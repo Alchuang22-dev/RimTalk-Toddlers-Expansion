@@ -1,0 +1,90 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    RimTalk Toddlers Expansion (Add-on Mod)
+    Build:
+      dotnet build -c Release -p:GameVersion=1.6
+    Output:
+      <ProjectDir>\<GameVersion>\Assemblies\RimTalk_ToddlersExpansion.dll
+  -->
+
+  <PropertyGroup>
+    <!-- Defaults -->
+    <GameVersion Condition=" '$(GameVersion)' == '' ">1.6</GameVersion>
+
+    <TargetFramework>net48</TargetFramework>
+
+    <RootNamespace>RimTalk_ToddlersExpansion</RootNamespace>
+    <AssemblyName>RimTalk_ToddlersExpansion</AssemblyName>
+
+    <!-- RimWorld mod layout: put DLL directly under <GameVersion>/Assemblies -->
+    <OutputPath>$(GameVersion)\Assemblies\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+
+    <!-- VSCode/OmniSharp: do not fall back to C# 7.3 -->
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+
+    <!-- Mod assemblies: keep outputs clean -->
+    <DebugType>portable</DebugType>
+    <Deterministic>true</Deterministic>
+
+    <!-- Make it easier to evolve this add-on without blocking builds -->
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <!-- Optional version defines for conditional compilation -->
+  <PropertyGroup Condition=" '$(GameVersion)' == '1.5' ">
+    <DefineConstants>$(DefineConstants);V1_5</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(GameVersion)' == '1.6' ">
+    <DefineConstants>$(DefineConstants);V1_6</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Reference pack for RimWorld types (Verse/RimWorld/Unity) -->
+    <PackageReference Include="Krafs.Rimworld.Ref" Version="$(GameVersion).*-*" PrivateAssets="All" />
+    <!-- Harmony reference -->
+    <PackageReference Include="Lib.Harmony.Ref" Version="2.*" PrivateAssets="All" />
+  </ItemGroup>
+
+  <!-- RimTalk core reference: configurable location -->
+  <PropertyGroup>
+    <!-- Override on command line: -p:RimTalkDir=... -->
+    <RimTalkDir Condition=" '$(RimTalkDir)' == '' ">..\..\RimTalk</RimTalkDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="RimTalk" Condition="Exists('$(RimTalkDir)\$(GameVersion)\Assemblies\RimTalk.dll')">
+      <!-- Expected layout: ..\..\RimTalk\<GameVersion>\Assemblies\RimTalk.dll -->
+      <HintPath>$(RimTalkDir)\$(GameVersion)\Assemblies\RimTalk.dll</HintPath>
+      <!-- Do not copy RimTalk.dll into this mod's Assemblies -->
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Toddlers mod reference (optional): prefer reflection at runtime, but allow compile-time ref if available -->
+  <PropertyGroup>
+    <!-- Override on command line: -p:ToddlersDir=... -->
+    <ToddlersDir Condition=" '$(ToddlersDir)' == '' ">..\..\Toddlers</ToddlersDir>
+    <!-- If the assembly name differs, override: -p:ToddlersAssemblyName=... -->
+    <ToddlersAssemblyName Condition=" '$(ToddlersAssemblyName)' == '' ">Toddlers</ToddlersAssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Expected layout: ..\..\Toddlers\<GameVersion>\Assemblies\Toddlers.dll -->
+    <Reference Include="Toddlers"
+               Condition="Exists('$(ToddlersDir)\$(GameVersion)\Assemblies\$(ToddlersAssemblyName).dll')">
+      <HintPath>$(ToddlersDir)\$(GameVersion)\Assemblies\$(ToddlersAssemblyName).dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Prompt templates (optional): embed into the assembly to avoid file path issues -->
+  <ItemGroup Condition="Exists('promptoverride')">
+    <EmbeddedResource Include="promptoverride\templates\**\*.txt" />
+  </ItemGroup>
+
+</Project>

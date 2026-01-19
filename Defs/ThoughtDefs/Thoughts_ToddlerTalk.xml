@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThoughtDef>
+    <defName>RimTalk_TalkedToBaby</defName>
+    <label>someone talked to the baby</label>
+    <description>gugugaga... (translation: someone taught me to talk! happy!)</description>
+    <thoughtClass>Thought_Memory</thoughtClass>
+    <durationDays>0.125</durationDays>
+    <stackLimit>3</stackLimit>
+    <stages>
+      <li>
+        <label>someone talked to the baby</label>
+        <baseMoodEffect>3</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+</Defs>

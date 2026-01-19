@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <ThoughtDef>
+    <defName>RimTalk_MyBabyNearby</defName>
+    <label>my baby nearby</label>
+    <description>my baby is sleeping...how cute!</description>
+    <stages>
+      <li>
+        <label>my baby nearby</label>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef>
+    <defName>RimTalk_ToddlerSleepAlone</defName>
+    <label>sleeping alone</label>
+    <description>yaya... (translation: I'm scared... where is mom?)</description>
+    <stages>
+      <li>
+        <label>sleeping alone</label>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef>
+    <defName>RimTalk_ToddlerSleepWithOthers</defName>
+    <label>slept with others</label>
+    <description>mamamomo... (translation: it's a bit crowded... want a hug)</description>
+    <stages>
+      <li>
+        <label>slept with others</label>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef>
+    <defName>RimTalk_ToddlerSleepWithParents</defName>
+    <label>slept with family</label>
+    <description>gugu! (translation: the pillow is soft! time to sleep...)</description>
+    <stages>
+      <li>
+        <label>slept with family</label>
+      </li>
+    </stages>
+  </ThoughtDef>
+</LanguageData>

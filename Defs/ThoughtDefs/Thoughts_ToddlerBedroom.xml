@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThoughtDef MayRequire="Ludeon.RimWorld.Biotech">
+    <defName>RimTalk_MyBabyNearby</defName>
+    <label>my baby nearby</label>
+    <description>my baby is sleeping...how cute!</description>
+    <thoughtClass>Thought_Situational</thoughtClass>
+    <workerClass>RimTalk_ToddlersExpansion.Integration.BioTech.ThoughtWorker_MyBabyNearby</workerClass>
+    <stages>
+      <li>
+        <label>my baby nearby</label>
+        <baseMoodEffect>2</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef MayRequire="Ludeon.RimWorld.Biotech">
+    <defName>RimTalk_ToddlerSleepAlone</defName>
+    <label>sleeping alone</label>
+    <description>yaya... (translation: I'm scared... where is mom?)</description>
+    <thoughtClass>Thought_Memory</thoughtClass>
+    <durationDays>0.5</durationDays>
+    <stackLimit>1</stackLimit>
+    <stages>
+      <li>
+        <label>sleeping alone</label>
+        <baseMoodEffect>-3</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef MayRequire="Ludeon.RimWorld.Biotech">
+    <defName>RimTalk_ToddlerSleepWithOthers</defName>
+    <label>slept with others</label>
+    <description>mamamomo... (translation: it's a bit crowded... want a hug)</description>
+    <thoughtClass>Thought_Memory</thoughtClass>
+    <durationDays>0.5</durationDays>
+    <stackLimit>1</stackLimit>
+    <stages>
+      <li>
+        <label>slept with others</label>
+        <baseMoodEffect>-1</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef MayRequire="Ludeon.RimWorld.Biotech">
+    <defName>RimTalk_ToddlerSleepWithParents</defName>
+    <label>slept with family</label>
+    <description>gugu!... (translation: the pillow is soft! time to sleep...)</description>
+    <thoughtClass>Thought_Memory</thoughtClass>
+    <durationDays>0.5</durationDays>
+    <stackLimit>1</stackLimit>
+    <stages>
+      <li>
+        <label>slept with family</label>
+        <baseMoodEffect>-1</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+</Defs>

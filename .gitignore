@@ -1,0 +1,5 @@
+*nuget*
+*.sln
+obj/
+Source/1.6/
+reference/

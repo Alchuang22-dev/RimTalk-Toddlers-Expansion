@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <HediffDef>
+    <defName>RimTalk_ToddlerLanguageLearning</defName>
+    <label>语言学习</label>
+    <stages>
+      <li>
+        <label>简单发声</label>
+        <description>幼儿还太小，只能发出一些含糊不清的音节。</description>
+      </li>
+      <li>
+        <label>牙牙学语</label>
+        <description>幼儿刚刚学会称呼妈妈，现在正在尝试说出简单的词语。</description>
+      </li>
+      <li>
+        <label>尝试对话</label>
+        <description>幼儿能说出一两个简短的句子，还会表达自己的需求。</description>
+      </li>
+    </stages>
+  </HediffDef>
+</LanguageData>

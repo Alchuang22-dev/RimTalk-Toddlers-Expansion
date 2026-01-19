@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimTalk_ToddlersExpansion_ToddlerTumbleLabel>Toddler tumble</RimTalk_ToddlersExpansion_ToddlerTumbleLabel>
+  <RimTalk_ToddlersExpansion_ToddlerTumbleText>{TODDLER} fell while playing and got a bruise.</RimTalk_ToddlersExpansion_ToddlerTumbleText>
+  <RimTalk_ToddlersExpansion_ToddlerScuffleLabel>Toddler scuffle</RimTalk_ToddlersExpansion_ToddlerScuffleLabel>
+  <RimTalk_ToddlersExpansion_ToddlerScuffleText>{TODDLER} got into a brief scuffle with {PARTNER}.</RimTalk_ToddlersExpansion_ToddlerScuffleText>
+  <RimTalk_ToddlersExpansion_PlayReport_SelfPrefix>self play -> </RimTalk_ToddlersExpansion_PlayReport_SelfPrefix>
+  <RimTalk_ToddlersExpansion_PlayReport_MutualPrefix>play with {PARTNER} -> </RimTalk_ToddlersExpansion_PlayReport_MutualPrefix>
+  <RimTalk_ToddlersExpansion_PlayReport_AnotherToddler>another toddler</RimTalk_ToddlersExpansion_PlayReport_AnotherToddler>
+  <RimTalk_ToddlersExpansion_ToddlerLanguageDescriptor>Toddler language level descriptor</RimTalk_ToddlersExpansion_ToddlerLanguageDescriptor>
+  <RimTalk_ToddlersExpansion_ToddlerPlayContext>Toddler play context</RimTalk_ToddlersExpansion_ToddlerPlayContext>
+</LanguageData>

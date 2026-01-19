@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <ThoughtDef>
+    <defName>RimTalk_TalkedToBaby</defName>
+    <label>有人和宝宝说话</label>
+    <description>gugugaga...（翻译：有人教我说话！开心！）</description>
+    <stages>
+      <li>
+        <label>有人和宝宝说话</label>
+      </li>
+    </stages>
+  </ThoughtDef>
+</LanguageData>

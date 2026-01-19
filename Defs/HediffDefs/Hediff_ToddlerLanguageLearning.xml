@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <HediffDef MayRequire="Ludeon.RimWorld.Biotech">
+    <defName>RimTalk_ToddlerLanguageLearning</defName>
+    <label>language learning</label>
+    <hediffClass>RimTalk_ToddlersExpansion.Language.Hediff_ToddlerLanguageLearning</hediffClass>
+    <isBad>false</isBad>
+    <comps>
+      <li Class="HediffCompProperties">
+        <compClass>RimTalk_ToddlersExpansion.Language.HediffComp_LanguageLearningProgress</compClass>
+      </li>
+    </comps>
+    <stages>
+      <li>
+        <label>simple babbling</label>
+        <description>The toddler is still very young and can only make indistinct sounds.</description>
+        <minSeverity>0</minSeverity>
+      </li>
+      <li>
+        <label>early words</label>
+        <description>The toddler just learned to call mom and is trying out simple words.</description>
+        <minSeverity>0.34</minSeverity>
+      </li>
+      <li>
+        <label>trying to converse</label>
+        <description>The toddler can say one or two short sentences and express basic needs.</description>
+        <minSeverity>0.68</minSeverity>
+      </li>
+    </stages>
+  </HediffDef>
+</Defs>

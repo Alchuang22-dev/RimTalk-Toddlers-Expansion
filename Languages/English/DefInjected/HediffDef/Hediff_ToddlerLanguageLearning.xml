@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <HediffDef>
+    <defName>RimTalk_ToddlerLanguageLearning</defName>
+    <label>language learning</label>
+    <stages>
+      <li>
+        <label>simple babbling</label>
+        <description>The toddler is still very young and can only make indistinct sounds.</description>
+      </li>
+      <li>
+        <label>early words</label>
+        <description>The toddler just learned to call mom and is trying out simple words.</description>
+      </li>
+      <li>
+        <label>trying to converse</label>
+        <description>The toddler can say one or two short sentences and express basic needs.</description>
+      </li>
+    </stages>
+  </HediffDef>
+</LanguageData>

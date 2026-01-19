@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <ThoughtDef>
+    <defName>RimTalk_MyBabyNearby</defName>
+    <label>我的宝宝在身边</label>
+    <description>我的宝宝睡着呢，看看多可爱！</description>
+    <stages>
+      <li>
+        <label>我的宝宝在身边</label>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef>
+    <defName>RimTalk_ToddlerSleepAlone</defName>
+    <label>自己睡觉</label>
+    <description>yaya...（翻译：好害怕...妈妈在哪里？）</description>
+    <stages>
+      <li>
+        <label>自己睡觉</label>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef>
+    <defName>RimTalk_ToddlerSleepWithOthers</defName>
+    <label>被带着睡觉</label>
+    <description>mamamomo...（翻译：有点挤...想要抱）</description>
+    <stages>
+      <li>
+        <label>被带着睡觉</label>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef>
+    <defName>RimTalk_ToddlerSleepWithParents</defName>
+    <label>和家人一起睡</label>
+    <description>gugu!（翻译：枕头软软的！睡觉啦...）</description>
+    <stages>
+      <li>
+        <label>和家人一起睡</label>
+      </li>
+    </stages>
+  </ThoughtDef>
+</LanguageData>

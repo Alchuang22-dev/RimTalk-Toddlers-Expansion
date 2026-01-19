@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <JobDef>
+    <defName>RimTalk_ToddlerSelfPlayJob</defName>
+    <reportString>自己在玩耍。</reportString>
+  </JobDef>
+  <JobDef>
+    <defName>RimTalk_ToddlerMutualPlayJob</defName>
+    <reportString>在和TargetA玩耍。</reportString>
+  </JobDef>
+  <JobDef>
+    <defName>RimTalk_WatchToddlerPlayJob</defName>
+    <reportString>在观看TargetA玩耍。</reportString>
+  </JobDef>
+</LanguageData>
