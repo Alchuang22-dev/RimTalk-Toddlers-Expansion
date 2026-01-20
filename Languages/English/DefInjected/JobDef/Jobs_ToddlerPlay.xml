@@ -12,4 +12,8 @@
     <defName>RimTalk_WatchToddlerPlayJob</defName>
     <reportString>watching TargetA play.</reportString>
   </JobDef>
+  <JobDef>
+    <defName>RimTalk_ToddlerPlayAtToy</defName>
+    <reportString>playing with TargetA.</reportString>
+  </JobDef>
 </LanguageData>

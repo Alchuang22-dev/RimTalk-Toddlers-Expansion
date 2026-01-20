@@ -9,6 +9,7 @@ namespace RimTalk_ToddlersExpansion.Core
 		public static JobDef RimTalk_ToddlerSelfPlayJob;
 		public static JobDef RimTalk_ToddlerMutualPlayJob;
 		public static JobDef RimTalk_WatchToddlerPlayJob;
+		public static JobDef RimTalk_ToddlerPlayAtToy;
 
 		static ToddlersExpansionJobDefOf()
 		{
@@ -20,6 +21,7 @@ namespace RimTalk_ToddlersExpansion.Core
 	public static class ToddlersExpansionJoyGiverDefOf
 	{
 		public static JoyGiverDef RimTalk_WatchToddlerPlayJoy;
+		public static JoyGiverDef RimTalk_ToddlerToyPlayJoy;
 
 		static ToddlersExpansionJoyGiverDefOf()
 		{

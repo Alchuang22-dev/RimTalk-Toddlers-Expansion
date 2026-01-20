@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <JoyGiverDef>
+    <defName>RimTalk_ToddlerToyPlayJoy</defName>
+    <giverClass>RimTalk_ToddlersExpansion.Integration.Toddlers.WorkGiver_ToddlerToyPlay</giverClass>
+    <joyKind>Meditative</joyKind>
+    <jobDef>RimTalk_ToddlerPlayAtToy</jobDef>
+    <baseChance>1</baseChance>
+    <requireChair>false</requireChair>
+    <desireSit>false</desireSit>
+  </JoyGiverDef>
+</Defs>

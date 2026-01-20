@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <ThingDef>
+    <defName>RimTalk_ToyBlockPile</defName>
+    <label>block pile</label>
+    <description>A small pile of soft blocks for tiny hands.</description>
+  </ThingDef>
+  <ThingDef>
+    <defName>RimTalk_ToyRockingHorse</defName>
+    <label>rocking horse</label>
+    <description>A small rocking horse that soothes and steadies young riders.</description>
+  </ThingDef>
+  <ThingDef>
+    <defName>RimTalk_ToyPuzzleTable</defName>
+    <label>puzzle table</label>
+    <description>A small table with simple puzzles and pieces.</description>
+  </ThingDef>
+</LanguageData>

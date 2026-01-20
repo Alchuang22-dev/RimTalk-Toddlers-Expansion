@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="BuildingBase">
+    <defName>RimTalk_ToyBlockPile</defName>
+    <label>block pile</label>
+    <description>A small pile of soft blocks for tiny hands.</description>
+    <thingClass>Building</thingClass>
+    <graphicData>
+      <texPath>Things/Building/ToddlerToys/toy_block_pile</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <drawSize>(0.9,0.9)</drawSize>
+    </graphicData>
+    <altitudeLayer>Building</altitudeLayer>
+    <passability>Standable</passability>
+    <fillPercent>0.1</fillPercent>
+    <pathCost>10</pathCost>
+    <statBases>
+      <WorkToBuild>600</WorkToBuild>
+      <MaxHitPoints>100</MaxHitPoints>
+      <Beauty>1</Beauty>
+    </statBases>
+    <costList>
+      <WoodLog>15</WoodLog>
+      <Cloth>10</Cloth>
+    </costList>
+    <designationCategory>Furniture</designationCategory>
+    <thingCategories>
+      <li>Joy</li>
+    </thingCategories>
+    <comps>
+      <li Class="RimTalk_ToddlersExpansion.Integration.Toddlers.CompProperties_ToddlerToy">
+        <groundToy>true</groundToy>
+        <joyKind>Meditative</joyKind>
+        <joyGainPerTick>0.00022</joyGainPerTick>
+        <useDurationTicks>1800</useDurationTicks>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="BuildingBase">
+    <defName>RimTalk_ToyRockingHorse</defName>
+    <label>rocking horse</label>
+    <description>A small rocking horse that soothes and steadies young riders.</description>
+    <thingClass>Building</thingClass>
+    <graphicData>
+      <texPath>Things/Building/ToddlerToys/toy_rocking_horse</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <drawSize>(0.9,0.9)</drawSize>
+    </graphicData>
+    <altitudeLayer>Building</altitudeLayer>
+    <passability>Standable</passability>
+    <fillPercent>0.2</fillPercent>
+    <pathCost>15</pathCost>
+    <statBases>
+      <WorkToBuild>1000</WorkToBuild>
+      <MaxHitPoints>140</MaxHitPoints>
+      <Beauty>2</Beauty>
+    </statBases>
+    <costList>
+      <WoodLog>30</WoodLog>
+      <Cloth>12</Cloth>
+    </costList>
+    <designationCategory>Furniture</designationCategory>
+    <thingCategories>
+      <li>Joy</li>
+    </thingCategories>
+    <comps>
+      <li Class="RimTalk_ToddlersExpansion.Integration.Toddlers.CompProperties_ToddlerToy">
+        <groundToy>false</groundToy>
+        <joyKind>Social</joyKind>
+        <joyGainPerTick>0.00024</joyGainPerTick>
+        <useDurationTicks>2000</useDurationTicks>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="BuildingBase">
+    <defName>RimTalk_ToyPuzzleTable</defName>
+    <label>puzzle table</label>
+    <description>A small table with simple puzzles and pieces.</description>
+    <thingClass>Building</thingClass>
+    <graphicData>
+      <texPath>Things/Building/ToddlerToys/toy_puzzle_table</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <drawSize>(0.9,0.9)</drawSize>
+    </graphicData>
+    <altitudeLayer>Building</altitudeLayer>
+    <passability>PassThroughOnly</passability>
+    <fillPercent>0.4</fillPercent>
+    <pathCost>20</pathCost>
+    <statBases>
+      <WorkToBuild>1400</WorkToBuild>
+      <MaxHitPoints>160</MaxHitPoints>
+      <Beauty>2</Beauty>
+    </statBases>
+    <costList>
+      <WoodLog>40</WoodLog>
+      <Cloth>8</Cloth>
+    </costList>
+    <designationCategory>Furniture</designationCategory>
+    <thingCategories>
+      <li>Joy</li>
+    </thingCategories>
+    <comps>
+      <li Class="RimTalk_ToddlersExpansion.Integration.Toddlers.CompProperties_ToddlerToy">
+        <groundToy>false</groundToy>
+        <joyKind>Meditative</joyKind>
+        <joyGainPerTick>0.00024</joyGainPerTick>
+        <useDurationTicks>2200</useDurationTicks>
+      </li>
+    </comps>
+  </ThingDef>
+
+</Defs>

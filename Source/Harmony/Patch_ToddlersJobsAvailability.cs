@@ -12,6 +12,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 	{
 		private static readonly WorkGiver_ToddlerSelfPlay SelfPlayGiver = new WorkGiver_ToddlerSelfPlay();
 		private static readonly WorkGiver_ToddlerMutualPlay MutualPlayGiver = new WorkGiver_ToddlerMutualPlay();
+		private static readonly WorkGiver_ToddlerToyPlay ToyPlayGiver = new WorkGiver_ToddlerToyPlay();
 		private const float OverrideChance = 0.5f;
 
 		public static void Init(HarmonyLib.Harmony harmony)
@@ -44,7 +45,9 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				return;
 			}
 
-			Job job = MutualPlayGiver.TryGiveJob(pawn) ?? SelfPlayGiver.TryGiveJob(pawn);
+			Job job = MutualPlayGiver.TryGiveJob(pawn)
+				?? ToyPlayGiver.TryGiveJob(pawn)
+				?? SelfPlayGiver.TryGiveJob(pawn);
 			if (job == null)
 			{
 				return;
