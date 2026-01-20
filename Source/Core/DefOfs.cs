@@ -52,4 +52,18 @@ namespace RimTalk_ToddlersExpansion.Core
 			DefOfHelper.EnsureInitializedInCtor(typeof(ToddlersExpansionThoughtDefOf));
 		}
 	}
+
+	[DefOf]
+	public static class ToddlersExpansionAnimationDefOf
+	{
+		public static AnimationDef RimTalk_ToddlerPlay_Wiggle;
+		public static AnimationDef RimTalk_ToddlerPlay_Sway;
+		public static AnimationDef RimTalk_ToddlerPlay_Lay;
+		public static AnimationDef RimTalk_ToddlerPlay_Crawl;
+
+		static ToddlersExpansionAnimationDefOf()
+		{
+			DefOfHelper.EnsureInitializedInCtor(typeof(ToddlersExpansionAnimationDefOf));
+		}
+	}
 }

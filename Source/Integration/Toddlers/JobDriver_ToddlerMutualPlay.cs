@@ -12,6 +12,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private const TargetIndex PlaySpotInd = TargetIndex.B;
 
 		private float _initialPlayLevel = -1f;
+		private AnimationDef _playAnimation;
 
 		private Pawn Partner => TargetA.Thing as Pawn;
 
@@ -43,11 +44,14 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			play.initAction = () =>
 			{
 				_initialPlayLevel = GetPlayLevel(pawn);
+				_playAnimation = ToddlerPlayAnimationUtility.GetRandomMutualPlayAnimation();
+				ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, _playAnimation);
 				ToddlerPlayReportUtility.EnsureReportRequested(job, pawn, Partner, ToddlerPlayReportKind.MutualPlay);
 				ToddlerPlayReportUtility.TryApplyPendingReport(job);
 			};
 			play.tickIntervalAction = delta =>
 			{
+				ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, _playAnimation);
 				if (ToddlerCareEventUtility.TryTriggerMutualPlayMishap(pawn, Partner, delta))
 				{
 					return;
@@ -73,6 +77,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 			AddFinishAction(condition =>
 			{
+				ToddlerPlayAnimationUtility.ClearAnimation(pawn, _playAnimation);
 				ToddlerPlayReportUtility.CancelJob(job);
 				if (condition != JobCondition.Succeeded)
 				{

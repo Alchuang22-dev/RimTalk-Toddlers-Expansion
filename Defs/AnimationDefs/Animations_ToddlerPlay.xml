@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <AnimationDef>
+    <defName>RimTalk_ToddlerPlay_Wiggle</defName>
+    <label>toddler play wiggle</label>
+    <durationTicks>120</durationTicks>
+    <startOnRandomTick>true</startOnRandomTick>
+    <playWhenDowned>false</playWhenDowned>
+    <keyframeParts>
+      <li>
+        <key>Root</key>
+        <value>
+          <pivot>(0.5,0.3)</pivot>
+          <workerType>RimTalk_ToddlersExpansion.Integration.Toddlers.AnimationWorker_ToddlerPlayWiggle</workerType>
+        </value>
+      </li>
+    </keyframeParts>
+  </AnimationDef>
+
+  <AnimationDef>
+    <defName>RimTalk_ToddlerPlay_Sway</defName>
+    <label>toddler play sway</label>
+    <durationTicks>180</durationTicks>
+    <startOnRandomTick>true</startOnRandomTick>
+    <playWhenDowned>false</playWhenDowned>
+    <keyframeParts>
+      <li>
+        <key>Root</key>
+        <value>
+          <pivot>(0.5,0.3)</pivot>
+          <workerType>RimTalk_ToddlersExpansion.Integration.Toddlers.AnimationWorker_ToddlerPlaySway</workerType>
+        </value>
+      </li>
+    </keyframeParts>
+  </AnimationDef>
+
+  <AnimationDef>
+    <defName>RimTalk_ToddlerPlay_Lay</defName>
+    <label>toddler play lay</label>
+    <durationTicks>60</durationTicks>
+    <startOnRandomTick>false</startOnRandomTick>
+    <playWhenDowned>false</playWhenDowned>
+    <keyframeParts>
+      <li>
+        <key>Root</key>
+        <value>
+          <pivot>(0.5,0.3)</pivot>
+          <workerType>RimTalk_ToddlersExpansion.Integration.Toddlers.AnimationWorker_ToddlerPlayLay</workerType>
+        </value>
+      </li>
+    </keyframeParts>
+  </AnimationDef>
+
+  <AnimationDef>
+    <defName>RimTalk_ToddlerPlay_Crawl</defName>
+    <label>toddler play crawl</label>
+    <durationTicks>80</durationTicks>
+    <startOnRandomTick>true</startOnRandomTick>
+    <playWhenDowned>false</playWhenDowned>
+    <keyframeParts>
+      <li>
+        <key>Root</key>
+        <value>
+          <workerType>RimTalk_ToddlersExpansion.Integration.Toddlers.AnimationWorker_ToddlerPlayCrawl_Root</workerType>
+        </value>
+      </li>
+      <li>
+        <key>Head</key>
+        <value>
+          <workerType>RimTalk_ToddlersExpansion.Integration.Toddlers.AnimationWorker_ToddlerPlayCrawl_Head</workerType>
+        </value>
+      </li>
+    </keyframeParts>
+  </AnimationDef>
+</Defs>

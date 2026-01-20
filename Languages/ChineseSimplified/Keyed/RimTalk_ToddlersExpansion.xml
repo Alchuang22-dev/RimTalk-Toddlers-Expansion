@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
-  <RimTalk_ToddlersExpansion_ToddlerTumbleLabel>幼儿摔跤</RimTalk_ToddlersExpansion_ToddlerTumbleLabel>
-  <RimTalk_ToddlersExpansion_ToddlerTumbleText>{TODDLER}在玩耍时摔倒，擦伤了。</RimTalk_ToddlersExpansion_ToddlerTumbleText>
-  <RimTalk_ToddlersExpansion_ToddlerScuffleLabel>幼儿打架</RimTalk_ToddlersExpansion_ToddlerScuffleLabel>
-  <RimTalk_ToddlersExpansion_ToddlerScuffleText>{TODDLER}和{PARTNER}发生了短暂打斗。</RimTalk_ToddlersExpansion_ToddlerScuffleText>
+  <RimTalk_ToddlersExpansion_ToddlerTumbleLabel>摔跤</RimTalk_ToddlersExpansion_ToddlerTumbleLabel>
+  <RimTalk_ToddlersExpansion_ToddlerTumbleText>{TODDLER}在玩耍时摔倒了，坐在地上哇哇大哭。</RimTalk_ToddlersExpansion_ToddlerTumbleText>
+  <RimTalk_ToddlersExpansion_ToddlerScuffleLabel>打架</RimTalk_ToddlersExpansion_ToddlerScuffleLabel>
+  <RimTalk_ToddlersExpansion_ToddlerScuffleText>{TODDLER}和{PARTNER}为了抢一个玩具打起来了。</RimTalk_ToddlersExpansion_ToddlerScuffleText>
   <RimTalk_ToddlersExpansion_PlayReport_SelfPrefix>自娱自乐 -> </RimTalk_ToddlersExpansion_PlayReport_SelfPrefix>
   <RimTalk_ToddlersExpansion_PlayReport_MutualPrefix>和{PARTNER}玩耍 -> </RimTalk_ToddlersExpansion_PlayReport_MutualPrefix>
   <RimTalk_ToddlersExpansion_PlayReport_AnotherToddler>另一位幼儿</RimTalk_ToddlersExpansion_PlayReport_AnotherToddler>

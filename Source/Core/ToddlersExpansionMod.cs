@@ -17,6 +17,7 @@ namespace RimTalk_ToddlersExpansion.Core
 			DefOfHelper.EnsureInitializedInCtor(typeof(ToddlersExpansionJoyGiverDefOf));
 			DefOfHelper.EnsureInitializedInCtor(typeof(ToddlersExpansionHediffDefOf));
 			DefOfHelper.EnsureInitializedInCtor(typeof(ToddlersExpansionThoughtDefOf));
+			DefOfHelper.EnsureInitializedInCtor(typeof(ToddlersExpansionAnimationDefOf));
 
 			HarmonyBootstrap.Init();
 			RimTalkCompatUtility.TryRegisterToddlerVariables();

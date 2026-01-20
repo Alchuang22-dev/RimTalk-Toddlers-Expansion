@@ -9,6 +9,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 	public sealed class JobDriver_ToddlerSelfPlay : JobDriver
 	{
 		private const TargetIndex PlaySpotInd = TargetIndex.A;
+		private AnimationDef _playAnimation;
 
 		public override bool TryMakePreToilReservations(bool errorOnFailed)
 		{
@@ -24,11 +25,14 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			Toil play = ToilMaker.MakeToil("ToddlerSelfPlay");
 			play.initAction = () =>
 			{
+				_playAnimation = ToddlerPlayAnimationUtility.GetRandomSelfPlayAnimation();
+				ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, _playAnimation);
 				ToddlerPlayReportUtility.EnsureReportRequested(job, pawn, null, ToddlerPlayReportKind.SelfPlay);
 				ToddlerPlayReportUtility.TryApplyPendingReport(job);
 			};
 			play.tickIntervalAction = delta =>
 			{
+				ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, _playAnimation);
 				if (ToddlerCareEventUtility.TryTriggerSelfPlayMishap(pawn, delta))
 				{
 					return;
@@ -48,6 +52,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 			AddFinishAction(condition =>
 			{
+				ToddlerPlayAnimationUtility.ClearAnimation(pawn, _playAnimation);
 				ToddlerPlayReportUtility.CancelJob(job);
 				if (condition == JobCondition.Succeeded)
 				{
