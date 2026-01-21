@@ -20,6 +20,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			Patch_RimTalkTalkService.Init(harmony);
 			Patch_BiotechSharedBedroomThoughts.Init(harmony);
 			Patch_PawnGroupMakerUtility.Init(harmony);
+			Patch_FloatMenu_ToddlerToyPlay.Init(harmony);
 		}
 	}
 }
