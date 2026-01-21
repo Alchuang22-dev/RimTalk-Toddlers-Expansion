@@ -71,12 +71,15 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 
 			try
 			{
+				string languageLabel = GetTranslationOrKey("RimTalk_ToddlersExpansion_ToddlerLanguageDescriptor");
+				string playLabel = GetTranslationOrKey("RimTalk_ToddlersExpansion_ToddlerPlayContext");
+
 				_registerPawnVariable.Invoke(null, new object[]
 				{
 					ModId,
 					"toddler_language",
 					(Func<Pawn, string>)ToddlerContextInjector.GetToddlerLanguageDescriptor,
-					"RimTalk_ToddlersExpansion_ToddlerLanguageDescriptor".Translate(),
+					languageLabel,
 					100
 				});
 
@@ -85,7 +88,7 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 					ModId,
 					"toddler_play",
 					(Func<Pawn, string>)ToddlerContextInjector.GetToddlerPlayDescriptor,
-					"RimTalk_ToddlersExpansion_ToddlerPlayContext".Translate(),
+					playLabel,
 					110
 				});
 
@@ -408,6 +411,16 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 
 			_warned = true;
 			Log.Warning($"[RimTalk_ToddlersExpansion] RimTalk compat {context} failed: {ex.Message}");
+		}
+
+		private static string GetTranslationOrKey(string key)
+		{
+			if (LanguageDatabase.activeLanguage == null)
+			{
+				return key;
+			}
+
+			return key.Translate().ToString();
 		}
 
 		private static void LogShortTextUnavailableOnce(string reason)
