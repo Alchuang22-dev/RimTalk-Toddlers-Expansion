@@ -18,6 +18,7 @@
       <WorkToBuild>600</WorkToBuild>
       <MaxHitPoints>100</MaxHitPoints>
       <Beauty>1</Beauty>
+      <Mass>3</Mass>
     </statBases>
     <costList>
       <WoodLog>15</WoodLog>
@@ -25,8 +26,12 @@
     </costList>
     <designationCategory>Furniture</designationCategory>
     <thingCategories>
-      <li>Joy</li>
+      <li>BuildingsJoy</li>
     </thingCategories>
+    <minifiedDef>MinifiedThing</minifiedDef>
+    <thingSetMakerTags>
+      <li>Furniture</li>
+    </thingSetMakerTags>
     <comps>
       <li Class="RimTalk_ToddlersExpansion.Integration.Toddlers.CompProperties_ToddlerToy">
         <groundToy>true</groundToy>
@@ -55,6 +60,7 @@
       <WorkToBuild>1000</WorkToBuild>
       <MaxHitPoints>140</MaxHitPoints>
       <Beauty>2</Beauty>
+      <Mass>8</Mass>
     </statBases>
     <costList>
       <WoodLog>30</WoodLog>
@@ -62,8 +68,12 @@
     </costList>
     <designationCategory>Furniture</designationCategory>
     <thingCategories>
-      <li>Joy</li>
+      <li>BuildingsJoy</li>
     </thingCategories>
+    <minifiedDef>MinifiedThing</minifiedDef>
+    <thingSetMakerTags>
+      <li>Furniture</li>
+    </thingSetMakerTags>
     <comps>
       <li Class="RimTalk_ToddlersExpansion.Integration.Toddlers.CompProperties_ToddlerToy">
         <groundToy>false</groundToy>
@@ -92,6 +102,7 @@
       <WorkToBuild>1400</WorkToBuild>
       <MaxHitPoints>160</MaxHitPoints>
       <Beauty>2</Beauty>
+      <Mass>12</Mass>
     </statBases>
     <costList>
       <WoodLog>40</WoodLog>
@@ -99,8 +110,12 @@
     </costList>
     <designationCategory>Furniture</designationCategory>
     <thingCategories>
-      <li>Joy</li>
+      <li>BuildingsJoy</li>
     </thingCategories>
+    <minifiedDef>MinifiedThing</minifiedDef>
+    <thingSetMakerTags>
+      <li>Furniture</li>
+    </thingSetMakerTags>
     <comps>
       <li Class="RimTalk_ToddlersExpansion.Integration.Toddlers.CompProperties_ToddlerToy">
         <groundToy>false</groundToy>
