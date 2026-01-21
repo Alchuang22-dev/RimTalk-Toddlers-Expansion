@@ -40,9 +40,9 @@ namespace RimTalk_ToddlersExpansion.Core
 			missingDefs += CheckDef<AnimationDef>("RimTalk_ToddlerPlay_Lay");
 			missingDefs += CheckDef<AnimationDef>("RimTalk_ToddlerPlay_Crawl");
 
-			missingTextures += CheckTexture("Things/Building/ToddlerToys/toy_block_pile");
-			missingTextures += CheckTexture("Things/Building/ToddlerToys/toy_rocking_horse");
-			missingTextures += CheckTexture("Things/Building/ToddlerToys/toy_puzzle_table");
+			missingTextures += CheckMultiTexture("Things/Building/ToddlerToys/toy_block_pile");
+			missingTextures += CheckMultiTexture("Things/Building/ToddlerToys/toy_rocking_horse");
+			missingTextures += CheckMultiTexture("Things/Building/ToddlerToys/toy_puzzle_table");
 
 			if (missingDefs == 0 && missingTextures == 0)
 			{
@@ -65,12 +65,14 @@ namespace RimTalk_ToddlersExpansion.Core
 			return 0;
 		}
 
-		private static int CheckTexture(string path)
+		private static int CheckMultiTexture(string path)
 		{
-			Texture2D texture = ContentFinder<Texture2D>.Get(path, false);
-			if (texture == null)
+			if (ContentFinder<Texture2D>.Get(path + "_north", false) == null
+				|| ContentFinder<Texture2D>.Get(path + "_east", false) == null
+				|| ContentFinder<Texture2D>.Get(path + "_south", false) == null
+				|| ContentFinder<Texture2D>.Get(path + "_west", false) == null)
 			{
-				Log.Warning($"[RimTalk_ToddlersExpansion] Missing texture: {path}");
+				Log.Warning($"[RimTalk_ToddlersExpansion] Missing multi-texture set: {path}_north/east/south/west");
 				return 1;
 			}
 

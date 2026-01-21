@@ -3,6 +3,7 @@
   <HediffDef MayRequire="Ludeon.RimWorld.Biotech">
     <defName>RimTalk_ToddlerLanguageLearning</defName>
     <label>language learning</label>
+    <description>The toddler is learning to talk and will gradually improve.</description>
     <hediffClass>RimTalk_ToddlersExpansion.Language.Hediff_ToddlerLanguageLearning</hediffClass>
     <isBad>false</isBad>
     <comps>
@@ -13,17 +14,17 @@
     <stages>
       <li>
         <label>simple babbling</label>
-        <description>The toddler is still very young and can only make indistinct sounds.</description>
+        <overrideTooltip>The toddler is still very young and can only make indistinct sounds.</overrideTooltip>
         <minSeverity>0</minSeverity>
       </li>
       <li>
         <label>early words</label>
-        <description>The toddler just learned to call mom and is trying out simple words.</description>
+        <overrideTooltip>The toddler just learned to call mom and is trying out simple words.</overrideTooltip>
         <minSeverity>0.34</minSeverity>
       </li>
       <li>
         <label>trying to converse</label>
-        <description>The toddler can say one or two short sentences and express basic needs.</description>
+        <overrideTooltip>The toddler can say one or two short sentences and express basic needs.</overrideTooltip>
         <minSeverity>0.68</minSeverity>
       </li>
     </stages>
