@@ -24,7 +24,7 @@ namespace RimTalk_ToddlersExpansion.Integration.BioTech
 					continue;
 				}
 
-				if (BiotechCompatUtility.IsBaby(other) && BiotechCompatUtility.IsParentOrGrandparentOf(pawn, other))
+				if (BiotechCompatUtility.IsBabyOrToddler(other) && BiotechCompatUtility.IsParentOrGrandparentOf(pawn, other))
 				{
 					return true;
 				}

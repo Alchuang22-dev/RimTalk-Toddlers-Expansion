@@ -1,5 +1,6 @@
 using System.Reflection;
 using HarmonyLib;
+using RimTalk_ToddlersExpansion.Core;
 using RimTalk_ToddlersExpansion.Integration.BioTech;
 using RimTalk_ToddlersExpansion.Integration.Toddlers;
 using RimWorld;
@@ -51,6 +52,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			if (BedroomThoughtsPatchHelper.ShouldReplaceWithMyBabyThought(actor, room))
 			{
 				actor.needs.mood.thoughts.memories.RemoveMemoriesOfDef(ThoughtDefOf.SleptInBarracks);
+				actor.needs.mood.thoughts.memories.TryGainMemory(ToddlersExpansionThoughtDefOf.RimTalk_MyBabyNearby);
 			}
 
 			ToddlerSleepThoughtUtility.ApplySleepThoughts(actor, bed);

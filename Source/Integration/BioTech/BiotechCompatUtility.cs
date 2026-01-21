@@ -19,6 +19,17 @@ namespace RimTalk_ToddlersExpansion.Integration.BioTech
 			return stage.Baby() || stage.Newborn();
 		}
 
+		public static bool IsBabyOrToddler(Pawn pawn)
+		{
+			if (!IsBiotechActive || pawn == null)
+			{
+				return false;
+			}
+
+			DevelopmentalStage stage = pawn.DevelopmentalStage;
+			return stage.Baby() || stage.Newborn() || stage.Child();
+		}
+
 		public static bool IsParentOrGrandparentOf(Pawn adult, Pawn baby)
 		{
 			if (adult == null || baby == null || adult == baby)

@@ -109,6 +109,8 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 			}
 		}
 
+		public static string ActiveLanguageName => LanguageDatabase.activeLanguage?.info?.friendlyNameNative ?? "English";
+
 		public static void CancelJob(Job job)
 		{
 			if (job == null)
@@ -170,10 +172,10 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 
 		private static string BuildSystemPrompt(ToddlerPlayReportKind kind)
 		{
-			string lang = GetActiveLanguageName();
 			string activity = kind == ToddlerPlayReportKind.SelfPlay
 				? "Return a short toddler self-play activity."
 				: "Return a short toddler shared play activity.";
+			string lang = ActiveLanguageName;
 			string langRule = string.IsNullOrWhiteSpace(lang)
 				? "Use the game's language."
 				: $"Use the game's language: {lang}.";
@@ -189,11 +191,6 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 			}
 
 			return $"Nearby: {context}. Toddler is playing with {partnerLabel}. Suggest a specific shared play activity.";
-		}
-
-		private static string GetActiveLanguageName()
-		{
-			return LanguageDatabase.activeLanguage?.info?.friendlyNameNative ?? "English";
 		}
 
 		private static string TrimContext(string context)
