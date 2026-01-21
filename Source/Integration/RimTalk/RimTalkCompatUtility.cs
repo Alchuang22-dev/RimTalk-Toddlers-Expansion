@@ -26,6 +26,12 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 		private static bool _isActive;
 		private static bool _warned;
 		private static bool _hooksRegistered;
+		private static bool _loggedInit;
+		private static bool _loggedRegister;
+		private static bool _loggedShortTextUnavailable;
+		private static bool _loggedShortTextRequest;
+		private static bool _loggedClientSuccess;
+		private static bool _loggedClientFailure;
 
 		private static MethodInfo _registerPawnVariable;
 		private static MethodInfo _generateTalk;
@@ -84,6 +90,11 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 				});
 
 				_hooksRegistered = true;
+				if (!_loggedRegister)
+				{
+					_loggedRegister = true;
+					Log.Message("[RimTalk_ToddlersExpansion] Registered RimTalk toddler context variables.");
+				}
 			}
 			catch (Exception ex)
 			{
@@ -197,9 +208,21 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 			}
 
 			EnsureInitialized();
-			if (!_isActive || _getAiClientAsync == null || _getChatCompletionAsync == null || _messageListType == null)
+			if (!_isActive)
 			{
+				LogShortTextUnavailableOnce("RimTalk not active.");
 				return false;
+			}
+			if (_getAiClientAsync == null || _getChatCompletionAsync == null || _messageListType == null)
+			{
+				LogShortTextUnavailableOnce("LLM API hooks missing.");
+				return false;
+			}
+
+			if (!_loggedShortTextRequest)
+			{
+				_loggedShortTextRequest = true;
+				Log.Message($"[RimTalk_ToddlersExpansion] First short-text request queued (systemPrompt={systemPrompt?.Length ?? 0}, userPrompt={userPrompt.Length}).");
 			}
 
 			Task.Run(async () =>
@@ -235,6 +258,11 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 				if (promptApiType == null)
 				{
 					_isActive = false;
+					if (!_loggedInit)
+					{
+						_loggedInit = true;
+						Log.Message("[RimTalk_ToddlersExpansion] RimTalk not detected; integration disabled.");
+					}
 					return;
 				}
 
@@ -284,6 +312,19 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 					_roleSystem = Enum.Parse(_roleType, "System");
 					_roleUser = Enum.Parse(_roleType, "User");
 				}
+
+				if (!_loggedInit)
+				{
+					_loggedInit = true;
+					if (_getAiClientAsync != null && _getChatCompletionAsync != null && _messageListType != null)
+					{
+						Log.Message("[RimTalk_ToddlersExpansion] RimTalk detected; LLM short-text pipeline ready.");
+					}
+					else
+					{
+						Log.Warning("[RimTalk_ToddlersExpansion] RimTalk detected, but LLM short-text pipeline unavailable.");
+					}
+				}
 			}
 			catch (Exception ex)
 			{
@@ -327,7 +368,22 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 			}
 
 			await task.ConfigureAwait(false);
-			return task.GetType().GetProperty("Result")?.GetValue(task);
+			object result = task.GetType().GetProperty("Result")?.GetValue(task);
+			if (result == null)
+			{
+				if (!_loggedClientFailure)
+				{
+					_loggedClientFailure = true;
+					Log.Warning("[RimTalk_ToddlersExpansion] RimTalk AI client unavailable.");
+				}
+			}
+			else if (!_loggedClientSuccess)
+			{
+				_loggedClientSuccess = true;
+				Log.Message("[RimTalk_ToddlersExpansion] RimTalk AI client acquired.");
+			}
+
+			return result;
 		}
 
 		private static object CreateMessageList(string message, object role)
@@ -352,6 +408,17 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 
 			_warned = true;
 			Log.Warning($"[RimTalk_ToddlersExpansion] RimTalk compat {context} failed: {ex.Message}");
+		}
+
+		private static void LogShortTextUnavailableOnce(string reason)
+		{
+			if (_loggedShortTextUnavailable)
+			{
+				return;
+			}
+
+			_loggedShortTextUnavailable = true;
+			Log.Warning($"[RimTalk_ToddlersExpansion] Short-text LLM request disabled: {reason}");
 		}
 	}
 }
