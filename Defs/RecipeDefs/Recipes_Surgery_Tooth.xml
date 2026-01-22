@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <RecipeDef ParentName="SurgeryFlesh">
+    <defName>RimTalk_ExtractTooth</defName>
+    <label>extract tooth</label>
+    <description>Extract a severely decayed tooth.</description>
+    <workerClass>Recipe_RemoveHediff</workerClass>
+    <removesHediff>RimTalk_ToddlerToothDecay</removesHediff>
+    <jobString>Extracting tooth.</jobString>
+    <workAmount>1000</workAmount>
+    <anesthetize>true</anesthetize>
+    <surgeryOutcomeEffect>SurgeryOutcomeBase</surgeryOutcomeEffect>
+    <surgerySuccessChanceFactor>0.8</surgerySuccessChanceFactor>
+    <surgeryFatalChance>0.01</surgeryFatalChance>
+    <developmentalStageFilter>Child</developmentalStageFilter>
+    <skillRequirements>
+      <Medicine>6</Medicine>
+    </skillRequirements>
+    <workSkill>Medicine</workSkill>
+    <workSkillLearnFactor>4</workSkillLearnFactor>
+    <ingredients>
+      <li>
+        <filter>
+          <categories>
+            <li>Medicine</li>
+          </categories>
+        </filter>
+        <count>2</count>
+      </li>
+    </ingredients>
+    <fixedIngredientFilter>
+      <categories>
+        <li>Medicine</li>
+      </categories>
+      <disallowedThingDefs>
+        <li>HerbalMedicine</li>
+      </disallowedThingDefs>
+    </fixedIngredientFilter>
+    <appliedOnFixedBodyParts>
+      <li>Teeth</li>
+    </appliedOnFixedBodyParts>
+  </RecipeDef>
+
+  <RecipeDef ParentName="SurgeryFlesh">
+    <defName>RimTalk_AddMissingTooth</defName>
+    <label>add missing tooth effect</label>
+    <description>Add the missing tooth effect after extraction.</description>
+    <workerClass>Recipe_AddHediff</workerClass>
+    <addsHediff>RimTalk_MissingTooth</addsHediff>
+    <jobString>Finishing extraction.</jobString>
+    <workAmount>1</workAmount>
+    <targetsBodyPart>false</targetsBodyPart>
+    <hideBodyPartNames>true</hideBodyPartNames>
+    <developmentalStageFilter>Child</developmentalStageFilter>
+    <skillRequirements>
+      <Medicine>6</Medicine>
+    </skillRequirements>
+  </RecipeDef>
+</Defs>

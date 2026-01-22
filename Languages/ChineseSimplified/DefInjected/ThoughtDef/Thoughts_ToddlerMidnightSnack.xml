@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimTalk_MidnightSnackSuccess_Child.label>偷吃成功</RimTalk_MidnightSnackSuccess_Child.label>
+  <RimTalk_MidnightSnackSuccess_Child.description>嘿嘿，我们成功了！半夜和朋友一起偷吃甜食是最棒的！</RimTalk_MidnightSnackSuccess_Child.description>
+
+  <RimTalk_MidnightSnackSuccess_Baby.label>偷吃成功</RimTalk_MidnightSnackSuccess_Baby.label>
+  <RimTalk_MidnightSnackSuccess_Baby.description>gegagu...（翻译：和朋友一起偷吃好吃的！）</RimTalk_MidnightSnackSuccess_Baby.description>
+
+  <RimTalk_MidnightSnackSuccess_Toddler.label>偷吃成功</RimTalk_MidnightSnackSuccess_Toddler.label>
+  <RimTalk_MidnightSnackSuccess_Toddler.description>gaga!gu?...（翻译：和朋友一起分享美味的甜食！这是我们的小秘密！）</RimTalk_MidnightSnackSuccess_Toddler.description>
+</LanguageData>

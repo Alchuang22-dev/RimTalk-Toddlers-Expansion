@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThoughtDef>
+    <defName>RimTalk_MidnightSnackSuccess_Child</defName>
+    <label>sneaky snack success</label>
+    <thoughtClass>Thought_Memory</thoughtClass>
+    <durationDays>1</durationDays>
+    <stackLimit>1</stackLimit>
+    <developmentalStageFilter>Child</developmentalStageFilter>
+    <stages>
+      <li>
+        <label>sneaky snack success</label>
+        <description>Hehe, we got away with it! Sweets with friends in the middle of the night is the best!</description>
+        <baseMoodEffect>2</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimTalk_MidnightSnackSuccess_Baby</defName>
+    <label>sneaky snack success</label>
+    <thoughtClass>Thought_Memory</thoughtClass>
+    <durationDays>1</durationDays>
+    <stackLimit>1</stackLimit>
+    <developmentalStageFilter>Baby</developmentalStageFilter>
+    <stages>
+      <li>
+        <label>sneaky snack success</label>
+        <description>gugugaga... (translation: sweet treats with friends!)</description>
+        <baseMoodEffect>2</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimTalk_MidnightSnackSuccess_Toddler</defName>
+    <label>sneaky snack success</label>
+    <thoughtClass>Thought_Memory</thoughtClass>
+    <durationDays>1</durationDays>
+    <stackLimit>1</stackLimit>
+    <developmentalStageFilter>Toddler</developmentalStageFilter>
+    <stages>
+      <li>
+        <label>sneaky snack success</label>
+        <description>Yummy treats with my friends! This is our little secret!</description>
+        <baseMoodEffect>2</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+</Defs>

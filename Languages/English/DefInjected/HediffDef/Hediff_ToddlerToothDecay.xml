@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimTalk_ToddlerToothDecay.label>dental cavities</RimTalk_ToddlerToothDecay.label>
+  <RimTalk_ToddlerToothDecay.description>Painful cavities from eating too many sweets. Can be treated with medicine to reduce severity. Severe cavities require dental surgery extraction.</RimTalk_ToddlerToothDecay.description>
+  <RimTalk_ToddlerToothDecay.stages.0.label>minor cavities</RimTalk_ToddlerToothDecay.stages.0.label>
+  <RimTalk_ToddlerToothDecay.stages.0.description>Dull ache from cavities.</RimTalk_ToddlerToothDecay.stages.0.description>
+  <RimTalk_ToddlerToothDecay.stages.1.label>moderate cavities</RimTalk_ToddlerToothDecay.stages.1.label>
+  <RimTalk_ToddlerToothDecay.stages.1.description>Painful cavities making eating difficult.</RimTalk_ToddlerToothDecay.stages.1.description>
+  <RimTalk_ToddlerToothDecay.stages.2.label>severe cavities</RimTalk_ToddlerToothDecay.stages.2.label>
+  <RimTalk_ToddlerToothDecay.stages.2.description>Severe tooth decay requiring extraction.</RimTalk_ToddlerToothDecay.stages.2.description>
+
+  <RimTalk_MissingTooth.label>missing tooth</RimTalk_MissingTooth.label>
+  <RimTalk_MissingTooth.description>A tooth was extracted due to severe decay. Will be replaced by adult teeth when the child matures.</RimTalk_MissingTooth.description>
+
+  <RimTalk_MidnightSnackCooldown.label>midnight snack cooldown</RimTalk_MidnightSnackCooldown.label>
+  <RimTalk_MidnightSnackCooldown.description>Recently had a midnight snack.</RimTalk_MidnightSnackCooldown.description>
+</LanguageData>

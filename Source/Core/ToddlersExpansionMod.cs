@@ -25,6 +25,7 @@ namespace RimTalk_ToddlersExpansion.Core
 				DefOfHelper.EnsureInitializedInCtor(typeof(ToddlersExpansionAnimationDefOf));
 				ToddlersExpansionDiagnostics.Run();
 				RimTalkCompatUtility.TryRegisterToddlerVariables();
+				Integration.Toddlers.MidnightSnackUtility.RegisterGameComponent();
 			});
 		}
 

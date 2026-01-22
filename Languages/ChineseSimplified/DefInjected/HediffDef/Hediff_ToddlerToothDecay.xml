@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimTalk_ToddlerToothDecay.label>蛀牙</RimTalk_ToddlerToothDecay.label>
+  <RimTalk_ToddlerToothDecay.description>吃了太多甜食导致的痛苦蛀牙。可以通过治疗或使用医疗服务包缓解，严重的蛀牙需要手术拔除。</RimTalk_ToddlerToothDecay.description>
+  <RimTalk_ToddlerToothDecay.stages.0.label>轻微蛀牙</RimTalk_ToddlerToothDecay.stages.0.label>
+  <RimTalk_ToddlerToothDecay.stages.0.description>蛀牙引起的隐隐作痛。</RimTalk_ToddlerToothDecay.stages.0.description>
+  <RimTalk_ToddlerToothDecay.stages.1.label>中度蛀牙</RimTalk_ToddlerToothDecay.stages.1.label>
+  <RimTalk_ToddlerToothDecay.stages.1.description>蛀牙引起的疼痛让进食变得困难。</RimTalk_ToddlerToothDecay.stages.1.description>
+  <RimTalk_ToddlerToothDecay.stages.2.label>严重蛀牙</RimTalk_ToddlerToothDecay.stages.2.label>
+  <RimTalk_ToddlerToothDecay.stages.2.description>严重的蛀牙需要手术拔除。</RimTalk_ToddlerToothDecay.stages.2.description>
+
+  <RimTalk_MissingTooth.label>缺牙</RimTalk_MissingTooth.label>
+  <RimTalk_MissingTooth.description>因为严重蛀牙而拔除的乳牙。长大后会自动被新的恒牙替代。</RimTalk_MissingTooth.description>
+
+  <RimTalk_MidnightSnackCooldown.label>吃饱辣</RimTalk_MidnightSnackCooldown.label>
+  <RimTalk_MidnightSnackCooldown.description>最近偷吃过。</RimTalk_MidnightSnackCooldown.description>
+</LanguageData>

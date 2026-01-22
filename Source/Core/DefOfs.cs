@@ -10,6 +10,7 @@ namespace RimTalk_ToddlersExpansion.Core
 		public static JobDef RimTalk_ToddlerMutualPlayJob;
 		public static JobDef RimTalk_WatchToddlerPlayJob;
 		public static JobDef RimTalk_ToddlerPlayAtToy;
+		public static JobDef RimTalk_MidnightSnack;
 
 		static ToddlersExpansionJobDefOf()
 		{
@@ -33,6 +34,9 @@ namespace RimTalk_ToddlersExpansion.Core
 	public static class ToddlersExpansionHediffDefOf
 	{
 		public static HediffDef RimTalk_ToddlerLanguageLearning;
+		public static HediffDef RimTalk_ToddlerToothDecay;
+		public static HediffDef RimTalk_MissingTooth;
+		public static HediffDef RimTalk_MidnightSnackCooldown;
 
 		static ToddlersExpansionHediffDefOf()
 		{
@@ -48,6 +52,9 @@ namespace RimTalk_ToddlersExpansion.Core
 		public static ThoughtDef RimTalk_ToddlerSleepAlone;
 		public static ThoughtDef RimTalk_ToddlerSleepWithOthers;
 		public static ThoughtDef RimTalk_ToddlerSleepWithParents;
+		public static ThoughtDef RimTalk_MidnightSnackSuccess_Child;
+		public static ThoughtDef RimTalk_MidnightSnackSuccess_Baby;
+		public static ThoughtDef RimTalk_MidnightSnackSuccess_Toddler;
 
 		static ToddlersExpansionThoughtDefOf()
 		{

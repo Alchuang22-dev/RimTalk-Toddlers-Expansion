@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimTalk_ExtractTooth.label>拔牙</RimTalk_ExtractTooth.label>
+  <RimTalk_ExtractTooth.description>拔除严重蛀牙的牙齿。</RimTalk_ExtractTooth.description>
+  <RimTalk_ExtractTooth.jobString>正在拔牙。</RimTalk_ExtractTooth.jobString>
+</LanguageData>

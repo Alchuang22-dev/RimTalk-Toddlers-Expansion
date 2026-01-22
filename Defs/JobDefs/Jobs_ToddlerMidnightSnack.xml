@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <JobDef>
+    <defName>RimTalk_MidnightSnack</defName>
+    <driverClass>RimTalk_ToddlersExpansion.Integration.Toddlers.JobDriver_MidnightSnack</driverClass>
+    <reportString>stealing food.</reportString>
+    <allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+    <casualInterruptible>false</casualInterruptible>
+    <alwaysShowWeapon>false</alwaysShowWeapon>
+  </JobDef>
+</Defs>
