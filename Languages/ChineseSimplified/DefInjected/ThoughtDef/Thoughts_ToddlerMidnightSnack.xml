@@ -8,4 +8,13 @@
 
   <RimTalk_MidnightSnackSuccess_Toddler.label>偷吃成功</RimTalk_MidnightSnackSuccess_Toddler.label>
   <RimTalk_MidnightSnackSuccess_Toddler.description>gaga!gu?...（翻译：和朋友一起分享美味的甜食！这是我们的小秘密！）</RimTalk_MidnightSnackSuccess_Toddler.description>
+
+  <RimTalk_VisitedDentist_Child.label>看了牙医</RimTalk_VisitedDentist_Child.label>
+  <RimTalk_VisitedDentist_Child.description>不得不拔牙。太可怕了，还很痛！</RimTalk_VisitedDentist_Child.description>
+
+  <RimTalk_VisitedDentist_Baby.label>看了牙医</RimTalk_VisitedDentist_Baby.label>
+  <RimTalk_VisitedDentist_Baby.description>waah...（翻译：可怕的牙医！）</RimTalk_VisitedDentist_Baby.description>
+
+  <RimTalk_VisitedDentist_Toddler.label>看了牙医</RimTalk_VisitedDentist_Toddler.label>
+  <RimTalk_VisitedDentist_Toddler.description>waah...（翻译：牙医拔了我的牙，好痛！呜呜呜！）</RimTalk_VisitedDentist_Toddler.description>
 </LanguageData>

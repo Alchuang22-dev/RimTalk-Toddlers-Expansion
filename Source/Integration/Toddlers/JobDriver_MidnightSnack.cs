@@ -174,6 +174,25 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
             }
         }
 
+        public void OnToothExtraction()
+        {
+            var thoughtDef = GetDentistThoughtDefForPawn();
+            if (thoughtDef != null)
+            {
+                pawn.needs.mood.thoughts.memories.TryGainMemory(thoughtDef);
+            }
+        }
+
+        private ThoughtDef GetDentistThoughtDefForPawn()
+        {
+            if (ToddlersCompatUtility.IsToddler(pawn))
+                return Core.ToddlersExpansionThoughtDefOf.RimTalk_VisitedDentist_Toddler;
+            else if (pawn.DevelopmentalStage == DevelopmentalStage.Baby)
+                return Core.ToddlersExpansionThoughtDefOf.RimTalk_VisitedDentist_Baby;
+            else
+                return Core.ToddlersExpansionThoughtDefOf.RimTalk_VisitedDentist_Child;
+        }
+
         private ThoughtDef GetThoughtDefForPawn(Pawn p = null)
         {
             var targetPawn = p ?? pawn;

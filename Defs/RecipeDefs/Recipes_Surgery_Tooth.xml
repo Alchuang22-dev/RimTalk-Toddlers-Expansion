@@ -4,8 +4,9 @@
     <defName>RimTalk_ExtractTooth</defName>
     <label>extract tooth</label>
     <description>Extract a severely decayed tooth.</description>
-    <workerClass>Recipe_RemoveHediff</workerClass>
+    <workerClass>RimTalk_ToddlersExpansion.Integration.Toddlers.RecipeWorker_ExtractTooth</workerClass>
     <removesHediff>RimTalk_ToddlerToothDecay</removesHediff>
+    <addsHediff>RimTalk_MissingTooth</addsHediff>
     <jobString>Extracting tooth.</jobString>
     <workAmount>1000</workAmount>
     <anesthetize>true</anesthetize>

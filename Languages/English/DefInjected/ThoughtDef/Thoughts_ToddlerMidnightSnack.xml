@@ -8,4 +8,13 @@
 
   <RimTalk_MidnightSnackSuccess_Toddler.label>sneaky snack success</RimTalk_MidnightSnackSuccess_Toddler.label>
   <RimTalk_MidnightSnackSuccess_Toddler.description>gaga!gu?... (translation: Yummy treats with my friends! This is our little secret!)</RimTalk_MidnightSnackSuccess_Toddler.description>
+
+  <RimTalk_VisitedDentist_Child.label>visited dentist</RimTalk_VisitedDentist_Child.label>
+  <RimTalk_VisitedDentist_Child.description>Had to get a tooth pulled. It was scary and painful!</RimTalk_VisitedDentist_Child.description>
+
+  <RimTalk_VisitedDentist_Baby.label>visited dentist</RimTalk_VisitedDentist_Baby.label>
+  <RimTalk_VisitedDentist_Baby.description>waah... (translation: scary dentist!)</RimTalk_VisitedDentist_Baby.description>
+
+  <RimTalk_VisitedDentist_Toddler.label>visited dentist</RimTalk_VisitedDentist_Toddler.label>
+  <RimTalk_VisitedDentist_Toddler.description>waah... (translation: The dentist pulled my tooth. It hurt! Wahhh!)</RimTalk_VisitedDentist_Toddler.description>
 </LanguageData>

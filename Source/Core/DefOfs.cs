@@ -55,6 +55,9 @@ namespace RimTalk_ToddlersExpansion.Core
 		public static ThoughtDef RimTalk_MidnightSnackSuccess_Child;
 		public static ThoughtDef RimTalk_MidnightSnackSuccess_Baby;
 		public static ThoughtDef RimTalk_MidnightSnackSuccess_Toddler;
+		public static ThoughtDef RimTalk_VisitedDentist_Child;
+		public static ThoughtDef RimTalk_VisitedDentist_Baby;
+		public static ThoughtDef RimTalk_VisitedDentist_Toddler;
 
 		static ToddlersExpansionThoughtDefOf()
 		{

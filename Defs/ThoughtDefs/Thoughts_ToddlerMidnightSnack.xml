@@ -33,18 +33,51 @@
   </ThoughtDef>
 
   <ThoughtDef>
-    <defName>RimTalk_MidnightSnackSuccess_Toddler</defName>
-    <label>sneaky snack success</label>
+    <defName>RimTalk_VisitedDentist_Child</defName>
+    <label>visited dentist</label>
     <thoughtClass>Thought_Memory</thoughtClass>
-    <durationDays>1</durationDays>
+    <durationDays>3</durationDays>
+    <stackLimit>1</stackLimit>
+    <developmentalStageFilter>Child</developmentalStageFilter>
+    <stages>
+      <li>
+        <label>visited dentist</label>
+        <description>Had to get a tooth pulled. It was scary and painful!</description>
+        <baseMoodEffect>-5</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimTalk_VisitedDentist_Baby</defName>
+    <label>visited dentist</label>
+    <thoughtClass>Thought_Memory</thoughtClass>
+    <durationDays>3</durationDays>
+    <stackLimit>1</stackLimit>
+    <developmentalStageFilter>Baby</developmentalStageFilter>
+    <stages>
+      <li>
+        <label>visited dentist</label>
+        <description>waah... (translation: scary dentist!)</description>
+        <baseMoodEffect>-5</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimTalk_VisitedDentist_Toddler</defName>
+    <label>visited dentist</label>
+    <thoughtClass>Thought_Memory</thoughtClass>
+    <durationDays>3</durationDays>
     <stackLimit>1</stackLimit>
     <developmentalStageFilter>Toddler</developmentalStageFilter>
     <stages>
       <li>
-        <label>sneaky snack success</label>
-        <description>Yummy treats with my friends! This is our little secret!</description>
-        <baseMoodEffect>2</baseMoodEffect>
+        <label>visited dentist</label>
+        <description>waah... (translation: The dentist pulled my tooth. It hurt! Wahhh!)</description>
+        <baseMoodEffect>-5</baseMoodEffect>
       </li>
     </stages>
   </ThoughtDef>
+
 </Defs>
