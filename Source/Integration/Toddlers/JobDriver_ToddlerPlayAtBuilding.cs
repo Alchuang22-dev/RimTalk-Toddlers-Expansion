@@ -55,6 +55,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				if (ToddlersCompatUtility.IsToddlerOrBaby(pawn))
 				{
 					ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, _playAnimation);
+					// 应用玩具盒和咯咯笑动画效果
+					ToddlerPlayEffectUtility.ApplyPlayEffects(pawn, pawn.Map);
 				}
 
 				pawn.rotationTracker.FaceCell(Toy.Position);
@@ -73,6 +75,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			AddFinishAction(condition =>
 			{
 				ToddlerPlayAnimationUtility.ClearAnimation(pawn, _playAnimation);
+				ToddlerPlayEffectUtility.ClearEffects();
 				if (condition == JobCondition.Succeeded && ToddlersCompatUtility.IsToddler(pawn))
 				{
 					ToddlerPlayDialogueEvents.OnToddlerSelfPlayCompleted(pawn, job, Map);

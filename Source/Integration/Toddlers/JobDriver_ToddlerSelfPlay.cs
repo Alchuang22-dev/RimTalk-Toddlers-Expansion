@@ -33,6 +33,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			play.tickIntervalAction = delta =>
 			{
 				ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, _playAnimation);
+				// 随机触发咯咯笑效果
+				ToddlerPlayEffectUtility.TryTriggerGigglingEffect(pawn);
 				if (ToddlerCareEventUtility.TryTriggerSelfPlayMishap(pawn, delta))
 				{
 					return;
