@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <JobDef>
+    <defName>RimTalk_ToddlerObserveAdultWork</defName>
+    <driverClass>RimTalk_ToddlersExpansion.Integration.Toddlers.JobDriver_ToddlerObserveAdultWork</driverClass>
+    <reportString>toddler watching work being performed.</reportString>
+    <joyGainRate>0.5</joyGainRate>
+  </JobDef>
+</Defs>

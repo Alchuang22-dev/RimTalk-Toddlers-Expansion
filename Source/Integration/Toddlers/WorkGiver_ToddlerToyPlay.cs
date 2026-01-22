@@ -7,7 +7,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 {
 	public sealed class WorkGiver_ToddlerToyPlay : JoyGiver
 	{
-		private const float PlayNeedThreshold = 0.9f;
+		private const float PlayNeedThreshold = 0.88f;
 		private const float SearchRadius = 30f;
 
 		private static bool _walkHediffChecked;

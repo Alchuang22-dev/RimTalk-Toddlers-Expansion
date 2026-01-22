@@ -7,7 +7,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 {
 	public sealed class WorkGiver_ToddlerMutualPlay : WorkGiver
 	{
-		private const float PlayNeedThreshold = 0.9f;
+		private const float PlayNeedThreshold = 0.85f;
 		private const int PartnerSearchRadius = 10;
 		private const int SpotSearchRadius = 6;
 

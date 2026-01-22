@@ -11,6 +11,7 @@ namespace RimTalk_ToddlersExpansion.Core
 		public static JobDef RimTalk_WatchToddlerPlayJob;
 		public static JobDef RimTalk_ToddlerPlayAtToy;
 		public static JobDef RimTalk_MidnightSnack;
+		public static JobDef RimTalk_ToddlerObserveAdultWork;
 
 		static ToddlersExpansionJobDefOf()
 		{

@@ -7,7 +7,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 {
 	public sealed class WorkGiver_ToddlerSelfPlay : WorkGiver
 	{
-		private const float PlayNeedThreshold = 0.9f;
+		private const float PlayNeedThreshold = 0.92f;
 		private const int SearchRadius = 6;
 
 		public override Job NonScanJob(Pawn pawn)
