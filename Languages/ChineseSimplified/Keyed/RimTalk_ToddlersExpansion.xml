@@ -10,4 +10,16 @@
   <RimTalk_ToddlersExpansion_ToddlerLanguageDescriptor>幼儿语言等级描述</RimTalk_ToddlersExpansion_ToddlerLanguageDescriptor>
   <RimTalk_ToddlersExpansion_ToddlerPlayContext>幼儿玩耍上下文</RimTalk_ToddlersExpansion_ToddlerPlayContext>
   <RimTalk_ToddlersExpansion_ToddlerToyPlayOrder>玩{0}</RimTalk_ToddlersExpansion_ToddlerToyPlayOrder>
+
+  <!-- 设置 -->
+  <RimTalk_ToddlersExpansion_Settings_Title>RimTalk 幼儿扩展 - 设置</RimTalk_ToddlersExpansion_Settings_Title>
+  <RimTalk_ToddlersExpansion_EnableCaravanToddlerGeneration>启用商队/过路者幼儿生成</RimTalk_ToddlersExpansion_EnableCaravanToddlerGeneration>
+  <RimTalk_ToddlersExpansion_EnableCaravanToddlerGeneration_Tooltip>允许商队、访客和过路者群体中出现幼儿和儿童</RimTalk_ToddlersExpansion_EnableCaravanToddlerGeneration_Tooltip>
+  <RimTalk_ToddlersExpansion_MaxToddlersPerGroup>每组最大幼儿数量：{0}</RimTalk_ToddlersExpansion_MaxToddlersPerGroup>
+  <RimTalk_ToddlersExpansion_MaxChildrenPerGroup>每组最大儿童数量：{0}</RimTalk_ToddlersExpansion_MaxChildrenPerGroup>
+  <RimTalk_ToddlersExpansion_ToddlerGenerationChance>幼儿生成概率：{0}</RimTalk_ToddlersExpansion_ToddlerGenerationChance>
+  <RimTalk_ToddlersExpansion_ChildGenerationChance>儿童生成概率：{0}</RimTalk_ToddlersExpansion_ChildGenerationChance>
+  <RimTalk_ToddlersExpansion_MinBatchCount>最小生成批次数：{0}</RimTalk_ToddlersExpansion_MinBatchCount>
+  <RimTalk_ToddlersExpansion_MaxBatchCount>最大生成批次数：{0}</RimTalk_ToddlersExpansion_MaxBatchCount>
+  <RimTalk_ToddlersExpansion_ExtraBatchChance>额外批次概率：{0}</RimTalk_ToddlersExpansion_ExtraBatchChance>
 </LanguageData>

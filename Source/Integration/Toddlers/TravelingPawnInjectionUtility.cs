@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using RimTalk_ToddlersExpansion.Core;
 using RimWorld;
 using Verse;
 
@@ -23,8 +24,20 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return;
 			}
 
+			// 检查设置是否启用生成
+			if (!ToddlersExpansionMod.Settings.EnableCaravanToddlerGeneration)
+			{
+				return;
+			}
+
 			List<Pawn> pawnList = pawns as List<Pawn> ?? pawns.ToList();
-			if (pawnList.Count == 0 || !HasAdultLeader(pawnList))
+			if (pawnList.Count == 0 || !HasAdultLeader(pawnList, out Pawn adultLeader))
+			{
+				return;
+			}
+
+			// 确保至少有一个成年人
+			if (adultLeader == null)
 			{
 				return;
 			}
@@ -35,9 +48,22 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return;
 			}
 
+			// 计算当前组中的幼儿和儿童数量
+			int existingToddlerCount = pawnList.Count(ToddlersCompatUtility.IsToddler);
+			int existingChildCount = pawnList.Count(IsChildPawn);
+
+			// 如果已达到最大数量限制，不再生成
+			if (existingToddlerCount >= ToddlersExpansionMod.Settings.MaxToddlersPerGroup &&
+				existingChildCount >= ToddlersExpansionMod.Settings.MaxChildrenPerGroup)
+			{
+				return;
+			}
+
+			// 使用设置中的生成概率
+			float childChance = existingChildCount > 0 ? 0.7f : ToddlersExpansionMod.Settings.ChildGenerationChance;
+			float toddlerChance = existingToddlerCount > 0 ? 0.7f : ToddlersExpansionMod.Settings.ToddlerGenerationChance;
+
 			Pawn samplePawn = GetSamplePawn(pawnList);
-			bool hasChildAlready = pawnList.Any(IsChildPawn);
-			float childChance = hasChildAlready ? ChildBiasWhenAlreadyPresent : 0.5f;
 			int addCount = RollStackedCount();
 			if (addCount <= 0)
 			{
@@ -46,9 +72,29 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 			int added = 0;
 			bool addedToddler = false;
-			for (int i = 0; i < addCount; i++)
+			int toddlerToAdd = 0;
+			int childToAdd = 0;
+
+			// 根据概率决定生成幼儿还是儿童
+			for (int i = 0; i < addCount && (existingToddlerCount + toddlerToAdd < ToddlersExpansionMod.Settings.MaxToddlersPerGroup ||
+													  existingChildCount + childToAdd < ToddlersExpansionMod.Settings.MaxChildrenPerGroup); i++)
 			{
-				bool wantChild = !ToddlersCompatUtility.IsToddlersActive || Rand.Value < childChance;
+				bool wantChild;
+				if (existingToddlerCount + toddlerToAdd >= ToddlersExpansionMod.Settings.MaxToddlersPerGroup)
+				{
+					wantChild = true; // 幼儿已达上限，只能生成儿童
+				}
+				else if (existingChildCount + childToAdd >= ToddlersExpansionMod.Settings.MaxChildrenPerGroup)
+				{
+					wantChild = false; // 儿童已达上限，只能生成幼儿
+				}
+				else
+				{
+					// 两者都没有达上限，根据概率决定
+					float totalChance = toddlerChance + childChance;
+					wantChild = Rand.Value < (childChance / totalChance);
+				}
+
 				if (!TryGetTargetAgeYears(baseKind, samplePawn, wantChild, out float ageYears))
 				{
 					continue;
@@ -62,6 +108,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					if (!wantChild && ToddlersCompatUtility.IsToddler(pawn))
 					{
 						addedToddler = true;
+						toddlerToAdd++;
+					}
+					else if (wantChild)
+					{
+						childToAdd++;
 					}
 				}
 			}
@@ -79,7 +130,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				{
 					string kind = parms?.groupKind?.defName ?? "UnknownGroup";
 					string faction = parms?.faction?.Name ?? "NoFaction";
-					Log.Message($"[RimTalk_ToddlersExpansion] Added {added} toddler/child pawns to {kind} group ({faction}).");
+					Log.Message($"[RimTalk_ToddlersExpansion] Added {added} toddler/child pawns to {kind} group ({faction}) based on settings.");
 				}
 			}
 		}
@@ -134,8 +185,9 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			return count;
 		}
 
-		private static bool HasAdultLeader(List<Pawn> pawns)
+		private static bool HasAdultLeader(List<Pawn> pawns, out Pawn adultLeader)
 		{
+			adultLeader = null;
 			for (int i = 0; i < pawns.Count; i++)
 			{
 				Pawn pawn = pawns[i];
@@ -154,6 +206,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					continue;
 				}
 
+				adultLeader = pawn;
 				return true;
 			}
 
