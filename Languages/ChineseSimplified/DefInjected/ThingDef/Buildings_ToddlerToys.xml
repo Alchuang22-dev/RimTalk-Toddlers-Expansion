@@ -1,18 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
-  <ThingDef>
-    <defName>RimTalk_ToyBlockPile</defName>
-    <label>积木堆</label>
-    <description>一小堆柔软积木，适合幼小的手。</description>
-  </ThingDef>
-  <ThingDef>
-    <defName>RimTalk_ToyRockingHorse</defName>
-    <label>摇摇马</label>
-    <description>一个小摇摇马，可以安抚并训练平衡。</description>
-  </ThingDef>
-  <ThingDef>
-    <defName>RimTalk_ToyPuzzleTable</defName>
-    <label>拼图桌</label>
-    <description>一张摆放简单拼图和零件的小桌子。</description>
-  </ThingDef>
+  <RimTalk_ToyBlockPile.label>积木堆</RimTalk_ToyBlockPile.label>
+  <RimTalk_ToyBlockPile.description>一小堆柔软积木，适合幼小的手。</RimTalk_ToyBlockPile.description>
+
+  <RimTalk_ToyRockingHorse.label>摇摇马</RimTalk_ToyRockingHorse.label>
+  <RimTalk_ToyRockingHorse.description>一个小摇摇马，可以安抚并训练平衡。</RimTalk_ToyRockingHorse.description>
+
+  <RimTalk_ToyPuzzleTable.label>拼图桌</RimTalk_ToyPuzzleTable.label>
+  <RimTalk_ToyPuzzleTable.description>一张摆放简单拼图和零件的小桌子。</RimTalk_ToyPuzzleTable.description>
 </LanguageData>

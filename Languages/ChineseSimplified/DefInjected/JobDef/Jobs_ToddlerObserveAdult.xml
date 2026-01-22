@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
   <RimTalk_ToddlerObserveAdultWork.label>观察成人工作</RimTalk_ToddlerObserveAdultWork.label>
-  <RimTalk_ToddlerObserveAdultWork.description>仔细看着成人工作，学习如何做各种事情。</RimTalk_ToddlerObserveAdultWork.description>
+  <RimTalk_ToddlerObserveAdultWork.reportString>观察成人工作。</RimTalk_ToddlerObserveAdultWork.reportString>
 </LanguageData>

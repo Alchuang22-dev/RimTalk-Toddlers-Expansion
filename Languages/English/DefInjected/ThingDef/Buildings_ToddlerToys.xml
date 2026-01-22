@@ -1,18 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
-  <ThingDef>
-    <defName>RimTalk_ToyBlockPile</defName>
-    <label>block pile</label>
-    <description>A small pile of soft blocks for tiny hands.</description>
-  </ThingDef>
-  <ThingDef>
-    <defName>RimTalk_ToyRockingHorse</defName>
-    <label>rocking horse</label>
-    <description>A small rocking horse that soothes and steadies young riders.</description>
-  </ThingDef>
-  <ThingDef>
-    <defName>RimTalk_ToyPuzzleTable</defName>
-    <label>puzzle table</label>
-    <description>A small table with simple puzzles and pieces.</description>
-  </ThingDef>
+  <RimTalk_ToyBlockPile.label>block pile</RimTalk_ToyBlockPile.label>
+  <RimTalk_ToyBlockPile.description>A small pile of soft blocks for tiny hands.</RimTalk_ToyBlockPile.description>
+
+  <RimTalk_ToyRockingHorse.label>rocking horse</RimTalk_ToyRockingHorse.label>
+  <RimTalk_ToyRockingHorse.description>A small rocking horse that soothes and steadies young riders.</RimTalk_ToyRockingHorse.description>
+
+  <RimTalk_ToyPuzzleTable.label>puzzle table</RimTalk_ToyPuzzleTable.label>
+  <RimTalk_ToyPuzzleTable.description>A small table with simple puzzles and pieces.</RimTalk_ToyPuzzleTable.description>
 </LanguageData>
