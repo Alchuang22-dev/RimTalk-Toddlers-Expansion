@@ -1,6 +1,5 @@
 using System.Reflection;
 using HarmonyLib;
-using RimTalk_ToddlersExpansion.Core;
 using RimTalk_ToddlersExpansion.Integration.BioTech;
 using RimTalk_ToddlersExpansion.Integration.Toddlers;
 using RimWorld;
@@ -51,8 +50,9 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			Room room = bed?.GetRoom() ?? actor.GetRoom();
 			if (BedroomThoughtsPatchHelper.ShouldReplaceWithMyBabyThought(actor, room))
 			{
+				// Remove negative barracks thought when sleeping with baby
+				// The RimTalk_MyBabyNearby situational thought is handled by ThoughtWorker_MyBabyNearby
 				actor.needs.mood.thoughts.memories.RemoveMemoriesOfDef(ThoughtDefOf.SleptInBarracks);
-				actor.needs.mood.thoughts.memories.TryGainMemory(ToddlersExpansionThoughtDefOf.RimTalk_MyBabyNearby);
 			}
 
 			ToddlerSleepThoughtUtility.ApplySleepThoughts(actor, bed);

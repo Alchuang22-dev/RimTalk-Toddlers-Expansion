@@ -27,12 +27,21 @@ namespace RimTalk_ToddlersExpansion.Language
 
 		public float Progress01 => _progress01;
 
+		public override void CompPostPostAdd(DamageInfo? dinfo)
+		{
+			base.CompPostPostAdd(dinfo);
+			EnsureStageThresholds();
+			InitializeProgressFromExisting();
+			UpdateSeverity();
+		}
+
 		public override void CompExposeData()
 		{
 			Scribe_Values.Look(ref _progress01, "progress01", 0f);
 			if (Scribe.mode == LoadSaveMode.PostLoadInit)
 			{
 				EnsureStageThresholds();
+				InitializeProgressFromExisting();
 				UpdateSeverity();
 			}
 		}
@@ -46,6 +55,13 @@ namespace RimTalk_ToddlersExpansion.Language
 
 			if (!Pawn.IsHashIntervalTick(UpdateIntervalTicks, delta))
 			{
+				return;
+			}
+
+			InitializeProgressFromExisting();
+			if (!ShouldUseProgress())
+			{
+				UpdateSeverity();
 				return;
 			}
 
@@ -81,23 +97,51 @@ namespace RimTalk_ToddlersExpansion.Language
 			}
 
 			EnsureStageThresholds();
-			float severity = ShouldUseToddlerStages() ? _progress01 : 0f;
+			float severity = ShouldUseProgress() ? Mathf.Clamp01(_progress01) : 0f;
 			if (!Mathf.Approximately(parent.Severity, severity))
 			{
 				parent.Severity = severity;
 			}
 		}
 
-		private bool ShouldUseToddlerStages()
+		private bool ShouldUseProgress()
 		{
-			if (!IsToddlersActive())
-			{
-				return false;
-			}
-
 			float age = Pawn?.ageTracker?.AgeBiologicalYearsFloat ?? 0f;
 			float minAge = GetToddlerMinAgeYears(Pawn);
 			return age >= minAge;
+		}
+
+		private void InitializeProgressFromExisting()
+		{
+			if (_progress01 > 0f)
+			{
+				return;
+			}
+
+			float existingSeverity = parent?.Severity ?? 0f;
+			HediffDef source = FindSelfCareHediff();
+			if (source == null || Pawn?.health?.hediffSet == null)
+			{
+				if (existingSeverity > 0f)
+				{
+					_progress01 = Mathf.Clamp01(existingSeverity);
+				}
+
+				return;
+			}
+
+			Hediff hediff = Pawn.health.hediffSet.GetFirstHediffOfDef(source);
+			float sourceSeverity = hediff?.Severity ?? 0f;
+			float best = existingSeverity;
+			if (sourceSeverity > best)
+			{
+				best = sourceSeverity;
+			}
+
+			if (best > 0f)
+			{
+				_progress01 = Mathf.Clamp01(best);
+			}
 		}
 
 		private static float GetToddlerMinAgeYears(Pawn pawn)
@@ -202,7 +246,9 @@ namespace RimTalk_ToddlersExpansion.Language
 				"LearningSelfCare",
 				"LearningToSelfCare",
 				"ToddlerLearningSelfCare",
-				"ToddlerLearningToSelfCare"
+				"ToddlerLearningToSelfCare",
+				"LearningManipulation",
+				"ToddlerLearningManipulation"
 			};
 
 			for (int i = 0; i < candidates.Length; i++)
@@ -224,7 +270,10 @@ namespace RimTalk_ToddlersExpansion.Language
 				string defName = def.defName ?? string.Empty;
 				if (defName.IndexOf("SelfCare", StringComparison.OrdinalIgnoreCase) < 0)
 				{
-					continue;
+					if (defName.IndexOf("Manipulation", StringComparison.OrdinalIgnoreCase) < 0)
+					{
+						continue;
+					}
 				}
 
 				if (defName.IndexOf("Learning", StringComparison.OrdinalIgnoreCase) < 0)

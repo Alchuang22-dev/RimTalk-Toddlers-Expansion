@@ -35,6 +35,7 @@ namespace RimTalk_ToddlersExpansion.Core
 	public static class ToddlersExpansionHediffDefOf
 	{
 		public static HediffDef RimTalk_ToddlerLanguageLearning;
+		public static HediffDef RimTalk_BabyBabbling;
 		public static HediffDef RimTalk_ToddlerToothDecay;
 		public static HediffDef RimTalk_MissingTooth;
 		public static HediffDef RimTalk_MidnightSnackCooldown;
@@ -48,10 +49,12 @@ namespace RimTalk_ToddlersExpansion.Core
 	[DefOf]
 	public static class ToddlersExpansionThoughtDefOf
 	{
-		public static ThoughtDef RimTalk_MyBabyNearby;
+		// Note: RimTalk_MyBabyNearby is a Situational Thought handled by ThoughtWorker_MyBabyNearby
+		// It should not be referenced via DefOf as it cannot be used with TryGainMemory()
 		public static ThoughtDef RimTalk_TalkedToBaby;
 		public static ThoughtDef RimTalk_ToddlerSleepAlone;
 		public static ThoughtDef RimTalk_ToddlerSleepWithOthers;
+		public static ThoughtDef RimTalk_ToddlerSleepInNursery;
 		public static ThoughtDef RimTalk_ToddlerSleepWithParents;
 		public static ThoughtDef RimTalk_MidnightSnackSuccess_Child;
 		public static ThoughtDef RimTalk_MidnightSnackSuccess_Baby;

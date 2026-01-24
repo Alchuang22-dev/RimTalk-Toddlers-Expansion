@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
-  <ThoughtDef>
-    <defName>RimTalk_TalkedToBaby</defName>
-    <label>someone talked to the baby</label>
-    <description>gugugaga... (translation: someone taught me to talk! happy!)</description>
-    <stages>
-      <li>
-        <label>someone talked to the baby</label>
-      </li>
-    </stages>
-  </ThoughtDef>
+  <RimTalk_TalkedToBaby.label>someone talked to me</RimTalk_TalkedToBaby.label>
+  <RimTalk_TalkedToBaby.stages.0.label>someone talked to me</RimTalk_TalkedToBaby.stages.0.label>
+  <RimTalk_TalkedToBaby.stages.0.description>Someone taught me to talk! I'm so happy!</RimTalk_TalkedToBaby.stages.0.description>
 </LanguageData>

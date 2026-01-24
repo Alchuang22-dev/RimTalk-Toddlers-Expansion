@@ -1,4 +1,6 @@
+using System;
 using RimTalk_ToddlersExpansion.Core;
+using RimTalk_ToddlersExpansion.Integration.BioTech;
 using RimWorld;
 using Verse;
 
@@ -8,60 +10,105 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 	{
 		public static void ApplySleepThoughts(Pawn pawn, Building_Bed bed)
 		{
+			Log.Message($"[RimTalk_ToddlersExpansion] ApplySleepThoughts called for pawn: {pawn?.Name}, bed: {(bed != null ? bed.def.defName : "null")}");
+
 			if (pawn?.needs?.mood?.thoughts?.memories == null || !ToddlersCompatUtility.IsToddlerOrBaby(pawn))
 			{
+				Log.Warning($"[RimTalk_ToddlersExpansion] ApplySleepThoughts early return: memories null={pawn?.needs?.mood?.thoughts?.memories == null}, IsToddlerOrBaby={ToddlersCompatUtility.IsToddlerOrBaby(pawn)}");
 				return;
+			}
+
+			if (bed == null && pawn != null)
+			{
+				bed = pawn.CurrentBed();
+			}
+
+			if (bed == null)
+			{
+				string jobDef = pawn?.CurJob?.def?.defName ?? "null";
+				string toil = pawn?.jobs?.curDriver?.CurToilString ?? "null";
+				string position = pawn?.Position.ToString() ?? "null";
+				Log.Warning($"[RimTalk_ToddlersExpansion] ApplySleepThoughts bed is null (job={jobDef}, toil={toil}, pos={position})");
 			}
 
 			Room room = bed?.GetRoom() ?? pawn.GetRoom();
 			if (room == null || room.PsychologicallyOutdoors)
 			{
+				Log.Warning($"[RimTalk_ToddlersExpansion] ApplySleepThoughts early return: room null={room == null}, outdoors={room?.PsychologicallyOutdoors ?? false}");
 				return;
 			}
 
 			ThoughtDef thought = GetSleepThought(pawn, bed, room);
 			if (thought == null)
 			{
+				Log.Warning($"[RimTalk_ToddlersExpansion] ApplySleepThoughts early return: thought is null");
 				return;
 			}
 
+			Log.Message($"[RimTalk_ToddlersExpansion] Applying sleep thought '{thought.defName}' to pawn: {pawn.Name}");
+
 			MemoryThoughtHandler memories = pawn.needs.mood.thoughts.memories;
 			RemoveExistingThoughts(memories);
-			memories.TryGainMemory(thought);
+
+			try
+			{
+				memories.TryGainMemory(thought);
+				Log.Message($"[RimTalk_ToddlersExpansion] Successfully added thought '{thought.defName}' to pawn: {pawn.Name}");
+			}
+			catch (Exception ex)
+			{
+				Log.Error($"[RimTalk_ToddlersExpansion] Failed to add thought '{thought.defName}' to pawn: {pawn.Name}. Error: {ex.Message}");
+			}
 		}
 
 		private static ThoughtDef GetSleepThought(Pawn pawn, Building_Bed bed, Room room)
 		{
-			if (IsSleepingAlone(pawn, bed, room))
+			if (room == null)
 			{
+				return null;
+			}
+
+			SleepRoomInfo info = GetRoomInfo(pawn, room);
+			if (info.BedCount == 1 && !info.HasOtherOwner)
+			{
+				LogSleepCheck("Alone", pawn, room, info);
 				return ToddlersExpansionThoughtDefOf.RimTalk_ToddlerSleepAlone;
 			}
 
-			if (IsSleepingWithOthers(pawn, room))
+			if (info.HasParentOrGrandparent)
 			{
+				LogSleepCheck("WithParents", pawn, room, info);
+				return ToddlersExpansionThoughtDefOf.RimTalk_ToddlerSleepWithParents;
+			}
+
+			if (info.HasNonBabyToddler)
+			{
+				LogSleepCheck("WithOthers", pawn, room, info);
 				return ToddlersExpansionThoughtDefOf.RimTalk_ToddlerSleepWithOthers;
 			}
 
-			return ToddlersExpansionThoughtDefOf.RimTalk_ToddlerSleepWithParents;
-		}
-
-		private static bool IsSleepingAlone(Pawn pawn, Building_Bed bed, Room room)
-		{
-			if (bed == null || room.Role != RoomRoleDefOf.Bedroom)
+			if (info.BedCount > 1 || info.HasOtherOwner)
 			{
-				return false;
+				LogSleepCheck("Nursery", pawn, room, info);
+				return ToddlersExpansionThoughtDefOf.RimTalk_ToddlerSleepInNursery;
 			}
 
-			var owners = bed.OwnersForReading;
-			if (owners == null || owners.Count != 1 || owners[0] != pawn)
+			LogSleepCheck("NoMatch", pawn, room, info);
+			return null;
+		}
+
+		private static SleepRoomInfo GetRoomInfo(Pawn pawn, Room room)
+		{
+			SleepRoomInfo info = new SleepRoomInfo();
+			if (room == null)
 			{
-				return false;
+				return info;
 			}
 
 			var beds = room.ContainedBeds;
 			if (beds == null)
 			{
-				return false;
+				return info;
 			}
 
 			int bedCount = 0;
@@ -73,91 +120,40 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				}
 
 				bedCount++;
-				if (bedCount > 1)
-				{
-					return false;
-				}
-			}
-
-			return bedCount == 1;
-		}
-
-		private static bool IsSleepingWithOthers(Pawn pawn, Room room)
-		{
-			if (room.Role != RoomRoleDefOf.Barracks)
-			{
-				return false;
-			}
-
-			bool hasBed = false;
-			bool hasOtherOwner = false;
-			var beds = room.ContainedBeds;
-			if (beds == null)
-			{
-				return false;
-			}
-
-			foreach (Building_Bed roomBed in beds)
-			{
-				if (roomBed == null)
-				{
-					continue;
-				}
-
-				hasBed = true;
 				var owners = roomBed.OwnersForReading;
 				if (owners == null || owners.Count == 0)
 				{
 					continue;
 				}
 
-				for (int j = 0; j < owners.Count; j++)
+				info.OwnerCount += owners.Count;
+				for (int i = 0; i < owners.Count; i++)
 				{
-					Pawn owner = owners[j];
-					if (owner == null || owner == pawn)
+					Pawn owner = owners[i];
+					if (owner == null)
 					{
 						continue;
 					}
 
-					hasOtherOwner = true;
-					if (IsRelated(pawn, owner))
+					if (owner != pawn)
 					{
-						return false;
+						info.HasOtherOwner = true;
+					}
+
+					if (BiotechCompatUtility.IsParentOrGrandparentOf(owner, pawn))
+					{
+						info.HasParentOrGrandparent = true;
+					}
+
+					if (!ToddlersCompatUtility.IsToddlerOrBaby(owner))
+					{
+						info.HasNonBabyToddler = true;
 					}
 				}
 			}
 
-			if (!hasBed)
-			{
-				return false;
-			}
-
-			return hasOtherOwner;
-		}
-
-		private static bool IsRelated(Pawn pawn, Pawn other)
-		{
-			var relations = pawn?.relations;
-			if (relations == null)
-			{
-				return false;
-			}
-
-			var related = relations.RelatedPawns;
-			if (related == null)
-			{
-				return false;
-			}
-
-			foreach (Pawn relatedPawn in related)
-			{
-				if (relatedPawn == other)
-				{
-					return true;
-				}
-			}
-
-			return false;
+			info.BedCount = bedCount;
+			return info;
 		}
 
 		private static void RemoveExistingThoughts(MemoryThoughtHandler memories)
@@ -181,6 +177,27 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			{
 				memories.RemoveMemoriesOfDef(ToddlersExpansionThoughtDefOf.RimTalk_ToddlerSleepWithParents);
 			}
+
+			if (ToddlersExpansionThoughtDefOf.RimTalk_ToddlerSleepInNursery != null)
+			{
+				memories.RemoveMemoriesOfDef(ToddlersExpansionThoughtDefOf.RimTalk_ToddlerSleepInNursery);
+			}
+		}
+
+		private static void LogSleepCheck(string branch, Pawn pawn, Room room, SleepRoomInfo info)
+		{
+			string pawnLabel = pawn?.Name?.ToStringShort ?? "null";
+			string roomRole = room?.Role?.defName ?? "null";
+			Log.Message($"[RimTalk_ToddlersExpansion] SleepCheck {branch} pawn={pawnLabel}, roomRole={roomRole}, bedCount={info.BedCount}, ownerCount={info.OwnerCount}, otherOwner={info.HasOtherOwner}, parentOrGrandparent={info.HasParentOrGrandparent}, nonBabyToddler={info.HasNonBabyToddler}");
+		}
+
+		private struct SleepRoomInfo
+		{
+			public int BedCount;
+			public int OwnerCount;
+			public bool HasOtherOwner;
+			public bool HasParentOrGrandparent;
+			public bool HasNonBabyToddler;
 		}
 	}
 }

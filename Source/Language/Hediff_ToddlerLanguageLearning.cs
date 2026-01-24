@@ -13,6 +13,19 @@ namespace RimTalk_ToddlersExpansion.Language
 			}
 		}
 
+		public override string SeverityLabel
+		{
+			get
+			{
+				if (Severity <= 0f)
+				{
+					return null;
+				}
+
+				return Severity.ToStringPercent();
+			}
+		}
+
 		public override string TipStringExtra
 		{
 			get

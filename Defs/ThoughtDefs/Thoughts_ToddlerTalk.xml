@@ -2,14 +2,16 @@
 <Defs>
   <ThoughtDef>
     <defName>RimTalk_TalkedToBaby</defName>
-    <label>someone talked to the baby</label>
+    <label>someone talked to me</label>
     <thoughtClass>Thought_Memory</thoughtClass>
     <durationDays>0.125</durationDays>
     <stackLimit>3</stackLimit>
+    <validWhileDespawned>true</validWhileDespawned>
+    <developmentalStageFilter>Baby</developmentalStageFilter>
     <stages>
       <li>
-        <label>someone talked to the baby</label>
-        <description>gugugaga... (translation: someone taught me to talk! happy!)</description>
+        <label>someone talked to me</label>
+        <description>Someone taught me to talk! I'm so happy!</description>
         <baseMoodEffect>3</baseMoodEffect>
       </li>
     </stages>

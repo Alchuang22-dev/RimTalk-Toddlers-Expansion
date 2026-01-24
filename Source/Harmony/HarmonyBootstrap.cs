@@ -15,7 +15,6 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 			_initialized = true;
 			var harmony = new HarmonyLib.Harmony("cj.rimtalk.toddlers");
-			Patch_ToddlersJobsAvailability.Init(harmony);
 			Patch_RimTalkContextBuilder.Init(harmony);
 			Patch_RimTalkTalkService.Init(harmony);
 			Patch_BiotechSharedBedroomThoughts.Init(harmony);

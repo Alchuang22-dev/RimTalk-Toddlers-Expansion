@@ -6,6 +6,9 @@
     <description>The toddler is learning to talk and will gradually improve.</description>
     <hediffClass>RimTalk_ToddlersExpansion.Language.Hediff_ToddlerLanguageLearning</hediffClass>
     <isBad>false</isBad>
+    <everCurableByItem>false</everCurableByItem>
+    <initialSeverity>0.001</initialSeverity>
+	  <maxSeverity>1</maxSeverity>
     <comps>
       <li Class="HediffCompProperties">
         <compClass>RimTalk_ToddlersExpansion.Language.HediffComp_LanguageLearningProgress</compClass>

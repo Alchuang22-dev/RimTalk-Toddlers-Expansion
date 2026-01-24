@@ -6,6 +6,7 @@
     <thoughtClass>Thought_Memory</thoughtClass>
     <durationDays>1</durationDays>
     <stackLimit>1</stackLimit>
+    <validWhileDespawned>true</validWhileDespawned>
     <developmentalStageFilter>Child</developmentalStageFilter>
     <stages>
       <li>
@@ -22,11 +23,29 @@
     <thoughtClass>Thought_Memory</thoughtClass>
     <durationDays>1</durationDays>
     <stackLimit>1</stackLimit>
+    <validWhileDespawned>true</validWhileDespawned>
     <developmentalStageFilter>Baby</developmentalStageFilter>
     <stages>
       <li>
         <label>sneaky snack success</label>
-        <description>gugugaga... (translation: sweet treats with friends!)</description>
+        <description>Sweet treats with friends!</description>
+        <baseMoodEffect>2</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimTalk_MidnightSnackSuccess_Toddler</defName>
+    <label>sneaky snack success</label>
+    <thoughtClass>Thought_Memory</thoughtClass>
+    <durationDays>1</durationDays>
+    <stackLimit>1</stackLimit>
+    <validWhileDespawned>true</validWhileDespawned>
+    <developmentalStageFilter>Baby</developmentalStageFilter>
+    <stages>
+      <li>
+        <label>sneaky snack success</label>
+        <description>We got away with the late night treats!</description>
         <baseMoodEffect>2</baseMoodEffect>
       </li>
     </stages>
@@ -38,6 +57,7 @@
     <thoughtClass>Thought_Memory</thoughtClass>
     <durationDays>3</durationDays>
     <stackLimit>1</stackLimit>
+    <validWhileDespawned>true</validWhileDespawned>
     <developmentalStageFilter>Child</developmentalStageFilter>
     <stages>
       <li>
@@ -54,11 +74,12 @@
     <thoughtClass>Thought_Memory</thoughtClass>
     <durationDays>3</durationDays>
     <stackLimit>1</stackLimit>
+    <validWhileDespawned>true</validWhileDespawned>
     <developmentalStageFilter>Baby</developmentalStageFilter>
     <stages>
       <li>
         <label>visited dentist</label>
-        <description>waah... (translation: scary dentist!)</description>
+        <description>The dentist is scary!</description>
         <baseMoodEffect>-5</baseMoodEffect>
       </li>
     </stages>
@@ -70,11 +91,12 @@
     <thoughtClass>Thought_Memory</thoughtClass>
     <durationDays>3</durationDays>
     <stackLimit>1</stackLimit>
-    <developmentalStageFilter>Toddler</developmentalStageFilter>
+    <validWhileDespawned>true</validWhileDespawned>
+    <developmentalStageFilter>Baby</developmentalStageFilter>
     <stages>
       <li>
         <label>visited dentist</label>
-        <description>waah... (translation: The dentist pulled my tooth. It hurt! Wahhh!)</description>
+        <description>The dentist pulled my tooth. It hurt! Wahhh!</description>
         <baseMoodEffect>-5</baseMoodEffect>
       </li>
     </stages>

@@ -1,4 +1,5 @@
 using RimTalk_ToddlersExpansion.Core;
+using RimTalk_ToddlersExpansion.Integration.BioTech;
 using RimTalk_ToddlersExpansion.Integration.Toddlers;
 using RimTalk_ToddlersExpansion.Language;
 using Verse;
@@ -12,7 +13,9 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 
 		public static string InjectToddlerLanguageContext(string context, Pawn pawn)
 		{
-			if (pawn == null || !ToddlersCompatUtility.IsToddler(pawn))
+			bool isToddler = pawn != null && ToddlersCompatUtility.IsToddler(pawn);
+			bool isBabyOnly = pawn != null && BiotechCompatUtility.IsBaby(pawn) && !isToddler;
+			if (pawn == null || (!isToddler && !isBabyOnly))
 			{
 				return context;
 			}
@@ -46,6 +49,11 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 
 		public static string GetToddlerLanguageDescriptor(Pawn pawn)
 		{
+			if (BiotechCompatUtility.IsBaby(pawn) && !ToddlersCompatUtility.IsToddler(pawn))
+			{
+				return LanguageLevelUtility.GetPromptDescriptor(0f);
+			}
+
 			if (!ToddlersCompatUtility.IsToddler(pawn))
 			{
 				return string.Empty;

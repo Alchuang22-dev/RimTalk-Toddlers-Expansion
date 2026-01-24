@@ -1,19 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
-  <JobDef>
-    <defName>RimTalk_ToddlerSelfPlayJob</defName>
-    <reportString>自己在玩耍。</reportString>
-  </JobDef>
-  <JobDef>
-    <defName>RimTalk_ToddlerMutualPlayJob</defName>
-    <reportString>在和TargetA玩耍。</reportString>
-  </JobDef>
-  <JobDef>
-    <defName>RimTalk_WatchToddlerPlayJob</defName>
-    <reportString>在观看TargetA玩耍。</reportString>
-  </JobDef>
-  <JobDef>
-    <defName>RimTalk_ToddlerPlayAtToy</defName>
-    <reportString>在玩TargetA。</reportString>
-  </JobDef>
+  <RimTalk_ToddlerSelfPlayJob.reportString>自己在玩耍。</RimTalk_ToddlerSelfPlayJob.reportString>
+  <RimTalk_ToddlerMutualPlayJob.reportString>在和TargetA玩耍。</RimTalk_ToddlerMutualPlayJob.reportString>
+  <RimTalk_WatchToddlerPlayJob.reportString>在观看TargetA玩耍。</RimTalk_WatchToddlerPlayJob.reportString>
+  <RimTalk_ToddlerPlayAtToy.reportString>在玩TargetA。</RimTalk_ToddlerPlayAtToy.reportString>
 </LanguageData>

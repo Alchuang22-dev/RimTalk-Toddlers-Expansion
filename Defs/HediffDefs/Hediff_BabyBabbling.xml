@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <HediffDef MayRequire="Ludeon.RimWorld.Biotech">
+    <defName>RimTalk_BabyBabbling</defName>
+    <label>babbling</label>
+    <description>The baby can only make indistinct babbling sounds.</description>
+    <hediffClass>RimTalk_ToddlersExpansion.Language.Hediff_BabyBabbling</hediffClass>
+    <isBad>false</isBad>
+    <everCurableByItem>false</everCurableByItem>
+    <initialSeverity>1</initialSeverity>
+    <minSeverity>1</minSeverity>
+    <maxSeverity>1</maxSeverity>
+    <stages>
+      <li>
+        <label>babbling</label>
+        <overrideTooltip>The baby can only coo and babble.</overrideTooltip>
+      </li>
+    </stages>
+  </HediffDef>
+</Defs>

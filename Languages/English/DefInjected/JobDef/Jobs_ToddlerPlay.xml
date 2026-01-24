@@ -1,19 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
-  <JobDef>
-    <defName>RimTalk_ToddlerSelfPlayJob</defName>
-    <reportString>playing by themselves.</reportString>
-  </JobDef>
-  <JobDef>
-    <defName>RimTalk_ToddlerMutualPlayJob</defName>
-    <reportString>playing with TargetA.</reportString>
-  </JobDef>
-  <JobDef>
-    <defName>RimTalk_WatchToddlerPlayJob</defName>
-    <reportString>watching TargetA play.</reportString>
-  </JobDef>
-  <JobDef>
-    <defName>RimTalk_ToddlerPlayAtToy</defName>
-    <reportString>playing with TargetA.</reportString>
-  </JobDef>
+  <RimTalk_ToddlerSelfPlayJob.reportString>playing by themselves.</RimTalk_ToddlerSelfPlayJob.reportString>
+  <RimTalk_ToddlerMutualPlayJob.reportString>playing with TargetA.</RimTalk_ToddlerMutualPlayJob.reportString>
+  <RimTalk_WatchToddlerPlayJob.reportString>watching TargetA play.</RimTalk_WatchToddlerPlayJob.reportString>
+  <RimTalk_ToddlerPlayAtToy.reportString>playing with TargetA.</RimTalk_ToddlerPlayAtToy.reportString>
 </LanguageData>

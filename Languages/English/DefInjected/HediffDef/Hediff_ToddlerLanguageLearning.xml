@@ -1,22 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
-  <HediffDef>
-    <defName>RimTalk_ToddlerLanguageLearning</defName>
-    <label>language learning</label>
-    <description>The toddler is learning to talk and will gradually improve.</description>
-    <stages>
-      <li>
-        <label>simple babbling</label>
-        <overrideTooltip>The toddler is still very young and can only make indistinct sounds.</overrideTooltip>
-      </li>
-      <li>
-        <label>early words</label>
-        <overrideTooltip>The toddler just learned to call mom and is trying out simple words.</overrideTooltip>
-      </li>
-      <li>
-        <label>trying to converse</label>
-        <overrideTooltip>The toddler can say one or two short sentences and express basic needs.</overrideTooltip>
-      </li>
-    </stages>
-  </HediffDef>
+  <RimTalk_ToddlerLanguageLearning.label>language learning</RimTalk_ToddlerLanguageLearning.label>
+  <RimTalk_ToddlerLanguageLearning.description>The toddler is learning to talk and will gradually improve.</RimTalk_ToddlerLanguageLearning.description>
+  <RimTalk_ToddlerLanguageLearning.stages.0.label>simple babbling</RimTalk_ToddlerLanguageLearning.stages.0.label>
+  <RimTalk_ToddlerLanguageLearning.stages.0.overrideTooltip>The toddler is still very young and can only make indistinct sounds.</RimTalk_ToddlerLanguageLearning.stages.0.overrideTooltip>
+  <RimTalk_ToddlerLanguageLearning.stages.1.label>early words</RimTalk_ToddlerLanguageLearning.stages.1.label>
+  <RimTalk_ToddlerLanguageLearning.stages.1.overrideTooltip>The toddler just learned to call mom and is trying out simple words.</RimTalk_ToddlerLanguageLearning.stages.1.overrideTooltip>
+  <RimTalk_ToddlerLanguageLearning.stages.2.label>trying to converse</RimTalk_ToddlerLanguageLearning.stages.2.label>
+  <RimTalk_ToddlerLanguageLearning.stages.2.overrideTooltip>The toddler can say one or two short sentences and express basic needs.</RimTalk_ToddlerLanguageLearning.stages.2.overrideTooltip>
 </LanguageData>

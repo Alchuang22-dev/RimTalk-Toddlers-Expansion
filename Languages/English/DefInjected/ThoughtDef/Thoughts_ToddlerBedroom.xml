@@ -1,43 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
-  <ThoughtDef>
-    <defName>RimTalk_MyBabyNearby</defName>
-    <label>my baby nearby</label>
-    <description>my baby is sleeping...how cute!</description>
-    <stages>
-      <li>
-        <label>my baby nearby</label>
-      </li>
-    </stages>
-  </ThoughtDef>
-  <ThoughtDef>
-    <defName>RimTalk_ToddlerSleepAlone</defName>
-    <label>sleeping alone</label>
-    <description>yaya... (translation: I'm scared... where is mom?)</description>
-    <stages>
-      <li>
-        <label>sleeping alone</label>
-      </li>
-    </stages>
-  </ThoughtDef>
-  <ThoughtDef>
-    <defName>RimTalk_ToddlerSleepWithOthers</defName>
-    <label>slept with others</label>
-    <description>mamamomo... (translation: it's a bit crowded... want a hug)</description>
-    <stages>
-      <li>
-        <label>slept with others</label>
-      </li>
-    </stages>
-  </ThoughtDef>
-  <ThoughtDef>
-    <defName>RimTalk_ToddlerSleepWithParents</defName>
-    <label>slept with family</label>
-    <description>gugu! (translation: the pillow is soft! time to sleep...)</description>
-    <stages>
-      <li>
-        <label>slept with family</label>
-      </li>
-    </stages>
-  </ThoughtDef>
+  <RimTalk_MyBabyNearby.label>my baby nearby</RimTalk_MyBabyNearby.label>
+  <RimTalk_MyBabyNearby.stages.0.label>my baby nearby</RimTalk_MyBabyNearby.stages.0.label>
+  <RimTalk_MyBabyNearby.stages.0.description>My baby is sleeping peacefully nearby... how cute!</RimTalk_MyBabyNearby.stages.0.description>
+
+  <RimTalk_ToddlerSleepAlone.label>sleeping alone</RimTalk_ToddlerSleepAlone.label>
+  <RimTalk_ToddlerSleepAlone.stages.0.label>sleeping alone</RimTalk_ToddlerSleepAlone.stages.0.label>
+  <RimTalk_ToddlerSleepAlone.stages.0.description>I'm scared... where is mom?</RimTalk_ToddlerSleepAlone.stages.0.description>
+
+  <RimTalk_ToddlerSleepWithOthers.label>slept with others</RimTalk_ToddlerSleepWithOthers.label>
+  <RimTalk_ToddlerSleepWithOthers.stages.0.label>slept with others</RimTalk_ToddlerSleepWithOthers.stages.0.label>
+  <RimTalk_ToddlerSleepWithOthers.stages.0.description>It's a bit crowded... I want a hug.</RimTalk_ToddlerSleepWithOthers.stages.0.description>
+
+  <RimTalk_ToddlerSleepInNursery.label>slept in nursery</RimTalk_ToddlerSleepInNursery.label>
+  <RimTalk_ToddlerSleepInNursery.stages.0.label>slept in nursery</RimTalk_ToddlerSleepInNursery.stages.0.label>
+  <RimTalk_ToddlerSleepInNursery.stages.0.description>So many cribs here... it's a little noisy, but safe.</RimTalk_ToddlerSleepInNursery.stages.0.description>
+
+  <RimTalk_ToddlerSleepWithParents.label>slept with family</RimTalk_ToddlerSleepWithParents.label>
+  <RimTalk_ToddlerSleepWithParents.stages.0.label>slept with family</RimTalk_ToddlerSleepWithParents.stages.0.label>
+  <RimTalk_ToddlerSleepWithParents.stages.0.description>The pillow is soft! Time to sleep...</RimTalk_ToddlerSleepWithParents.stages.0.description>
 </LanguageData>

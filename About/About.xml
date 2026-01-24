@@ -19,6 +19,10 @@
 			<displayName>RimTalk</displayName>
 		</li>
 		<li>
+			<packageId>cyanobot.toddlers</packageId>
+			<displayName>Toddlers</displayName>
+		</li>
+		<li>
 			<packageId>brrainz.harmony</packageId>
 			<displayName>Harmony</displayName>
 			<steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
@@ -33,6 +37,7 @@
 
 	<loadAfter>
 		<li>cj.rimtalk</li>
+		<li>cyanobot.toddlers</li>
 		<li>brrainz.harmony</li>
 		<li>Jaxe.Bubbles</li>
 	</loadAfter>

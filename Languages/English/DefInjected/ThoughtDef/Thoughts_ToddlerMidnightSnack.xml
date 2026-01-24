@@ -1,20 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
   <RimTalk_MidnightSnackSuccess_Child.label>sneaky snack success</RimTalk_MidnightSnackSuccess_Child.label>
-  <RimTalk_MidnightSnackSuccess_Child.description>Hehe, we got away with it! Sweets with friends in the middle of the night is the best!</RimTalk_MidnightSnackSuccess_Child.description>
+  <RimTalk_MidnightSnackSuccess_Child.stages.0.label>sneaky snack success</RimTalk_MidnightSnackSuccess_Child.stages.0.label>
+  <RimTalk_MidnightSnackSuccess_Child.stages.0.description>Hehe, we got away with it! Sweets with friends in the middle of the night is the best!</RimTalk_MidnightSnackSuccess_Child.stages.0.description>
 
   <RimTalk_MidnightSnackSuccess_Baby.label>sneaky snack success</RimTalk_MidnightSnackSuccess_Baby.label>
-  <RimTalk_MidnightSnackSuccess_Baby.description>gugugaga... (translation: sweet treats with friends!)</RimTalk_MidnightSnackSuccess_Baby.description>
+  <RimTalk_MidnightSnackSuccess_Baby.stages.0.label>sneaky snack success</RimTalk_MidnightSnackSuccess_Baby.stages.0.label>
+  <RimTalk_MidnightSnackSuccess_Baby.stages.0.description>Sweet treats with friends!</RimTalk_MidnightSnackSuccess_Baby.stages.0.description>
 
   <RimTalk_MidnightSnackSuccess_Toddler.label>sneaky snack success</RimTalk_MidnightSnackSuccess_Toddler.label>
-  <RimTalk_MidnightSnackSuccess_Toddler.description>gaga!gu?... (translation: Yummy treats with my friends! This is our little secret!)</RimTalk_MidnightSnackSuccess_Toddler.description>
+  <RimTalk_MidnightSnackSuccess_Toddler.stages.0.label>sneaky snack success</RimTalk_MidnightSnackSuccess_Toddler.stages.0.label>
+  <RimTalk_MidnightSnackSuccess_Toddler.stages.0.description>We got away with the late night treats!</RimTalk_MidnightSnackSuccess_Toddler.stages.0.description>
 
   <RimTalk_VisitedDentist_Child.label>visited dentist</RimTalk_VisitedDentist_Child.label>
-  <RimTalk_VisitedDentist_Child.description>Had to get a tooth pulled. It was scary and painful!</RimTalk_VisitedDentist_Child.description>
+  <RimTalk_VisitedDentist_Child.stages.0.label>visited dentist</RimTalk_VisitedDentist_Child.stages.0.label>
+  <RimTalk_VisitedDentist_Child.stages.0.description>Had to get a tooth pulled. It was scary and painful!</RimTalk_VisitedDentist_Child.stages.0.description>
 
   <RimTalk_VisitedDentist_Baby.label>visited dentist</RimTalk_VisitedDentist_Baby.label>
-  <RimTalk_VisitedDentist_Baby.description>waah... (translation: scary dentist!)</RimTalk_VisitedDentist_Baby.description>
+  <RimTalk_VisitedDentist_Baby.stages.0.label>visited dentist</RimTalk_VisitedDentist_Baby.stages.0.label>
+  <RimTalk_VisitedDentist_Baby.stages.0.description>The dentist is scary!</RimTalk_VisitedDentist_Baby.stages.0.description>
 
   <RimTalk_VisitedDentist_Toddler.label>visited dentist</RimTalk_VisitedDentist_Toddler.label>
-  <RimTalk_VisitedDentist_Toddler.description>waah... (translation: The dentist pulled my tooth. It hurt! Wahhh!)</RimTalk_VisitedDentist_Toddler.description>
+  <RimTalk_VisitedDentist_Toddler.stages.0.label>visited dentist</RimTalk_VisitedDentist_Toddler.stages.0.label>
+  <RimTalk_VisitedDentist_Toddler.stages.0.description>The dentist pulled my tooth. It hurt! Wahhh!</RimTalk_VisitedDentist_Toddler.stages.0.description>
 </LanguageData>

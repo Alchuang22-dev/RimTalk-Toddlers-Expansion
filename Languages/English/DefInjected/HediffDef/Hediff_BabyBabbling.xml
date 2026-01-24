@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimTalk_BabyBabbling.label>babbling</RimTalk_BabyBabbling.label>
+  <RimTalk_BabyBabbling.description>The baby can only make indistinct babbling sounds.</RimTalk_BabyBabbling.description>
+  <RimTalk_BabyBabbling.stages.0.label>babbling</RimTalk_BabyBabbling.stages.0.label>
+  <RimTalk_BabyBabbling.stages.0.overrideTooltip>The baby can only coo and babble.</RimTalk_BabyBabbling.stages.0.overrideTooltip>
+</LanguageData>

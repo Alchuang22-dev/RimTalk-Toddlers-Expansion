@@ -1,4 +1,5 @@
 using RimWorld;
+using RimTalk_ToddlersExpansion.Integration.Toddlers;
 using Verse;
 
 namespace RimTalk_ToddlersExpansion.Integration.BioTech
@@ -24,7 +25,7 @@ namespace RimTalk_ToddlersExpansion.Integration.BioTech
 					continue;
 				}
 
-				if (BiotechCompatUtility.IsBabyOrToddler(other) && BiotechCompatUtility.IsParentOrGrandparentOf(pawn, other))
+				if (ToddlersCompatUtility.IsToddlerOrBaby(other) && BiotechCompatUtility.IsParentOrGrandparentOf(pawn, other))
 				{
 					return true;
 				}

@@ -5,6 +5,8 @@
     <label>my baby nearby</label>
     <thoughtClass>Thought_Situational</thoughtClass>
     <workerClass>RimTalk_ToddlersExpansion.Integration.BioTech.ThoughtWorker_MyBabyNearby</workerClass>
+    <validWhileDespawned>true</validWhileDespawned>
+    <developmentalStageFilter>Baby</developmentalStageFilter>
     <stages>
       <li>
         <label>my baby nearby</label>
@@ -17,12 +19,14 @@
     <defName>RimTalk_ToddlerSleepAlone</defName>
     <label>sleeping alone</label>
     <thoughtClass>Thought_Memory</thoughtClass>
+    <validWhileDespawned>true</validWhileDespawned>
+    <developmentalStageFilter>Baby</developmentalStageFilter>
     <durationDays>0.5</durationDays>
     <stackLimit>1</stackLimit>
     <stages>
       <li>
         <label>sleeping alone</label>
-        <description>yaya... (translation: I'm scared... where is mom?)</description>
+        <description>I'm scared... where is mom?</description>
         <baseMoodEffect>-3</baseMoodEffect>
       </li>
     </stages>
@@ -31,13 +35,31 @@
     <defName>RimTalk_ToddlerSleepWithOthers</defName>
     <label>slept with others</label>
     <thoughtClass>Thought_Memory</thoughtClass>
+    <validWhileDespawned>true</validWhileDespawned>
+    <developmentalStageFilter>Baby</developmentalStageFilter>
     <durationDays>0.5</durationDays>
     <stackLimit>1</stackLimit>
     <stages>
       <li>
         <label>slept with others</label>
-        <description>mamamomo... (translation: it's a bit crowded... want a hug)</description>
+        <description>It's a bit crowded... I want a hug.</description>
         <baseMoodEffect>-1</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef MayRequire="Ludeon.RimWorld.Biotech">
+    <defName>RimTalk_ToddlerSleepInNursery</defName>
+    <label>slept in nursery</label>
+    <thoughtClass>Thought_Memory</thoughtClass>
+    <validWhileDespawned>true</validWhileDespawned>
+    <developmentalStageFilter>Baby</developmentalStageFilter>
+    <durationDays>0.5</durationDays>
+    <stackLimit>1</stackLimit>
+    <stages>
+      <li>
+        <label>slept in nursery</label>
+        <description>So many cribs here... it's a little noisy, but safe.</description>
+        <baseMoodEffect>1</baseMoodEffect>
       </li>
     </stages>
   </ThoughtDef>
@@ -45,13 +67,15 @@
     <defName>RimTalk_ToddlerSleepWithParents</defName>
     <label>slept with family</label>
     <thoughtClass>Thought_Memory</thoughtClass>
+    <validWhileDespawned>true</validWhileDespawned>
+    <developmentalStageFilter>Baby</developmentalStageFilter>
     <durationDays>0.5</durationDays>
     <stackLimit>1</stackLimit>
     <stages>
       <li>
         <label>slept with family</label>
-        <description>gugu!... (translation: the pillow is soft! time to sleep...)</description>
-        <baseMoodEffect>-1</baseMoodEffect>
+        <description>The pillow is soft! Time to sleep...</description>
+        <baseMoodEffect>3</baseMoodEffect>
       </li>
     </stages>
   </ThoughtDef>

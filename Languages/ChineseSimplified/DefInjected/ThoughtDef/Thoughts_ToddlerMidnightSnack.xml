@@ -1,20 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
   <RimTalk_MidnightSnackSuccess_Child.label>偷吃成功</RimTalk_MidnightSnackSuccess_Child.label>
-  <RimTalk_MidnightSnackSuccess_Child.description>嘿嘿，我们成功了！半夜和朋友一起偷吃甜食是最棒的！</RimTalk_MidnightSnackSuccess_Child.description>
+  <RimTalk_MidnightSnackSuccess_Child.stages.0.label>偷吃成功</RimTalk_MidnightSnackSuccess_Child.stages.0.label>
+  <RimTalk_MidnightSnackSuccess_Child.stages.0.description>嘿嘿，我们成功了！半夜和朋友一起偷吃甜食是最棒的！</RimTalk_MidnightSnackSuccess_Child.stages.0.description>
 
   <RimTalk_MidnightSnackSuccess_Baby.label>偷吃成功</RimTalk_MidnightSnackSuccess_Baby.label>
-  <RimTalk_MidnightSnackSuccess_Baby.description>gegagu...（翻译：和朋友一起偷吃好吃的！）</RimTalk_MidnightSnackSuccess_Baby.description>
+  <RimTalk_MidnightSnackSuccess_Baby.stages.0.label>偷吃成功</RimTalk_MidnightSnackSuccess_Baby.stages.0.label>
+  <RimTalk_MidnightSnackSuccess_Baby.stages.0.description>和朋友一起偷吃好吃的！</RimTalk_MidnightSnackSuccess_Baby.stages.0.description>
 
   <RimTalk_MidnightSnackSuccess_Toddler.label>偷吃成功</RimTalk_MidnightSnackSuccess_Toddler.label>
-  <RimTalk_MidnightSnackSuccess_Toddler.description>gaga!gu?...（翻译：和朋友一起分享美味的甜食！这是我们的小秘密！）</RimTalk_MidnightSnackSuccess_Toddler.description>
+  <RimTalk_MidnightSnackSuccess_Toddler.stages.0.label>偷吃成功</RimTalk_MidnightSnackSuccess_Toddler.stages.0.label>
+  <RimTalk_MidnightSnackSuccess_Toddler.stages.0.description>我们成功偷到夜宵了！</RimTalk_MidnightSnackSuccess_Toddler.stages.0.description>
 
   <RimTalk_VisitedDentist_Child.label>看了牙医</RimTalk_VisitedDentist_Child.label>
-  <RimTalk_VisitedDentist_Child.description>不得不拔牙。太可怕了，还很痛！</RimTalk_VisitedDentist_Child.description>
+  <RimTalk_VisitedDentist_Child.stages.0.label>看了牙医</RimTalk_VisitedDentist_Child.stages.0.label>
+  <RimTalk_VisitedDentist_Child.stages.0.description>不得不拔牙。太可怕了，还很痛！</RimTalk_VisitedDentist_Child.stages.0.description>
 
   <RimTalk_VisitedDentist_Baby.label>看了牙医</RimTalk_VisitedDentist_Baby.label>
-  <RimTalk_VisitedDentist_Baby.description>waah...（翻译：可怕的牙医！）</RimTalk_VisitedDentist_Baby.description>
+  <RimTalk_VisitedDentist_Baby.stages.0.label>看了牙医</RimTalk_VisitedDentist_Baby.stages.0.label>
+  <RimTalk_VisitedDentist_Baby.stages.0.description>牙医好可怕！</RimTalk_VisitedDentist_Baby.stages.0.description>
 
   <RimTalk_VisitedDentist_Toddler.label>看了牙医</RimTalk_VisitedDentist_Toddler.label>
-  <RimTalk_VisitedDentist_Toddler.description>waah...（翻译：牙医拔了我的牙，好痛！呜呜呜！）</RimTalk_VisitedDentist_Toddler.description>
+  <RimTalk_VisitedDentist_Toddler.stages.0.label>看了牙医</RimTalk_VisitedDentist_Toddler.stages.0.label>
+  <RimTalk_VisitedDentist_Toddler.stages.0.description>牙医拔了我的牙，好痛！呜呜呜！</RimTalk_VisitedDentist_Toddler.stages.0.description>
 </LanguageData>
