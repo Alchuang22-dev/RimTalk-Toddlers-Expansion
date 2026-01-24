@@ -41,15 +41,33 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 			if (!RimTalkCompatUtility.TryGetTalkRequestInfo(__0, out Pawn initiator, out Pawn recipient, out string talkTypeName))
 			{
+				if (Prefs.DevMode)
+				{
+					Log.Message("[RimTalk_ToddlersExpansion] TalkService.GenerateTalk: failed to read talk request info.");
+				}
 				return;
 			}
 
 			if (!RimTalkCompatUtility.IsUserTalkType(talkTypeName))
 			{
+				if (Prefs.DevMode)
+				{
+					Log.Message($"[RimTalk_ToddlersExpansion] TalkService.GenerateTalk: skip non-user talk type ({talkTypeName ?? "null"}).");
+				}
 				return;
 			}
 
-			ToddlerTalkRecipientEffects.TryApply(recipient, initiator);
+			if (Prefs.DevMode)
+			{
+				Log.Message($"[RimTalk_ToddlersExpansion] TalkService.GenerateTalk: type={talkTypeName}, initiator={initiator?.LabelShort ?? "null"}, recipient={recipient?.LabelShort ?? "null"}.");
+			}
+
+			if (Prefs.DevMode)
+			{
+				Log.Message("[RimTalk_ToddlersExpansion] TalkService.GenerateTalk: applying talked-to effect to talkRequest.Initiator for user talk.");
+			}
+
+			ToddlerTalkRecipientEffects.TryApply(initiator, recipient);
 		}
 	}
 }

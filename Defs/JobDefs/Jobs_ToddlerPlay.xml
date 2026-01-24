@@ -19,6 +19,15 @@
   </JobDef>
 
   <JobDef>
+    <defName>RimTalk_ToddlerMutualPlayPartnerJob</defName>
+    <driverClass>RimTalk_ToddlersExpansion.Integration.Toddlers.JobDriver_ToddlerMutualPlayPartner</driverClass>
+    <reportString>playing with TargetA.</reportString>
+    <joyDuration>2000</joyDuration>
+    <joyKind>Social</joyKind>
+    <joyGainRate>1</joyGainRate>
+  </JobDef>
+
+  <JobDef>
     <defName>RimTalk_WatchToddlerPlayJob</defName>
     <driverClass>RimTalk_ToddlersExpansion.Integration.Toddlers.JobDriver_WatchToddlerPlay</driverClass>
     <reportString>watching TargetA play.</reportString>

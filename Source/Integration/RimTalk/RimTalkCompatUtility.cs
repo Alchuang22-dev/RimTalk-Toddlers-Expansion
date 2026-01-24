@@ -32,6 +32,7 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 		private static bool _loggedShortTextRequest;
 		private static bool _loggedClientSuccess;
 		private static bool _loggedClientFailure;
+		private static bool _loggedTalkRequestTypeMismatch;
 
 		private static MethodInfo _registerPawnVariable;
 		private static MethodInfo _generateTalk;
@@ -150,18 +151,35 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 
 			try
 			{
-				if (_talkRequestType != null && !_talkRequestType.IsInstanceOfType(talkRequest))
+				Type requestType = talkRequest.GetType();
+				if (_talkRequestType != null && !_talkRequestType.IsInstanceOfType(talkRequest) && Prefs.DevMode && !_loggedTalkRequestTypeMismatch)
 				{
+					_loggedTalkRequestTypeMismatch = true;
+					Log.Message($"[RimTalk_ToddlersExpansion] TalkRequest type mismatch: expected={_talkRequestType.FullName}, actual={requestType.FullName}.");
+				}
+
+				PropertyInfo initiatorProp = requestType == _talkRequestType
+					? (_talkRequestInitiator ??= AccessTools.Property(requestType, "Initiator"))
+					: AccessTools.Property(requestType, "Initiator");
+				PropertyInfo recipientProp = requestType == _talkRequestType
+					? (_talkRequestRecipient ??= AccessTools.Property(requestType, "Recipient"))
+					: AccessTools.Property(requestType, "Recipient");
+				PropertyInfo talkTypeProp = requestType == _talkRequestType
+					? (_talkRequestTalkType ??= AccessTools.Property(requestType, "TalkType"))
+					: AccessTools.Property(requestType, "TalkType");
+
+				if (initiatorProp == null || recipientProp == null || talkTypeProp == null)
+				{
+					if (Prefs.DevMode)
+					{
+						Log.Message($"[RimTalk_ToddlersExpansion] TalkRequest properties missing on type {requestType.FullName}.");
+					}
 					return false;
 				}
 
-				_talkRequestInitiator ??= AccessTools.Property(talkRequest.GetType(), "Initiator");
-				_talkRequestRecipient ??= AccessTools.Property(talkRequest.GetType(), "Recipient");
-				_talkRequestTalkType ??= AccessTools.Property(talkRequest.GetType(), "TalkType");
-
-				initiator = _talkRequestInitiator?.GetValue(talkRequest) as Pawn;
-				recipient = _talkRequestRecipient?.GetValue(talkRequest) as Pawn;
-				object talkType = _talkRequestTalkType?.GetValue(talkRequest);
+				initiator = initiatorProp.GetValue(talkRequest) as Pawn;
+				recipient = recipientProp.GetValue(talkRequest) as Pawn;
+				object talkType = talkTypeProp.GetValue(talkRequest);
 				talkTypeName = talkType?.ToString();
 				return true;
 			}

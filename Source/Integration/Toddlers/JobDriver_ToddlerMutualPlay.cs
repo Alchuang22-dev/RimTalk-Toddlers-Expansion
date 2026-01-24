@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using RimTalk_ToddlersExpansion.Core;
 using RimTalk_ToddlersExpansion.Integration.RimTalk;
 using RimWorld;
 using Verse;
@@ -13,6 +14,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		private float _initialPlayLevel = -1f;
 		private AnimationDef _playAnimation;
+		private bool _partnerJobStarted;
 
 		private Pawn Partner => TargetA.Thing as Pawn;
 
@@ -43,6 +45,16 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			Toil play = ToilMaker.MakeToil("ToddlerMutualPlay");
 			play.initAction = () =>
 			{
+				if (!_partnerJobStarted)
+				{
+					_partnerJobStarted = true;
+					if (!TryStartPartnerJob())
+					{
+						EndJobWith(JobCondition.Incompletable);
+						return;
+					}
+				}
+
 				_initialPlayLevel = GetPlayLevel(pawn);
 				_playAnimation = ToddlerPlayAnimationUtility.GetRandomMutualPlayAnimation();
 				ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, _playAnimation);
@@ -97,6 +109,30 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			});
 
 			yield return play;
+		}
+
+		private bool TryStartPartnerJob()
+		{
+			if (Partner?.jobs == null)
+			{
+				return false;
+			}
+
+			JobDef partnerJobDef = ToddlersExpansionJobDefOf.RimTalk_ToddlerMutualPlayPartnerJob;
+			if (partnerJobDef == null)
+			{
+				return false;
+			}
+
+			if (Partner.CurJob?.def == partnerJobDef)
+			{
+				return true;
+			}
+
+			Job partnerJob = JobMaker.MakeJob(partnerJobDef, pawn);
+			partnerJob.ignoreJoyTimeAssignment = true;
+			partnerJob.expiryInterval = job.expiryInterval > 0 ? job.expiryInterval : partnerJob.def.joyDuration;
+			return Partner.jobs.TryTakeOrderedJob(partnerJob);
 		}
 
 		private static float GetPlayLevel(Pawn pawn)

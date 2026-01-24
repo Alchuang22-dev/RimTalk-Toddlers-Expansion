@@ -22,6 +22,7 @@ namespace RimTalk_ToddlersExpansion.Core
 
 			missingDefs += CheckDef<JobDef>("RimTalk_ToddlerSelfPlayJob");
 			missingDefs += CheckDef<JobDef>("RimTalk_ToddlerMutualPlayJob");
+			missingDefs += CheckDef<JobDef>("RimTalk_ToddlerMutualPlayPartnerJob");
 			missingDefs += CheckDef<JobDef>("RimTalk_WatchToddlerPlayJob");
 			missingDefs += CheckDef<JobDef>("RimTalk_ToddlerPlayAtToy");
 			missingDefs += CheckDef<JoyGiverDef>("RimTalk_WatchToddlerPlayJoy");

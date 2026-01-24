@@ -7,7 +7,10 @@
     <durationDays>0.125</durationDays>
     <stackLimit>3</stackLimit>
     <validWhileDespawned>true</validWhileDespawned>
-    <developmentalStageFilter>Baby</developmentalStageFilter>
+    <developmentalStageFilter>
+      <li>Baby</li>
+      <li>Child</li>
+    </developmentalStageFilter>
     <stages>
       <li>
         <label>someone talked to me</label>

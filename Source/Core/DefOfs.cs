@@ -8,6 +8,7 @@ namespace RimTalk_ToddlersExpansion.Core
 	{
 		public static JobDef RimTalk_ToddlerSelfPlayJob;
 		public static JobDef RimTalk_ToddlerMutualPlayJob;
+		public static JobDef RimTalk_ToddlerMutualPlayPartnerJob;
 		public static JobDef RimTalk_WatchToddlerPlayJob;
 		public static JobDef RimTalk_ToddlerPlayAtToy;
 		public static JobDef RimTalk_MidnightSnack;
