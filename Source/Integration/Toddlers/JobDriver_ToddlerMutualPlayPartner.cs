@@ -11,8 +11,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private const TargetIndex InitiatorInd = TargetIndex.A;
 		private const int MaxPartnerDistance = 6;
 
-		private AnimationDef _playAnimation;
-
 		private Pawn Initiator => TargetA.Thing as Pawn;
 
 		public override bool TryMakePreToilReservations(bool errorOnFailed)
@@ -27,18 +25,40 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			this.FailOn(() => Initiator == null || Initiator.Downed || Initiator.Drafted || Initiator.InMentalState);
 			this.FailOn(() => Initiator.Map != pawn.Map);
 
-			yield return Toils_Interpersonal.GotoInteractablePosition(InitiatorInd);
-
-			Toil play = ToilMaker.MakeToil("ToddlerMutualPlayPartner");
-			play.initAction = () =>
+			// Step 1: Wait for initiator to arrive (stop moving and stay in place)
+			Toil waitForInitiator = ToilMaker.MakeToil("WaitForInitiator");
+			waitForInitiator.initAction = () =>
 			{
-				_playAnimation = ToddlerPlayAnimationUtility.GetRandomMutualPlayAnimation();
-				ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, _playAnimation);
+				pawn.pather.StopDead();
 			};
-			play.tickIntervalAction = delta =>
+			waitForInitiator.tickAction = () =>
 			{
-				ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, _playAnimation);
+				if (Initiator == null
+					|| Initiator.CurJob?.def != ToddlersExpansionJobDefOf.RimTalk_ToddlerMutualPlayJob
+					|| Initiator.CurJob.targetA.Thing != pawn)
+				{
+					EndJobWith(JobCondition.Incompletable);
+					return;
+				}
 
+				pawn.rotationTracker.FaceCell(Initiator.Position);
+			};
+			waitForInitiator.handlingFacing = true;
+			waitForInitiator.defaultCompleteMode = ToilCompleteMode.Never;
+			waitForInitiator.AddEndCondition(() =>
+			{
+				if (Initiator != null && pawn.Position.InHorDistOf(Initiator.Position, 2))
+				{
+					return JobCondition.Succeeded;
+				}
+				return JobCondition.Ongoing;
+			});
+			yield return waitForInitiator;
+
+			// Step 2: Play together
+			Toil play = ToilMaker.MakeToil("ToddlerMutualPlayPartner");
+			play.tickAction = () =>
+			{
 				if (Initiator == null
 					|| Initiator.CurJob?.def != ToddlersExpansionJobDefOf.RimTalk_ToddlerMutualPlayJob
 					|| Initiator.CurJob.targetA.Thing != pawn)
@@ -54,7 +74,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				}
 
 				pawn.rotationTracker.FaceCell(Initiator.Position);
-				pawn.GainComfortFromCellIfPossible(delta);
+				pawn.GainComfortFromCellIfPossible(1);
 
 				if (SocialNeedTuning_Toddlers.IsPlayNeedSatisfied(pawn))
 				{
@@ -64,11 +84,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			play.handlingFacing = true;
 			play.defaultCompleteMode = ToilCompleteMode.Delay;
 			play.defaultDuration = job.def.joyDuration;
-
-			AddFinishAction(_ =>
-			{
-				ToddlerPlayAnimationUtility.ClearAnimation(pawn, _playAnimation);
-			});
 
 			yield return play;
 		}

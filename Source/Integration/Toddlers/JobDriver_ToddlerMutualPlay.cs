@@ -13,7 +13,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private const TargetIndex PlaySpotInd = TargetIndex.B;
 
 		private float _initialPlayLevel = -1f;
-		private AnimationDef _playAnimation;
 		private bool _partnerJobStarted;
 
 		private Pawn Partner => TargetA.Thing as Pawn;
@@ -40,10 +39,9 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			this.FailOn(() => Partner == null || Partner.Downed || Partner.Drafted || Partner.InMentalState);
 			this.FailOn(() => Partner.Map != pawn.Map);
 
-			yield return Toils_Interpersonal.GotoInteractablePosition(PartnerInd);
-
-			Toil play = ToilMaker.MakeToil("ToddlerMutualPlay");
-			play.initAction = () =>
+			// Step 1: Start partner job first (partner will stop moving and wait)
+			Toil startPartnerJob = ToilMaker.MakeToil("StartPartnerJob");
+			startPartnerJob.initAction = () =>
 			{
 				if (!_partnerJobStarted)
 				{
@@ -51,20 +49,26 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					if (!TryStartPartnerJob())
 					{
 						EndJobWith(JobCondition.Incompletable);
-						return;
 					}
 				}
+			};
+			startPartnerJob.defaultCompleteMode = ToilCompleteMode.Instant;
+			yield return startPartnerJob;
 
+			// Step 2: Walk to partner's position
+			yield return Toils_Goto.GotoThing(PartnerInd, PathEndMode.Touch);
+
+			// Step 3: Play together
+			Toil play = ToilMaker.MakeToil("ToddlerMutualPlay");
+			play.initAction = () =>
+			{
 				_initialPlayLevel = GetPlayLevel(pawn);
-				_playAnimation = ToddlerPlayAnimationUtility.GetRandomMutualPlayAnimation();
-				ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, _playAnimation);
 				ToddlerPlayReportUtility.EnsureReportRequested(job, pawn, Partner, ToddlerPlayReportKind.MutualPlay);
 				ToddlerPlayReportUtility.TryApplyPendingReport(job);
 			};
-			play.tickIntervalAction = delta =>
+			play.tickAction = () =>
 			{
-				ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, _playAnimation);
-				if (ToddlerCareEventUtility.TryTriggerMutualPlayMishap(pawn, Partner, delta))
+				if (ToddlerCareEventUtility.TryTriggerMutualPlayMishap(pawn, Partner, 1))
 				{
 					return;
 				}
@@ -75,8 +79,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					pawn.rotationTracker.FaceCell(Partner.Position);
 				}
 
-				pawn.GainComfortFromCellIfPossible(delta);
-				SocialNeedTuning_Toddlers.ApplyMutualPlayTickEffects(pawn, Partner, delta);
+				pawn.GainComfortFromCellIfPossible(1);
+				SocialNeedTuning_Toddlers.ApplyMutualPlayTickEffects(pawn, Partner, 1);
 
 				if (SocialNeedTuning_Toddlers.IsPlayNeedSatisfied(pawn))
 				{
@@ -89,7 +93,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 			AddFinishAction(condition =>
 			{
-				ToddlerPlayAnimationUtility.ClearAnimation(pawn, _playAnimation);
 				ToddlerPlayReportUtility.CancelJob(job);
 				if (condition != JobCondition.Succeeded)
 				{

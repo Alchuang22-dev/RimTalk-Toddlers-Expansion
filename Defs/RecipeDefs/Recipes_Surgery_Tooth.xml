@@ -12,8 +12,6 @@
     <anesthetize>true</anesthetize>
     <surgeryOutcomeEffect>SurgeryOutcomeBase</surgeryOutcomeEffect>
     <surgerySuccessChanceFactor>0.8</surgerySuccessChanceFactor>
-    <surgeryFatalChance>0.01</surgeryFatalChance>
-    <developmentalStageFilter>Child</developmentalStageFilter>
     <skillRequirements>
       <Medicine>6</Medicine>
     </skillRequirements>
@@ -52,7 +50,6 @@
     <workAmount>1</workAmount>
     <targetsBodyPart>false</targetsBodyPart>
     <hideBodyPartNames>true</hideBodyPartNames>
-    <developmentalStageFilter>Child</developmentalStageFilter>
     <skillRequirements>
       <Medicine>6</Medicine>
     </skillRequirements>

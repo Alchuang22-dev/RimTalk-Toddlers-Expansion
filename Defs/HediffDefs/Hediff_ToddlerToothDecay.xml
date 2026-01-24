@@ -7,18 +7,13 @@
     <description>Painful cavities from eating too many sweets.</description>
     <initialSeverity>0.001</initialSeverity>
     <maxSeverity>1.5</maxSeverity>
-    <developmentalStageFilter>Child</developmentalStageFilter>
     <tendable>true</tendable>
-    <tendQualityEffect>0.5</tendQualityEffect>
-    <tendQualityOffset>0.3</tendQualityOffset>
-    <maxTendQuality>0.9</maxTendQuality>
     <comps>
       <li Class="RimTalk_ToddlersExpansion.Integration.Toddlers.HediffCompProperties_ToothDecayProgress"/>
     </comps>
     <stages>
       <li>
         <label>minor cavities</label>
-        <description>Dull ache from cavities.</description>
         <minSeverity>0</minSeverity>
         <painOffset>0.02</painOffset>
         <statOffsets>
@@ -27,7 +22,6 @@
       </li>
       <li>
         <label>moderate cavities</label>
-        <description>Painful cavities making eating difficult.</description>
         <minSeverity>0.6</minSeverity>
         <painOffset>0.05</painOffset>
         <statOffsets>
@@ -36,7 +30,6 @@
       </li>
       <li>
         <label>severe cavities</label>
-        <description>Severe tooth decay requiring extraction.</description>
         <minSeverity>1.2</minSeverity>
         <painOffset>0.05</painOffset>
         <statOffsets>
@@ -56,16 +49,19 @@
     </stages>
   </HediffDef>
 
-  <HediffDef ParentName="RimTalk_ToothDecayPart">
+  <HediffDef>
     <defName>RimTalk_MissingTooth</defName>
+    <hediffClass>HediffWithComps</hediffClass>
     <label>missing tooth</label>
     <description>A tooth was extracted due to severe decay. Will be replaced by adult teeth when the child grows up.</description>
     <initialSeverity>1</initialSeverity>
     <maxSeverity>1</maxSeverity>
-    <developmentalStageFilter>Child</developmentalStageFilter>
+    <isBad>false</isBad>
     <comps>
-      <li Class="HediffCompProperties_DisappearsAtAge">
-        <age>13</age>
+      <li Class="HediffCompProperties_Disappears">
+        <!-- Disappears at age 13 (approximately 13 years * 60 days/year * 60000 ticks/day) -->
+        <disappearsAfterTicks>46800000~46800000</disappearsAfterTicks>
+        <showRemainingTime>false</showRemainingTime>
       </li>
     </comps>
     <capMods>
