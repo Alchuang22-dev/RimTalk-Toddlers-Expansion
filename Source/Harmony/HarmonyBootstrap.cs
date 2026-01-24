@@ -17,6 +17,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			var harmony = new HarmonyLib.Harmony("cj.rimtalk.toddlers");
 			Patch_RimTalkContextBuilder.Init(harmony);
 			Patch_RimTalkTalkService.Init(harmony);
+			Patch_ToddlersWashBaby.Init(harmony);
 			Patch_BiotechSharedBedroomThoughts.Init(harmony);
 			Patch_PawnGroupMakerUtility.Init(harmony);
 			Patch_FloatMenu_ToddlerToyPlay.Init(harmony);
