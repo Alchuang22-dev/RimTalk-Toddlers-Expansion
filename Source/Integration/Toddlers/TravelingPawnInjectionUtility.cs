@@ -16,6 +16,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		private static bool _walkHediffChecked;
 		private static HediffDef _learningToWalkDef;
+		private static HediffDef _learningManipulationDef;
 
 		public static void TryInjectToddlerOrChildPawns(PawnGroupMakerParms parms, ref IEnumerable<Pawn> pawns)
 		{
@@ -348,11 +349,12 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 			_walkHediffChecked = true;
 			_learningToWalkDef = DefDatabase<HediffDef>.GetNamedSilentFail("LearningToWalk");
+			_learningManipulationDef = DefDatabase<HediffDef>.GetNamedSilentFail("LearningManipulation");
 		}
 
 		private static void EnsureWalkingToddlers(List<Pawn> pawns)
 		{
-			if (_learningToWalkDef == null || pawns == null)
+			if (pawns == null)
 			{
 				return;
 			}
@@ -360,20 +362,39 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			for (int i = 0; i < pawns.Count; i++)
 			{
 				Pawn pawn = pawns[i];
-				if (!ToddlersCompatUtility.IsToddler(pawn))
+				if (!ToddlersCompatUtility.IsToddler(pawn) || pawn.health == null)
 				{
 					continue;
 				}
 
-				Hediff hediff = pawn.health?.hediffSet?.GetFirstHediffOfDef(_learningToWalkDef);
-				if (hediff == null && pawn.health != null)
+				// 添加蹒跚学步hediff（LearningToWalk）
+				if (_learningToWalkDef != null)
 				{
-					hediff = pawn.health.AddHediff(_learningToWalkDef);
+					Hediff walkHediff = pawn.health.hediffSet?.GetFirstHediffOfDef(_learningToWalkDef);
+					if (walkHediff == null)
+					{
+						walkHediff = pawn.health.AddHediff(_learningToWalkDef);
+					}
+
+					if (walkHediff != null && walkHediff.Severity < WalkingToddlerSeverity)
+					{
+						walkHediff.Severity = WalkingToddlerSeverity;
+					}
 				}
 
-				if (hediff != null && hediff.Severity < WalkingToddlerSeverity)
+				// 添加学习自理hediff（LearningManipulation）
+				if (_learningManipulationDef != null)
 				{
-					hediff.Severity = WalkingToddlerSeverity;
+					Hediff manipulationHediff = pawn.health.hediffSet?.GetFirstHediffOfDef(_learningManipulationDef);
+					if (manipulationHediff == null)
+					{
+						manipulationHediff = pawn.health.AddHediff(_learningManipulationDef);
+					}
+
+					if (manipulationHediff != null && manipulationHediff.Severity < WalkingToddlerSeverity)
+					{
+						manipulationHediff.Severity = WalkingToddlerSeverity;
+					}
 				}
 			}
 		}
