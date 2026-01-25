@@ -64,16 +64,20 @@
         <showRemainingTime>false</showRemainingTime>
       </li>
     </comps>
-    <capMods>
+    <stages>
       <li>
-        <capacity>Talking</capacity>
-        <offset>-0.02</offset>
+        <capMods>
+          <li>
+            <capacity>Talking</capacity>
+            <offset>-0.02</offset>
+          </li>
+          <li>
+            <capacity>Social</capacity>
+            <offset>-0.05</offset>
+          </li>
+        </capMods>
       </li>
-      <li>
-        <capacity>Social</capacity>
-        <offset>-0.05</offset>
-      </li>
-    </capMods>
+    </stages>
   </HediffDef>
 
   <HediffDef>

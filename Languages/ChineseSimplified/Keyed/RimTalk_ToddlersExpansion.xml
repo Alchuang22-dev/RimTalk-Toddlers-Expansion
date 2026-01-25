@@ -22,4 +22,30 @@
   <RimTalk_ToddlersExpansion_MinBatchCount>最小生成批次数：{0}</RimTalk_ToddlersExpansion_MinBatchCount>
   <RimTalk_ToddlersExpansion_MaxBatchCount>最大生成批次数：{0}</RimTalk_ToddlersExpansion_MaxBatchCount>
   <RimTalk_ToddlersExpansion_ExtraBatchChance>额外批次概率：{0}</RimTalk_ToddlersExpansion_ExtraBatchChance>
+
+  <!-- 厌倦机制设置 -->
+  <RimTalk_Boredom_Settings_Header>厌倦机制</RimTalk_Boredom_Settings_Header>
+  <RimTalk_Boredom_Enable>启用厌倦机制</RimTalk_Boredom_Enable>
+  <RimTalk_Boredom_Enable_Tooltip>启用后，幼儿会对重复的玩耍活动感到厌倦，从中获得的玩乐需求满足度会降低。</RimTalk_Boredom_Enable_Tooltip>
+  <RimTalk_Boredom_IncreasePerActivity>每次玩耍增加厌倦度: {0}</RimTalk_Boredom_IncreasePerActivity>
+  <RimTalk_Boredom_MaxCap>厌倦度上限: {0}</RimTalk_Boredom_MaxCap>
+  <RimTalk_Boredom_DailyRecoveryRate>每日厌倦度恢复: {0}</RimTalk_Boredom_DailyRecoveryRate>
+  <RimTalk_Boredom_AutoDetection>自动检测玩耍活动</RimTalk_Boredom_AutoDetection>
+  <RimTalk_Boredom_AutoDetection_Tooltip>根据活动特征自动分类未注册的玩耍活动。</RimTalk_Boredom_AutoDetection_Tooltip>
+  <RimTalk_Caravan_Settings_Header>商队/过路者设置</RimTalk_Caravan_Settings_Header>
+
+  <!-- 厌倦度悬浮窗显示 -->
+  <RimTalk_Boredom_Header>娱乐类型厌倦:</RimTalk_Boredom_Header>
+  <RimTalk_Boredom_Label_Boring>无聊</RimTalk_Boredom_Label_Boring>
+  <RimTalk_Boredom_RecoveryInfo>按目前的预期(至高)，每项无趣程度每天下降{0}。</RimTalk_Boredom_RecoveryInfo>
+  <RimTalk_Boredom_PlayTypeSuggestion>建议使用{0}个娱乐类型。</RimTalk_Boredom_PlayTypeSuggestion>
+  <RimTalk_Boredom_Category_SoloPlay>独自玩耍</RimTalk_Boredom_Category_SoloPlay>
+  <RimTalk_Boredom_Category_SocialPlay>社交玩耍</RimTalk_Boredom_Category_SocialPlay>
+  <RimTalk_Boredom_Category_ToyPlay>玩具玩耍</RimTalk_Boredom_Category_ToyPlay>
+  <RimTalk_Boredom_Category_Observation>观察学习</RimTalk_Boredom_Category_Observation>
+  <RimTalk_Boredom_Category_Media>媒体娱乐</RimTalk_Boredom_Category_Media>
+  <RimTalk_Boredom_Category_Passive>被动娱乐</RimTalk_Boredom_Category_Passive>
+  <RimTalk_Boredom_Category_Exploration>探索</RimTalk_Boredom_Category_Exploration>
+  <RimTalk_Boredom_Category_Creative>创意活动</RimTalk_Boredom_Category_Creative>
+  <RimTalk_Boredom_Category_Unknown>未知</RimTalk_Boredom_Category_Unknown>
 </LanguageData>

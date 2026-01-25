@@ -42,17 +42,15 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				}
 
 				pawn.rotationTracker.FaceCell(Initiator.Position);
+
+				// Check if initiator has arrived close enough, then proceed to next toil
+				if (pawn.Position.InHorDistOf(Initiator.Position, 2))
+				{
+					ReadyForNextToil();
+				}
 			};
 			waitForInitiator.handlingFacing = true;
 			waitForInitiator.defaultCompleteMode = ToilCompleteMode.Never;
-			waitForInitiator.AddEndCondition(() =>
-			{
-				if (Initiator != null && pawn.Position.InHorDistOf(Initiator.Position, 2))
-				{
-					return JobCondition.Succeeded;
-				}
-				return JobCondition.Ongoing;
-			});
 			yield return waitForInitiator;
 
 			// Step 2: Play together

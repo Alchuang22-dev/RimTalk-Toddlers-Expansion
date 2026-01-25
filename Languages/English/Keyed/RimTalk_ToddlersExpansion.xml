@@ -22,5 +22,31 @@
   <RimTalk_ToddlersExpansion_MinBatchCount>Min batch count: {0}</RimTalk_ToddlersExpansion_MinBatchCount>
   <RimTalk_ToddlersExpansion_MaxBatchCount>Max batch count: {0}</RimTalk_ToddlersExpansion_MaxBatchCount>
   <RimTalk_ToddlersExpansion_ExtraBatchChance>Extra batch chance: {0}</RimTalk_ToddlersExpansion_ExtraBatchChance>
+
+  <!-- Boredom System Settings -->
+  <RimTalk_Boredom_Settings_Header>Boredom System</RimTalk_Boredom_Settings_Header>
+  <RimTalk_Boredom_Enable>Enable boredom system</RimTalk_Boredom_Enable>
+  <RimTalk_Boredom_Enable_Tooltip>When enabled, toddlers will accumulate boredom when repeatedly doing the same play activities, reducing their effectiveness.</RimTalk_Boredom_Enable_Tooltip>
+  <RimTalk_Boredom_IncreasePerActivity>Boredom increase per play: {0}</RimTalk_Boredom_IncreasePerActivity>
+  <RimTalk_Boredom_MaxCap>Boredom cap: {0}</RimTalk_Boredom_MaxCap>
+  <RimTalk_Boredom_DailyRecoveryRate>Daily boredom recovery: {0}</RimTalk_Boredom_DailyRecoveryRate>
+  <RimTalk_Boredom_AutoDetection>Auto-detect play activities</RimTalk_Boredom_AutoDetection>
+  <RimTalk_Boredom_AutoDetection_Tooltip>Automatically categorize unregistered play activities based on their characteristics.</RimTalk_Boredom_AutoDetection_Tooltip>
+  <RimTalk_Caravan_Settings_Header>Caravan/Visitor Settings</RimTalk_Caravan_Settings_Header>
+
+  <!-- Boredom Tooltip Display -->
+  <RimTalk_Boredom_Header>Play boredom:</RimTalk_Boredom_Header>
+  <RimTalk_Boredom_Label_Boring>boring</RimTalk_Boredom_Label_Boring>
+  <RimTalk_Boredom_RecoveryInfo>At the current expectation, each boringness drops by {0} per day.</RimTalk_Boredom_RecoveryInfo>
+  <RimTalk_Boredom_PlayTypeSuggestion>It is recommended to use {0} play types.</RimTalk_Boredom_PlayTypeSuggestion>
+  <RimTalk_Boredom_Category_SoloPlay>Solo Play</RimTalk_Boredom_Category_SoloPlay>
+  <RimTalk_Boredom_Category_SocialPlay>Social Play</RimTalk_Boredom_Category_SocialPlay>
+  <RimTalk_Boredom_Category_ToyPlay>Toy Play</RimTalk_Boredom_Category_ToyPlay>
+  <RimTalk_Boredom_Category_Observation>Observation</RimTalk_Boredom_Category_Observation>
+  <RimTalk_Boredom_Category_Media>Media</RimTalk_Boredom_Category_Media>
+  <RimTalk_Boredom_Category_Passive>Passive</RimTalk_Boredom_Category_Passive>
+  <RimTalk_Boredom_Category_Exploration>Exploration</RimTalk_Boredom_Category_Exploration>
+  <RimTalk_Boredom_Category_Creative>Creative</RimTalk_Boredom_Category_Creative>
+  <RimTalk_Boredom_Category_Unknown>Unknown</RimTalk_Boredom_Category_Unknown>
 </LanguageData>
 

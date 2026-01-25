@@ -33,15 +33,52 @@ namespace RimTalk_ToddlersExpansion.Core
 		public override void DoSettingsWindowContents(Rect inRect)
 		{
 			var settings = Settings;
-			var listingStandard = new Listing_Standard();
 
-			listingStandard.Begin(inRect);
+			// 计算内容高度 - 足够容纳所有设置项
+			float contentHeight = 1000f;
+			Rect viewRect = new Rect(0f, 0f, inRect.width - 20f, contentHeight);
+
+			Widgets.BeginScrollView(inRect, ref scrollPosition, viewRect);
+
+			var listingStandard = new Listing_Standard();
+			listingStandard.Begin(viewRect);
 
 			// 标题
 			Text.Font = GameFont.Medium;
 			listingStandard.Label("RimTalk_ToddlersExpansion_Settings_Title".Translate());
 			Text.Font = GameFont.Small;
 			listingStandard.Gap();
+
+			// ========== 无聊机制设置 ==========
+			listingStandard.Label("RimTalk_Boredom_Settings_Header".Translate());
+			listingStandard.GapLine();
+
+			listingStandard.CheckboxLabeled("RimTalk_Boredom_Enable".Translate(), ref ToddlersExpansionSettings.enableBoredomSystem, "RimTalk_Boredom_Enable_Tooltip".Translate());
+			listingStandard.Gap();
+
+			if (ToddlersExpansionSettings.enableBoredomSystem)
+			{
+				listingStandard.Label("RimTalk_Boredom_IncreasePerActivity".Translate(ToddlersExpansionSettings.boredomIncreasePerActivity.ToStringPercent()));
+				ToddlersExpansionSettings.boredomIncreasePerActivity = listingStandard.Slider(ToddlersExpansionSettings.boredomIncreasePerActivity, 0.01f, 0.2f);
+				listingStandard.Gap();
+
+				listingStandard.Label("RimTalk_Boredom_MaxCap".Translate(ToddlersExpansionSettings.boredomMaxCap.ToStringPercent()));
+				ToddlersExpansionSettings.boredomMaxCap = listingStandard.Slider(ToddlersExpansionSettings.boredomMaxCap, 0.5f, 1.0f);
+				listingStandard.Gap();
+
+				listingStandard.Label("RimTalk_Boredom_DailyRecoveryRate".Translate(ToddlersExpansionSettings.boredomDailyRecoveryRate.ToStringPercent()));
+				ToddlersExpansionSettings.boredomDailyRecoveryRate = listingStandard.Slider(ToddlersExpansionSettings.boredomDailyRecoveryRate, 0.05f, 0.5f);
+				listingStandard.Gap();
+
+				listingStandard.CheckboxLabeled("RimTalk_Boredom_AutoDetection".Translate(), ref ToddlersExpansionSettings.enableAutoDetection, "RimTalk_Boredom_AutoDetection_Tooltip".Translate());
+				listingStandard.Gap();
+			}
+
+			listingStandard.GapLine();
+
+			// ========== 商队/过路者设置 ==========
+			listingStandard.Label("RimTalk_Caravan_Settings_Header".Translate());
+			listingStandard.GapLine();
 
 			// 启用过路者/商队幼儿生成
 			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_EnableCaravanToddlerGeneration".Translate(), ref settings.EnableCaravanToddlerGeneration, "RimTalk_ToddlersExpansion_EnableCaravanToddlerGeneration_Tooltip".Translate());
@@ -85,6 +122,7 @@ namespace RimTalk_ToddlersExpansion.Core
 			}
 
 			listingStandard.End();
+			Widgets.EndScrollView();
 		}
 
 		public override string SettingsCategory() => "RimTalk Toddlers Expansion";

@@ -1,4 +1,5 @@
 using HarmonyLib;
+using Verse;
 
 namespace RimTalk_ToddlersExpansion.Harmony
 {
@@ -23,6 +24,10 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			Patch_PawnGroupMakerUtility.Init(harmony);
 			Patch_FloatMenu_ToddlerToyPlay.Init(harmony);
 			Patch_TravelingLord.Init(harmony);
+			
+			// 幼儿无聊机制补丁
+			Patch_ToddlerBoredom.ApplyPatches(harmony);
+			Log.Message("[RimTalk Toddlers Expansion] Toddler boredom system patches applied");
 		}
 	}
 }

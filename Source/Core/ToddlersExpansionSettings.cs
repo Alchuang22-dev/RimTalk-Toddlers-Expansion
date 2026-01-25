@@ -14,6 +14,13 @@ namespace RimTalk_ToddlersExpansion.Core
 		public int MaxBatchCount = 3;
 		public float ExtraBatchChance = 0.3f;
 
+		// 厌倦系统设置
+		public static bool enableBoredomSystem = true;
+		public static float boredomIncreasePerActivity = 0.05f; // 每次活动增加5%
+		public static float boredomMaxCap = 0.70f; // 厌倦度封顶70%
+		public static float boredomDailyRecoveryRate = 0.07f; // 每天恢复7%
+		public static bool enableAutoDetection = true;
+
 		public override void ExposeData()
 		{
 			base.ExposeData();
@@ -26,6 +33,13 @@ namespace RimTalk_ToddlersExpansion.Core
 			Scribe_Values.Look(ref MinBatchCount, "MinBatchCount", 1);
 			Scribe_Values.Look(ref MaxBatchCount, "MaxBatchCount", 3);
 			Scribe_Values.Look(ref ExtraBatchChance, "ExtraBatchChance", 0.3f);
+
+			// 厌倦系统设置
+			Scribe_Values.Look(ref enableBoredomSystem, "enableBoredomSystem", true);
+			Scribe_Values.Look(ref boredomIncreasePerActivity, "boredomIncreasePerActivity", 0.05f);
+			Scribe_Values.Look(ref boredomMaxCap, "boredomMaxCap", 0.70f);
+			Scribe_Values.Look(ref boredomDailyRecoveryRate, "boredomDailyRecoveryRate", 0.07f);
+			Scribe_Values.Look(ref enableAutoDetection, "enableAutoDetection", true);
 		}
 	}
 }

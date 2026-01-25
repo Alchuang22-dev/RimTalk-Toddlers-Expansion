@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+    <!-- 
+    Toddler Play Category Definitions
+    Used for boredom mechanism activity classification
+    Other mods can add their own ToddlerPlayCategoryDef to register new activities
+    -->
+
+    <!-- Solo Play -->
+    <RimTalk_ToddlersExpansion.Core.ToddlerPlayCategoryDef>
+        <defName>ToddlerPlayCategory_SoloPlay</defName>
+        <label>solo play</label>
+        <description>Play activities that toddlers do alone.</description>
+        <category>SoloPlay</category>
+        <jobDefNames>
+            <li>Toddlers_PlayInCrib</li>
+            <li>Toddlers_PlayOnFloor</li>
+            <li>Toddlers_PlayInSandbox</li>
+            <li>RimTalk_ToddlerSelfPlay</li>
+        </jobDefNames>
+    </RimTalk_ToddlersExpansion.Core.ToddlerPlayCategoryDef>
+
+    <!-- Social Play -->
+    <RimTalk_ToddlersExpansion.Core.ToddlerPlayCategoryDef>
+        <defName>ToddlerPlayCategory_SocialPlay</defName>
+        <label>social play</label>
+        <description>Play activities involving interaction with other toddlers or adults.</description>
+        <category>SocialPlay</category>
+        <jobDefNames>
+            <li>Toddlers_PlayWithBaby</li>
+            <li>RimTalk_ToddlerMutualPlay</li>
+            <li>RimTalk_ToddlerMutualPlayPartner</li>
+        </jobDefNames>
+    </RimTalk_ToddlersExpansion.Core.ToddlerPlayCategoryDef>
+
+    <!-- Toy Play -->
+    <RimTalk_ToddlersExpansion.Core.ToddlerPlayCategoryDef>
+        <defName>ToddlerPlayCategory_ToyPlay</defName>
+        <label>toy play</label>
+        <description>Play activities using toys.</description>
+        <category>ToyPlay</category>
+        <jobDefNames>
+            <li>RimTalk_ToddlerPlayAtBuilding</li>
+        </jobDefNames>
+    </RimTalk_ToddlersExpansion.Core.ToddlerPlayCategoryDef>
+
+    <!-- Observation -->
+    <RimTalk_ToddlersExpansion.Core.ToddlerPlayCategoryDef>
+        <defName>ToddlerPlayCategory_Observation</defName>
+        <label>observation</label>
+        <description>Observing adult work or other activities.</description>
+        <category>Observation</category>
+        <jobDefNames>
+            <li>RimTalk_ToddlerObserveAdultWork</li>
+            <li>RimTalk_WatchToddlerPlay</li>
+        </jobDefNames>
+    </RimTalk_ToddlersExpansion.Core.ToddlerPlayCategoryDef>
+
+    <!-- Media -->
+    <RimTalk_ToddlersExpansion.Core.ToddlerPlayCategoryDef>
+        <defName>ToddlerPlayCategory_Media</defName>
+        <label>media entertainment</label>
+        <description>Watching television or other media.</description>
+        <category>Media</category>
+        <jobDefNames>
+            <li>WatchTelevision</li>
+        </jobDefNames>
+    </RimTalk_ToddlersExpansion.Core.ToddlerPlayCategoryDef>
+
+    <!-- Passive -->
+    <RimTalk_ToddlersExpansion.Core.ToddlerPlayCategoryDef>
+        <defName>ToddlerPlayCategory_Passive</defName>
+        <label>passive entertainment</label>
+        <description>Entertainment received while being cared for by adults.</description>
+        <category>Passive</category>
+        <jobDefNames>
+            <li>Toddlers_CarryToDestination</li>
+            <li>Toddlers_WashBaby</li>
+        </jobDefNames>
+    </RimTalk_ToddlersExpansion.Core.ToddlerPlayCategoryDef>
+
+    <!-- Exploration -->
+    <RimTalk_ToddlersExpansion.Core.ToddlerPlayCategoryDef>
+        <defName>ToddlerPlayCategory_Exploration</defName>
+        <label>exploration</label>
+        <description>Activities exploring the environment.</description>
+        <category>Exploration</category>
+        <jobDefNames>
+            <li>Toddlers_Wander</li>
+        </jobDefNames>
+    </RimTalk_ToddlersExpansion.Core.ToddlerPlayCategoryDef>
+
+    <!-- Creative -->
+    <RimTalk_ToddlersExpansion.Core.ToddlerPlayCategoryDef>
+        <defName>ToddlerPlayCategory_Creative</defName>
+        <label>creative activity</label>
+        <description>Creative and artistic activities.</description>
+        <category>Creative</category>
+        <jobDefNames>
+            <li>Toddlers_DrawOnFloor</li>
+        </jobDefNames>
+    </RimTalk_ToddlersExpansion.Core.ToddlerPlayCategoryDef>
+
+</Defs>

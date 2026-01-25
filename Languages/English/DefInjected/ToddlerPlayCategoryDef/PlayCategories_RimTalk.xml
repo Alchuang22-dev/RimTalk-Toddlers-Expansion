@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+    <!-- Solo Play -->
+    <ToddlerPlayCategory_SoloPlay.label>solo play</ToddlerPlayCategory_SoloPlay.label>
+    <ToddlerPlayCategory_SoloPlay.description>Play activities that toddlers do alone.</ToddlerPlayCategory_SoloPlay.description>
+
+    <!-- Social Play -->
+    <ToddlerPlayCategory_SocialPlay.label>social play</ToddlerPlayCategory_SocialPlay.label>
+    <ToddlerPlayCategory_SocialPlay.description>Play activities involving interaction with other toddlers or adults.</ToddlerPlayCategory_SocialPlay.description>
+
+    <!-- Toy Play -->
+    <ToddlerPlayCategory_ToyPlay.label>toy play</ToddlerPlayCategory_ToyPlay.label>
+    <ToddlerPlayCategory_ToyPlay.description>Play activities using toys.</ToddlerPlayCategory_ToyPlay.description>
+
+    <!-- Observation -->
+    <ToddlerPlayCategory_Observation.label>observation</ToddlerPlayCategory_Observation.label>
+    <ToddlerPlayCategory_Observation.description>Observing adult work or other activities.</ToddlerPlayCategory_Observation.description>
+
+    <!-- Media -->
+    <ToddlerPlayCategory_Media.label>media entertainment</ToddlerPlayCategory_Media.label>
+    <ToddlerPlayCategory_Media.description>Watching television or other media.</ToddlerPlayCategory_Media.description>
+
+    <!-- Passive -->
+    <ToddlerPlayCategory_Passive.label>passive entertainment</ToddlerPlayCategory_Passive.label>
+    <ToddlerPlayCategory_Passive.description>Entertainment received while being cared for by adults.</ToddlerPlayCategory_Passive.description>
+
+    <!-- Exploration -->
+    <ToddlerPlayCategory_Exploration.label>exploration</ToddlerPlayCategory_Exploration.label>
+    <ToddlerPlayCategory_Exploration.description>Activities exploring the environment.</ToddlerPlayCategory_Exploration.description>
+
+    <!-- Creative -->
+    <ToddlerPlayCategory_Creative.label>creative activity</ToddlerPlayCategory_Creative.label>
+    <ToddlerPlayCategory_Creative.description>Creative and artistic activities.</ToddlerPlayCategory_Creative.description>
+</LanguageData>
