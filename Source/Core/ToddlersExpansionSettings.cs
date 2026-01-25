@@ -21,6 +21,9 @@ namespace RimTalk_ToddlersExpansion.Core
 		public static float boredomDailyRecoveryRate = 0.07f; // 每天恢复7%
 		public static bool enableAutoDetection = true;
 
+		// 语言学习设置
+		public static float learningFactor_Talking = 0.8f; // 与其他学习保持一致
+
 		public override void ExposeData()
 		{
 			base.ExposeData();
@@ -40,6 +43,9 @@ namespace RimTalk_ToddlersExpansion.Core
 			Scribe_Values.Look(ref boredomMaxCap, "boredomMaxCap", 0.70f);
 			Scribe_Values.Look(ref boredomDailyRecoveryRate, "boredomDailyRecoveryRate", 0.07f);
 			Scribe_Values.Look(ref enableAutoDetection, "enableAutoDetection", true);
+
+			// 语言学习设置
+			Scribe_Values.Look(ref learningFactor_Talking, "learningFactor_Talking", 0.8f);
 		}
 	}
 }

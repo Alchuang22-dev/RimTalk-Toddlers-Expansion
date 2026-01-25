@@ -34,6 +34,10 @@
   <RimTalk_Boredom_AutoDetection_Tooltip>根据活动特征自动分类未注册的玩耍活动。</RimTalk_Boredom_AutoDetection_Tooltip>
   <RimTalk_Caravan_Settings_Header>商队/过路者设置</RimTalk_Caravan_Settings_Header>
 
+  <!-- 语言学习设置 -->
+  <RimTalk_Language_Settings_Header>语言学习</RimTalk_Language_Settings_Header>
+  <RimTalk_Language_LearningFactor>学习速度: {0}</RimTalk_Language_LearningFactor>
+
   <!-- 厌倦度悬浮窗显示 -->
   <RimTalk_Boredom_Header>娱乐类型厌倦:</RimTalk_Boredom_Header>
   <RimTalk_Boredom_Label_Boring>无聊</RimTalk_Boredom_Label_Boring>

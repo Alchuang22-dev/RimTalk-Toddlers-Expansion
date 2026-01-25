@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using RimTalk_ToddlersExpansion.Core;
 using UnityEngine;
 using Verse;
 
@@ -66,11 +67,32 @@ namespace RimTalk_ToddlersExpansion.Language
 			}
 
 			float agingRate = Pawn.ageTracker?.BiologicalTicksPerTick ?? 1f;
-			float passivePerTick = 1f / (DefaultYearsToFluent * DaysPerYear * TicksPerDay);
-			AddProgress(passivePerTick * UpdateIntervalTicks * agingRate);
+
+			// 使用 Toddlers 模组的学习速度计算（如果可用），否则使用默认计算
+			float progressPerInterval;
+			if (IsToddlersActive())
+			{
+				// 使用与 Toddlers 模组兼容的方式计算进度
+				// 基于幼儿阶段总时长计算每tick的学习进度
+				float ticksAsToddler = GetToddlerStageInTicks(Pawn);
+				float learningPerTick = GetLearningPerBioTickCompatible(ticksAsToddler);
+				progressPerInterval = learningPerTick * UpdateIntervalTicks * agingRate;
+			}
+			else
+			{
+				// 使用 RimTalk 自己的默认计算
+				float passivePerTick = 1f / (DefaultYearsToFluent * DaysPerYear * TicksPerDay);
+				progressPerInterval = passivePerTick * UpdateIntervalTicks * agingRate;
+			}
+
+			// 应用学习因子（受 ToddlersExpansionSettings 控制，如果 Toddlers 模组激活则使用其设置）
+			float learningFactor = GetLearningFactor();
+			AddProgress(progressPerInterval / learningFactor);
+
 			EnsureStageThresholds();
 			UpdateSeverity();
 		}
+
 
 		public void SetProgress01(float value)
 		{
@@ -285,6 +307,63 @@ namespace RimTalk_ToddlersExpansion.Language
 			}
 
 			return null;
+		}
+
+		// 计算幼儿阶段的总ticks（兼容版）
+		private static float GetToddlerStageInTicks(Pawn pawn)
+		{
+			if (pawn?.ageTracker == null)
+			{
+				return DefaultYearsToFluent * DaysPerYear * TicksPerDay; // 默认2年
+			}
+
+			float minAge = GetToddlerMinAgeYears(pawn);
+			float maxAge = minAge + DefaultYearsToFluent; // 默认幼儿阶段为2年
+
+			return (maxAge - minAge) * DaysPerYear * TicksPerDay;
+		}
+
+		// 兼容Toddlers模组的学习进度计算
+		private static float GetLearningPerBioTickCompatible(float ticksAsToddler)
+		{
+			if (ticksAsToddler <= 0f)
+			{
+				return 1f / (DefaultYearsToFluent * DaysPerYear * TicksPerDay);
+			}
+			return 1f / ticksAsToddler;
+		}
+
+		// 获取学习因子（使用 Toddlers 模组设置如果可用）
+		private static float GetLearningFactor()
+		{
+			// 如果 Toddlers 模组激活，尝试使用其设置（通过反射）
+			if (IsToddlersActive())
+			{
+				try
+				{
+					Type settingsType = GenTypes.GetTypeInAnyAssembly("Toddlers.Toddlers_Settings");
+					if (settingsType != null)
+					{
+						var field = settingsType.GetField("learningFactor_Manipulation",
+							BindingFlags.Public | BindingFlags.Static);
+						if (field != null)
+						{
+							object value = field.GetValue(null);
+							if (value is float floatValue && floatValue > 0f)
+							{
+								return floatValue;
+							}
+						}
+					}
+				}
+				catch (Exception)
+				{
+					// 如果反射失败，回退到 RimTalk 自己的设置
+				}
+			}
+
+			// 使用 RimTalk 自己的设置
+			return ToddlersExpansionSettings.learningFactor_Talking;
 		}
 	}
 }

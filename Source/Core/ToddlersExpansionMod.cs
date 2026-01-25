@@ -76,6 +76,16 @@ namespace RimTalk_ToddlersExpansion.Core
 
 			listingStandard.GapLine();
 
+			// ========== 语言学习设置 ==========
+			listingStandard.Label("RimTalk_Language_Settings_Header".Translate());
+			listingStandard.GapLine();
+
+			listingStandard.Label("RimTalk_Language_LearningFactor".Translate(ToddlersExpansionSettings.learningFactor_Talking.ToStringPercent()));
+			ToddlersExpansionSettings.learningFactor_Talking = listingStandard.Slider(ToddlersExpansionSettings.learningFactor_Talking, 0.01f, 1f);
+			listingStandard.Gap();
+
+			listingStandard.GapLine();
+
 			// ========== 商队/过路者设置 ==========
 			listingStandard.Label("RimTalk_Caravan_Settings_Header".Translate());
 			listingStandard.GapLine();

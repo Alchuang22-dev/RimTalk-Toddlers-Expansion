@@ -3,7 +3,7 @@
   <AnimationDef>
     <defName>RimTalk_ToddlerPlay_Wiggle</defName>
     <label>toddler play wiggle</label>
-    <durationTicks>120</durationTicks>
+    <durationTicks>2000</durationTicks>
     <startOnRandomTick>true</startOnRandomTick>
     <playWhenDowned>false</playWhenDowned>
     <keyframeParts>
@@ -20,7 +20,7 @@
   <AnimationDef>
     <defName>RimTalk_ToddlerPlay_Sway</defName>
     <label>toddler play sway</label>
-    <durationTicks>180</durationTicks>
+    <durationTicks>2000</durationTicks>
     <startOnRandomTick>true</startOnRandomTick>
     <playWhenDowned>false</playWhenDowned>
     <keyframeParts>
@@ -37,7 +37,7 @@
   <AnimationDef>
     <defName>RimTalk_ToddlerPlay_Lay</defName>
     <label>toddler play lay</label>
-    <durationTicks>60</durationTicks>
+    <durationTicks>2000</durationTicks>
     <startOnRandomTick>false</startOnRandomTick>
     <playWhenDowned>false</playWhenDowned>
     <keyframeParts>
@@ -54,7 +54,7 @@
   <AnimationDef>
     <defName>RimTalk_ToddlerPlay_Crawl</defName>
     <label>toddler play crawl</label>
-    <durationTicks>80</durationTicks>
+    <durationTicks>2000</durationTicks>
     <startOnRandomTick>true</startOnRandomTick>
     <playWhenDowned>false</playWhenDowned>
     <keyframeParts>

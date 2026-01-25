@@ -34,6 +34,10 @@
   <RimTalk_Boredom_AutoDetection_Tooltip>Automatically categorize unregistered play activities based on their characteristics.</RimTalk_Boredom_AutoDetection_Tooltip>
   <RimTalk_Caravan_Settings_Header>Caravan/Visitor Settings</RimTalk_Caravan_Settings_Header>
 
+  <!-- Language Learning Settings -->
+  <RimTalk_Language_Settings_Header>Language Learning</RimTalk_Language_Settings_Header>
+  <RimTalk_Language_LearningFactor>Learning speed: {0}</RimTalk_Language_LearningFactor>
+
   <!-- Boredom Tooltip Display -->
   <RimTalk_Boredom_Header>Play boredom:</RimTalk_Boredom_Header>
   <RimTalk_Boredom_Label_Boring>boring</RimTalk_Boredom_Label_Boring>
