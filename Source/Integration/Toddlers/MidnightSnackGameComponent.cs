@@ -17,7 +17,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
         {
             get
             {
-                if (instance == null)
+                if (instance == null && Current.Game != null)
                 {
                     instance = Current.Game.GetComponent<MidnightSnackGameComponent>();
                 }
@@ -31,6 +31,10 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
         public override void GameComponentTick()
         {
+            // 确保Current.Game不为null
+            if (Current.Game == null)
+                return;
+
             base.GameComponentTick();
 
             if (Find.TickManager.TicksGame <= ticksUntilNextCheck)
@@ -62,7 +66,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
         private bool IsValidTimeForCheck()
         {
-            int hour = GenLocalDate.HourOfDay(Find.CurrentMap);
+            var map = Find.CurrentMap;
+            if (map == null)
+                return false;
+
+            int hour = GenLocalDate.HourOfDay(map);
             return hour >= 0 && hour <= 3 || hour >= 12 && hour <= 15;
         }
 
@@ -85,6 +93,13 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
     {
         public static void RegisterGameComponent()
         {
+            // 检查 Current.Game 是否为 null（在游戏初始化期间可能发生）
+            if (Current.Game == null)
+            {
+                Log.Warning("[RimTalk_ToddlersExpansion] Current.Game is null, skipping MidnightSnackGameComponent registration. Will retry when game is available.");
+                return;
+            }
+
             if (Current.Game.GetComponent<MidnightSnackGameComponent>() == null)
             {
                 Current.Game.components.Add(new MidnightSnackGameComponent(Current.Game));
