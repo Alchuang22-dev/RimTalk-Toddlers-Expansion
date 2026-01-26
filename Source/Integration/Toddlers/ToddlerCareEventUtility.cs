@@ -1,3 +1,4 @@
+using System.Linq;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -179,6 +180,82 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			return hediff.Severity < 0.5f ? WalkingStage.Crawling : WalkingStage.Wobbly;
+		}
+
+		/// <summary>
+		/// 触发幼儿摔倒事件（供调试使用）- 对选中的幼儿
+		/// </summary>
+		[LudeonTK.DebugAction("RimTalk Toddlers", "Trigger Tumble (Selected)", allowedGameStates = LudeonTK.AllowedGameStates.PlayingOnMap)]
+		public static void DebugTriggerTumbleSelected()
+		{
+			Pawn toddler = Find.Selector.SingleSelectedThing as Pawn;
+			if (toddler == null)
+			{
+				Messages.Message("Please select a toddler first.", MessageTypeDefOf.RejectInput);
+				return;
+			}
+			
+			if (!ToddlersCompatUtility.IsToddler(toddler))
+			{
+				Messages.Message($"{toddler.LabelShort} is not a toddler.", MessageTypeDefOf.RejectInput);
+				return;
+			}
+			
+			TriggerTumble(toddler);
+			Messages.Message($"Triggered tumble for {toddler.LabelShort}", MessageTypeDefOf.NeutralEvent);
+		}
+
+		/// <summary>
+		/// 触发幼儿打架事件（供调试使用）- 对选中的幼儿
+		/// </summary>
+		[LudeonTK.DebugAction("RimTalk Toddlers", "Trigger Scuffle (Selected)", allowedGameStates = LudeonTK.AllowedGameStates.PlayingOnMap)]
+		public static void DebugTriggerScuffleSelected()
+		{
+			Pawn toddler = Find.Selector.SingleSelectedThing as Pawn;
+			if (toddler == null)
+			{
+				Messages.Message("Please select a toddler first.", MessageTypeDefOf.RejectInput);
+				return;
+			}
+			
+			if (!ToddlersCompatUtility.IsToddler(toddler))
+			{
+				Messages.Message($"{toddler.LabelShort} is not a toddler (Stage: {toddler.DevelopmentalStage}).", MessageTypeDefOf.RejectInput);
+				return;
+			}
+			
+			// 找一个附近的幼儿作为打架对象
+			var allPawns = toddler.Map?.mapPawns?.SpawnedPawnsInFaction(toddler.Faction)?.ToList();
+			var partner = allPawns?.FirstOrDefault(p => p != toddler && ToddlersCompatUtility.IsToddler(p) && !p.Dead && !p.Downed);
+			
+			if (partner == null)
+			{
+				Messages.Message("No other toddler found to scuffle with.", MessageTypeDefOf.RejectInput);
+				return;
+			}
+			
+			DebugTriggerFight(toddler, partner);
+		}
+		
+		private static void DebugTriggerFight(Pawn toddler, Pawn partner)
+		{
+			int now = Find.TickManager.TicksGame;
+			LastEventTickByPawn[toddler.thingIDNumber] = now;
+
+			toddler.jobs?.EndCurrentJob(JobCondition.InterruptForced);
+			partner.jobs?.EndCurrentJob(JobCondition.InterruptForced);
+
+			Job job = JobMaker.MakeJob(JobDefOf.AttackMelee, partner);
+			job.expiryInterval = FightDurationTicks;
+			job.checkOverrideOnExpire = true;
+			
+			toddler.jobs?.TryTakeOrderedJob(job);
+
+			string label = "RimTalk_ToddlersExpansion_ToddlerScuffleLabel".Translate();
+			string text = "RimTalk_ToddlersExpansion_ToddlerScuffleText".Translate(toddler.Named("TODDLER"), partner.Named("PARTNER"));
+			Find.LetterStack.ReceiveLetter(label, text, LetterDefOf.NegativeEvent, toddler);
+			
+			Messages.Message($"Triggered scuffle between {toddler.LabelShort} and {partner.LabelShort}", MessageTypeDefOf.NeutralEvent);
 		}
 
 		private static void TriggerTumble(Pawn toddler)
