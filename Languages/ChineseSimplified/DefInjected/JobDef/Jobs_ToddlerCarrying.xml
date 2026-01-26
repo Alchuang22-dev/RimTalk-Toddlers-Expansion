@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimTalk_BeingCarried.reportString>被 {1} 抱着</RimTalk_BeingCarried.reportString>
+  <RimTalk_PickUpToddler.reportString>抱起 {0}</RimTalk_PickUpToddler.reportString>
+</LanguageData>

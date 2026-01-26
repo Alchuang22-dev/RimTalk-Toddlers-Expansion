@@ -59,53 +59,73 @@ namespace RimTalk_ToddlersExpansion.Harmony
 		}
 
 		private static void Lord_Postfix(Lord __instance, LordJob lordJob)
-		{
-			// 检查是否是需要处理的旅行类 Lord
-			if (!IsTravelingLord(lordJob))
-				return;
-
-			// 为所有的 toddlers 设置监护人
-			for (int i = 0; i < __instance.ownedPawns.Count; i++)
 			{
-				Pawn pawn = __instance.ownedPawns[i];
-				if (ToddlersCompatUtility.IsToddler(pawn) || pawn.DevelopmentalStage == DevelopmentalStage.Child)
+				// 检查是否是需要处理的旅行类 Lord
+				if (!IsTravelingLord(lordJob))
+					return;
+	
+				// 自动分配背负关系：让成年人背着幼儿
+				List<Pawn> pawnList = __instance.ownedPawns.ToList();
+				ToddlerCarryingUtility.AutoAssignCarryingForGroup(pawnList);
+	
+				// 为所有的 toddlers 设置监护人（非幼儿或未被背的）
+				for (int i = 0; i < __instance.ownedPawns.Count; i++)
 				{
-					Pawn guardian = FindGuardian(__instance, pawn);
-					if (guardian != null)
+					Pawn pawn = __instance.ownedPawns[i];
+					if (ToddlersCompatUtility.IsToddler(pawn) || pawn.DevelopmentalStage == DevelopmentalStage.Child)
 					{
-						// 尝试让幼儿跟随守卫者
-						TryMakeToddlerFollow(pawn, guardian);
+						// 如果已经被背着，不需要跟随任务
+						if (ToddlerCarryingUtility.IsBeingCarried(pawn))
+						{
+							continue;
+						}
+	
+						Pawn guardian = FindGuardian(__instance, pawn);
+						if (guardian != null)
+						{
+							// 尝试让幼儿跟随守卫者
+							TryMakeToddlerFollow(pawn, guardian);
+						}
 					}
 				}
 			}
-		}
 
 		private static void AddPawn_Postfix(Lord __instance, Pawn p)
-		{
-			// 当新的 toddler 或 child 加入时，确保他们有监护人
-			if (ToddlersCompatUtility.IsToddler(p) || p.DevelopmentalStage == DevelopmentalStage.Child)
 			{
-				Pawn guardian = FindGuardian(__instance, p);
-				if (guardian != null)
+				// 当新的 toddler 或 child 加入时，确保他们有监护人
+				if (ToddlersCompatUtility.IsToddler(p) || p.DevelopmentalStage == DevelopmentalStage.Child)
 				{
-					TryMakeToddlerFollow(p, guardian);
+					// 尝试让成年人背着这个幼儿
+					Pawn guardian = FindGuardian(__instance, p);
+					if (guardian != null)
+					{
+						// 优先尝试背着
+						if (ToddlerCarryingUtility.TryMountToddler(guardian, p))
+						{
+							return;
+						}
+						// 如果不能背，则跟随
+						TryMakeToddlerFollow(p, guardian);
+					}
 				}
 			}
-		}
 
 		private static void RemovePawn_Postfix(Lord __instance, Pawn p)
-		{
-			// 当 Pawn 离开 Lord 时（比如商队解散）
-			// 检查是否有 toddlers 失去了监护人
-			if (__instance.ownedPawns.NullOrEmpty())
-				return;
-
-			// 如果被移除的是成年人，检查是否有需要重新分配监护人的 toddlers
-			if (!(ToddlersCompatUtility.IsToddler(p) || p.DevelopmentalStage == DevelopmentalStage.Child))
 			{
-				TryReassignGuardians(__instance, p);
+				// 当 Pawn 离开 Lord 时（比如商队解散）
+				// 清除该pawn的所有背负关系
+				ToddlerCarryingUtility.ClearAllCarryingRelations(p);
+	
+				// 检查是否有 toddlers 失去了监护人
+				if (__instance.ownedPawns.NullOrEmpty())
+					return;
+	
+				// 如果被移除的是成年人，检查是否有需要重新分配监护人的 toddlers
+				if (!(ToddlersCompatUtility.IsToddler(p) || p.DevelopmentalStage == DevelopmentalStage.Child))
+				{
+					TryReassignGuardians(__instance, p);
+				}
 			}
-		}
 
 		private static bool IsTravelingLord(LordJob lordJob)
 		{
@@ -226,32 +246,53 @@ namespace RimTalk_ToddlersExpansion.Harmony
 		}
 
 		/// <summary>
-		/// 在 LordToil_ExitMapAndEscortCarriers.UpdateAllDuties 之后执行
-		/// 确保幼儿/儿童也能获得正确的离开地图的 duty
-		/// </summary>
-		private static void ExitMapAndEscortCarriers_UpdateAllDuties_Postfix(LordToil __instance)
-		{
-			Lord lord = __instance.lord;
-			if (lord == null || lord.ownedPawns.NullOrEmpty())
-				return;
-
-			// 找到商队领队（trader）
-			Pawn trader = TraderCaravanUtility.FindTrader(lord);
-			FixToddlerDuties(lord, trader);
-		}
+			/// 在 LordToil_ExitMapAndEscortCarriers.UpdateAllDuties 之后执行
+			/// 确保幼儿/儿童也能获得正确的离开地图的 duty
+			/// </summary>
+			private static void ExitMapAndEscortCarriers_UpdateAllDuties_Postfix(LordToil __instance)
+			{
+				Lord lord = __instance.lord;
+				if (lord == null || lord.ownedPawns.NullOrEmpty())
+					return;
+	
+				// 找到商队领队（trader）
+				Pawn trader = TraderCaravanUtility.FindTrader(lord);
+				FixToddlerDuties(lord, trader);
+				
+				// 商队即将离开地图，清除所有背负关系
+				ClearCarryingForLord(lord);
+			}
 
 		/// <summary>
-		/// 在 LordToil_ExitMap.UpdateAllDuties 之后执行
-		/// 用于访客等使用 LordToil_ExitMap 的情况
-		/// </summary>
-		private static void LordToil_ExitMap_UpdateAllDuties_Postfix(LordToil __instance)
-		{
-			Lord lord = __instance.lord;
-			if (lord == null || lord.ownedPawns.NullOrEmpty())
-				return;
-
-			FixToddlerDuties(lord, null);
-		}
+			/// 在 LordToil_ExitMap.UpdateAllDuties 之后执行
+			/// 用于访客等使用 LordToil_ExitMap 的情况
+			/// </summary>
+			private static void LordToil_ExitMap_UpdateAllDuties_Postfix(LordToil __instance)
+			{
+				Lord lord = __instance.lord;
+				if (lord == null || lord.ownedPawns.NullOrEmpty())
+					return;
+	
+				FixToddlerDuties(lord, null);
+				
+				// 商队即将离开地图，清除所有背负关系
+				ClearCarryingForLord(lord);
+			}
+	
+			/// <summary>
+			/// 清除Lord中所有pawn的背负关系
+			/// </summary>
+			private static void ClearCarryingForLord(Lord lord)
+			{
+				if (lord?.ownedPawns == null)
+					return;
+	
+				for (int i = 0; i < lord.ownedPawns.Count; i++)
+				{
+					Pawn pawn = lord.ownedPawns[i];
+					ToddlerCarryingUtility.ClearAllCarryingRelations(pawn);
+				}
+			}
 
 		/// <summary>
 		/// 修复幼儿/儿童的 duty，确保他们能正确离开地图

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  
+  <!-- 幼儿被抱着的Job -->
+  <JobDef>
+    <defName>RimTalk_BeingCarried</defName>
+    <driverClass>RimTalk_ToddlersExpansion.Integration.Toddlers.JobDriver_BeingCarried</driverClass>
+    <reportString>being carried by {1}</reportString>
+    <casualInterruptible>false</casualInterruptible>
+    <allowOpportunisticPrefix>false</allowOpportunisticPrefix>
+    <suspendable>false</suspendable>
+    <neverFleeFromEnemies>true</neverFleeFromEnemies>
+    <playerInterruptible>false</playerInterruptible>
+  </JobDef>
+
+  <!-- 殖民者去抱起幼儿的Job -->
+  <JobDef>
+    <defName>RimTalk_PickUpToddler</defName>
+    <driverClass>RimTalk_ToddlersExpansion.Integration.Toddlers.JobDriver_PickUpToddler</driverClass>
+    <reportString>picking up {0}</reportString>
+    <casualInterruptible>true</casualInterruptible>
+  </JobDef>
+
+</Defs>

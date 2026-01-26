@@ -25,6 +25,10 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			Patch_FloatMenu_ToddlerToyPlay.Init(harmony);
 			Patch_TravelingLord.Init(harmony);
 			
+			// 幼儿背负系统补丁
+			Patch_ToddlerCarrying.Init(harmony);
+			Patch_FloatMenu_ToddlerCarrying.Init(harmony);
+			
 			// 幼儿无聊机制补丁
 			Patch_ToddlerBoredom.ApplyPatches(harmony);
 			Log.Message("[RimTalk Toddlers Expansion] Toddler boredom system patches applied");

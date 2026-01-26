@@ -52,4 +52,11 @@
   <RimTalk_Boredom_Category_Exploration>探索</RimTalk_Boredom_Category_Exploration>
   <RimTalk_Boredom_Category_Creative>创意活动</RimTalk_Boredom_Category_Creative>
   <RimTalk_Boredom_Category_Unknown>未知</RimTalk_Boredom_Category_Unknown>
+  
+  <!-- 幼儿背负系统 -->
+  <RimTalk_BeingCarriedBy>被 {0} 抱着</RimTalk_BeingCarriedBy>
+  <RimTalk_CarryingToddler>抱着 {0}</RimTalk_CarryingToddler>
+  <RimTalk_PickUpToddler>抱起 {0}</RimTalk_PickUpToddler>
+  <RimTalk_PutDownToddler>放下 {0}</RimTalk_PutDownToddler>
+  <RimTalk_PickingUpToddler>抱起 {0}</RimTalk_PickingUpToddler>
 </LanguageData>

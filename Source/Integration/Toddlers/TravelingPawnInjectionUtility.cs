@@ -127,21 +127,24 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			if (added > 0)
-			{
-				if (addedToddler)
 				{
-					EnsureWalkDef();
-					EnsureWalkingToddlers(pawnList);
+					if (addedToddler)
+					{
+						EnsureWalkDef();
+						EnsureWalkingToddlers(pawnList);
+						
+						// 自动分配背负关系：让成年人背着幼儿
+						ToddlerCarryingUtility.AutoAssignCarryingForGroup(pawnList);
+					}
+	
+					pawns = pawnList;
+					if (Prefs.DevMode)
+					{
+						string kind = parms?.groupKind?.defName ?? "UnknownGroup";
+						string faction = parms?.faction?.Name ?? "NoFaction";
+						Log.Message($"[RimTalk_ToddlersExpansion] Added {added} toddler/child pawns to {kind} group ({faction}) based on settings.");
+					}
 				}
-
-				pawns = pawnList;
-				if (Prefs.DevMode)
-				{
-					string kind = parms?.groupKind?.defName ?? "UnknownGroup";
-					string faction = parms?.faction?.Name ?? "NoFaction";
-					Log.Message($"[RimTalk_ToddlersExpansion] Added {added} toddler/child pawns to {kind} group ({faction}) based on settings.");
-				}
-			}
 		}
 
 		private static bool IsEligibleGroup(PawnGroupMakerParms parms)
