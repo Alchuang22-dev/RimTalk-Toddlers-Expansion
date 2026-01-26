@@ -12,6 +12,8 @@ namespace RimTalk_ToddlersExpansion.Harmony
 {
 	public static class Patch_TravelingLord
 	{
+		private static Type _lordToilExitMapAndEscortCarriersType;
+
 		public static void Init(HarmonyLib.Harmony harmony)
 		{
 			// 当一个新的 Lord (群体) 创建时
@@ -33,6 +35,26 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			if (removePawn != null)
 			{
 				harmony.Patch(removePawn, postfix: new HarmonyMethod(typeof(Patch_TravelingLord), nameof(RemovePawn_Postfix)));
+			}
+
+			// 当 LordToil 更新所有 duty 时 - 修复幼儿/儿童 duty 不更新的问题
+			// Patch LordToil_ExitMapAndEscortCarriers.UpdateAllDuties (商人商队)
+			_lordToilExitMapAndEscortCarriersType = AccessTools.TypeByName("RimWorld.LordToil_ExitMapAndEscortCarriers");
+			if (_lordToilExitMapAndEscortCarriersType != null)
+			{
+				var updateAllDuties = AccessTools.Method(_lordToilExitMapAndEscortCarriersType, "UpdateAllDuties");
+				if (updateAllDuties != null)
+				{
+					harmony.Patch(updateAllDuties, postfix: new HarmonyMethod(typeof(Patch_TravelingLord), nameof(ExitMapAndEscortCarriers_UpdateAllDuties_Postfix)));
+				}
+			}
+
+			// Patch LordToil_ExitMap.UpdateAllDuties (访客等)
+			var lordToilExitMapType = typeof(LordToil_ExitMap);
+			var exitMapUpdateAllDuties = AccessTools.Method(lordToilExitMapType, "UpdateAllDuties");
+			if (exitMapUpdateAllDuties != null)
+			{
+				harmony.Patch(exitMapUpdateAllDuties, postfix: new HarmonyMethod(typeof(Patch_TravelingLord), nameof(LordToil_ExitMap_UpdateAllDuties_Postfix)));
 			}
 		}
 
@@ -201,6 +223,83 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 			// 否则去南边
 			return new IntVec3(pawnPos.x, 0, 0);
+		}
+
+		/// <summary>
+		/// 在 LordToil_ExitMapAndEscortCarriers.UpdateAllDuties 之后执行
+		/// 确保幼儿/儿童也能获得正确的离开地图的 duty
+		/// </summary>
+		private static void ExitMapAndEscortCarriers_UpdateAllDuties_Postfix(LordToil __instance)
+		{
+			Lord lord = __instance.lord;
+			if (lord == null || lord.ownedPawns.NullOrEmpty())
+				return;
+
+			// 找到商队领队（trader）
+			Pawn trader = TraderCaravanUtility.FindTrader(lord);
+			FixToddlerDuties(lord, trader);
+		}
+
+		/// <summary>
+		/// 在 LordToil_ExitMap.UpdateAllDuties 之后执行
+		/// 用于访客等使用 LordToil_ExitMap 的情况
+		/// </summary>
+		private static void LordToil_ExitMap_UpdateAllDuties_Postfix(LordToil __instance)
+		{
+			Lord lord = __instance.lord;
+			if (lord == null || lord.ownedPawns.NullOrEmpty())
+				return;
+
+			FixToddlerDuties(lord, null);
+		}
+
+		/// <summary>
+		/// 修复幼儿/儿童的 duty，确保他们能正确离开地图
+		/// 问题原因：RimWorld 原版代码会跳过某些条件下的幼儿/儿童，导致他们的 duty 保持为旧的 TravelOrLeave
+		/// </summary>
+		private static void FixToddlerDuties(Lord lord, Pawn trader)
+		{
+			for (int i = 0; i < lord.ownedPawns.Count; i++)
+			{
+				Pawn pawn = lord.ownedPawns[i];
+				
+				// 检查 duty 是否仍然是 TravelOrLeave（说明没有被正确更新）
+				if (pawn.mindState?.duty?.def != DutyDefOf.TravelOrLeave)
+					continue;
+
+				// 判断是否是需要特殊处理的幼儿/婴儿/儿童
+				bool needsFix = ToddlersCompatUtility.IsToddler(pawn)
+					|| pawn.DevelopmentalStage.Baby()
+					|| pawn.DevelopmentalStage == DevelopmentalStage.Child
+					|| IsYoungHuman(pawn);
+				
+				if (!needsFix)
+					continue;
+
+				// 为幼儿/儿童分配正确的离开地图 duty
+				if (trader != null)
+				{
+					pawn.mindState.duty = new PawnDuty(DutyDefOf.Escort, trader, 14f);
+				}
+				else
+				{
+					pawn.mindState.duty = new PawnDuty(DutyDefOf.ExitMapBest);
+					pawn.mindState.duty.locomotion = LocomotionUrgency.Jog;
+				}
+			}
+		}
+
+		/// <summary>
+		/// 检查是否是年幼的人类（小于13岁）
+		/// </summary>
+		private static bool IsYoungHuman(Pawn pawn)
+		{
+			if (pawn?.ageTracker == null || pawn?.RaceProps?.Humanlike != true)
+				return false;
+			
+			float age = pawn.ageTracker.AgeBiologicalYearsFloat;
+			// 小于13岁（RimWorld 的成年年龄）
+			return age < 13f;
 		}
 	}
 }
