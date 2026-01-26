@@ -32,7 +32,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
             var job = JobMaker.MakeJob(Core.ToddlersExpansionJobDefOf.RimTalk_MidnightSnack, food);
             job.count = Mathf.Min(food.def.ingestible.maxNumToIngestAtOnce, food.stackCount);
 
-            ApplyCooldown(pawn);
+            // 冷却现在在 JobDriver_MidnightSnack.ApplyEffects() 中应用
 
             return job;
         }

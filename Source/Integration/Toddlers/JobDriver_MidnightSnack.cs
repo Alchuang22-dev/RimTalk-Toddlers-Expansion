@@ -23,7 +23,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
         protected override IEnumerable<Toil> MakeNewToils()
         {
             this.FailOnDespawnedNullOrForbidden(FoodInd);
-            this.FailOn(() => pawn.needs.food.CurLevelPercentage > 0.9f);
+            // 移除饱腹度检查，让偷糖能够完成
 
             yield return Toils_Goto.GotoThing(FoodInd, PathEndMode.ClosestTouch);
 
@@ -138,18 +138,28 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
         private void ApplyEffects()
         {
-            var food = job.GetTarget(FoodInd).Thing;
-            if (food == null || pawn.needs.joy == null)
-                return;
+            // 应用冷却
+            ApplyCooldown();
 
-            float joyGain = 0.1f;
-            pawn.needs.joy.CurLevel += joyGain;
+            var food = job.GetTarget(FoodInd).Thing;
+            if (pawn.needs.joy != null)
+            {
+                float joyGain = 0.1f;
+                pawn.needs.joy.CurLevel += joyGain;
+            }
 
             var thoughtDef = GetThoughtDefForPawn();
-            if (thoughtDef != null)
+            if (thoughtDef != null && pawn.needs?.mood?.thoughts?.memories != null)
             {
                 pawn.needs.mood.thoughts.memories.TryGainMemory(thoughtDef);
             }
+        }
+
+        private void ApplyCooldown()
+        {
+            var hediff = HediffMaker.MakeHediff(Core.ToddlersExpansionHediffDefOf.RimTalk_MidnightSnackCooldown, pawn);
+            hediff.Severity = 1f;
+            pawn.health.AddHediff(hediff);
         }
 
         private void NotifyFollowersComplete()
