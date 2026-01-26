@@ -1,4 +1,5 @@
 using RimTalk_ToddlersExpansion.Core;
+using RimWorld;
 using UnityEngine;
 using Verse;
 
@@ -54,6 +55,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
+			if (IsStandingAnimation() && !IsSuitableForStanding(pawn))
+			{
+				return false;
+			}
+
 			return IsPlayJob(pawn);
 		}
 
@@ -79,6 +85,31 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		public override GraphicStateDef GraphicStateAtTick(int tick, AnimationDef def, PawnRenderNode node, AnimationPart part, PawnDrawParms parms)
 		{
 			return null;
+		}
+
+		protected virtual bool IsStandingAnimation()
+		{
+			return false;
+		}
+
+		protected static bool IsSuitableForStanding(Pawn pawn)
+		{
+			if (pawn == null)
+			{
+				return false;
+			}
+
+			if (!pawn.Awake())
+			{
+				return false;
+			}
+
+			if (pawn.pather.Moving)
+			{
+				return false;
+			}
+
+			return true;
 		}
 
 		protected static bool IsPlayJob(Pawn pawn)
@@ -109,6 +140,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			float x = ToddlerPlayAnimationMath.GetTickFraction(def);
 			return WiggleAngle * ToddlerPlayAnimationMath.TriangleWave(x);
 		}
+
+		protected override bool IsStandingAnimation()
+		{
+			return true;
+		}
 	}
 
 	public sealed class AnimationWorker_ToddlerPlaySway : AnimationWorker_ToddlerPlayBase
@@ -119,6 +155,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		{
 			float x = ToddlerPlayAnimationMath.GetTickFraction(def);
 			return SwayAngle * Mathf.Sin(x * Mathf.PI * 2f);
+		}
+
+		protected override bool IsStandingAnimation()
+		{
+			return true;
 		}
 	}
 
@@ -145,6 +186,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 			return 0f;
 		}
+
+		protected override bool IsStandingAnimation()
+		{
+			return false;
+		}
 	}
 
 	public sealed class AnimationWorker_ToddlerPlayCrawl_Root : AnimationWorker_ToddlerPlayBase
@@ -170,6 +216,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 			return 0f;
 		}
+
+		protected override bool IsStandingAnimation()
+		{
+			return false;
+		}
 	}
 
 	public sealed class AnimationWorker_ToddlerPlayCrawl_Head : AnimationWorker_ToddlerPlayBase
@@ -194,6 +245,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			return 0f;
+		}
+
+		protected override bool IsStandingAnimation()
+		{
+			return false;
 		}
 	}
 }

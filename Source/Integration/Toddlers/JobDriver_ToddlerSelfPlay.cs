@@ -32,7 +32,12 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			};
 			play.tickIntervalAction = delta =>
 			{
-				ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, _playAnimation);
+				// Only reapply animation if it's not currently set (optimization to avoid flickering)
+				if (pawn.Drawer?.renderer?.CurAnimation != _playAnimation)
+				{
+					ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, _playAnimation);
+				}
+
 				// 随机触发咯咯笑效果
 				ToddlerPlayEffectUtility.TryTriggerGigglingEffect(pawn);
 				if (ToddlerCareEventUtility.TryTriggerSelfPlayMishap(pawn, delta))
@@ -52,9 +57,13 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			play.defaultCompleteMode = ToilCompleteMode.Delay;
 			play.defaultDuration = job.def.joyDuration;
 
-			AddFinishAction(condition =>
+			play.AddFinishAction(() =>
 			{
 				ToddlerPlayAnimationUtility.ClearAnimation(pawn, _playAnimation);
+			});
+
+			AddFinishAction(condition =>
+			{
 				ToddlerPlayReportUtility.CancelJob(job);
 				if (condition == JobCondition.Succeeded)
 				{

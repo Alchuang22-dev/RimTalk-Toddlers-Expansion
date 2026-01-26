@@ -1,8 +1,12 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using RimTalk_ToddlersExpansion.Core;
 using RimWorld;
+using UnityEngine;
 using Verse;
+using Verse.AI;
+using Verse.Sound;
 
 namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 {
@@ -13,6 +17,10 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private const float ExtraBatchChance = 0.5f;
 		private const float ChildBiasWhenAlreadyPresent = 0.7f;
 		private const float WalkingToddlerSeverity = 0.6f;
+		private const float BabyFoodBaseUnits = 5f;
+		private const float BabyFoodUnitsPerToddlerAgeYear = 2f;
+		private const float MinBabyFoodUnits = 3f;
+		private const float MaxBabyFoodUnits = 15f;
 
 		private static bool _walkHediffChecked;
 		private static HediffDef _learningToWalkDef;
@@ -327,7 +335,15 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					fixedBiologicalAge: ageYears,
 					fixedChronologicalAge: ageYears);
 
-				return PawnGenerator.GeneratePawn(request);
+				Pawn pawn = PawnGenerator.GeneratePawn(request);
+
+				// Inject baby food for toddlers
+				if (pawn != null && ToddlersCompatUtility.IsToddler(pawn))
+				{
+					TryInjectBabyFood(pawn, ageYears);
+				}
+
+				return pawn;
 			}
 			catch
 			{
@@ -396,6 +412,44 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 						manipulationHediff.Severity = WalkingToddlerSeverity;
 					}
 				}
+			}
+		}
+
+		private static void TryInjectBabyFood(Pawn toddler, float ageYears)
+		{
+			if (toddler == null || toddler.inventory == null)
+			{
+				return;
+			}
+
+			// 计算婴儿食品数量基于年龄
+			float foodUnits = BabyFoodBaseUnits + (ageYears * BabyFoodUnitsPerToddlerAgeYear);
+			foodUnits = Mathf.Clamp(foodUnits, MinBabyFoodUnits, MaxBabyFoodUnits);
+
+			int foodCount = Mathf.RoundToInt(foodUnits);
+
+			if (foodCount <= 0)
+			{
+				return;
+			}
+
+			try
+			{
+				Thing babyFood = ThingMaker.MakeThing(ThingDefOf.BabyFood);
+				if (babyFood != null)
+				{
+					babyFood.stackCount = foodCount;
+					toddler.inventory.innerContainer.TryAdd(babyFood);
+
+					if (Prefs.DevMode)
+					{
+						Log.Message($"[RimTalk_ToddlersExpansion] 为toddler {toddler.Name}添加了{foodCount}个婴儿食品");
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Log.Warning($"[RimTalk_ToddlersExpansion] 注入婴儿食品失败: {ex.Message}");
 			}
 		}
 	}
