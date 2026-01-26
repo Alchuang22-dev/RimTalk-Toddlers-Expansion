@@ -34,15 +34,12 @@
         <painOffset>0.05</painOffset>
         <statOffsets>
           <EatingSpeed>-0.05</EatingSpeed>
+          <SocialImpact>-0.1</SocialImpact>
         </statOffsets>
         <capMods>
           <li>
             <capacity>Talking</capacity>
             <offset>-0.05</offset>
-          </li>
-          <li>
-            <capacity>Social</capacity>
-            <offset>-0.1</offset>
           </li>
         </capMods>
       </li>
@@ -66,14 +63,13 @@
     </comps>
     <stages>
       <li>
+        <statOffsets>
+          <SocialImpact>-0.05</SocialImpact>
+        </statOffsets>
         <capMods>
           <li>
             <capacity>Talking</capacity>
             <offset>-0.02</offset>
-          </li>
-          <li>
-            <capacity>Social</capacity>
-            <offset>-0.05</offset>
           </li>
         </capMods>
       </li>
@@ -82,6 +78,7 @@
 
   <HediffDef>
     <defName>RimTalk_MidnightSnackCooldown</defName>
+    <hediffClass>HediffWithComps</hediffClass>
     <label>midnight snack cooldown</label>
     <description>Recently had a midnight snack.</description>
     <initialSeverity>1</initialSeverity>

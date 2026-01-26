@@ -32,11 +32,11 @@
         <li>Medicine</li>
       </categories>
       <disallowedThingDefs>
-        <li>HerbalMedicine</li>
+        <li>MedicineHerbal</li>
       </disallowedThingDefs>
     </fixedIngredientFilter>
     <appliedOnFixedBodyParts>
-      <li>Teeth</li>
+      <li>Jaw</li>
     </appliedOnFixedBodyParts>
   </RecipeDef>
 

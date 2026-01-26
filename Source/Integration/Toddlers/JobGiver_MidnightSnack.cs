@@ -42,19 +42,10 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
             if (!IsValidPawn(pawn))
                 return false;
 
-            if (!IsValidTime())
-                return false;
-
-            if (!HasValidHunger(pawn))
-                return false;
-
             if (HasCooldown(pawn))
                 return false;
 
             if (IsInBadCondition(pawn))
-                return false;
-
-            if (!Rand.Chance(0.3f))
                 return false;
 
             if (!HasCookingFoodAvailable(pawn))
@@ -81,19 +72,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
                 return true;
 
             return false;
-        }
-
-        private bool IsValidTime()
-        {
-            int hour = GenLocalDate.HourOfDay(Find.CurrentMap);
-            return hour >= 0 && hour <= 3 || hour >= 12 && hour <= 15;
-        }
-
-        private bool HasValidHunger(Pawn pawn)
-        {
-            if (pawn.needs.food == null)
-                return false;
-            return pawn.needs.food.CurLevelPercentage < 0.7f;
         }
 
         private bool HasCooldown(Pawn pawn)
