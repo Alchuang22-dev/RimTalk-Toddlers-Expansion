@@ -196,7 +196,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			try
 			{
 				string prompt = GeneratePlayPrompt(carrier, toddler, playType);
-				RimTalkCompatUtility.TryQueueTalk(carrier, toddler, prompt, "User");
+				// 使用 Event 类型立即触发对话（添加到队列头部），而不是 User（会触发手动回复模式）
+				RimTalkCompatUtility.TryQueueTalk(carrier, toddler, prompt, "Event");
 			}
 			catch (Exception ex)
 			{
@@ -221,9 +222,9 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 			string playDescription = playType switch
 			{
-				"TossUp" => $"{carrierName} is tossing {toddlerName} up in the air playfully. The toddler is giggling with joy!",
-				"Tickle" => $"{carrierName} is tickling {toddlerName}, making them laugh uncontrollably!",
-				"SpinAround" => $"{carrierName} is spinning around while holding {toddlerName}, who is squealing with delight!",
+				"TossUp" => $"{carrierName} is ***TOSSING*** {toddlerName} up in the air playfully. The toddler is giggling with joy!",
+				"Tickle" => $"{carrierName} is ***TICKLING*** {toddlerName}, making them laugh uncontrollably!",
+				"SpinAround" => $"{carrierName} is ***SPINNING around*** while holding {toddlerName}, who is squealing with delight!",
 				_ => $"{carrierName} is playing with {toddlerName}."
 			};
 

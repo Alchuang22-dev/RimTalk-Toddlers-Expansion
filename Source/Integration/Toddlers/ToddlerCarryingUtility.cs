@@ -16,13 +16,14 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 	{
 		/// <summary>
 		/// 幼儿在胸前的渲染偏移量（根据朝向）
+		/// X = 左右偏移，Y = 渲染图层（正值在前，负值在后），Z = 上下偏移
 		/// </summary>
 		private static readonly Dictionary<Rot4, Vector3> CarryOffsets = new Dictionary<Rot4, Vector3>
 		{
-			{ Rot4.North, new Vector3(0f, 0.1f, -0.25f) },    // 面向北，幼儿在背后（略低）
-			{ Rot4.South, new Vector3(0f, 0.1f, 0.15f) },     // 面向南，幼儿在胸前
-			{ Rot4.East, new Vector3(-0.2f, 0.1f, 0f) },      // 面向东，幼儿在左侧
-			{ Rot4.West, new Vector3(0.2f, 0.1f, 0f) }        // 面向西，幼儿在右侧
+			{ Rot4.North, new Vector3(0f, -0.1f, -0.15f) },   // 面向北（背对镜头），幼儿在背后，图层在大人后面
+			{ Rot4.South, new Vector3(0f, 0.1f, -0.1f) },     // 面向南（正对镜头），幼儿在胸前偏下
+			{ Rot4.East, new Vector3(-0.15f, 0.05f, -0.05f) }, // 面向东，幼儿在左侧偏下
+			{ Rot4.West, new Vector3(0.15f, 0.05f, -0.05f) }   // 面向西，幼儿在右侧偏下
 		};
 
 		/// <summary>

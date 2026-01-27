@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using RimTalk_ToddlersExpansion.Core;
+using RimWorld;
 using Verse;
 using Verse.AI;
 
@@ -45,6 +46,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			Toil playToil = new Toil();
 			playToil.initAction = () =>
 			{
+				// 停止移动，站在原地
+				pawn.pather.StopDead();
 				// 开始动画
 				CarriedPlayAnimationTracker.StartTossUpAnimation(pawn, Toddler);
 			};

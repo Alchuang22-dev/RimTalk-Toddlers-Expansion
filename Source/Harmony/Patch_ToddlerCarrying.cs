@@ -95,11 +95,14 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			Vector3 carrierPos = carrier.DrawPos;
 			Rot4 carrierRotation = carrier.Rotation;
 
-			// 计算偏移
+			// 计算基础偏移
 			Vector3 offset = ToddlerCarryingUtility.GetCarryOffset(carrierRotation);
 
-			// 设置幼儿的渲染位置
-			__result = carrierPos + offset;
+			// 添加动画偏移（飞高高、逗弄、转圈时的额外位移）
+			Vector3 animOffset = CarriedPlayAnimationTracker.GetAnimationOffset(carrier, __instance);
+
+			// 设置幼儿的渲染位置（基础偏移 + 动画偏移）
+			__result = carrierPos + offset + animOffset;
 		}
 
 		/// <summary>

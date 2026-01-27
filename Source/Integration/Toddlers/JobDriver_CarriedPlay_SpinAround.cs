@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using RimTalk_ToddlersExpansion.Core;
+using RimWorld;
 using Verse;
 using Verse.AI;
 
@@ -19,6 +20,26 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		/// 动画持续时间（ticks）- 转圈需要更长时间
 		/// </summary>
 		private const int AnimationDuration = 240;
+
+		/// <summary>
+		/// 每隔多少tick切换一次朝向（越小转得越快）
+		/// </summary>
+		private const int TicksPerRotation = 15;
+
+		/// <summary>
+		/// 朝向序列：南->东->北->西->南（顺时针转圈）
+		/// </summary>
+		private static readonly Rot4[] RotationSequence = { Rot4.South, Rot4.East, Rot4.North, Rot4.West };
+
+		/// <summary>
+		/// 当前朝向索引
+		/// </summary>
+		private int currentRotationIndex = 0;
+
+		/// <summary>
+		/// 上次切换朝向的tick
+		/// </summary>
+		private int lastRotationTick = 0;
 
 		public override bool TryMakePreToilReservations(bool errorOnFailed)
 		{
@@ -45,13 +66,29 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			Toil playToil = new Toil();
 			playToil.initAction = () =>
 			{
+				// 停止移动，站在原地
+				pawn.pather.StopDead();
 				// 开始动画
 				CarriedPlayAnimationTracker.StartSpinAroundAnimation(pawn, Toddler);
+				// 初始化朝向
+				currentRotationIndex = 0;
+				lastRotationTick = Find.TickManager.TicksGame;
+				pawn.Rotation = RotationSequence[currentRotationIndex];
 			};
 			playToil.tickAction = () =>
 			{
 				// 更新动画
 				CarriedPlayAnimationTracker.UpdateAnimation(pawn, Toddler);
+				
+				// 检查是否需要切换朝向
+				int currentTick = Find.TickManager.TicksGame;
+				if (currentTick - lastRotationTick >= TicksPerRotation)
+				{
+					// 切换到下一个朝向（顺时针）
+					currentRotationIndex = (currentRotationIndex + 1) % RotationSequence.Length;
+					pawn.Rotation = RotationSequence[currentRotationIndex];
+					lastRotationTick = currentTick;
+				}
 			};
 			playToil.defaultCompleteMode = ToilCompleteMode.Delay;
 			playToil.defaultDuration = AnimationDuration;

@@ -17,7 +17,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		{
 			None,
 			TossUp,
-			Tickle,
 			SpinAround
 		}
 
@@ -43,14 +42,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		public static void StartTossUpAnimation(Pawn carrier, Pawn toddler)
 		{
 			StartAnimation(carrier, toddler, CarriedPlayAnimationType.TossUp);
-		}
-
-		/// <summary>
-		/// 开始逗弄动画
-		/// </summary>
-		public static void StartTickleAnimation(Pawn carrier, Pawn toddler)
-		{
-			StartAnimation(carrier, toddler, CarriedPlayAnimationType.Tickle);
 		}
 
 		/// <summary>
@@ -140,10 +131,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			{
 				case CarriedPlayAnimationType.TossUp:
 					return GetTossUpOffset(progress);
-				case CarriedPlayAnimationType.Tickle:
-					return GetTickleOffset(progress);
 				case CarriedPlayAnimationType.SpinAround:
-					return Vector3.zero; // 转圈使用旋转而不是偏移
+					return Vector3.zero; // 转圈通过改变朝向实现，不需要偏移
 				default:
 					return Vector3.zero;
 			}
@@ -182,16 +171,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			// 每0.5秒一个周期，上下移动0.3个单位
 			float height = Mathf.Sin(progress * Mathf.PI * 4f) * 0.3f;
 			return new Vector3(0f, 0f, height);
-		}
-
-		/// <summary>
-		/// 逗弄动画偏移（轻微晃动）
-		/// </summary>
-		private static Vector3 GetTickleOffset(float progress)
-		{
-			// 快速左右晃动
-			float shake = Mathf.Sin(progress * Mathf.PI * 12f) * 0.05f;
-			return new Vector3(shake, 0f, 0f);
 		}
 
 		/// <summary>
