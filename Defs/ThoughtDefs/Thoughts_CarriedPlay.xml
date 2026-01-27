@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- 飞高高 - 幼儿心情 -->
+  <ThoughtDef>
+    <defName>RimTalk_ToddlerTossedUp</defName>
+    <label>tossed up high</label>
+    <thoughtClass>Thought_Memory</thoughtClass>
+    <durationDays>0.5</durationDays>
+    <stackLimit>3</stackLimit>
+    <validWhileDespawned>true</validWhileDespawned>
+    <developmentalStageFilter>
+      <li>Baby</li>
+      <li>Child</li>
+    </developmentalStageFilter>
+    <stages>
+      <li>
+        <label>tossed up high</label>
+        <description>Someone tossed me up in the air! Wheee!</description>
+        <baseMoodEffect>8</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <!-- 逗弄幼儿 - 幼儿心情（咯咯笑） -->
+  <ThoughtDef>
+    <defName>RimTalk_ToddlerTickled</defName>
+    <label>tickled and giggling</label>
+    <thoughtClass>Thought_Memory</thoughtClass>
+    <durationDays>0.5</durationDays>
+    <stackLimit>3</stackLimit>
+    <validWhileDespawned>true</validWhileDespawned>
+    <developmentalStageFilter>
+      <li>Baby</li>
+      <li>Child</li>
+    </developmentalStageFilter>
+    <stages>
+      <li>
+        <label>tickled and giggling</label>
+        <description>Someone tickled me and made me giggle! Hehe!</description>
+        <baseMoodEffect>6</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <!-- 转圈 - 幼儿心情 -->
+  <ThoughtDef>
+    <defName>RimTalk_ToddlerSpunAround</defName>
+    <label>spun around</label>
+    <thoughtClass>Thought_Memory</thoughtClass>
+    <durationDays>0.5</durationDays>
+    <stackLimit>3</stackLimit>
+    <validWhileDespawned>true</validWhileDespawned>
+    <developmentalStageFilter>
+      <li>Baby</li>
+      <li>Child</li>
+    </developmentalStageFilter>
+    <stages>
+      <li>
+        <label>spun around</label>
+        <description>Someone spun me around! The world is spinning!</description>
+        <baseMoodEffect>7</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <!-- 成年人和幼儿玩耍的心情 -->
+  <ThoughtDef>
+    <defName>RimTalk_PlayedWithToddler</defName>
+    <label>played with toddler</label>
+    <thoughtClass>Thought_Memory</thoughtClass>
+    <durationDays>0.5</durationDays>
+    <stackLimit>3</stackLimit>
+    <validWhileDespawned>true</validWhileDespawned>
+    <stages>
+      <li>
+        <label>played with toddler</label>
+        <description>I played with a little one. Their laughter is so heartwarming!</description>
+        <baseMoodEffect>5</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+</Defs>

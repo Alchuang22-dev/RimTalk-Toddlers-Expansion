@@ -59,5 +59,17 @@
   <RimTalk_PickUpToddler>Pick up {0}</RimTalk_PickUpToddler>
   <RimTalk_PutDownToddler>Put down {0}</RimTalk_PutDownToddler>
   <RimTalk_PickingUpToddler>picking up {0}</RimTalk_PickingUpToddler>
+  
+  <!-- Carried Play -->
+  <RimTalk_TossUp>Toss Up</RimTalk_TossUp>
+  <RimTalk_TossUpDesc>Toss {0} up in the air and catch them, making the toddler giggle with joy.</RimTalk_TossUpDesc>
+  <RimTalk_TossingUpToddler>tossing up {0}</RimTalk_TossingUpToddler>
+  <RimTalk_Tickle>Tickle</RimTalk_Tickle>
+  <RimTalk_TickleDesc>Gently tickle {0}, making the toddler giggle.</RimTalk_TickleDesc>
+  <RimTalk_TicklingToddler>tickling {0}</RimTalk_TicklingToddler>
+  <RimTalk_SpinAround>Spin Around</RimTalk_SpinAround>
+  <RimTalk_SpinAroundDesc>Spin around while holding {0}, making the toddler feel excited.</RimTalk_SpinAroundDesc>
+  <RimTalk_SpinningWithToddler>spinning around with {0}</RimTalk_SpinningWithToddler>
+  <RimTalk_CarriedPlayOnCooldown>The toddler just played and needs a short rest.</RimTalk_CarriedPlayOnCooldown>
 </LanguageData>
 

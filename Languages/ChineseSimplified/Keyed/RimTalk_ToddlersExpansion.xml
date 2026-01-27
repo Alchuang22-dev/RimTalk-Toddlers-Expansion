@@ -59,4 +59,16 @@
   <RimTalk_PickUpToddler>抱起 {0}</RimTalk_PickUpToddler>
   <RimTalk_PutDownToddler>放下 {0}</RimTalk_PutDownToddler>
   <RimTalk_PickingUpToddler>抱起 {0}</RimTalk_PickingUpToddler>
+  
+  <!-- 抱着幼儿玩耍 -->
+  <RimTalk_TossUp>飞高高</RimTalk_TossUp>
+  <RimTalk_TossUpDesc>把 {0} 抛向空中再接住，让幼儿开心地咯咯笑。</RimTalk_TossUpDesc>
+  <RimTalk_TossingUpToddler>正在和 {0} 玩飞高高</RimTalk_TossingUpToddler>
+  <RimTalk_Tickle>逗弄幼儿</RimTalk_Tickle>
+  <RimTalk_TickleDesc>轻轻逗弄 {0}，让幼儿咯咯笑。</RimTalk_TickleDesc>
+  <RimTalk_TicklingToddler>正在逗弄 {0}</RimTalk_TicklingToddler>
+  <RimTalk_SpinAround>转圈圈</RimTalk_SpinAround>
+  <RimTalk_SpinAroundDesc>抱着 {0} 转圈圈，让幼儿感到兴奋。</RimTalk_SpinAroundDesc>
+  <RimTalk_SpinningWithToddler>正在抱着 {0} 转圈圈</RimTalk_SpinningWithToddler>
+  <RimTalk_CarriedPlayOnCooldown>幼儿刚刚玩过，需要休息一下。</RimTalk_CarriedPlayOnCooldown>
 </LanguageData>

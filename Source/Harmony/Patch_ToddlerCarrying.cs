@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 using RimTalk_ToddlersExpansion.Integration.Toddlers;
+using RimTalk_ToddlersExpansion.UI;
 using UnityEngine;
 using Verse;
 using Verse.AI;
@@ -62,6 +63,13 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			if (getReportMethod != null)
 			{
 				harmony.Patch(getReportMethod, postfix: new HarmonyMethod(typeof(Patch_ToddlerCarrying), nameof(JobDriver_GetReport_Postfix)));
+			}
+
+			// Patch Pawn.GetGizmos - 添加抱着幼儿玩耍的Gizmo按钮
+			MethodInfo getGizmosMethod = AccessTools.Method(typeof(Pawn), "GetGizmos");
+			if (getGizmosMethod != null)
+			{
+				harmony.Patch(getGizmosMethod, postfix: new HarmonyMethod(typeof(Patch_ToddlerCarrying), nameof(Pawn_GetGizmos_Postfix)));
 			}
 
 			Log.Message("[RimTalk_ToddlersExpansion] Toddler carrying patches initialized");
@@ -256,6 +264,27 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 			// 在原有报告后附加背负信息，使用破折号连接
 			__result = $"{__result} - {carryingText}";
+		}
+
+		/// <summary>
+		/// 为抱着幼儿的pawn添加玩耍Gizmo按钮
+		/// </summary>
+		private static IEnumerable<Gizmo> Pawn_GetGizmos_Postfix(IEnumerable<Gizmo> __result, Pawn __instance)
+		{
+			// 先返回原有的所有Gizmo
+			foreach (Gizmo gizmo in __result)
+			{
+				yield return gizmo;
+			}
+
+			// 如果pawn正在抱着幼儿，添加玩耍按钮
+			if (__instance != null && ToddlerCarryingUtility.IsCarryingToddler(__instance))
+			{
+				foreach (Gizmo playGizmo in Gizmo_CarriedPlay.GetCarriedPlayGizmos(__instance))
+				{
+					yield return playGizmo;
+				}
+			}
 		}
 	}
 }

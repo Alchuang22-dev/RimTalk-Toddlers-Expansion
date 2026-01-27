@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- 飞高高 - 成年人抱着幼儿上下抛 -->
+  <JobDef>
+    <defName>RimTalk_CarriedPlay_TossUp</defName>
+    <driverClass>RimTalk_ToddlersExpansion.Integration.Toddlers.JobDriver_CarriedPlay_TossUp</driverClass>
+    <reportString>tossing {0} up in the air</reportString>
+    <casualInterruptible>false</casualInterruptible>
+    <allowOpportunisticPrefix>false</allowOpportunisticPrefix>
+    <suspendable>false</suspendable>
+    <playerInterruptible>true</playerInterruptible>
+  </JobDef>
+
+  <!-- 逗弄幼儿 - 成年人逗幼儿笑 -->
+  <JobDef>
+    <defName>RimTalk_CarriedPlay_Tickle</defName>
+    <driverClass>RimTalk_ToddlersExpansion.Integration.Toddlers.JobDriver_CarriedPlay_Tickle</driverClass>
+    <reportString>tickling {0}</reportString>
+    <casualInterruptible>false</casualInterruptible>
+    <allowOpportunisticPrefix>false</allowOpportunisticPrefix>
+    <suspendable>false</suspendable>
+    <playerInterruptible>true</playerInterruptible>
+  </JobDef>
+
+  <!-- 转圈 - 成年人抱着幼儿转圈 -->
+  <JobDef>
+    <defName>RimTalk_CarriedPlay_SpinAround</defName>
+    <driverClass>RimTalk_ToddlersExpansion.Integration.Toddlers.JobDriver_CarriedPlay_SpinAround</driverClass>
+    <reportString>spinning around with {0}</reportString>
+    <casualInterruptible>false</casualInterruptible>
+    <allowOpportunisticPrefix>false</allowOpportunisticPrefix>
+    <suspendable>false</suspendable>
+    <playerInterruptible>true</playerInterruptible>
+  </JobDef>
+</Defs>
