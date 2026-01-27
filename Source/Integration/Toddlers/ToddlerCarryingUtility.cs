@@ -20,9 +20,9 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		/// </summary>
 		private static readonly Dictionary<Rot4, Vector3> CarryOffsets = new Dictionary<Rot4, Vector3>
 		{
-			{ Rot4.North, new Vector3(0f, -0.1f, -0.15f) },   // 面向北（背对镜头），幼儿在背后，图层在大人后面
-			{ Rot4.South, new Vector3(0f, 0.1f, -0.1f) },     // 面向南（正对镜头），幼儿在胸前偏下
-			{ Rot4.East, new Vector3(-0.15f, 0.05f, -0.05f) }, // 面向东，幼儿在左侧偏下
+			{ Rot4.North, new Vector3(-0.12f, -0.1f, -0.1f) },    // 面向北（背对镜头），幼儿在背后，图层在大人后面
+			{ Rot4.South, new Vector3(0.12f, 0.1f, -0.1f) },   // 面向南（正对镜头），幼儿在胸前偏右侧
+			{ Rot4.East, new Vector3(0.15f, -0.05f, -0.05f) }, // 面向东，幼儿在左侧偏下
 			{ Rot4.West, new Vector3(0.15f, 0.05f, -0.05f) }   // 面向西，幼儿在右侧偏下
 		};
 
