@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
-  <RimTalk_BeingCarried.reportString>被 {1} 抱着</RimTalk_BeingCarried.reportString>
-  <RimTalk_PickUpToddler.reportString>抱起 {0}</RimTalk_PickUpToddler.reportString>
+  <RimTalk_BeingCarried.reportString>被{1}抱着</RimTalk_BeingCarried.reportString>
+  <RimTalk_BeingCarried_Observe.reportString>被{1}抱着到处看</RimTalk_BeingCarried_Observe.reportString>
+  <RimTalk_BeingCarried_Sleep.reportString>在{1}怀里睡觉</RimTalk_BeingCarried_Sleep.reportString>
+  <RimTalk_BeingCarried_Idle.reportString>被{1}抱着发呆</RimTalk_BeingCarried_Idle.reportString>
+  <RimTalk_BeingCarried_Struggle.reportString>在{1}怀里挣扎</RimTalk_BeingCarried_Struggle.reportString>
+  <RimTalk_PickUpToddler.reportString>抱起{0}</RimTalk_PickUpToddler.reportString>
 </LanguageData>

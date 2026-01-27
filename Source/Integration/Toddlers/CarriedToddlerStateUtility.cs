@@ -1,0 +1,194 @@
+using System;
+using RimTalk_ToddlersExpansion.Core;
+using RimTalk_ToddlersExpansion.Integration.RimTalk;
+using RimWorld;
+using Verse;
+using Verse.AI;
+
+namespace RimTalk_ToddlersExpansion.Integration.Toddlers
+{
+	public static class CarriedToddlerStateUtility
+	{
+		private const float HungryThreshold = 0.10f;
+		private const float RestThreshold = 0.10f;
+		private const float ObserveChance = 0.65f;
+
+		public static void UpdateCarriedJobs()
+		{
+			var carriedToddlers = ToddlerCarryingTracker.GetAllCarriedToddlers();
+			if (carriedToddlers.Count == 0)
+			{
+				return;
+			}
+
+			for (int i = 0; i < carriedToddlers.Count; i++)
+			{
+				Pawn toddler = carriedToddlers[i];
+				if (toddler == null || toddler.Dead || toddler.Destroyed)
+				{
+					continue;
+				}
+
+				Pawn carrier = ToddlerCarryingUtility.GetCarrier(toddler);
+				if (carrier == null)
+				{
+					continue;
+				}
+
+				JobDef current = toddler.CurJobDef;
+
+				if (ShouldStruggle(toddler))
+				{
+					if (current != ToddlersExpansionJobDefOf.RimTalk_BeingCarried_Struggle)
+					{
+						StartCarriedJob(toddler, carrier, ToddlersExpansionJobDefOf.RimTalk_BeingCarried_Struggle);
+					}
+					continue;
+				}
+
+				if (ShouldSleep(toddler))
+				{
+					if (current != ToddlersExpansionJobDefOf.RimTalk_BeingCarried_Sleep)
+					{
+						StartCarriedJob(toddler, carrier, ToddlersExpansionJobDefOf.RimTalk_BeingCarried_Sleep);
+					}
+					continue;
+				}
+
+				if (!IsCarriedStateJob(current))
+				{
+					StartCarriedJob(toddler, carrier, SelectIdleOrObserveJob());
+				}
+			}
+		}
+
+		public static void EnsureCarriedJob(Pawn toddler, Pawn carrier, bool force)
+		{
+			if (toddler?.jobs == null || carrier == null)
+			{
+				return;
+			}
+
+			JobDef desired = GetDesiredJobDef(toddler);
+			if (desired == null)
+			{
+				return;
+			}
+
+			if (!force && toddler.CurJobDef == desired)
+			{
+				return;
+			}
+
+			StartCarriedJob(toddler, carrier, desired);
+		}
+
+		public static bool IsCarriedStateJob(JobDef jobDef)
+		{
+			if (jobDef == null)
+			{
+				return false;
+			}
+
+			return jobDef == ToddlersExpansionJobDefOf.RimTalk_BeingCarried
+				|| jobDef == ToddlersExpansionJobDefOf.RimTalk_BeingCarried_Idle
+				|| jobDef == ToddlersExpansionJobDefOf.RimTalk_BeingCarried_Observe
+				|| jobDef == ToddlersExpansionJobDefOf.RimTalk_BeingCarried_Sleep
+				|| jobDef == ToddlersExpansionJobDefOf.RimTalk_BeingCarried_Struggle;
+		}
+
+		public static void TryQueueStruggleTalk(Pawn carrier, Pawn toddler)
+		{
+			if (carrier == null || toddler == null || !RimTalkCompatUtility.IsRimTalkActive)
+			{
+				return;
+			}
+
+			string carrierName = carrier.Name?.ToStringShort ?? "Adult";
+			string toddlerName = toddler.Name?.ToStringShort ?? "Toddler";
+			string prompt =
+				$"{toddlerName} starts squirming in {carrierName}'s arms because they are hungry. " +
+				$"{carrierName} decides to put {toddlerName} down and check on their needs. " +
+				"Generate a short, gentle interaction.";
+
+			RimTalkCompatUtility.TryQueueTalk(carrier, toddler, prompt, "Event");
+		}
+
+		private static JobDef GetDesiredJobDef(Pawn toddler)
+		{
+			if (ShouldStruggle(toddler))
+			{
+				return ToddlersExpansionJobDefOf.RimTalk_BeingCarried_Struggle;
+			}
+
+			if (ShouldSleep(toddler))
+			{
+				return ToddlersExpansionJobDefOf.RimTalk_BeingCarried_Sleep;
+			}
+
+			return SelectIdleOrObserveJob();
+		}
+
+		private static JobDef SelectIdleOrObserveJob()
+		{
+			JobDef observe = ToddlersExpansionJobDefOf.RimTalk_BeingCarried_Observe;
+			JobDef idle = GetIdleJobDef();
+
+			if (observe == null && idle == null)
+			{
+				return null;
+			}
+
+			if (observe == null)
+			{
+				return idle;
+			}
+
+			if (idle == null)
+			{
+				return observe;
+			}
+
+			return Rand.Chance(ObserveChance) ? observe : idle;
+		}
+
+		private static JobDef GetIdleJobDef()
+		{
+			return ToddlersExpansionJobDefOf.RimTalk_BeingCarried_Idle
+				?? ToddlersExpansionJobDefOf.RimTalk_BeingCarried;
+		}
+
+		private static void StartCarriedJob(Pawn toddler, Pawn carrier, JobDef jobDef)
+		{
+			if (jobDef == null || toddler?.jobs == null)
+			{
+				return;
+			}
+
+			try
+			{
+				Job job = JobMaker.MakeJob(jobDef, carrier);
+				toddler.jobs.StartJob(job, JobCondition.InterruptForced);
+			}
+			catch (Exception ex)
+			{
+				if (Prefs.DevMode)
+				{
+					Log.Warning($"[RimTalk_ToddlersExpansion] Failed to start carried job {jobDef.defName}: {ex.Message}");
+				}
+			}
+		}
+
+		private static bool ShouldStruggle(Pawn toddler)
+		{
+			var food = toddler?.needs?.food;
+			return food != null && food.CurLevelPercentage < HungryThreshold;
+		}
+
+		private static bool ShouldSleep(Pawn toddler)
+		{
+			var rest = toddler?.needs?.rest;
+			return rest != null && rest.CurLevelPercentage < RestThreshold;
+		}
+	}
+}

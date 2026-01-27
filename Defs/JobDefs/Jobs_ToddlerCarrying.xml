@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Defs>
-  
-  <!-- 幼儿被抱着的Job -->
+
+  <!-- Being carried states -->
   <JobDef>
     <defName>RimTalk_BeingCarried</defName>
     <driverClass>RimTalk_ToddlersExpansion.Integration.Toddlers.JobDriver_BeingCarried</driverClass>
@@ -13,7 +13,51 @@
     <playerInterruptible>false</playerInterruptible>
   </JobDef>
 
-  <!-- 殖民者去抱起幼儿的Job -->
+  <JobDef>
+    <defName>RimTalk_BeingCarried_Observe</defName>
+    <driverClass>RimTalk_ToddlersExpansion.Integration.Toddlers.JobDriver_BeingCarried_Observe</driverClass>
+    <reportString>looking around while carried by {1}</reportString>
+    <casualInterruptible>false</casualInterruptible>
+    <allowOpportunisticPrefix>false</allowOpportunisticPrefix>
+    <suspendable>false</suspendable>
+    <neverFleeFromEnemies>true</neverFleeFromEnemies>
+    <playerInterruptible>false</playerInterruptible>
+  </JobDef>
+
+  <JobDef>
+    <defName>RimTalk_BeingCarried_Sleep</defName>
+    <driverClass>RimTalk_ToddlersExpansion.Integration.Toddlers.JobDriver_BeingCarried_Sleep</driverClass>
+    <reportString>sleeping in {1}'s arms</reportString>
+    <casualInterruptible>false</casualInterruptible>
+    <allowOpportunisticPrefix>false</allowOpportunisticPrefix>
+    <suspendable>false</suspendable>
+    <neverFleeFromEnemies>true</neverFleeFromEnemies>
+    <playerInterruptible>false</playerInterruptible>
+  </JobDef>
+
+  <JobDef>
+    <defName>RimTalk_BeingCarried_Idle</defName>
+    <driverClass>RimTalk_ToddlersExpansion.Integration.Toddlers.JobDriver_BeingCarried_Idle</driverClass>
+    <reportString>idling while carried by {1}</reportString>
+    <casualInterruptible>false</casualInterruptible>
+    <allowOpportunisticPrefix>false</allowOpportunisticPrefix>
+    <suspendable>false</suspendable>
+    <neverFleeFromEnemies>true</neverFleeFromEnemies>
+    <playerInterruptible>false</playerInterruptible>
+  </JobDef>
+
+  <JobDef>
+    <defName>RimTalk_BeingCarried_Struggle</defName>
+    <driverClass>RimTalk_ToddlersExpansion.Integration.Toddlers.JobDriver_BeingCarried_Struggle</driverClass>
+    <reportString>struggling in {1}'s arms</reportString>
+    <casualInterruptible>false</casualInterruptible>
+    <allowOpportunisticPrefix>false</allowOpportunisticPrefix>
+    <suspendable>false</suspendable>
+    <neverFleeFromEnemies>true</neverFleeFromEnemies>
+    <playerInterruptible>false</playerInterruptible>
+  </JobDef>
+
+  <!-- Carrier picks up toddler -->
   <JobDef>
     <defName>RimTalk_PickUpToddler</defName>
     <driverClass>RimTalk_ToddlersExpansion.Integration.Toddlers.JobDriver_PickUpToddler</driverClass>

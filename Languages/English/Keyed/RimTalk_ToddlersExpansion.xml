@@ -55,6 +55,10 @@
   
   <!-- Toddler Carrying System -->
   <RimTalk_BeingCarriedBy>being carried by {0}</RimTalk_BeingCarriedBy>
+  <RimTalk_BeingCarriedObserveBy>looking around while carried by {0}</RimTalk_BeingCarriedObserveBy>
+  <RimTalk_BeingCarriedSleepBy>sleeping in {0}'s arms</RimTalk_BeingCarriedSleepBy>
+  <RimTalk_BeingCarriedIdleBy>idling while carried by {0}</RimTalk_BeingCarriedIdleBy>
+  <RimTalk_BeingCarriedStruggleBy>struggling in {0}'s arms</RimTalk_BeingCarriedStruggleBy>
   <RimTalk_CarryingToddler>carrying {0}</RimTalk_CarryingToddler>
   <RimTalk_PickUpToddler>Pick up {0}</RimTalk_PickUpToddler>
   <RimTalk_PutDownToddler>Put down {0}</RimTalk_PutDownToddler>

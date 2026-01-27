@@ -55,6 +55,10 @@
   
   <!-- 幼儿背负系统 -->
   <RimTalk_BeingCarriedBy>被 {0} 抱着</RimTalk_BeingCarriedBy>
+  <RimTalk_BeingCarriedObserveBy>在 {0} 怀里到处看</RimTalk_BeingCarriedObserveBy>
+  <RimTalk_BeingCarriedSleepBy>在 {0} 怀里睡觉</RimTalk_BeingCarriedSleepBy>
+  <RimTalk_BeingCarriedIdleBy>在 {0} 怀里发呆</RimTalk_BeingCarriedIdleBy>
+  <RimTalk_BeingCarriedStruggleBy>在 {0} 身上扭动</RimTalk_BeingCarriedStruggleBy>
   <RimTalk_CarryingToddler>抱着 {0}</RimTalk_CarryingToddler>
   <RimTalk_PickUpToddler>抱起 {0}</RimTalk_PickUpToddler>
   <RimTalk_PutDownToddler>放下 {0}</RimTalk_PutDownToddler>

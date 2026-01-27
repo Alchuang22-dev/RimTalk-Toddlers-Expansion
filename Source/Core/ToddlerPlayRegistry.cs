@@ -26,7 +26,7 @@ namespace RimTalk_ToddlersExpansion.Core
     }
 
     /// <summary>
-    /// 娱乐活动注册管理器
+    /// 娱乐活动注册管理�?
     /// 提供可扩展的活动分类注册机制
     /// </summary>
     public static class ToddlerPlayRegistry
@@ -37,7 +37,7 @@ namespace RimTalk_ToddlersExpansion.Core
         private static bool _initialized = false;
 
         /// <summary>
-        /// 初始化注册表，注册默认活动
+        /// 初始化注册表，注册默认活�?
         /// </summary>
         public static void Initialize()
         {
@@ -54,47 +54,50 @@ namespace RimTalk_ToddlersExpansion.Core
         }
 
         /// <summary>
-        /// 注册 Toddlers 模组的活动
+        /// 注册 Toddlers 模组的活�?
         /// </summary>
         private static void RegisterToddlersModActivities()
         {
-            // 地面绘画 - 创造活动
+            // 地面绘画 - 创造活�?
             Register("ToddlerFloordrawing", ToddlerPlayCategory.Creative, 1.0f, "Toddlers");
             // 仰望天空 - 观察活动
             Register("ToddlerSkydreaming", ToddlerPlayCategory.Observation, 1.0f, "Toddlers");
             // 观察昆虫 - 观察活动
             Register("ToddlerBugwatching", ToddlerPlayCategory.Observation, 1.0f, "Toddlers");
-            // 玩玩具 - 玩具玩耍
+            // 玩玩�?- 玩具玩�?
             Register("ToddlerPlayToys", ToddlerPlayCategory.ToyPlay, 1.0f, "Toddlers");
-            // 看电视 - 媒体娱乐
+            // 看电�?- 媒体娱乐
             Register("ToddlerWatchTelevision", ToddlerPlayCategory.Media, 1.0f, "Toddlers");
             // 凝视火焰 - 观察活动
             Register("ToddlerFiregazing", ToddlerPlayCategory.Observation, 1.0f, "Toddlers");
-            // 玩耍装饰 - 玩具玩耍
+            // 玩耍装�?- 玩具玩�?
             Register("ToddlerPlayDecor", ToddlerPlayCategory.ToyPlay, 1.0f, "Toddlers");
         }
 
         /// <summary>
-        /// 注册 RimTalk Expansion 的活动
+        /// 注册 RimTalk Expansion 的活�?
         /// </summary>
         private static void RegisterRimTalkActivities()
         {
-            // 独自玩耍 - 独自玩耍
+            // 独自玩�?- 独自玩�?
             Register("RimTalk_ToddlerSelfPlayJob", ToddlerPlayCategory.SoloPlay, 1.0f, "RimTalk_ToddlersExpansion");
-            // 相互玩耍 - 社交玩耍
+            // 相互玩�?- 社交玩�?
             Register("RimTalk_ToddlerMutualPlayJob", ToddlerPlayCategory.SocialPlay, 1.0f, "RimTalk_ToddlersExpansion");
-            // 相互玩耍(伙伴) - 社交玩耍
+            // 相互玩�?伙伴) - 社交玩�?
             Register("RimTalk_ToddlerMutualPlayPartnerJob", ToddlerPlayCategory.SocialPlay, 1.0f, "RimTalk_ToddlersExpansion");
-            // 玩具玩耍 - 玩具玩耍
+            // 玩具玩�?- 玩具玩�?
             Register("RimTalk_ToddlerPlayAtToy", ToddlerPlayCategory.ToyPlay, 1.0f, "RimTalk_ToddlersExpansion");
             // 观察成人工作 - 观察学习
             Register("RimTalk_ToddlerObserveAdultWork", ToddlerPlayCategory.Observation, 1.0f, "RimTalk_ToddlersExpansion");
-            // 成人观看幼儿 - 社交玩耍
+            // 成人观看幼儿 - 社交玩�?
             Register("RimTalk_WatchToddlerPlayJob", ToddlerPlayCategory.SocialPlay, 1.0f, "RimTalk_ToddlersExpansion");
-            // 午夜偷吃 - 不计入无聊系统
+            // 午夜偷吃 - 不计入无聊系�?
             Register("RimTalk_MidnightSnack", ToddlerPlayCategory.None, 0f, "RimTalk_ToddlersExpansion");
+            Register("RimTalk_BeingCarried_Observe", ToddlerPlayCategory.Exploration, 0.8f, "RimTalk_ToddlersExpansion");
+            Register("RimTalk_BeingCarried_Idle", ToddlerPlayCategory.Passive, 0.3f, "RimTalk_ToddlersExpansion");
+            Register("RimTalk_BeingCarried", ToddlerPlayCategory.Passive, 0.3f, "RimTalk_ToddlersExpansion");
 
-            // 预注册未来活动
+            // 预注册未来活�?
             Register("RimTalk_ToddlerListenStory", ToddlerPlayCategory.Passive, 0.8f, "RimTalk_ToddlersExpansion");
             Register("RimTalk_ToddlerExploreWild", ToddlerPlayCategory.Exploration, 1.2f, "RimTalk_ToddlersExpansion");
             Register("RimTalk_ToddlerPlayWater", ToddlerPlayCategory.Exploration, 1.2f, "RimTalk_ToddlersExpansion");
@@ -103,11 +106,11 @@ namespace RimTalk_ToddlersExpansion.Core
         }
 
         /// <summary>
-        /// 注册一个娱乐活动
+        /// 注册一个娱乐活�?
         /// </summary>
         /// <param name="jobDefName">JobDef 名称</param>
-        /// <param name="category">所属类别</param>
-        /// <param name="boredomWeight">无聊权重（默认1.0）</param>
+        /// <param name="category">所属类�?/param>
+        /// <param name="boredomWeight">无聊权重（默�?.0�?/param>
         /// <param name="modId">来源模组ID（可选）</param>
         public static void Register(string jobDefName, ToddlerPlayCategory category, float boredomWeight = 1.0f, string modId = null)
         {
@@ -149,7 +152,7 @@ namespace RimTalk_ToddlersExpansion.Core
         }
 
         /// <summary>
-        /// 注册自定义类别
+        /// 注册自定义类�?
         /// </summary>
         /// <param name="categoryName">类别名称</param>
         /// <returns>分配的类别ID</returns>
@@ -169,7 +172,7 @@ namespace RimTalk_ToddlersExpansion.Core
         }
 
         /// <summary>
-        /// 获取活动的类别
+        /// 获取活动的类�?
         /// </summary>
         public static ToddlerPlayCategory GetCategory(JobDef jobDef)
         {
@@ -178,7 +181,7 @@ namespace RimTalk_ToddlersExpansion.Core
         }
 
         /// <summary>
-        /// 获取活动的类别（通过名称）
+        /// 获取活动的类别（通过名称�?
         /// </summary>
         public static ToddlerPlayCategory GetCategory(string jobDefName)
         {
@@ -193,7 +196,7 @@ namespace RimTalk_ToddlersExpansion.Core
                 return registration.Category;
             }
 
-            // 尝试自动检测
+            // 尝试自动检�?
             if (ToddlersExpansionSettings.enableAutoDetection)
             {
                 var jobDef = DefDatabase<JobDef>.GetNamedSilentFail(jobDefName);
@@ -207,7 +210,7 @@ namespace RimTalk_ToddlersExpansion.Core
         }
 
         /// <summary>
-        /// 获取活动的无聊权重
+        /// 获取活动的无聊权�?
         /// </summary>
         public static float GetBoredomWeight(JobDef jobDef)
         {
@@ -216,7 +219,7 @@ namespace RimTalk_ToddlersExpansion.Core
         }
 
         /// <summary>
-        /// 获取活动的无聊权重（通过名称）
+        /// 获取活动的无聊权重（通过名称�?
         /// </summary>
         public static float GetBoredomWeight(string jobDefName)
         {
@@ -243,7 +246,7 @@ namespace RimTalk_ToddlersExpansion.Core
         }
 
         /// <summary>
-        /// 获取所有已注册的活动
+        /// 获取所有已注册的活�?
         /// </summary>
         public static IEnumerable<ToddlerPlayRegistration> GetAllRegistrations()
         {
@@ -252,13 +255,13 @@ namespace RimTalk_ToddlersExpansion.Core
         }
 
         /// <summary>
-        /// 自动检测未注册活动的类别
+        /// 自动检测未注册活动的类�?
         /// </summary>
         public static ToddlerPlayCategory AutoDetectCategory(JobDef jobDef)
         {
             if (jobDef == null) return ToddlerPlayCategory.None;
 
-            // 1. 检查 JoyKind
+            // 1. 检�?JoyKind
             if (jobDef.joyKind != null)
             {
                 switch (jobDef.joyKind.defName)
@@ -272,7 +275,7 @@ namespace RimTalk_ToddlersExpansion.Core
                 }
             }
 
-            // 2. 检查 JobDef 名称模式
+            // 2. 检�?JobDef 名称模式
             string name = jobDef.defName.ToLower();
 
             if (name.Contains("watch") || name.Contains("observe") || name.Contains("gaze"))
@@ -304,7 +307,7 @@ namespace RimTalk_ToddlersExpansion.Core
         }
 
         /// <summary>
-        /// 重置注册表（用于测试）
+        /// 重置注册表（用于测试�?
         /// </summary>
         public static void Reset()
         {

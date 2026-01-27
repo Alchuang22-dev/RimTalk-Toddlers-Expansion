@@ -2,16 +2,10 @@ using Verse;
 
 namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 {
-	/// <summary>
-	/// 幼儿背负系统的GameComponent。
-	/// 负责定期清理无效的背负关系。
-	/// </summary>
 	public class ToddlerCarryingGameComponent : GameComponent
 	{
-		/// <summary>
-		/// 清理间隔（每600 ticks = 10秒清理一次）
-		/// </summary>
 		private const int CleanupInterval = 600;
+		private const int CarriedJobInterval = 120;
 
 		private int _tickCounter;
 
@@ -27,6 +21,13 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				_tickCounter = 0;
 				ToddlerCarryingTracker.CleanupInvalidEntries();
 			}
+
+			ToddlerCarryDesireUtility.Tick();
+
+			if (_tickCounter % CarriedJobInterval == 0)
+			{
+				CarriedToddlerStateUtility.UpdateCarriedJobs();
+			}
 		}
 
 		public override void StartedNewGame()
@@ -36,15 +37,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		public override void LoadedGame()
 		{
-			// 游戏加载时清除所有背负关系
-			// 因为我们不保存背负状态（背负是临时的，商队离开后就结束）
 			ToddlerCarryingTracker.ClearAll();
 		}
 
 		public override void ExposeData()
 		{
-			// 不需要保存任何数据
-			// 背负关系是临时的，不需要持久化
 		}
 	}
 }

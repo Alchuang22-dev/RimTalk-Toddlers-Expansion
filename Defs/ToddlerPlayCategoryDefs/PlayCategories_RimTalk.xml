@@ -76,6 +76,8 @@
         <jobDefNames>
             <li>Toddlers_CarryToDestination</li>
             <li>Toddlers_WashBaby</li>
+            <li>RimTalk_BeingCarried_Idle</li>
+            <li>RimTalk_BeingCarried</li>
         </jobDefNames>
     </RimTalk_ToddlersExpansion.Core.ToddlerPlayCategoryDef>
 
@@ -87,6 +89,7 @@
         <category>Exploration</category>
         <jobDefNames>
             <li>Toddlers_Wander</li>
+            <li>RimTalk_BeingCarried_Observe</li>
         </jobDefNames>
     </RimTalk_ToddlersExpansion.Core.ToddlerPlayCategoryDef>
 

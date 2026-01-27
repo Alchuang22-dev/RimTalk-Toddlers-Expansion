@@ -18,6 +18,10 @@ namespace RimTalk_ToddlersExpansion.Core
 		public static JobDef RimTalk_CarriedPlay_TossUp;
 		public static JobDef RimTalk_CarriedPlay_Tickle;
 		public static JobDef RimTalk_CarriedPlay_SpinAround;
+		public static JobDef RimTalk_BeingCarried_Observe;
+		public static JobDef RimTalk_BeingCarried_Sleep;
+		public static JobDef RimTalk_BeingCarried_Idle;
+		public static JobDef RimTalk_BeingCarried_Struggle;
 
 		static ToddlersExpansionJobDefOf()
 		{
@@ -91,6 +95,17 @@ namespace RimTalk_ToddlersExpansion.Core
 		static ToddlersExpansionAnimationDefOf()
 		{
 			DefOfHelper.EnsureInitializedInCtor(typeof(ToddlersExpansionAnimationDefOf));
+		}
+	}
+
+	[DefOf]
+	public static class ToddlersExpansionMentalStateDefOf
+	{
+		public static MentalStateDef RimTalk_WantToBeHeld;
+
+		static ToddlersExpansionMentalStateDefOf()
+		{
+			DefOfHelper.EnsureInitializedInCtor(typeof(ToddlersExpansionMentalStateDefOf));
 		}
 	}
 }

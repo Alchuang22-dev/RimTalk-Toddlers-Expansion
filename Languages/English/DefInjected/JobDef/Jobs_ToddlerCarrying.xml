@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
   <RimTalk_BeingCarried.reportString>being carried by {1}</RimTalk_BeingCarried.reportString>
+  <RimTalk_BeingCarried_Observe.reportString>looking around while carried by {1}</RimTalk_BeingCarried_Observe.reportString>
+  <RimTalk_BeingCarried_Sleep.reportString>sleeping in {1}'s arms</RimTalk_BeingCarried_Sleep.reportString>
+  <RimTalk_BeingCarried_Idle.reportString>idling while carried by {1}</RimTalk_BeingCarried_Idle.reportString>
+  <RimTalk_BeingCarried_Struggle.reportString>struggling in {1}'s arms</RimTalk_BeingCarried_Struggle.reportString>
   <RimTalk_PickUpToddler.reportString>picking up {0}</RimTalk_PickUpToddler.reportString>
 </LanguageData>
