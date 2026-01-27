@@ -225,18 +225,56 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			return false;
 		}
 
+		/// <summary>
+		/// 获取用于生成幼儿/儿童的 PawnKindDef
+		/// 优先使用派系的 basicMemberKind，因为它通常没有工作标签要求
+		/// 商队成员的 kindDef（如 Tribal_Trader）可能有 requiredWorkTags，幼儿无法满足
+		/// </summary>
 		private static PawnKindDef GetBaseKind(List<Pawn> pawns, PawnGroupMakerParms parms)
 		{
+			// 优先使用派系的 basicMemberKind（通常没有工作标签要求）
+			PawnKindDef basicKind = parms?.faction?.def?.basicMemberKind;
+			
+			if (basicKind != null && basicKind.requiredWorkTags == WorkTags.None)
+			{
+				return basicKind;
+			}
+			
+			// 如果 basicMemberKind 不可用或有工作标签要求，尝试从商队成员中找一个没有要求的
 			for (int i = 0; i < pawns.Count; i++)
 			{
 				Pawn pawn = pawns[i];
 				if (pawn?.RaceProps?.Humanlike == true && pawn.kindDef != null)
 				{
-					return pawn.kindDef;
+					if (pawn.kindDef.requiredWorkTags == WorkTags.None)
+					{
+						return pawn.kindDef;
+					}
 				}
 			}
-
-			return parms?.faction?.def?.basicMemberKind;
+			
+			// 尝试从 DefDatabase 中找一个通用的无工作标签要求的 kindDef
+			// 优先查找与派系种族相同的
+			ThingDef targetRace = basicKind?.race ?? pawns.FirstOrDefault()?.def;
+			if (targetRace != null)
+			{
+				// 尝试找 Villager（通常没有工作标签要求）
+				PawnKindDef villager = DefDatabase<PawnKindDef>.GetNamedSilentFail("Villager");
+				if (villager != null && villager.race == targetRace && villager.requiredWorkTags == WorkTags.None)
+				{
+					return villager;
+				}
+				
+				// 尝试找 Tribesperson
+				PawnKindDef tribesperson = DefDatabase<PawnKindDef>.GetNamedSilentFail("Tribesperson");
+				if (tribesperson != null && tribesperson.race == targetRace && tribesperson.requiredWorkTags == WorkTags.None)
+				{
+					return tribesperson;
+				}
+			}
+			
+			// 最后回退到 basicMemberKind（即使有工作标签要求，生成可能会失败）
+			return basicKind;
 		}
 
 		private static Pawn GetSamplePawn(List<Pawn> pawns)
@@ -348,8 +386,12 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 				return pawn;
 			}
-			catch
+			catch (Exception ex)
 			{
+				if (Prefs.DevMode)
+				{
+					Log.Warning($"[RimTalk_ToddlersExpansion] GeneratePawn failed for kindDef={kind?.defName}, age={ageYears:F2}: {ex.Message}");
+				}
 				return null;
 			}
 		}
