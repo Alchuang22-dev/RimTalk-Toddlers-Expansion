@@ -1,4 +1,5 @@
 using HarmonyLib;
+using RimTalk_ToddlersExpansion.Integration.YayoAnimation;
 using Verse;
 
 namespace RimTalk_ToddlersExpansion.Harmony
@@ -30,7 +31,12 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			
 			// 幼儿无聊机制补丁
 			Patch_ToddlerBoredom.ApplyPatches(harmony);
-			Log.Message("[RimTalk Toddlers Expansion] Toddler boredom system patches applied");
+			
+			// Yayo's Animation 兼容性初始化和补丁
+			YayoAnimationCompatUtility.Initialize();
+			YayoAnimationCompatUtility.ApplyPatches(harmony);
+			
+			Log.Message("[RimTalk Toddlers Expansion] All patches applied");
 		}
 	}
 }

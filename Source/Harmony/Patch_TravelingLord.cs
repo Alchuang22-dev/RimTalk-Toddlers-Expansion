@@ -246,53 +246,38 @@ namespace RimTalk_ToddlersExpansion.Harmony
 		}
 
 		/// <summary>
-			/// 在 LordToil_ExitMapAndEscortCarriers.UpdateAllDuties 之后执行
-			/// 确保幼儿/儿童也能获得正确的离开地图的 duty
-			/// </summary>
-			private static void ExitMapAndEscortCarriers_UpdateAllDuties_Postfix(LordToil __instance)
-			{
-				Lord lord = __instance.lord;
-				if (lord == null || lord.ownedPawns.NullOrEmpty())
-					return;
-	
-				// 找到商队领队（trader）
-				Pawn trader = TraderCaravanUtility.FindTrader(lord);
-				FixToddlerDuties(lord, trader);
-				
-				// 商队即将离开地图，清除所有背负关系
-				ClearCarryingForLord(lord);
-			}
+		/// 在 LordToil_ExitMapAndEscortCarriers.UpdateAllDuties 之后执行
+		/// 确保幼儿/儿童也能获得正确的离开地图的 duty
+		/// </summary>
+		private static void ExitMapAndEscortCarriers_UpdateAllDuties_Postfix(LordToil __instance)
+		{
+			Lord lord = __instance.lord;
+			if (lord == null || lord.ownedPawns.NullOrEmpty())
+				return;
+
+			// 找到商队领队（trader）
+			Pawn trader = TraderCaravanUtility.FindTrader(lord);
+			FixToddlerDuties(lord, trader);
+			
+			// 注意：不要在这里清除背负关系！
+			// 让成年人继续背着幼儿离开地图，背负关系会在 RemovePawn_Postfix 中清除
+		}
 
 		/// <summary>
-			/// 在 LordToil_ExitMap.UpdateAllDuties 之后执行
-			/// 用于访客等使用 LordToil_ExitMap 的情况
-			/// </summary>
-			private static void LordToil_ExitMap_UpdateAllDuties_Postfix(LordToil __instance)
-			{
-				Lord lord = __instance.lord;
-				if (lord == null || lord.ownedPawns.NullOrEmpty())
-					return;
-	
-				FixToddlerDuties(lord, null);
-				
-				// 商队即将离开地图，清除所有背负关系
-				ClearCarryingForLord(lord);
-			}
-	
-			/// <summary>
-			/// 清除Lord中所有pawn的背负关系
-			/// </summary>
-			private static void ClearCarryingForLord(Lord lord)
-			{
-				if (lord?.ownedPawns == null)
-					return;
-	
-				for (int i = 0; i < lord.ownedPawns.Count; i++)
-				{
-					Pawn pawn = lord.ownedPawns[i];
-					ToddlerCarryingUtility.ClearAllCarryingRelations(pawn);
-				}
-			}
+		/// 在 LordToil_ExitMap.UpdateAllDuties 之后执行
+		/// 用于访客等使用 LordToil_ExitMap 的情况
+		/// </summary>
+		private static void LordToil_ExitMap_UpdateAllDuties_Postfix(LordToil __instance)
+		{
+			Lord lord = __instance.lord;
+			if (lord == null || lord.ownedPawns.NullOrEmpty())
+				return;
+
+			FixToddlerDuties(lord, null);
+			
+			// 注意：不要在这里清除背负关系！
+			// 让成年人继续背着幼儿离开地图，背负关系会在 RemovePawn_Postfix 中清除
+		}
 
 		/// <summary>
 		/// 修复幼儿/儿童的 duty，确保他们能正确离开地图

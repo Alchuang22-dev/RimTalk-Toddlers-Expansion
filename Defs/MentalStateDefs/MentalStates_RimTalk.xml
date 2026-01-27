@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Defs>
-  <MentalStateDef>
+  <MentalStateDef ParentName="BaseBabyMentalFit">
     <defName>RimTalk_WantToBeHeld</defName>
     <label>wants to be held</label>
     <description>This pawn wants to be held and comforted.</description>
-    <mentalStateClass>RimWorld.MentalState_Crying</mentalStateClass>
-    <category>Sad</category>
-    <minTicksBeforeRecovery>1200</minTicksBeforeRecovery>
-    <maxTicksBeforeRecovery>2400</maxTicksBeforeRecovery>
+    <stateClass>MentalState_BabyCry</stateClass>
+    <baseInspectLine>Mental state: Wants to be held</baseInspectLine>
+    <stateEffecter>BabyCrying</stateEffecter>
   </MentalStateDef>
 </Defs>

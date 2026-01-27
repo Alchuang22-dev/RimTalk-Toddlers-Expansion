@@ -40,6 +40,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			Toil waitToil = new Toil();
 			waitToil.initAction = () =>
 			{
+				// 停止幼儿的移动
+				StopMovement();
 				SyncRotation();
 				OnStart();
 			};
@@ -51,6 +53,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					return;
 				}
 
+				// 每tick确保幼儿不会尝试移动
+				StopMovement();
 				SyncRotation();
 
 				if (pawn.IsHashIntervalTick(EffectInterval))
@@ -62,6 +66,23 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			waitToil.handlingFacing = true;
 
 			yield return waitToil;
+		}
+
+		/// <summary>
+		/// 停止幼儿的移动，确保不会尝试寻路
+		/// </summary>
+		private void StopMovement()
+		{
+			if (pawn?.pather == null)
+			{
+				return;
+			}
+
+			// 如果pather正在移动，立即停止
+			if (pawn.pather.Moving)
+			{
+				pawn.pather.StopDead();
+			}
 		}
 
 		public override bool IsContinuation(Job j)

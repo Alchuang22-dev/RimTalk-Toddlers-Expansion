@@ -10,20 +10,20 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 {
 	/// <summary>
 	/// 幼儿背负系统的公共API工具类�?
-	/// 允许成年人背着/抱着幼儿移动，用于商队、访客等场景�?
+	/// 允许成年人背着/抱着幼儿移动，用于商队、访客等场景�?
 	/// </summary>
 	public static class ToddlerCarryingUtility
 	{
 		/// <summary>
-		/// 幼儿在胸前的渲染偏移量（根据朝向�?
+		/// 幼儿在胸前的渲染偏移量（根据朝向�?
 		/// X = 左右偏移，Y = 渲染图层（正值在前，负值在后），Z = 上下偏移
 		/// </summary>
 		private static readonly Dictionary<Rot4, Vector3> CarryOffsets = new Dictionary<Rot4, Vector3>
 		{
-			{ Rot4.North, new Vector3(-0.12f, -0.1f, -0.1f) },    // 面向北（背对镜头），幼儿在背后，图层在大人后�?
+			{ Rot4.North, new Vector3(-0.12f, -0.1f, -0.1f) },    // 面向北（背对镜头），幼儿在背后，图层在大人后�?
 			{ Rot4.South, new Vector3(0.12f, 0.1f, -0.1f) },   // 面向南（正对镜头），幼儿在胸前偏右侧
-			{ Rot4.East, new Vector3(0.15f, -0.05f, -0.05f) }, // 面向东，幼儿在左侧偏�?
-			{ Rot4.West, new Vector3(0.15f, 0.05f, -0.05f) }   // 面向西，幼儿在右侧偏�?
+			{ Rot4.East, new Vector3(0.15f, -0.05f, -0.05f) }, // 面向东，幼儿在左侧偏�?
+			{ Rot4.West, new Vector3(0.15f, 0.05f, -0.05f) }   // 面向西，幼儿在右侧偏�?
 		};
 
 		/// <summary>
@@ -32,10 +32,10 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private const float CarriedToddlerScale = 0.7f;
 
 		/// <summary>
-		/// 尝试让载体背起幼�?
+		/// 尝试让载体背起幼�?
 		/// </summary>
 		/// <param name="carrier">背负者（成年人）</param>
-		/// <param name="toddler">被背的幼�?/param>
+		/// <param name="toddler">被背的幼�?/param>
 		/// <returns>是否成功</returns>
 		public static bool TryMountToddler(Pawn carrier, Pawn toddler)
 		{
@@ -68,11 +68,14 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
+			// 清除幼儿的寻路状态
+			ClearToddlerPathingState(toddler);
+
 			// 注册背负关系
 			ToddlerCarryingTracker.RegisterCarrying(carrier, toddler);
 			ToddlerCarryDesireUtility.TryEndWantToBeHeld(toddler, Prefs.DevMode);
 
-			// 给幼儿分�?被抱着"的Job
+			// 给幼儿分配"被抱着"的Job
 			TryAssignBeingCarriedJob(toddler, carrier);
 
 			if (Prefs.DevMode)
@@ -84,7 +87,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		}
 
 		/// <summary>
-		/// 尝试给幼儿分�?被抱着"的Job
+		/// 尝试给幼儿分�?被抱着"的Job
 		/// </summary>
 		private static void TryAssignBeingCarriedJob(Pawn toddler, Pawn carrier)
 		{
@@ -99,7 +102,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		/// <summary>
 		/// 让幼儿从载体身上下来
 		/// </summary>
-		/// <param name="toddler">被背的幼�?/param>
+		/// <param name="toddler">被背的幼�?/param>
 		/// <returns>是否成功</returns>
 		public static bool DismountToddler(Pawn toddler)
 		{
@@ -116,19 +119,19 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			Pawn carrier = GetCarrier(toddler);
 			ToddlerCarryingTracker.UnregisterCarrying(toddler);
 
-			// 结束幼儿�?被抱着"Job
+			// 结束幼儿�?被抱着"Job
 			TryEndBeingCarriedJob(toddler);
 
 			if (Prefs.DevMode && carrier != null)
 			{
-				Log.Message($"[RimTalk_ToddlersExpansion] {toddler.Name} �?{carrier.Name} 身上下来");
+				Log.Message($"[RimTalk_ToddlersExpansion] {toddler.Name} �?{carrier.Name} 身上下来");
 			}
 
 			return true;
 		}
 
 		/// <summary>
-		/// 尝试结束幼儿�?被抱着"Job
+		/// 尝试结束幼儿�?被抱着"Job
 		/// </summary>
 		private static void TryEndBeingCarriedJob(Pawn toddler)
 		{
@@ -154,7 +157,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		}
 
 		/// <summary>
-		/// 获取背着指定幼儿的载�?
+		/// 获取背着指定幼儿的载�?
 		/// </summary>
 		/// <param name="toddler">幼儿</param>
 		/// <returns>载体，如果没有被背则返回null</returns>
@@ -169,7 +172,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		}
 
 		/// <summary>
-		/// 获取指定载体背着的所有幼�?
+		/// 获取指定载体背着的所有幼�?
 		/// </summary>
 		/// <param name="carrier">载体</param>
 		/// <returns>幼儿列表</returns>
@@ -204,7 +207,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		}
 
 		/// <summary>
-		/// 获取载体背着的幼儿数�?
+		/// 获取载体背着的幼儿数�?
 		/// </summary>
 		/// <param name="carrier">载体</param>
 		/// <returns>数量</returns>
@@ -217,7 +220,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		/// 获取载体最多可以背几个幼儿
 		/// </summary>
 		/// <param name="carrier">载体</param>
-		/// <returns>最大数�?/returns>
+		/// <returns>最大数�?/returns>
 		public static int GetMaxCarryCapacity(Pawn carrier)
 		{
 			// 默认最多背1个，可以根据体型、能力等调整
@@ -236,7 +239,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
-			// 必须是人�?
+			// 必须是人�?
 			if (!pawn.RaceProps.Humanlike)
 			{
 				return false;
@@ -259,7 +262,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
-			// 必须能移�?
+			// 必须能移�?
 			if (!pawn.health.capacities.CapableOf(PawnCapacityDefOf.Moving))
 			{
 				return false;
@@ -269,7 +272,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		}
 
 		/// <summary>
-		/// 检查幼儿是否可以被�?
+		/// 检查幼儿是否可以被�?
 		/// </summary>
 		/// <param name="pawn">幼儿</param>
 		/// <returns>是否可以</returns>
@@ -296,9 +299,9 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		}
 
 		/// <summary>
-		/// 获取幼儿被抱着时相对于载体的渲染偏�?
+		/// 获取幼儿被抱着时相对于载体的渲染偏�?
 		/// </summary>
-		/// <param name="carrierRotation">载体的朝�?/param>
+		/// <param name="carrierRotation">载体的朝�?/param>
 		/// <returns>偏移向量</returns>
 		public static Vector3 GetCarryOffset(Rot4 carrierRotation)
 		{
@@ -320,7 +323,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		}
 
 		/// <summary>
-		/// 让商�?访客组中的成年人背起所有幼�?
+		/// 让商�?访客组中的成年人背起所有幼�?
 		/// </summary>
 		/// <param name="pawns">商队成员列表</param>
 		public static void AutoAssignCarryingForGroup(List<Pawn> pawns)
@@ -330,7 +333,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return;
 			}
 
-			// 找出所有可以作为载体的成年�?
+			// 找出所有可以作为载体的成年�?
 			List<Pawn> carriers = new List<Pawn>();
 			List<Pawn> toddlersToCarry = new List<Pawn>();
 
@@ -383,7 +386,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		}
 
 		/// <summary>
-		/// 清除所有与指定pawn相关的背负关�?
+		/// 清除所有与指定pawn相关的背负关�?
 		/// </summary>
 		/// <param name="pawn">pawn</param>
 		public static void ClearAllCarryingRelations(Pawn pawn)
@@ -393,19 +396,48 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return;
 			}
 
-			// 如果是载体，放下所有幼�?
+			// 如果是载体，放下所有幼�?
 			List<Pawn> carried = GetCarriedToddlers(pawn);
 			for (int i = carried.Count - 1; i >= 0; i--)
 			{
 				DismountToddler(carried[i]);
 			}
 
-			// 如果是幼儿，从载体身上下�?
+			// 如果是幼儿，从载体身上下�?
 			if (IsBeingCarried(pawn))
 			{
 				DismountToddler(pawn);
 			}
 		}
+
+		/// <summary>
+		/// 清除幼儿的寻路状态
+		/// </summary>
+		/// <param name="toddler">幼儿</param>
+		private static void ClearToddlerPathingState(Pawn toddler)
+		{
+			if (toddler?.pather == null)
+			{
+				return;
+			}
+
+			try
+			{
+				// 停止任何正在进行的移动
+				if (toddler.pather.Moving)
+				{
+					toddler.pather.StopDead();
+				}
+			}
+			catch (Exception ex)
+			{
+				if (Prefs.DevMode)
+				{
+					Log.Warning($"[RimTalk_ToddlersExpansion] Failed to clear toddler pathing state: {ex.Message}");
+				}
+			}
+		}
+		
 	}
 }
 
