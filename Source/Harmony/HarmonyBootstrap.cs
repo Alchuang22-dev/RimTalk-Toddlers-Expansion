@@ -25,6 +25,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			Patch_PawnGroupMakerUtility.Init(harmony);
 			Patch_FloatMenu_ToddlerToyPlay.Init(harmony);
 			Patch_TravelingLord.Init(harmony);
+			Patch_ToddlerPrisonerThinkTree.Init(harmony);
 			
 			// 幼儿背负系统补丁
 			Patch_ToddlerCarrying.Init(harmony);
