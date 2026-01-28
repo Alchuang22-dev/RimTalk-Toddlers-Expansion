@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using Verse;
+using Verse.AI;
 using Verse.AI.Group;
 
 namespace RimTalk_ToddlersExpansion.Integration.Toddlers
@@ -65,16 +66,72 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
                 return false;
             }
             
-            // Create the lord job
+            // Gather all eligible participants
+            List<Pawn> participants = GatherParticipants(map, organizer);
+            if (participants.Count < MinimumChildrenCount)
+            {
+                return false;
+            }
+            
+            // Create the lord job with all participants
             LordJob lordJob = CreateLordJob(spot, organizer);
-            Lord lord = LordMaker.MakeNewLord(organizer.Faction, lordJob, organizer.Map, new Pawn[] { organizer });
+            Lord lord = LordMaker.MakeNewLord(organizer.Faction, lordJob, organizer.Map, participants);
+            
+            // Interrupt current jobs so participants respond immediately
+            foreach (Pawn participant in participants)
+            {
+                if (participant.jobs?.curJob != null)
+                {
+                    participant.jobs.EndCurrentJob(JobCondition.InterruptForced);
+                }
+            }
             
             // Send letter
             SendLetter(spot, organizer);
             
-            Log.Message($"[RimTalk_ToddlersExpansion] Children's outing started at {spot}, organized by {organizer.LabelShort}");
+            Log.Message($"[RimTalk_ToddlersExpansion] Children's outing started at {spot}, organized by {organizer.LabelShort}, participants: {participants.Count}");
             
             return true;
+        }
+        
+        /// <summary>
+        /// Gather all eligible participants for the outing
+        /// </summary>
+        private List<Pawn> GatherParticipants(Map map, Pawn organizer)
+        {
+            List<Pawn> participants = new List<Pawn>();
+            
+            // Always add the organizer first
+            participants.Add(organizer);
+            
+            // Find other children/toddlers to join
+            foreach (Pawn pawn in map.mapPawns.FreeColonistsSpawned)
+            {
+                if (pawn == organizer)
+                {
+                    continue;
+                }
+                
+                if (!IsChildOrToddler(pawn))
+                {
+                    continue;
+                }
+                
+                if (!CanParticipate(pawn))
+                {
+                    continue;
+                }
+                
+                // Check if can reach the organizer (as a proxy for can reach the gathering)
+                if (!pawn.CanReach(organizer, Verse.AI.PathEndMode.Touch, Danger.Some))
+                {
+                    continue;
+                }
+                
+                participants.Add(pawn);
+            }
+            
+            return participants;
         }
         
         protected override LordJob CreateLordJob(IntVec3 spot, Pawn organizer)

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <!-- 儿童野游聚会 -->
+  <RimTalk_ChildrenOuting.label>儿童野游</RimTalk_ChildrenOuting.label>
+  <RimTalk_ChildrenOuting.letterTitle>儿童野游！</RimTalk_ChildrenOuting.letterTitle>
+  <RimTalk_ChildrenOuting.letterText>孩子们要去野游了！他们将一起探索周围环境并玩耍，获得娱乐和社交满足。</RimTalk_ChildrenOuting.letterText>
+  <RimTalk_ChildrenOuting.calledOffMessage>儿童野游已取消。</RimTalk_ChildrenOuting.calledOffMessage>
+  <RimTalk_ChildrenOuting.finishedMessage>儿童野游结束了。</RimTalk_ChildrenOuting.finishedMessage>
+</LanguageData>

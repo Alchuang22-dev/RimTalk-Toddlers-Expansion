@@ -216,6 +216,12 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
                 return false;
             }
             
+            // Organizer being drafted cancels the outing
+            if (p.Drafted)
+            {
+                return false;
+            }
+            
             return true;
         }
         
