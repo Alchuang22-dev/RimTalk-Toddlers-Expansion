@@ -52,7 +52,6 @@
         <category>Observation</category>
         <jobDefNames>
             <li>RimTalk_ToddlerObserveAdultWork</li>
-            <li>RimTalk_WatchToddlerPlay</li>
         </jobDefNames>
     </RimTalk_ToddlersExpansion.Core.ToddlerPlayCategoryDef>
 

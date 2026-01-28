@@ -14,6 +14,11 @@ namespace RimTalk_ToddlersExpansion.UI
 	/// </summary>
 	public static class Gizmo_CarriedPlay
 	{
+		private const string TossUpIconPath = "UI/Commands/RimTalk_CarriedPlay_TossUp";
+		private const string TickleIconPath = "UI/Commands/RimTalk_CarriedPlay_Tickle";
+		private const string SpinAroundIconPath = "UI/Commands/RimTalk_CarriedPlay_SpinAround";
+		private static Texture2D _fallbackIcon;
+
 		/// <summary>
 		/// 获取抱着幼儿时的玩耍Gizmo
 		/// </summary>
@@ -53,7 +58,7 @@ namespace RimTalk_ToddlersExpansion.UI
 			{
 				defaultLabel = "RimTalk_TossUp".Translate(),
 				defaultDesc = "RimTalk_TossUpDesc".Translate(toddler.LabelShort),
-				icon = ContentFinder<Texture2D>.Get("UI/Commands/TossUp", false) ?? TexCommand.Attack,
+				icon = GetIcon(TossUpIconPath),
 				action = () => StartCarriedPlayJob(carrier, toddler, ToddlersExpansionJobDefOf.RimTalk_CarriedPlay_TossUp),
 				Order = 100f
 			};
@@ -68,7 +73,7 @@ namespace RimTalk_ToddlersExpansion.UI
 			{
 				defaultLabel = "RimTalk_Tickle".Translate(),
 				defaultDesc = "RimTalk_TickleDesc".Translate(toddler.LabelShort),
-				icon = ContentFinder<Texture2D>.Get("UI/Commands/Tickle", false) ?? TexCommand.DesirePower,
+				icon = GetIcon(TickleIconPath),
 				action = () => StartCarriedPlayJob(carrier, toddler, ToddlersExpansionJobDefOf.RimTalk_CarriedPlay_Tickle),
 				Order = 101f
 			};
@@ -83,7 +88,7 @@ namespace RimTalk_ToddlersExpansion.UI
 			{
 				defaultLabel = "RimTalk_SpinAround".Translate(),
 				defaultDesc = "RimTalk_SpinAroundDesc".Translate(toddler.LabelShort),
-				icon = ContentFinder<Texture2D>.Get("UI/Commands/SpinAround", false) ?? TexCommand.ClearPrioritizedWork,
+				icon = GetIcon(SpinAroundIconPath),
 				action = () => StartCarriedPlayJob(carrier, toddler, ToddlersExpansionJobDefOf.RimTalk_CarriedPlay_SpinAround),
 				Order = 102f
 			};
@@ -114,6 +119,22 @@ namespace RimTalk_ToddlersExpansion.UI
 			// 创建并开始Job
 			Job job = JobMaker.MakeJob(jobDef, toddler);
 			carrier.jobs.StartJob(job, JobCondition.InterruptForced, null, false, true, null, null, false, false);
+		}
+
+		private static Texture2D GetIcon(string path)
+		{
+			Texture2D tex = ContentFinder<Texture2D>.Get(path, false);
+			if (tex != null)
+			{
+				return tex;
+			}
+
+			if (_fallbackIcon == null)
+			{
+				_fallbackIcon = SolidColorMaterials.NewSolidColorTexture(new Color(0.35f, 0.35f, 0.35f, 1f));
+			}
+
+			return _fallbackIcon;
 		}
 	}
 }
