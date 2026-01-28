@@ -127,7 +127,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			return jobDef == ToddlersExpansionJobDefOf.RimTalk_ToddlerSelfPlayJob
 				|| jobDef == ToddlersExpansionJobDefOf.RimTalk_ToddlerMutualPlayJob
 				|| jobDef == ToddlersExpansionJobDefOf.RimTalk_ToddlerMutualPlayPartnerJob
-				|| jobDef == ToddlersExpansionJobDefOf.RimTalk_ToddlerPlayAtToy;
+				|| jobDef == ToddlersExpansionJobDefOf.RimTalk_ToddlerPlayAtToy
+				|| jobDef == ToddlersExpansionJobDefOf.RimTalk_ToddlerOuting;
 		}
 
 		public static bool IsEngagedInToddlerPlay(Pawn pawn)

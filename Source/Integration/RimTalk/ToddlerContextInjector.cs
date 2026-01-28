@@ -85,6 +85,11 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 				return "mutual";
 			}
 
+			if (jobDef == ToddlersExpansionJobDefOf.RimTalk_ToddlerOuting)
+			{
+				return "outing";
+			}
+
 			return string.Empty;
 		}
 	}

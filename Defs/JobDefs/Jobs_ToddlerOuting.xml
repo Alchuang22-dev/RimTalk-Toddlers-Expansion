@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <JobDef>
+    <defName>RimTalk_ToddlerOuting</defName>
+    <driverClass>RimTalk_ToddlersExpansion.Integration.Toddlers.JobDriver_ToddlerOuting</driverClass>
+    <reportString>going on an outing.</reportString>
+    <joyDuration>2400</joyDuration>
+    <joyKind>Social</joyKind>
+    <joyGainRate>1</joyGainRate>
+  </JobDef>
+</Defs>
