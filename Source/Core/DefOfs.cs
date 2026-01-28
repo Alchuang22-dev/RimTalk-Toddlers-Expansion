@@ -1,5 +1,6 @@
 using RimWorld;
 using Verse;
+using Verse.AI;
 
 namespace RimTalk_ToddlersExpansion.Core
 {
@@ -11,7 +12,6 @@ namespace RimTalk_ToddlersExpansion.Core
 		public static JobDef RimTalk_ToddlerMutualPlayPartnerJob;
 		public static JobDef RimTalk_WatchToddlerPlayJob;
 		public static JobDef RimTalk_ToddlerPlayAtToy;
-		public static JobDef RimTalk_ToddlerOuting;
 		public static JobDef RimTalk_MidnightSnack;
 		public static JobDef RimTalk_ToddlerObserveAdultWork;
 		public static JobDef RimTalk_BeingCarried;
@@ -23,6 +23,12 @@ namespace RimTalk_ToddlersExpansion.Core
 		public static JobDef RimTalk_BeingCarried_Sleep;
 		public static JobDef RimTalk_BeingCarried_Idle;
 		public static JobDef RimTalk_BeingCarried_Struggle;
+		public static JobDef RimTalk_FollowNatureRunner;
+
+		// Biotech DLC 的 NatureRunning JobDef（儿童野游）
+		// 原版没有在 JobDefOf 中定义，所以我们在这里引用
+		[MayRequireBiotech]
+		public static JobDef NatureRunning;
 
 		static ToddlersExpansionJobDefOf()
 		{
@@ -78,6 +84,8 @@ namespace RimTalk_ToddlersExpansion.Core
 		public static ThoughtDef RimTalk_ToddlerTickled;
 		public static ThoughtDef RimTalk_ToddlerSpunAround;
 		public static ThoughtDef RimTalk_PlayedWithToddler;
+		public static ThoughtDef RimTalk_AttendedChildrenOuting;
+		public static ThoughtDef RimTalk_OrganizedChildrenOuting;
 
 		static ToddlersExpansionThoughtDefOf()
 		{
@@ -107,6 +115,21 @@ namespace RimTalk_ToddlersExpansion.Core
 		static ToddlersExpansionMentalStateDefOf()
 		{
 			DefOfHelper.EnsureInitializedInCtor(typeof(ToddlersExpansionMentalStateDefOf));
+		}
+	}
+
+	[DefOf]
+	public static class ToddlersExpansionDutyDefOf
+	{
+		// Core DutyDef - Party (not defined in vanilla DutyDefOf)
+		public static DutyDef Party;
+
+		// Our custom children outing duty
+		public static DutyDef RimTalk_ChildrenOuting;
+
+		static ToddlersExpansionDutyDefOf()
+		{
+			DefOfHelper.EnsureInitializedInCtor(typeof(ToddlersExpansionDutyDefOf));
 		}
 	}
 }

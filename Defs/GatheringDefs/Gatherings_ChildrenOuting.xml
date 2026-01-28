@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- 儿童野游聚会 - Children's Outing Gathering -->
+  <GatheringDef>
+    <defName>RimTalk_ChildrenOuting</defName>
+    <label>children's outing</label>
+    <randomSelectionWeight>0.5</randomSelectionWeight>
+    <letterTitle>Children's Outing!</letterTitle>
+    <letterText>The children are going on an outing! They will explore the area and play together, gaining recreation and social satisfaction.</letterText>
+    <calledOffMessage>The children's outing has been called off.</calledOffMessage>
+    <finishedMessage>The children's outing has finished.</finishedMessage>
+    <duty>RimTalk_ChildrenOuting</duty>
+    <workerClass>RimTalk_ToddlersExpansion.Integration.Toddlers.GatheringWorker_ChildrenOuting</workerClass>
+    <respectTimetable>false</respectTimetable>
+  </GatheringDef>
+</Defs>

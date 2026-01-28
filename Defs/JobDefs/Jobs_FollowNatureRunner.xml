@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- 跟随野游 Job：当Child开始野游时，其他Child/Toddler跟随 -->
+  <JobDef>
+    <defName>RimTalk_FollowNatureRunner</defName>
+    <driverClass>RimTalk_ToddlersExpansion.Integration.Toddlers.JobDriver_FollowNatureRunner</driverClass>
+    <reportString>following {TargetA.LabelShort} on nature run.</reportString>
+    <casualInterruptible>true</casualInterruptible>
+    <allowOpportunisticPrefix>false</allowOpportunisticPrefix>
+    <suspendable>true</suspendable>
+  </JobDef>
+</Defs>

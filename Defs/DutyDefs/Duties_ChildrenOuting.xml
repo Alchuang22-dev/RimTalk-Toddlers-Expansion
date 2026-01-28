@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- 儿童野游 Duty - 参与者的行为定义 -->
+  <DutyDef>
+    <defName>RimTalk_ChildrenOuting</defName>
+    <label>children outing</label>
+    <hook>MediumPriority</hook>
+    <thinkNode Class="ThinkNode_Priority">
+      <subNodes>
+        <!-- 已在聚会区域内 -->
+        <li Class="ThinkNode_ConditionalInGatheringArea">
+          <subNodes>
+            <!-- 随机选择：进行play活动 -->
+            <li Class="ThinkNode_ConditionalRandom">
+              <chance>0.25</chance>
+              <subNodes>
+                <li Class="RimTalk_ToddlersExpansion.Integration.Toddlers.JobGiver_ChildrenOutingPlay" />
+              </subNodes>
+            </li>
+            
+            <!-- 随机选择：站立并社交 -->
+            <li Class="ThinkNode_ConditionalRandom">
+              <chance>0.35</chance>
+              <subNodes>
+                <li Class="JobGiver_StandAndBeSociallyActive">
+                  <ticksRange>350~750</ticksRange>
+                </li>
+              </subNodes>
+            </li>
+            
+            <!-- 默认：闲逛 -->
+            <li Class="JobGiver_WanderInGatheringArea">
+              <ticksBetweenWandersRange>50~250</ticksBetweenWandersRange>
+            </li>
+          </subNodes>
+        </li>
+        
+        <!-- 前往聚会区域 -->
+        <li Class="JobGiver_WanderInGatheringArea">
+          <ticksBetweenWandersRange>50~250</ticksBetweenWandersRange>
+          <locomotionUrgency>Jog</locomotionUrgency>
+        </li>
+      </subNodes>
+    </thinkNode>
+  </DutyDef>
+</Defs>

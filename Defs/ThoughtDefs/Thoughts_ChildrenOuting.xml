@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- 参加儿童野游的心情 buff -->
+  <ThoughtDef>
+    <defName>RimTalk_AttendedChildrenOuting</defName>
+    <durationDays>1</durationDays>
+    <stackLimit>1</stackLimit>
+    <stages>
+      <li>
+        <label>went on an outing</label>
+        <description>I went on an outing with the other children! It was so much fun exploring together.</description>
+        <baseMoodEffect>8</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+  
+  <!-- 组织野游的心情 buff -->
+  <ThoughtDef>
+    <defName>RimTalk_OrganizedChildrenOuting</defName>
+    <durationDays>1</durationDays>
+    <stackLimit>1</stackLimit>
+    <stages>
+      <li>
+        <label>led an outing</label>
+        <description>I led the other children on an outing! Everyone had a great time.</description>
+        <baseMoodEffect>10</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+</Defs>

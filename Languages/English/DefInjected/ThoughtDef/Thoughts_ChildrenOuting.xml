@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <!-- Attended Children's Outing -->
+  <RimTalk_AttendedChildrenOuting.stages.0.label>went on an outing</RimTalk_AttendedChildrenOuting.stages.0.label>
+  <RimTalk_AttendedChildrenOuting.stages.0.description>I went on an outing with the other children! It was so much fun exploring together.</RimTalk_AttendedChildrenOuting.stages.0.description>
+  
+  <!-- Organized Children's Outing -->
+  <RimTalk_OrganizedChildrenOuting.stages.0.label>led an outing</RimTalk_OrganizedChildrenOuting.stages.0.label>
+  <RimTalk_OrganizedChildrenOuting.stages.0.description>I led the other children on an outing! Everyone had a great time.</RimTalk_OrganizedChildrenOuting.stages.0.description>
+</LanguageData>
