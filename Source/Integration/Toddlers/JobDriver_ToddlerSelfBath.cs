@@ -17,6 +17,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		private static HediffDef _washingHediff;
 		private static bool _hediffChecked;
+		private static EffecterDef _washingEffect;
+		private static bool _effectChecked;
 
 		public override bool TryMakePreToilReservations(bool errorOnFailed)
 		{
@@ -61,6 +63,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			Toil bath = ToilMaker.MakeToil("ToddlerSelfBath");
+			EnsureWashingEffect();
+			if (_washingEffect != null)
+			{
+				bath.WithEffect(_washingEffect, BathTargetInd);
+			}
 			bath.defaultCompleteMode = ToilCompleteMode.Delay;
 			bath.defaultDuration = isBath ? BathDurationTicks : WashDurationTicks;
 			bath.handlingFacing = true;
@@ -124,6 +131,17 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 			_hediffChecked = true;
 			_washingHediff = DefDatabase<HediffDef>.GetNamedSilentFail("Washing");
+		}
+
+		private static void EnsureWashingEffect()
+		{
+			if (_effectChecked)
+			{
+				return;
+			}
+
+			_effectChecked = true;
+			_washingEffect = DefDatabase<EffecterDef>.GetNamedSilentFail("WashingEffect");
 		}
 	}
 }
