@@ -24,6 +24,9 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private static Func<Pawn, bool> _toddlersIsPlaying;
 		private static Type _toddlersWatchTelevisionDriverType;
 		private static Type[] _toddlersExtraPlayDriverTypes;
+		private static bool _selfCareInitialized;
+		private static Func<Pawn, bool> _canDressSelf;
+		private static HediffDef _learningManipulationDef;
 
 		public static bool IsToddlersActive
 		{
@@ -154,6 +157,35 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			return IsToddlersPlayJob(pawn);
+		}
+
+		public static bool CanSelfCare(Pawn pawn)
+		{
+			if (!IsToddler(pawn))
+			{
+				return false;
+			}
+
+			EnsureSelfCareInitialized();
+			if (_canDressSelf != null)
+			{
+				try
+				{
+					return _canDressSelf(pawn);
+				}
+				catch (Exception ex)
+				{
+					WarnOnce("CanSelfCare", ex);
+				}
+			}
+
+			if (_learningManipulationDef == null || pawn.health?.hediffSet == null)
+			{
+				return true;
+			}
+
+			Hediff hediff = pawn.health.hediffSet.GetFirstHediffOfDef(_learningManipulationDef);
+			return hediff == null || hediff.CurStageIndex >= 2;
 		}
 
 		public static bool IsToddlerOrBaby(Pawn pawn)
@@ -315,6 +347,34 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			{
 				WarnOnce("InitializePlayTypes", ex);
 			}
+		}
+
+		private static void EnsureSelfCareInitialized()
+		{
+			if (_selfCareInitialized)
+			{
+				return;
+			}
+
+			_selfCareInitialized = true;
+			try
+			{
+				Type learningUtilityType = AccessTools.TypeByName("Toddlers.ToddlerLearningUtility");
+				if (learningUtilityType != null)
+				{
+					MethodInfo canDressSelfMethod = AccessTools.Method(learningUtilityType, "CanDressSelf", new[] { typeof(Pawn) });
+					if (canDressSelfMethod != null)
+					{
+						_canDressSelf = (Func<Pawn, bool>)Delegate.CreateDelegate(typeof(Func<Pawn, bool>), canDressSelfMethod);
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				WarnOnce("InitSelfCare", ex);
+			}
+
+			_learningManipulationDef = DefDatabase<HediffDef>.GetNamedSilentFail("LearningManipulation");
 		}
 
 		private static void WarnOnce(string context, Exception ex)

@@ -12,6 +12,7 @@ namespace RimTalk_ToddlersExpansion.Core
 		public static JobDef RimTalk_ToddlerMutualPlayPartnerJob;
 		public static JobDef RimTalk_WatchToddlerPlayJob;
 		public static JobDef RimTalk_ToddlerPlayAtToy;
+		public static JobDef RimTalk_ToddlerSelfBath;
 		public static JobDef RimTalk_MidnightSnack;
 		public static JobDef RimTalk_ToddlerObserveAdultWork;
 		public static JobDef RimTalk_BeingCarried;
@@ -84,6 +85,7 @@ namespace RimTalk_ToddlersExpansion.Core
 		public static ThoughtDef RimTalk_ToddlerTickled;
 		public static ThoughtDef RimTalk_ToddlerSpunAround;
 		public static ThoughtDef RimTalk_PlayedWithToddler;
+		public static ThoughtDef RimTalk_ToddlerPlayedInWater;
 		public static ThoughtDef RimTalk_AttendedChildrenOuting;
 		public static ThoughtDef RimTalk_OrganizedChildrenOuting;
 

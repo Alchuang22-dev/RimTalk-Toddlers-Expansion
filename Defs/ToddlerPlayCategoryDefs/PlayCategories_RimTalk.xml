@@ -17,6 +17,7 @@
             <li>Toddlers_PlayOnFloor</li>
             <li>Toddlers_PlayInSandbox</li>
             <li>RimTalk_ToddlerSelfPlay</li>
+            <li>RimTalk_ToddlerSelfBath</li>
         </jobDefNames>
     </RimTalk_ToddlersExpansion.Core.ToddlerPlayCategoryDef>
 
