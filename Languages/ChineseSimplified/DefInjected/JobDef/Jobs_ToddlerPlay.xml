@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
-  <RimTalk_ToddlerSelfPlayJob.reportString>自己在玩耍。</RimTalk_ToddlerSelfPlayJob.reportString>
+  <RimTalk_ToddlerSelfPlayJob.reportString>自己玩耍。</RimTalk_ToddlerSelfPlayJob.reportString>
   <RimTalk_ToddlerMutualPlayJob.reportString>在和TargetA玩耍。</RimTalk_ToddlerMutualPlayJob.reportString>
   <RimTalk_ToddlerMutualPlayPartnerJob.reportString>在和TargetA玩耍</RimTalk_ToddlerMutualPlayPartnerJob.reportString>
   <RimTalk_WatchToddlerPlayJob.reportString>在观看TargetA玩耍。</RimTalk_WatchToddlerPlayJob.reportString>

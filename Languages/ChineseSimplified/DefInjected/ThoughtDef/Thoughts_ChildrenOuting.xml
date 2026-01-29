@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
   <!-- 参加儿童野游 -->
-  <RimTalk_AttendedChildrenOuting.stages.0.label>参加了野游</RimTalk_AttendedChildrenOuting.stages.0.label>
-  <RimTalk_AttendedChildrenOuting.stages.0.description>我和其他孩子们一起去野游了！大家一起探险真是太好玩了。</RimTalk_AttendedChildrenOuting.stages.0.description>
+  <RimTalk_AttendedChildrenOuting.stages.0.label>参加郊游</RimTalk_AttendedChildrenOuting.stages.0.label>
+  <RimTalk_AttendedChildrenOuting.stages.0.description>我还要和大家一起探险！好玩！</RimTalk_AttendedChildrenOuting.stages.0.description>
   
   <!-- 组织儿童野游 -->
-  <RimTalk_OrganizedChildrenOuting.stages.0.label>带领了野游</RimTalk_OrganizedChildrenOuting.stages.0.label>
-  <RimTalk_OrganizedChildrenOuting.stages.0.description>我带领其他孩子们去野游了！大家都玩得很开心。</RimTalk_OrganizedChildrenOuting.stages.0.description>
+  <RimTalk_OrganizedChildrenOuting.stages.0.label>郊游小队长</RimTalk_OrganizedChildrenOuting.stages.0.label>
+  <RimTalk_OrganizedChildrenOuting.stages.0.description>我是最厉害的小队长，所有宝宝都听我的！</RimTalk_OrganizedChildrenOuting.stages.0.description>
 </LanguageData>

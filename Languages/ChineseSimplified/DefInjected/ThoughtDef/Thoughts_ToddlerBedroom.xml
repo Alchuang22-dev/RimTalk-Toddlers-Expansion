@@ -4,19 +4,19 @@
   <RimTalk_MyBabyNearby.stages.0.label>我的宝宝在身边</RimTalk_MyBabyNearby.stages.0.label>
   <RimTalk_MyBabyNearby.stages.0.description>我的宝宝在身边安静地睡着呢...看看多可爱！</RimTalk_MyBabyNearby.stages.0.description>
 
-  <RimTalk_ToddlerSleepAlone.label>自己睡觉</RimTalk_ToddlerSleepAlone.label>
-  <RimTalk_ToddlerSleepAlone.stages.0.label>自己睡觉</RimTalk_ToddlerSleepAlone.stages.0.label>
-  <RimTalk_ToddlerSleepAlone.stages.0.description>好害怕...妈妈在哪里？</RimTalk_ToddlerSleepAlone.stages.0.description>
+  <RimTalk_ToddlerSleepAlone.label>自己睡</RimTalk_ToddlerSleepAlone.label>
+  <RimTalk_ToddlerSleepAlone.stages.0.label>自己睡</RimTalk_ToddlerSleepAlone.stages.0.label>
+  <RimTalk_ToddlerSleepAlone.stages.0.description>妈妈，妈妈在哪里？有点怕...</RimTalk_ToddlerSleepAlone.stages.0.description>
 
-  <RimTalk_ToddlerSleepWithOthers.label>被带着睡觉</RimTalk_ToddlerSleepWithOthers.label>
-  <RimTalk_ToddlerSleepWithOthers.stages.0.label>被带着睡觉</RimTalk_ToddlerSleepWithOthers.stages.0.label>
-  <RimTalk_ToddlerSleepWithOthers.stages.0.description>有点挤...想要抱抱。</RimTalk_ToddlerSleepWithOthers.stages.0.description>
+  <RimTalk_ToddlerSleepWithOthers.label>被大人带着睡</RimTalk_ToddlerSleepWithOthers.label>
+  <RimTalk_ToddlerSleepWithOthers.stages.0.label>被大人带着睡</RimTalk_ToddlerSleepWithOthers.stages.0.label>
+  <RimTalk_ToddlerSleepWithOthers.stages.0.description>好挤哦...那个人为什么不抱我？</RimTalk_ToddlerSleepWithOthers.stages.0.description>
 
   <RimTalk_ToddlerSleepInNursery.label>在育儿室睡觉</RimTalk_ToddlerSleepInNursery.label>
   <RimTalk_ToddlerSleepInNursery.stages.0.label>在育儿室睡觉</RimTalk_ToddlerSleepInNursery.stages.0.label>
-  <RimTalk_ToddlerSleepInNursery.stages.0.description>不想睡觉，我要和别的宝宝玩！</RimTalk_ToddlerSleepInNursery.stages.0.description>
+  <RimTalk_ToddlerSleepInNursery.stages.0.description>好多宝宝！窝不想睡觉，要和别的宝宝玩！</RimTalk_ToddlerSleepInNursery.stages.0.description>
 
   <RimTalk_ToddlerSleepWithParents.label>和家人一起睡</RimTalk_ToddlerSleepWithParents.label>
   <RimTalk_ToddlerSleepWithParents.stages.0.label>和家人一起睡</RimTalk_ToddlerSleepWithParents.stages.0.label>
-  <RimTalk_ToddlerSleepWithParents.stages.0.description>枕头软软的！呼噜呼噜...</RimTalk_ToddlerSleepWithParents.stages.0.description>
+  <RimTalk_ToddlerSleepWithParents.stages.0.description>枕头软软的！呼噜呼噜...妈妈...</RimTalk_ToddlerSleepWithParents.stages.0.description>
 </LanguageData>

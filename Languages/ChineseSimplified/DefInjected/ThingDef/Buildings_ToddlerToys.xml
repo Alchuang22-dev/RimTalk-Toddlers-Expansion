@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
   <RimTalk_ToyBlockPile.label>积木堆</RimTalk_ToyBlockPile.label>
-  <RimTalk_ToyBlockPile.description>一小堆柔软积木，适合幼小的手。</RimTalk_ToyBlockPile.description>
+  <RimTalk_ToyBlockPile.description>一小堆柔软的积木，适合幼小的手。</RimTalk_ToyBlockPile.description>
 
   <RimTalk_ToyRockingHorse.label>摇摇马</RimTalk_ToyRockingHorse.label>
-  <RimTalk_ToyRockingHorse.description>一个小摇摇马，可以安抚并训练平衡。</RimTalk_ToyRockingHorse.description>
+  <RimTalk_ToyRockingHorse.description>一个小摇摇马，可以安抚婴儿并训练平衡。</RimTalk_ToyRockingHorse.description>
 
   <RimTalk_ToyPuzzleTable.label>拼图桌</RimTalk_ToyPuzzleTable.label>
-  <RimTalk_ToyPuzzleTable.description>一张摆放简单拼图和零件的小桌子。</RimTalk_ToyPuzzleTable.description>
+  <RimTalk_ToyPuzzleTable.description>一张摆放简单拼图和玩具的小桌子。</RimTalk_ToyPuzzleTable.description>
 </LanguageData>
