@@ -28,6 +28,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			Patch_TravelingLord.Init(harmony);
 			Patch_ToddlerPrisonerThinkTree.Init(harmony);
 			Patch_LearningGiver_NatureRunning.Init(harmony);
+			Patch_PawnRenderer_SuppressBathDraw.Init(harmony);
 			
 			// 幼儿背负系统补丁
 			Patch_ToddlerCarrying.Init(harmony);

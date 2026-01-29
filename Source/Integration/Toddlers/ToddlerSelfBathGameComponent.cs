@@ -177,6 +177,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private static MethodInfo _bathTryPullPlug;
 		private static PropertyInfo _bathIsFull;
 		private static MethodInfo _showerTryUseWater;
+		private static FieldInfo _bathOccupantCachedField;
+		private static PropertyInfo _bathOccupantCachedProperty;
 		private static FieldInfo _cleanedPerTickField;
 		private static PropertyInfo _cleanedPerTickProperty;
 		private static NeedDef _hygieneNeedDef;
@@ -623,15 +625,39 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			ParameterInfo[] parms = _showerTryUseWater.GetParameters();
-			object coldArg = false;
-			object contamArg = parms.Length > 1 ? Activator.CreateInstance(parms[1].ParameterType) : null;
-			object[] args = parms.Length == 1 ? new[] { coldArg } : new[] { coldArg, contamArg };
-			object result = _showerTryUseWater.Invoke(shower, args);
-			if (args.Length > 0 && args[0] is bool b)
+			if (parms.Length < 1 || parms.Length > 2)
 			{
-				cold = b;
+				return false;
 			}
-			return result is bool ok && ok;
+
+			try
+			{
+				object coldArg = false;
+				object contamArg = null;
+				if (parms.Length > 1)
+				{
+					Type contamType = parms[1].ParameterType;
+					if (contamType.IsByRef)
+					{
+						contamType = contamType.GetElementType();
+					}
+					if (contamType != null)
+					{
+						contamArg = contamType.IsValueType ? Activator.CreateInstance(contamType) : null;
+					}
+				}
+				object[] args = parms.Length == 1 ? new[] { coldArg } : new[] { coldArg, contamArg };
+				object result = _showerTryUseWater.Invoke(shower, args);
+				if (args.Length > 0 && args[0] is bool b)
+				{
+					cold = b;
+				}
+				return result is bool ok && ok;
+			}
+			catch
+			{
+				return false;
+			}
 		}
 
 		public static void ApplyHygieneClean(Pawn pawn, Thing source, float fallbackPerTick, int delta)
@@ -716,6 +742,24 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			TrySetBathOccupant(bath, null);
 		}
 
+		public static bool ShouldSuppressBathRender(Pawn pawn)
+		{
+			if (pawn == null || pawn.CurJobDef != ToddlersExpansionJobDefOf.RimTalk_ToddlerSelfBath)
+			{
+				return false;
+			}
+
+			Job job = pawn.jobs?.curJob;
+			Thing bath = job?.GetTarget(TargetIndex.A).Thing;
+			if (bath == null || !IsBath(bath))
+			{
+				return false;
+			}
+
+			Pawn occupant = GetBathOccupant(bath);
+			return occupant == pawn;
+		}
+
 		private static void TrySetBathOccupant(Thing bath, Pawn pawn)
 		{
 			if (bath == null)
@@ -738,6 +782,26 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			{
 				_bathOccupantProperty.SetValue(bath, pawn);
 			}
+		}
+
+		private static Pawn GetBathOccupant(Thing bath)
+		{
+			if (bath == null)
+			{
+				return null;
+			}
+
+			if (_bathOccupantCachedField != null)
+			{
+				return _bathOccupantCachedField.GetValue(bath) as Pawn;
+			}
+
+			if (_bathOccupantCachedProperty != null)
+			{
+				return _bathOccupantCachedProperty.GetValue(bath) as Pawn;
+			}
+
+			return null;
 		}
 
 		private static void EnsureInitialized()
@@ -778,6 +842,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				_bathTryFillBath = AccessTools.Method(_bathType, "TryFillBath");
 				_bathTryPullPlug = AccessTools.Method(_bathType, "TryPullPlug");
 				_bathIsFull = AccessTools.Property(_bathType, "IsFull");
+				_bathOccupantCachedField = _bathOccupantField;
+				_bathOccupantCachedProperty = _bathOccupantProperty;
 			}
 
 			if (_showerType != null)

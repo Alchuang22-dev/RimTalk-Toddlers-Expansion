@@ -53,6 +53,10 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			this.FailOn(() => ToddlerSelfBathUtility.GetHygieneNeed(pawn) == null);
 
 			LocalTargetInfo target = job.GetTarget(BathTargetInd);
+			if (target.HasThing)
+			{
+				this.FailOnDestroyedNullOrForbidden(BathTargetInd);
+			}
 			bool isBath = ToddlerSelfBathUtility.IsBath(target.Thing);
 			bool isShower = ToddlerSelfBathUtility.IsShower(target.Thing);
 			bool isWashBucket = ToddlerSelfBathUtility.IsWashBucket(target.Thing);
@@ -142,6 +146,12 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			};
 			bath.tickIntervalAction = delta =>
 			{
+				if (targetIsSpawnedThing && target.Thing == null)
+				{
+					EndJobWith(JobCondition.Incompletable);
+					return;
+				}
+
 				if (isShower && targetIsSpawnedThing)
 				{
 					if (!ToddlerSelfBathUtility.TryUseShowerWater(target.Thing, out _))
