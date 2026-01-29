@@ -7,6 +7,7 @@ using HarmonyLib;
 using LudeonTK;
 using RimTalk_ToddlersExpansion.Core;
 using RimWorld;
+using UnityEngine;
 using Verse;
 using Verse.AI;
 
@@ -165,8 +166,19 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		private static Type _bathType;
 		private static Type _washBucketType;
+		private static Type _showerType;
+		private static FieldInfo _bathOccupantField;
+		private static PropertyInfo _bathOccupantProperty;
+		private static MethodInfo _findBestHygieneSource;
 		private static MethodInfo _findBathOrTub;
 		private static MethodInfo _findBestCleanWaterSource;
+		private static MethodInfo _needHygieneClean;
+		private static MethodInfo _bathTryFillBath;
+		private static MethodInfo _bathTryPullPlug;
+		private static PropertyInfo _bathIsFull;
+		private static MethodInfo _showerTryUseWater;
+		private static FieldInfo _cleanedPerTickField;
+		private static PropertyInfo _cleanedPerTickProperty;
 		private static NeedDef _hygieneNeedDef;
 		private static bool _initialized;
 
@@ -371,6 +383,20 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			job = JobMaker.MakeJob(ToddlersExpansionJobDefOf.RimTalk_ToddlerSelfBath, target);
+			if (target.HasThing && IsBath(target.Thing) && TryGetBathLayCell(target.Thing, out IntVec3 layCell))
+			{
+				if (layCell.IsValid
+					&& layCell.InBounds(pawn.Map)
+					&& ForbidUtility.InAllowedArea(layCell, pawn)
+					&& pawn.CanReach(layCell, PathEndMode.OnCell, Danger.Some))
+				{
+					job.SetTarget(TargetIndex.B, layCell);
+				}
+				else if (debugLog)
+				{
+					Log.Message($"[SelfBath Debug] {pawn.LabelShort}: Bath lay cell {layCell} not reachable/allowed; using bath touch instead.");
+				}
+			}
 			job.ignoreJoyTimeAssignment = true;
 			job.expiryInterval = 2800;
 			if (debugLog) Log.Message($"[SelfBath Debug] {pawn.LabelShort}: Successfully created self bath job targeting {DescribeTarget(target)}");
@@ -381,7 +407,12 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		{
 			target = LocalTargetInfo.Invalid;
 
-			// 优先级1：浴缸
+			if (_findBestHygieneSource != null)
+			{
+				return TryFindBestAdultHygieneSource(pawn, out target, debugLog);
+			}
+
+
 			if (TryFindBathOrTub(pawn, out Thing bath, debugLog))
 			{
 				target = bath;
@@ -390,17 +421,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 			if (debugLog) Log.Message($"[SelfBath Debug] {pawn.LabelShort}: No bath/tub found");
 
-			// 优先级2：背包中的水瓶
-			Thing waterBottle = pawn.inventory?.innerContainer?.FirstOrDefault(t => t?.def?.defName == "DBH_WaterBottle");
-			if (waterBottle != null)
-			{
-				target = waterBottle;
-				if (debugLog) Log.Message($"[SelfBath Debug] {pawn.LabelShort}: Found water bottle in inventory");
-				return true;
-			}
-			if (debugLog) Log.Message($"[SelfBath Debug] {pawn.LabelShort}: No water bottle in inventory");
-
-			// 优先级3：干净水源
 			if (_findBestCleanWaterSource == null)
 			{
 				if (debugLog) Log.Message($"[SelfBath Debug] {pawn.LabelShort}: FindBestCleanWaterSource method not available");
@@ -422,6 +442,33 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			{
 				if (debugLog) Log.Message($"[SelfBath Debug] {pawn.LabelShort}: FindBestCleanWaterSource threw exception: {ex.Message}");
 				return false;
+			}
+
+			return false;
+		}
+
+		private static bool TryFindBestAdultHygieneSource(Pawn pawn, out LocalTargetInfo target, bool debugLog)
+		{
+			target = LocalTargetInfo.Invalid;
+			if (_findBestHygieneSource == null || pawn == null)
+			{
+				return false;
+			}
+
+			try
+			{
+				object result = _findBestHygieneSource.Invoke(null, new object[] { pawn, false, 100f });
+				if (result is LocalTargetInfo lti && lti.IsValid)
+				{
+					target = lti;
+					if (debugLog) Log.Message($"[SelfBath Debug] {pawn.LabelShort}: DBH adult hygiene source: {DescribeTarget(lti)}");
+					return true;
+				}
+				if (debugLog) Log.Message($"[SelfBath Debug] {pawn.LabelShort}: DBH adult hygiene source not found");
+			}
+			catch (Exception ex)
+			{
+				if (debugLog) Log.Message($"[SelfBath Debug] {pawn.LabelShort}: DBH FindBestHygieneSource threw exception: {ex.Message}");
 			}
 
 			return false;
@@ -504,12 +551,22 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			EnsureInitialized();
-			if (_bathType != null && _bathType.IsInstanceOfType(thing))
-			{
-				return true;
-			}
+			return IsBath(thing) || IsShower(thing) || IsWashBucket(thing);
+		}
 
-			return _washBucketType != null && _washBucketType.IsInstanceOfType(thing);
+		public static bool IsBath(Thing thing)
+		{
+			return _bathType != null && thing != null && _bathType.IsInstanceOfType(thing);
+		}
+
+		public static bool IsShower(Thing thing)
+		{
+			return _showerType != null && thing != null && _showerType.IsInstanceOfType(thing);
+		}
+
+		public static bool IsWashBucket(Thing thing)
+		{
+			return _washBucketType != null && thing != null && _washBucketType.IsInstanceOfType(thing);
 		}
 
 		public static bool TryGetBathLayCell(Thing bath, out IntVec3 cell)
@@ -522,24 +579,165 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 			EnsureInitialized();
 			cell = bath.Position;
+			return cell.IsValid && cell.InBounds(bath.Map);
+		}
 
-			if (_bathType != null && _bathType.IsInstanceOfType(bath))
+		public static bool IsBathFull(Thing bath)
+		{
+			if (bath == null || _bathIsFull == null)
 			{
-				if (bath.Rotation == Rot4.East)
-				{
-					cell += IntVec3.East;
-				}
-				else if (bath.Rotation == Rot4.North)
-				{
-					cell += IntVec3.North;
-				}
-				else if (bath.Rotation == Rot4.West)
-				{
-					cell += IntVec3.West;
-				}
+				return false;
 			}
 
-			return cell.IsValid && cell.InBounds(bath.Map);
+			object value = _bathIsFull.GetValue(bath);
+			return value is bool b && b;
+		}
+
+		public static bool TryFillBath(Thing bath)
+		{
+			if (bath == null || _bathTryFillBath == null)
+			{
+				return true;
+			}
+
+			object result = _bathTryFillBath.Invoke(bath, Array.Empty<object>());
+			return result is bool b && b;
+		}
+
+		public static void TryPullBathPlug(Thing bath)
+		{
+			if (bath == null || _bathTryPullPlug == null)
+			{
+				return;
+			}
+
+			_bathTryPullPlug.Invoke(bath, Array.Empty<object>());
+		}
+
+		public static bool TryUseShowerWater(Thing shower, out bool cold)
+		{
+			cold = false;
+			if (shower == null || _showerTryUseWater == null)
+			{
+				return true;
+			}
+
+			ParameterInfo[] parms = _showerTryUseWater.GetParameters();
+			object coldArg = false;
+			object contamArg = parms.Length > 1 ? Activator.CreateInstance(parms[1].ParameterType) : null;
+			object[] args = parms.Length == 1 ? new[] { coldArg } : new[] { coldArg, contamArg };
+			object result = _showerTryUseWater.Invoke(shower, args);
+			if (args.Length > 0 && args[0] is bool b)
+			{
+				cold = b;
+			}
+			return result is bool ok && ok;
+		}
+
+		public static void ApplyHygieneClean(Pawn pawn, Thing source, float fallbackPerTick, int delta)
+		{
+			if (pawn == null)
+			{
+				return;
+			}
+
+			Need hygiene = GetHygieneNeed(pawn);
+			if (hygiene == null)
+			{
+				return;
+			}
+
+			float perTick = GetCleanedPerTick(source, fallbackPerTick);
+			float amount = perTick * delta;
+			if (_needHygieneClean != null)
+			{
+				_needHygieneClean.Invoke(hygiene, new object[] { amount });
+				return;
+			}
+
+			hygiene.CurLevel = Mathf.Min(hygiene.CurLevel + amount, 1f);
+		}
+
+		private static float GetCleanedPerTick(Thing source, float fallback)
+		{
+			if (source == null)
+			{
+				return fallback;
+			}
+
+			Type type = source.GetType();
+			FieldInfo field = type.GetField("cleanedPerTick", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+				?? type.GetField("CleanedPerTick", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+			if (field != null && field.FieldType == typeof(float))
+			{
+				return (float)field.GetValue(source);
+			}
+
+			PropertyInfo prop = type.GetProperty("CleanedPerTick", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+				?? type.GetProperty("cleanedPerTick", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+			if (prop != null && prop.PropertyType == typeof(float))
+			{
+				return (float)prop.GetValue(source);
+			}
+
+			if (_cleanedPerTickField != null && _cleanedPerTickField.FieldType == typeof(float))
+			{
+				return (float)_cleanedPerTickField.GetValue(source);
+			}
+
+			if (_cleanedPerTickProperty != null && _cleanedPerTickProperty.PropertyType == typeof(float))
+			{
+				return (float)_cleanedPerTickProperty.GetValue(source);
+			}
+
+			return fallback;
+		}
+
+		public static void BeginBathVisuals(Thing bath, Pawn pawn)
+		{
+			if (bath == null || pawn == null || bath.Map == null)
+			{
+				return;
+			}
+
+			EnsureInitialized();
+			TrySetBathOccupant(bath, pawn);
+			bath.Map.mapDrawer.MapMeshDirty(bath.Position, MapMeshFlagDefOf.Buildings);
+		}
+
+		public static void EndBathVisuals(Thing bath)
+		{
+			if (bath == null)
+			{
+				return;
+			}
+
+			EnsureInitialized();
+			TrySetBathOccupant(bath, null);
+		}
+
+		private static void TrySetBathOccupant(Thing bath, Pawn pawn)
+		{
+			if (bath == null)
+			{
+				return;
+			}
+
+			if (_bathType == null || !_bathType.IsInstanceOfType(bath))
+			{
+				return;
+			}
+
+			if (_bathOccupantField != null)
+			{
+				_bathOccupantField.SetValue(bath, pawn);
+				return;
+			}
+
+			if (_bathOccupantProperty != null && _bathOccupantProperty.CanWrite)
+			{
+				_bathOccupantProperty.SetValue(bath, pawn);
+			}
 		}
 
 		private static void EnsureInitialized()
@@ -558,14 +756,47 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				_findBathOrTub = AccessTools.Method(washUtility, "FindBathOrTub", new[] { typeof(Pawn), typeof(Pawn), typeof(Thing).MakeByRefType() });
 			}
 
+            Type closestSanitation = AccessTools.TypeByName("DubsBadHygiene.ClosestSanitation");
+			if (closestSanitation != null)
+			{
+				_findBestHygieneSource = AccessTools.Method(closestSanitation, "FindBestHygieneSource", new[] { typeof(Pawn), typeof(bool), typeof(float) });
+			}
+
 			Type patchDbh = AccessTools.TypeByName("Toddlers.Patch_DBH");
 			if (patchDbh != null)
 			{
-				_findBestCleanWaterSource = AccessTools.Field(patchDbh, "m_FindBestCleanWaterSource")?.GetValue(null) as MethodInfo;
-			}
+			_findBestCleanWaterSource = AccessTools.Field(patchDbh, "m_FindBestCleanWaterSource")?.GetValue(null) as MethodInfo;
+		}
 
 			_bathType = AccessTools.TypeByName("DubsBadHygiene.Building_bath");
+			_showerType = AccessTools.TypeByName("DubsBadHygiene.Building_shower");
 			_washBucketType = AccessTools.TypeByName("DubsBadHygiene.Building_washbucket");
+			if (_bathType != null)
+			{
+				_bathOccupantField = AccessTools.Field(_bathType, "occupant");
+				_bathOccupantProperty = AccessTools.Property(_bathType, "occupant");
+				_bathTryFillBath = AccessTools.Method(_bathType, "TryFillBath");
+				_bathTryPullPlug = AccessTools.Method(_bathType, "TryPullPlug");
+				_bathIsFull = AccessTools.Property(_bathType, "IsFull");
+			}
+
+			if (_showerType != null)
+			{
+				_showerTryUseWater = AccessTools.Method(_showerType, "TryUseWater");
+			}
+
+			Type hygieneNeedType = AccessTools.TypeByName("DubsBadHygiene.Need_Hygiene");
+			if (hygieneNeedType != null)
+			{
+				_needHygieneClean = AccessTools.Method(hygieneNeedType, "clean", new[] { typeof(float) });
+			}
+
+			_cleanedPerTickField = AccessTools.Field(_bathType, "cleanedPerTick")
+				?? AccessTools.Field(_showerType, "CleanedPerTick")
+				?? AccessTools.Field(_washBucketType, "CleanedPerTick");
+			_cleanedPerTickProperty = AccessTools.Property(_bathType, "CleanedPerTick")
+				?? AccessTools.Property(_showerType, "CleanedPerTick")
+				?? AccessTools.Property(_washBucketType, "CleanedPerTick");
 		}
 	}
 }

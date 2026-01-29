@@ -10,8 +10,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 	public sealed class JobDriver_ToddlerSelfBath : JobDriver
 	{
 		private const TargetIndex BathTargetInd = TargetIndex.A;
-		private const int BathDurationTicks = 1600;
-		private const int WashDurationTicks = 1400;
+		private const TargetIndex BathLayCellInd = TargetIndex.B;
+		private const int BathDurationTicks = 1800;
+		private const int ShowerDurationTicks = 1000;
+		private const int WashBucketDurationTicks = 1000;
+		private const int WashDurationTicks = 1000;
 		private const float HygieneGainPerTickBath = 0.0006f;
 		private const float HygieneGainPerTickWash = 0.0005f;
 
@@ -50,10 +53,44 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			this.FailOn(() => ToddlerSelfBathUtility.GetHygieneNeed(pawn) == null);
 
 			LocalTargetInfo target = job.GetTarget(BathTargetInd);
-			bool isBath = ToddlerSelfBathUtility.IsBathFixture(target.Thing);
+			bool isBath = ToddlerSelfBathUtility.IsBath(target.Thing);
+			bool isShower = ToddlerSelfBathUtility.IsShower(target.Thing);
+			bool isWashBucket = ToddlerSelfBathUtility.IsWashBucket(target.Thing);
 			bool targetIsSpawnedThing = target.HasThing && target.Thing.Spawned;
+			LocalTargetInfo layCellTarget = job.GetTarget(BathLayCellInd);
+			bool hasLayCell = layCellTarget.IsValid && layCellTarget.Cell.IsValid;
 
-			if (targetIsSpawnedThing)
+			if (isBath && hasLayCell)
+			{
+				yield return Toils_Goto.GotoThing(BathTargetInd, PathEndMode.Touch);
+				Toil getInBath = Toils_Goto.GotoCell(BathLayCellInd, PathEndMode.OnCell);
+				if (!ToddlerSelfBathUtility.IsBathFull(target.Thing))
+				{
+					Toil fillBath = ToilMaker.MakeToil("FillBath");
+					fillBath.defaultDuration = 1000;
+					fillBath.defaultCompleteMode = ToilCompleteMode.Delay;
+					fillBath.tickAction = () =>
+					{
+						if (!ToddlerSelfBathUtility.TryFillBath(target.Thing))
+						{
+							EndJobWith(JobCondition.Incompletable);
+						}
+					};
+					fillBath.JumpIf(() => ToddlerSelfBathUtility.IsBathFull(target.Thing), getInBath);
+					yield return fillBath;
+				}
+
+				yield return getInBath;
+			}
+			else if (isShower && targetIsSpawnedThing)
+			{
+				yield return Toils_Goto.GotoThing(BathTargetInd, PathEndMode.OnCell);
+			}
+			else if (isWashBucket && targetIsSpawnedThing)
+			{
+				yield return Toils_Goto.GotoThing(BathTargetInd, PathEndMode.InteractionCell);
+			}
+			else if (targetIsSpawnedThing)
 			{
 				yield return Toils_Goto.GotoThing(BathTargetInd, PathEndMode.Touch);
 			}
@@ -69,18 +106,31 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				bath.WithEffect(_washingEffect, BathTargetInd);
 			}
 			bath.defaultCompleteMode = ToilCompleteMode.Delay;
-			bath.defaultDuration = isBath ? BathDurationTicks : WashDurationTicks;
+			if (isBath)
+			{
+				bath.defaultDuration = BathDurationTicks;
+			}
+			else if (isShower)
+			{
+				bath.defaultDuration = ShowerDurationTicks;
+			}
+			else if (isWashBucket)
+			{
+				bath.defaultDuration = WashBucketDurationTicks;
+			}
+			else
+			{
+				bath.defaultDuration = WashDurationTicks;
+			}
 			bath.handlingFacing = true;
 			bath.initAction = () =>
 			{
 				if (isBath)
 				{
 					pawn.jobs.posture = PawnPosture.LayingOnGroundFaceUp;
-					if (targetIsSpawnedThing && ToddlerSelfBathUtility.TryGetBathLayCell(target.Thing, out IntVec3 bathCell))
+					if (targetIsSpawnedThing)
 					{
-						pawn.pather?.StopDead();
-						pawn.Position = bathCell;
-						pawn.Notify_Teleported();
+						ToddlerSelfBathUtility.BeginBathVisuals(target.Thing, pawn);
 					}
 				}
 
@@ -92,14 +142,20 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			};
 			bath.tickIntervalAction = delta =>
 			{
-				Need hygiene = ToddlerSelfBathUtility.GetHygieneNeed(pawn);
-				if (hygiene != null)
+				if (isShower && targetIsSpawnedThing)
 				{
-					float gain = (isBath ? HygieneGainPerTickBath : HygieneGainPerTickWash) * delta;
-					hygiene.CurLevel = Mathf.Min(hygiene.CurLevel + gain, 1f);
+					if (!ToddlerSelfBathUtility.TryUseShowerWater(target.Thing, out _))
+					{
+						EndJobWith(JobCondition.Incompletable);
+						return;
+					}
 				}
 
+				float fallback = isBath ? HygieneGainPerTickBath : HygieneGainPerTickWash;
+				ToddlerSelfBathUtility.ApplyHygieneClean(pawn, target.Thing, fallback, delta);
+
 				SocialNeedTuning_Toddlers.ApplySelfPlayTickEffects(pawn, delta);
+				Need hygiene = ToddlerSelfBathUtility.GetHygieneNeed(pawn);
 				if (hygiene != null && hygiene.CurLevel >= 0.999f)
 				{
 					EndJobWith(JobCondition.Succeeded);
@@ -107,6 +163,12 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			};
 			bath.AddFinishAction(() =>
 			{
+				if (isBath && targetIsSpawnedThing)
+				{
+					ToddlerSelfBathUtility.EndBathVisuals(target.Thing);
+					ToddlerSelfBathUtility.TryPullBathPlug(target.Thing);
+				}
+
 				if (_washingHediff != null && pawn.health?.hediffSet != null)
 				{
 					Hediff hediff = pawn.health.hediffSet.GetFirstHediffOfDef(_washingHediff);
