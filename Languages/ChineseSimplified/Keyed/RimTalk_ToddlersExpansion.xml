@@ -38,6 +38,11 @@
   <RimTalk_Language_Settings_Header>语言学习</RimTalk_Language_Settings_Header>
   <RimTalk_Language_LearningFactor>学习速度: {0}</RimTalk_Language_LearningFactor>
 
+  <!-- 行为设置 -->
+  <RimTalk_ToddlersExpansion_Behavior_Settings_Header>行为修正</RimTalk_ToddlersExpansion_Behavior_Settings_Header>
+  <RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior>在殖民地图中将敌对幼儿/婴儿按殖民者处理</RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior>
+  <RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior_Tooltip>防止敌对幼儿/婴儿在玩家主地图上尝试离开或砸门，得到更和平的行为。若与袭击/其他AI模组冲突可关闭。</RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior_Tooltip>
+
   <!-- 厌倦度悬浮窗显示 -->
   <RimTalk_Boredom_Header>娱乐类型厌倦:</RimTalk_Boredom_Header>
   <RimTalk_Boredom_Label_Boring>无聊</RimTalk_Boredom_Label_Boring>

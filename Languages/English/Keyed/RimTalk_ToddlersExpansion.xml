@@ -38,6 +38,11 @@
   <RimTalk_Language_Settings_Header>Language Learning</RimTalk_Language_Settings_Header>
   <RimTalk_Language_LearningFactor>Learning speed: {0}</RimTalk_Language_LearningFactor>
 
+  <!-- Behavior Settings -->
+  <RimTalk_ToddlersExpansion_Behavior_Settings_Header>Behavior Tweaks</RimTalk_ToddlersExpansion_Behavior_Settings_Header>
+  <RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior>Treat hostile toddlers/babies as colonists on player maps</RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior>
+  <RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior_Tooltip>Prevents hostile toddlers/babies from trying to exit or bash doors on player home maps. Disable if it conflicts with raids or other AI mods.</RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior_Tooltip>
+
   <!-- Boredom Tooltip Display -->
   <RimTalk_Boredom_Header>Play boredom:</RimTalk_Boredom_Header>
   <RimTalk_Boredom_Label_Boring>boring</RimTalk_Boredom_Label_Boring>

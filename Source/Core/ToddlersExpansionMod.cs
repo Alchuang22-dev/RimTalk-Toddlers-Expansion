@@ -36,7 +36,7 @@ namespace RimTalk_ToddlersExpansion.Core
 			var settings = Settings;
 
 			// 计算内容高度 - 足够容纳所有设置项
-			float contentHeight = 1000f;
+			float contentHeight = 1120f;
 			Rect viewRect = new Rect(0f, 0f, inRect.width - 20f, contentHeight);
 
 			Widgets.BeginScrollView(inRect, ref scrollPosition, viewRect);
@@ -87,7 +87,17 @@ namespace RimTalk_ToddlersExpansion.Core
 
 			listingStandard.GapLine();
 
-			// ========== 商队/过路者设置 ==========
+			
+			listingStandard.Label("RimTalk_ToddlersExpansion_Behavior_Settings_Header".Translate());
+			listingStandard.GapLine();
+
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior".Translate(),
+				ref ToddlersExpansionSettings.enableHostileToddlerColonistBehavior,
+				"RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior_Tooltip".Translate());
+			listingStandard.Gap();
+
+			listingStandard.GapLine();
+// ========== 商队/过路者设置 ==========
 			listingStandard.Label("RimTalk_Caravan_Settings_Header".Translate());
 			listingStandard.GapLine();
 

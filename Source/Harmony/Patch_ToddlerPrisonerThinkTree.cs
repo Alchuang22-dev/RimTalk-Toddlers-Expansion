@@ -1,9 +1,11 @@
 using System.Reflection;
 using HarmonyLib;
+using RimTalk_ToddlersExpansion.Core;
 using RimTalk_ToddlersExpansion.Integration.Toddlers;
 using RimWorld;
 using Verse;
 using Verse.AI;
+using Verse.AI.Group;
 
 namespace RimTalk_ToddlersExpansion.Harmony
 {
@@ -47,7 +49,49 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			if (pawn.IsPrisoner && ToddlersCompatUtility.IsToddlerOrBaby(pawn))
 			{
 				__result = true;
+				return;
 			}
+
+			if (ShouldTreatHostileYoungAsColonist(pawn))
+			{
+				__result = true;
+			}
+		}
+
+		private static bool ShouldTreatHostileYoungAsColonist(Pawn pawn)
+		{
+			if (pawn == null || !ToddlersCompatUtility.IsToddlerOrBaby(pawn))
+			{
+				return false;
+			}
+
+			if (!ToddlersExpansionSettings.enableHostileToddlerColonistBehavior)
+			{
+				return false;
+			}
+
+			if (pawn.IsPrisoner)
+			{
+				return false;
+			}
+
+			if (pawn.Map == null || !pawn.Map.IsPlayerHome)
+			{
+				return false;
+			}
+
+			if (pawn.Faction == null || !pawn.Faction.HostileTo(Faction.OfPlayer))
+			{
+				return false;
+			}
+
+			// Avoid overriding raid/escort/other lord-driven behavior.
+			if (pawn.GetLord() != null)
+			{
+				return false;
+			}
+
+			return true;
 		}
 	}
 }
