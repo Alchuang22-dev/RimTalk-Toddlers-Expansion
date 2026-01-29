@@ -76,6 +76,12 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				if (isBath)
 				{
 					pawn.jobs.posture = PawnPosture.LayingOnGroundFaceUp;
+					if (targetIsSpawnedThing && ToddlerSelfBathUtility.TryGetBathLayCell(target.Thing, out IntVec3 bathCell))
+					{
+						pawn.pather?.StopDead();
+						pawn.Position = bathCell;
+						pawn.Notify_Teleported();
+					}
 				}
 
 				EnsureWashingHediff();

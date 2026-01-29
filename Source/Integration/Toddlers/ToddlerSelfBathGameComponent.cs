@@ -512,6 +512,36 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			return _washBucketType != null && _washBucketType.IsInstanceOfType(thing);
 		}
 
+		public static bool TryGetBathLayCell(Thing bath, out IntVec3 cell)
+		{
+			cell = IntVec3.Invalid;
+			if (bath == null || bath.Map == null)
+			{
+				return false;
+			}
+
+			EnsureInitialized();
+			cell = bath.Position;
+
+			if (_bathType != null && _bathType.IsInstanceOfType(bath))
+			{
+				if (bath.Rotation == Rot4.East)
+				{
+					cell += IntVec3.East;
+				}
+				else if (bath.Rotation == Rot4.North)
+				{
+					cell += IntVec3.North;
+				}
+				else if (bath.Rotation == Rot4.West)
+				{
+					cell += IntVec3.West;
+				}
+			}
+
+			return cell.IsValid && cell.InBounds(bath.Map);
+		}
+
 		private static void EnsureInitialized()
 		{
 			if (_initialized)
