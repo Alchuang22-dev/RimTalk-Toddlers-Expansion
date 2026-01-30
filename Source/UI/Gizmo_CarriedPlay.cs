@@ -17,6 +17,7 @@ namespace RimTalk_ToddlersExpansion.UI
 		private const string TossUpIconPath = "UI/Commands/RimTalk_CarriedPlay_TossUp";
 		private const string TickleIconPath = "UI/Commands/RimTalk_CarriedPlay_Tickle";
 		private const string SpinAroundIconPath = "UI/Commands/RimTalk_CarriedPlay_SpinAround";
+		private const string PutDownIconPath = "UI/Commands/RimTalk_PutDownToddler";
 		private static Texture2D _fallbackIcon;
 
 		/// <summary>
@@ -48,6 +49,17 @@ namespace RimTalk_ToddlersExpansion.UI
 			{
 				yield break;
 			}
+
+			// 放下幼儿按钮（放在最前面，优先级最高）
+			Command_Action putDownCommand = new Command_Action
+			{
+				defaultLabel = "RimTalk_PutDownToddler".Translate(toddler.LabelShort),
+				defaultDesc = "RimTalk_PutDownToddlerDesc".Translate(toddler.LabelShort),
+				icon = GetIcon(PutDownIconPath),
+				action = () => PutDownToddler(carrier, toddler),
+				Order = 99f  // 放在玩耍按钮之前
+			};
+			yield return putDownCommand;
 
 			// 检查冷却期
 			bool hasCooldown = CarriedPlayUtility.HasPlayCooldown(toddler);
@@ -97,6 +109,26 @@ namespace RimTalk_ToddlersExpansion.UI
 				spinCommand.Disable(cooldownReason);
 			}
 			yield return spinCommand;
+		}
+
+		/// <summary>
+		/// 放下幼儿
+		/// </summary>
+		private static void PutDownToddler(Pawn carrier, Pawn toddler)
+		{
+			if (carrier == null || toddler == null)
+			{
+				return;
+			}
+
+			// 直接在当前位置放下幼儿
+			if (ToddlerCarryingUtility.DismountToddler(toddler))
+			{
+				if (Prefs.DevMode)
+				{
+					Log.Message($"[RimTalk_ToddlersExpansion] {carrier.LabelShort} 放下了 {toddler.LabelShort}");
+				}
+			}
 		}
 
 		/// <summary>

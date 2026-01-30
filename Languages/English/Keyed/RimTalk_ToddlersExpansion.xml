@@ -67,6 +67,7 @@
   <RimTalk_CarryingToddler>carrying {0}</RimTalk_CarryingToddler>
   <RimTalk_PickUpToddler>Pick up {0}</RimTalk_PickUpToddler>
   <RimTalk_PutDownToddler>Put down {0}</RimTalk_PutDownToddler>
+  <RimTalk_PutDownToddlerDesc>Put {0} down on the ground.</RimTalk_PutDownToddlerDesc>
   <RimTalk_PickingUpToddler>picking up {0}</RimTalk_PickingUpToddler>
   
   <!-- Carried Play -->

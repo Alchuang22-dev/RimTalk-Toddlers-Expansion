@@ -67,6 +67,7 @@
   <RimTalk_CarryingToddler>抱着 {0}</RimTalk_CarryingToddler>
   <RimTalk_PickUpToddler>抱起 {0}</RimTalk_PickUpToddler>
   <RimTalk_PutDownToddler>放下 {0}</RimTalk_PutDownToddler>
+  <RimTalk_PutDownToddlerDesc>将 {0} 放到地上。</RimTalk_PutDownToddlerDesc>
   <RimTalk_PickingUpToddler>抱起 {0}</RimTalk_PickingUpToddler>
   
   <!-- 抱着幼儿玩耍 -->
