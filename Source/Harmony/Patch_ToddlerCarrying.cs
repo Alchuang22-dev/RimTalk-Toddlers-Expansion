@@ -51,6 +51,13 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				harmony.Patch(killMethod, prefix: new HarmonyMethod(typeof(Patch_ToddlerCarrying), nameof(Pawn_Kill_Prefix)));
 			}
 
+			// Patch Pawn_HealthTracker.MakeDowned - 成人倒地时清除背负关系
+			MethodInfo makeDownedMethod = AccessTools.Method(typeof(Pawn_HealthTracker), "MakeDowned");
+			if (makeDownedMethod != null)
+			{
+				harmony.Patch(makeDownedMethod, postfix: new HarmonyMethod(typeof(Patch_ToddlerCarrying), nameof(HealthTracker_MakeDowned_Postfix)));
+			}
+
 			// Patch PawnRenderer.RenderPawnAt - 调整被背幼儿的渲染
 			MethodInfo renderMethod = AccessTools.Method(typeof(PawnRenderer), "RenderPawnAt");
 			if (renderMethod != null)
@@ -181,6 +188,30 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 			ToddlerCarryingUtility.ClearAllCarryingRelations(__instance);
 		}
+
+		/// <summary>
+		/// pawn倒地后清除背负关系（成人倒地时放下幼儿）
+		/// </summary>
+		private static void HealthTracker_MakeDowned_Postfix(Pawn_HealthTracker __instance)
+		{
+			if (__instance == null)
+			{
+				return;
+			}
+
+			// pawn字段是私有的，需要通过反射获取
+			Pawn pawn = _healthTrackerPawnField?.GetValue(__instance) as Pawn;
+			if (pawn == null)
+			{
+				return;
+			}
+
+			// 清除该pawn的所有背负关系（无论是作为载体还是被背者）
+			ToddlerCarryingUtility.ClearAllCarryingRelations(pawn);
+		}
+
+		// 缓存反射字段以提高性能
+		private static readonly FieldInfo _healthTrackerPawnField = AccessTools.Field(typeof(Pawn_HealthTracker), "pawn");
 
 		/// <summary>
 		/// 调整被背幼儿的渲染参数
