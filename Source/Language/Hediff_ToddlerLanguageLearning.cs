@@ -1,9 +1,14 @@
+using RimTalk_ToddlersExpansion.Integration.Toddlers;
 using Verse;
 
 namespace RimTalk_ToddlersExpansion.Language
 {
 	public sealed class Hediff_ToddlerLanguageLearning : HediffWithComps
 	{
+		public override bool ShouldRemove => pawn == null
+			|| Progress01 >= 1f
+			|| !ToddlersCompatUtility.IsToddler(pawn);
+
 		public float Progress01
 		{
 			get
