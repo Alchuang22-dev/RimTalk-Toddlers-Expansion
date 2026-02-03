@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
+  <RimTalk_AttendedChildrenOuting.label>参加郊游</RimTalk_AttendedChildrenOuting.label>
+  <RimTalk_OrganizedChildrenOuting.label>组织郊游</RimTalk_OrganizedChildrenOuting.label>
   <!-- 参加儿童野游 -->
   <RimTalk_AttendedChildrenOuting.stages.0.label>参加郊游</RimTalk_AttendedChildrenOuting.stages.0.label>
   <RimTalk_AttendedChildrenOuting.stages.0.description>我还要和大家一起探险！好玩！</RimTalk_AttendedChildrenOuting.stages.0.description>

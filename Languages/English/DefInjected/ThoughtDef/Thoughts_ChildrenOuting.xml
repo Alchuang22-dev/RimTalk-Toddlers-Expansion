@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
+  <RimTalk_AttendedChildrenOuting.label>went on an outing</RimTalk_AttendedChildrenOuting.label>
+  <RimTalk_OrganizedChildrenOuting.label>led an outing</RimTalk_OrganizedChildrenOuting.label>
   <!-- Attended Children's Outing -->
   <RimTalk_AttendedChildrenOuting.stages.0.label>went on an outing</RimTalk_AttendedChildrenOuting.stages.0.label>
   <RimTalk_AttendedChildrenOuting.stages.0.description>I went on an outing with the other children! It was so much fun exploring together.</RimTalk_AttendedChildrenOuting.stages.0.description>

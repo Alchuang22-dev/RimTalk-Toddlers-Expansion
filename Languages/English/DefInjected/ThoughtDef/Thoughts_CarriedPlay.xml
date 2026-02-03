@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimTalk_ToddlerTossedUp.label>tossed up high</RimTalk_ToddlerTossedUp.label>
+  <RimTalk_ToddlerTossedUp.stages.0.label>tossed up high</RimTalk_ToddlerTossedUp.stages.0.label>
+  <RimTalk_ToddlerTossedUp.stages.0.description>Someone tossed me up in the air! Wheee!</RimTalk_ToddlerTossedUp.stages.0.description>
+
+  <RimTalk_ToddlerTickled.label>tickled and giggling</RimTalk_ToddlerTickled.label>
+  <RimTalk_ToddlerTickled.stages.0.label>tickled and giggling</RimTalk_ToddlerTickled.stages.0.label>
+  <RimTalk_ToddlerTickled.stages.0.description>Someone tickled me and made me giggle! Hehe!</RimTalk_ToddlerTickled.stages.0.description>
+
+  <RimTalk_ToddlerSpunAround.label>spun around</RimTalk_ToddlerSpunAround.label>
+  <RimTalk_ToddlerSpunAround.stages.0.label>spun around</RimTalk_ToddlerSpunAround.stages.0.label>
+  <RimTalk_ToddlerSpunAround.stages.0.description>Someone spun me around! The world is spinning!</RimTalk_ToddlerSpunAround.stages.0.description>
+
+  <RimTalk_PlayedWithToddler.label>played with toddler</RimTalk_PlayedWithToddler.label>
+  <RimTalk_PlayedWithToddler.stages.0.label>played with toddler</RimTalk_PlayedWithToddler.stages.0.label>
+  <RimTalk_PlayedWithToddler.stages.0.description>I played with a little one. Their laughter is so heartwarming!</RimTalk_PlayedWithToddler.stages.0.description>
+</LanguageData>
