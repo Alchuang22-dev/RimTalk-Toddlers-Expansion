@@ -706,12 +706,18 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return (float)prop.GetValue(source);
 			}
 
-			if (_cleanedPerTickField != null && _cleanedPerTickField.FieldType == typeof(float))
+			if (_cleanedPerTickField != null
+				&& _cleanedPerTickField.FieldType == typeof(float)
+				&& _cleanedPerTickField.DeclaringType != null
+				&& _cleanedPerTickField.DeclaringType.IsInstanceOfType(source))
 			{
 				return (float)_cleanedPerTickField.GetValue(source);
 			}
 
-			if (_cleanedPerTickProperty != null && _cleanedPerTickProperty.PropertyType == typeof(float))
+			if (_cleanedPerTickProperty != null
+				&& _cleanedPerTickProperty.PropertyType == typeof(float)
+				&& _cleanedPerTickProperty.DeclaringType != null
+				&& _cleanedPerTickProperty.DeclaringType.IsInstanceOfType(source))
 			{
 				return (float)_cleanedPerTickProperty.GetValue(source);
 			}
