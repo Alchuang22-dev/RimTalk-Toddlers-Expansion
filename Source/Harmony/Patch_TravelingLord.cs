@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using HarmonyLib;
+using RimTalk_ToddlersExpansion.Core;
 using RimTalk_ToddlersExpansion.Integration.Toddlers;
 using Verse;
 using Verse.AI.Group;
@@ -248,71 +249,128 @@ namespace RimTalk_ToddlersExpansion.Harmony
 		/// <summary>
 		/// 在 LordToil_ExitMapAndEscortCarriers.UpdateAllDuties 之后执行
 		/// 确保幼儿/儿童也能获得正确的离开地图的 duty
+		/// 注意：抱幼儿的逻辑现在由 JobGiver_PickUpUncarriedToddler 处理（通过 XML Patch 注入到 Duty 中）
 		/// </summary>
 		private static void ExitMapAndEscortCarriers_UpdateAllDuties_Postfix(LordToil __instance)
 		{
-			Lord lord = __instance.lord;
-			if (lord == null || lord.ownedPawns.NullOrEmpty())
-				return;
+			try
+			{
+				Lord lord = __instance.lord;
+				if (lord == null || lord.ownedPawns.NullOrEmpty())
+				{
+					return;
+				}
 
-			// 找到商队领队（trader）
-			Pawn trader = TraderCaravanUtility.FindTrader(lord);
-			FixToddlerDuties(lord, trader);
-			
-			// 注意：不要在这里清除背负关系！
-			// 让成年人继续背着幼儿离开地图，背负关系会在 RemovePawn_Postfix 中清除
+				Log.Message($"[RimTalk_ToddlersExpansion][DEBUG] ExitMapAndEscortCarriers_UpdateAllDuties_Postfix 触发，Lord有 {lord.ownedPawns.Count} 个成员");
+
+				// 找到商队领队（trader）
+				Pawn trader = TraderCaravanUtility.FindTrader(lord);
+				
+				// 修复幼儿的 duty（确保他们有正确的 Escort duty）
+				FixToddlerDuties(lord, trader);
+			}
+			catch (Exception ex)
+			{
+				Log.Error($"[RimTalk_ToddlersExpansion] ExitMapAndEscortCarriers_UpdateAllDuties_Postfix 出错: {ex}");
+			}
 		}
 
 		/// <summary>
 		/// 在 LordToil_ExitMap.UpdateAllDuties 之后执行
 		/// 用于访客等使用 LordToil_ExitMap 的情况
+		/// 注意：抱幼儿的逻辑现在由 JobGiver_PickUpUncarriedToddler 处理（通过 XML Patch 注入到 Duty 中）
 		/// </summary>
 		private static void LordToil_ExitMap_UpdateAllDuties_Postfix(LordToil __instance)
 		{
-			Lord lord = __instance.lord;
-			if (lord == null || lord.ownedPawns.NullOrEmpty())
-				return;
+			try
+			{
+				Lord lord = __instance.lord;
+				if (lord == null || lord.ownedPawns.NullOrEmpty())
+				{
+					return;
+				}
 
-			FixToddlerDuties(lord, null);
-			
-			// 注意：不要在这里清除背负关系！
-			// 让成年人继续背着幼儿离开地图，背负关系会在 RemovePawn_Postfix 中清除
+				Log.Message($"[RimTalk_ToddlersExpansion][DEBUG] LordToil_ExitMap_UpdateAllDuties_Postfix 触发，Lord有 {lord.ownedPawns.Count} 个成员，LordJob类型: {lord.LordJob?.GetType().Name ?? "null"}");
+
+				// 修复幼儿的 duty
+				FixToddlerDuties(lord, null);
+			}
+			catch (Exception ex)
+			{
+				Log.Error($"[RimTalk_ToddlersExpansion] LordToil_ExitMap_UpdateAllDuties_Postfix 出错: {ex}");
+			}
 		}
 
 		/// <summary>
 		/// 修复幼儿/儿童的 duty，确保他们能正确离开地图
-		/// 问题原因：RimWorld 原版代码会跳过某些条件下的幼儿/儿童，导致他们的 duty 保持为旧的 TravelOrLeave
+		/// 问题原因：
+		/// 1. RimWorld 原版代码会跳过某些条件下的幼儿/儿童，导致他们的 duty 保持为旧的 TravelOrLeave
+		/// 2. 被背着的幼儿不应该获得 ExitMapBestAndDefendSelf 这种领头 duty，否则其他人会围着他们转
 		/// </summary>
 		private static void FixToddlerDuties(Lord lord, Pawn trader)
 		{
+			Log.Message($"[RimTalk_ToddlersExpansion][DEBUG] FixToddlerDuties 开始，检查 {lord.ownedPawns.Count} 个成员");
+			
+			// 先找出所有需要修复 duty 的幼儿
 			for (int i = 0; i < lord.ownedPawns.Count; i++)
 			{
 				Pawn pawn = lord.ownedPawns[i];
+				string currentDuty = pawn.mindState?.duty?.def?.defName ?? "null";
 				
-				// 检查 duty 是否仍然是 TravelOrLeave（说明没有被正确更新）
-				if (pawn.mindState?.duty?.def != DutyDefOf.TravelOrLeave)
-					continue;
-
 				// 判断是否是需要特殊处理的幼儿/婴儿/儿童
-				bool needsFix = ToddlersCompatUtility.IsToddler(pawn)
-					|| pawn.DevelopmentalStage.Baby()
-					|| pawn.DevelopmentalStage == DevelopmentalStage.Child
-					|| IsYoungHuman(pawn);
+				bool isToddler = ToddlersCompatUtility.IsToddler(pawn);
+				bool isBaby = pawn.DevelopmentalStage.Baby();
+				bool isChild = pawn.DevelopmentalStage == DevelopmentalStage.Child;
+				bool isYoung = IsYoungHuman(pawn);
+				bool isYoungPawn = isToddler || isBaby || isChild || isYoung;
 				
-				if (!needsFix)
+				// 检查是否被背着
+				bool isBeingCarried = ToddlerCarryingUtility.IsBeingCarried(pawn);
+				
+				// 检查 duty 是否是会导致问题的 duty
+				bool hasProblematicDuty = pawn.mindState?.duty?.def == DutyDefOf.TravelOrLeave ||
+				                          pawn.mindState?.duty?.def?.defName == "ExitMapBestAndDefendSelf";
+				
+				Log.Message($"[RimTalk_ToddlersExpansion][DEBUG]   {pawn.LabelShort}: duty={currentDuty}, isYoungPawn={isYoungPawn}, isBeingCarried={isBeingCarried}, hasProblematicDuty={hasProblematicDuty}");
+				
+				// 被背着的幼儿需要特殊处理
+				if (isBeingCarried)
+				{
+					// 被背着的幼儿应该跟随背着他的载体，而不是自己行动
+					Pawn carrier = ToddlerCarryingUtility.GetCarrier(pawn);
+					if (carrier != null)
+					{
+						// 让幼儿跟随载体
+						pawn.mindState.duty = new PawnDuty(DutyDefOf.Follow, carrier, 5f);
+						Log.Message($"[RimTalk_ToddlersExpansion][DEBUG]   {pawn.LabelShort}: 被背着，分配 Follow duty 跟随载体 {carrier.LabelShort}");
+					}
+					continue;
+				}
+				
+				// 只处理仍然是 TravelOrLeave 的幼儿
+				if (pawn.mindState?.duty?.def != DutyDefOf.TravelOrLeave)
+				{
+					continue;
+				}
+				
+				if (!isYoungPawn)
 					continue;
 
-				// 为幼儿/儿童分配正确的离开地图 duty
+				// 为未被背的幼儿/儿童分配正确的离开地图 duty
 				if (trader != null)
 				{
 					pawn.mindState.duty = new PawnDuty(DutyDefOf.Escort, trader, 14f);
+					Log.Message($"[RimTalk_ToddlersExpansion][DEBUG]   {pawn.LabelShort}: 分配 Escort duty 跟随 {trader.LabelShort}");
 				}
 				else
 				{
 					pawn.mindState.duty = new PawnDuty(DutyDefOf.ExitMapBest);
 					pawn.mindState.duty.locomotion = LocomotionUrgency.Jog;
+					Log.Message($"[RimTalk_ToddlersExpansion][DEBUG]   {pawn.LabelShort}: 分配 ExitMapBest duty");
 				}
 			}
+			
+			Log.Message($"[RimTalk_ToddlersExpansion][DEBUG] FixToddlerDuties 完成");
 		}
 
 		/// <summary>

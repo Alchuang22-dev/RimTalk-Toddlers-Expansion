@@ -41,30 +41,39 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		{
 			if (carrier == null || toddler == null)
 			{
+				Log.Message($"[RimTalk_ToddlersExpansion][DEBUG] TryMountToddler: carrier或toddler为null");
 				return false;
 			}
+
+			Log.Message($"[RimTalk_ToddlersExpansion][DEBUG] TryMountToddler: 尝试让 {carrier.LabelShort} 背 {toddler.LabelShort}");
 
 			// 验证载体是成年人
 			if (!IsValidCarrier(carrier))
 			{
+				Log.Message($"[RimTalk_ToddlersExpansion][DEBUG] TryMountToddler: {carrier.LabelShort} 不是有效载体");
 				return false;
 			}
 
 			// 验证幼儿可以被背
 			if (!CanBeCarried(toddler))
 			{
+				Log.Message($"[RimTalk_ToddlersExpansion][DEBUG] TryMountToddler: {toddler.LabelShort} 不能被背");
 				return false;
 			}
 
 			// 检查幼儿是否已经被背着
 			if (IsBeingCarried(toddler))
 			{
+				Log.Message($"[RimTalk_ToddlersExpansion][DEBUG] TryMountToddler: {toddler.LabelShort} 已经被背着");
 				return false;
 			}
 
 			// 检查载体是否已经背着太多幼儿
-			if (GetCarriedToddlerCount(carrier) >= GetMaxCarryCapacity(carrier))
+			int currentCount = GetCarriedToddlerCount(carrier);
+			int maxCapacity = GetMaxCarryCapacity(carrier);
+			if (currentCount >= maxCapacity)
 			{
+				Log.Message($"[RimTalk_ToddlersExpansion][DEBUG] TryMountToddler: {carrier.LabelShort} 已经背满了 ({currentCount}/{maxCapacity})");
 				return false;
 			}
 
@@ -72,16 +81,15 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			ClearToddlerPathingState(toddler);
 
 			// 注册背负关系
+			Log.Message($"[RimTalk_ToddlersExpansion][DEBUG] TryMountToddler: 注册背负关系...");
 			ToddlerCarryingTracker.RegisterCarrying(carrier, toddler);
 			ToddlerCarryDesireUtility.TryEndWantToBeHeld(toddler, Prefs.DevMode);
 
 			// 给幼儿分配"被抱着"的Job
+			Log.Message($"[RimTalk_ToddlersExpansion][DEBUG] TryMountToddler: 分配被抱着Job...");
 			TryAssignBeingCarriedJob(toddler, carrier);
 
-			if (Prefs.DevMode)
-			{
-				Log.Message($"[RimTalk_ToddlersExpansion] {carrier.Name} 开始背着 {toddler.Name}");
-			}
+			Log.Message($"[RimTalk_ToddlersExpansion] {carrier.LabelShort} 开始背着 {toddler.LabelShort} - 成功!");
 
 			return true;
 		}

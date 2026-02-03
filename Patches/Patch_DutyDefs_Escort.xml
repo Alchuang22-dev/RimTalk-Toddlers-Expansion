@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+	<!-- 
+		修改 Escort duty，在跟随护送对象之前先检查是否有未被背的幼儿需要抱起
+		这样商队成年人在离开地图前会先去抱起幼儿
+	-->
+	<Operation Class="PatchOperationInsert">
+		<xpath>/Defs/DutyDef[defName="Escort"]/thinkNode/subNodes/li[@Class="JobGiver_AIFollowEscortee"]</xpath>
+		<value>
+			<!-- 在跟随护送对象之前，先检查是否有未被背的幼儿需要抱起 -->
+			<li Class="RimTalk_ToddlersExpansion.AI.JobGiver_PickUpUncarriedToddler" />
+		</value>
+	</Operation>
+
+	<!-- 
+		修改 ExitMapBestAndDefendSelf duty，在离开地图之前先检查是否有未被背的幼儿需要抱起
+	-->
+	<Operation Class="PatchOperationInsert">
+		<xpath>/Defs/DutyDef[defName="ExitMapBestAndDefendSelf"]/thinkNode/subNodes/li[@Class="JobGiver_ExitMapBest"]</xpath>
+		<value>
+			<!-- 在离开地图之前，先检查是否有未被背的幼儿需要抱起 -->
+			<li Class="RimTalk_ToddlersExpansion.AI.JobGiver_PickUpUncarriedToddler" />
+		</value>
+	</Operation>
+
+	<!-- 
+		修改 ExitMapBest duty，在离开地图之前先检查是否有未被背的幼儿需要抱起
+	-->
+	<Operation Class="PatchOperationReplace">
+		<xpath>/Defs/DutyDef[defName="ExitMapBest"]/thinkNode</xpath>
+		<value>
+			<thinkNode Class="ThinkNode_Priority">
+				<subNodes>
+					<!-- 在离开地图之前，先检查是否有未被背的幼儿需要抱起 -->
+					<li Class="RimTalk_ToddlersExpansion.AI.JobGiver_PickUpUncarriedToddler" />
+					<li Class="JobGiver_ExitMapBest">
+						<defaultLocomotion>Walk</defaultLocomotion>
+						<canFlyOutOfMap>false</canFlyOutOfMap>
+					</li>
+				</subNodes>
+			</thinkNode>
+		</value>
+	</Operation>
+
+	<!-- 
+		修改 ExitMapNearDutyTarget duty，在离开地图之前先检查是否有未被背的幼儿需要抱起
+	-->
+	<Operation Class="PatchOperationInsert">
+		<xpath>/Defs/DutyDef[defName="ExitMapNearDutyTarget"]/thinkNode/subNodes/li[@Class="JobGiver_ExitMapNearDutyTarget"]</xpath>
+		<value>
+			<!-- 在离开地图之前，先检查是否有未被背的幼儿需要抱起 -->
+			<li Class="RimTalk_ToddlersExpansion.AI.JobGiver_PickUpUncarriedToddler" />
+		</value>
+	</Operation>
+</Patch>

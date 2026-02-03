@@ -6,7 +6,9 @@ using Verse.AI;
 namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 {
 	/// <summary>
-	/// 殖民者去抱起幼儿的JobDriver
+	/// 殖民者/访客去抱起幼儿的JobDriver
+	/// 用于商队/访客离开前让成年人抱起幼儿
+	/// 由 JobGiver_PickUpUncarriedToddler 分配
 	/// </summary>
 	public class JobDriver_PickUpToddler : JobDriver
 	{
@@ -52,12 +54,12 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				// 尝试抱起幼儿
 				if (ToddlerCarryingUtility.TryMountToddler(pawn, toddler))
 				{
-					// 成功，结束Job
+					Log.Message($"[RimTalk_ToddlersExpansion][DEBUG] {pawn.LabelShort} 成功抱起 {toddler.LabelShort}");
 					EndJobWith(JobCondition.Succeeded);
 				}
 				else
 				{
-					// 失败
+					Log.Message($"[RimTalk_ToddlersExpansion][DEBUG] {pawn.LabelShort} 抱起 {toddler.LabelShort} 失败");
 					EndJobWith(JobCondition.Incompletable);
 				}
 			};
