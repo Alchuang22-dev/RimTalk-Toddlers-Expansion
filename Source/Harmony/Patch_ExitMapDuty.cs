@@ -27,18 +27,9 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				var updateDutyMethod = AccessTools.Method(_lordToilExitMapAndEscortCarriersType, "UpdateDutyForChattelOrGuard");
 				if (updateDutyMethod != null)
 				{
-					harmony.Patch(updateDutyMethod, 
+					harmony.Patch(updateDutyMethod,
 						prefix: new HarmonyMethod(typeof(Patch_ExitMapDuty), nameof(UpdateDutyForChattelOrGuard_Prefix)));
-					Log.Message($"[RimTalk_ToddlersExpansion] 已 Patch LordToil_ExitMapAndEscortCarriers.UpdateDutyForChattelOrGuard");
 				}
-				else
-				{
-					Log.Warning($"[RimTalk_ToddlersExpansion] 未找到 LordToil_ExitMapAndEscortCarriers.UpdateDutyForChattelOrGuard");
-				}
-			}
-			else
-			{
-				Log.Warning($"[RimTalk_ToddlersExpansion] 未找到 LordToil_ExitMapAndEscortCarriers 类型");
 			}
 		}
 
@@ -62,7 +53,6 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				{
 					// 被背着的幼儿应该跟随载体
 					p.mindState.duty = new PawnDuty(DutyDefOf.Follow, carrier, 5f);
-					Log.Message($"[RimTalk_ToddlersExpansion][DEBUG] 被背幼儿 {p.LabelShort} 分配 Follow duty 跟随载体 {carrier.LabelShort}");
 					return false; // 跳过原方法
 				}
 

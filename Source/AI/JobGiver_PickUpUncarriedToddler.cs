@@ -48,8 +48,6 @@ namespace RimTalk_ToddlersExpansion.AI
 			Job job = JobMaker.MakeJob(ToddlersExpansionJobDefOf.RimTalk_PickUpToddler, toddlerToPickUp);
 			job.locomotionUrgency = LocomotionUrgency.Jog;
 
-			Log.Message($"[RimTalk_ToddlersExpansion][DEBUG] JobGiver_PickUpUncarriedToddler: {pawn.LabelShort} 将去抱 {toddlerToPickUp.LabelShort}");
-
 			return job;
 		}
 
