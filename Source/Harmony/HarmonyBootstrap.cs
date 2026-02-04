@@ -25,6 +25,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			Patch_BiotechSharedBedroomThoughts.Init(harmony);
 			Patch_PawnGroupMakerUtility.Init(harmony);
 			Patch_FloatMenu_ToddlerToyPlay.Init(harmony);
+			Patch_DBHFixtureFloatMenu.Init(harmony);
 			Patch_TravelingLord.Init(harmony);
 			// Patch 商队离开时的 duty 分配，确保被背着的幼儿不会获得不合适的 duty
 			Patch_ExitMapDuty.Init(harmony);

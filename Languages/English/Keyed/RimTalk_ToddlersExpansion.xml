@@ -85,5 +85,6 @@
   <RimTalk_SpinAroundDesc>Spin around while holding {0}, making the toddler feel excited.</RimTalk_SpinAroundDesc>
   <RimTalk_SpinningWithToddler>spinning around with {0}</RimTalk_SpinningWithToddler>
   <RimTalk_CarriedPlayOnCooldown>The toddler just played and needs a short rest.</RimTalk_CarriedPlayOnCooldown>
+  <RimTalk_ToddlersExpansion_ToddlerSelfBathTooSmall>Too young to bathe without help.</RimTalk_ToddlersExpansion_ToddlerSelfBathTooSmall>
 </LanguageData>
 

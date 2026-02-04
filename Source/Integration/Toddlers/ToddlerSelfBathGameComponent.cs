@@ -378,7 +378,24 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
-			if (!IsTargetReachable(pawn, target))
+			return TryCreateSelfBathJobForTarget(pawn, target, out job, ignoreAllowedArea: false, debugLog);
+		}
+
+		public static bool TryCreateSelfBathJobForTarget(Pawn pawn, LocalTargetInfo target, out Job job, bool ignoreAllowedArea = false, bool debugLog = false)
+		{
+			job = null;
+			if (pawn == null || pawn.Map == null || !target.IsValid)
+			{
+				return false;
+			}
+
+			EnsureInitialized();
+			if (_hygieneNeedDef == null)
+			{
+				return false;
+			}
+
+			if (!IsTargetReachable(pawn, target, ignoreAllowedArea))
 			{
 				if (debugLog) Log.Message($"[SelfBath Debug] {pawn.LabelShort}: Target {DescribeTarget(target)} is not reachable");
 				return false;
@@ -389,8 +406,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			{
 				if (layCell.IsValid
 					&& layCell.InBounds(pawn.Map)
-					&& ForbidUtility.InAllowedArea(layCell, pawn)
-					&& pawn.CanReach(layCell, PathEndMode.OnCell, Danger.Some))
+					&& (ignoreAllowedArea || ForbidUtility.InAllowedArea(layCell, pawn))
+					&& CanReachCell(pawn, layCell, ignoreAllowedArea))
 				{
 					job.SetTarget(TargetIndex.B, layCell);
 				}
@@ -399,8 +416,15 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					Log.Message($"[SelfBath Debug] {pawn.LabelShort}: Bath lay cell {layCell} not reachable/allowed; using bath touch instead.");
 				}
 			}
+
 			job.ignoreJoyTimeAssignment = true;
 			job.expiryInterval = 2800;
+			if (ignoreAllowedArea)
+			{
+				job.playerForced = true;
+				job.ignoreForbidden = true;
+			}
+
 			if (debugLog) Log.Message($"[SelfBath Debug] {pawn.LabelShort}: Successfully created self bath job targeting {DescribeTarget(target)}");
 			return true;
 		}
@@ -500,7 +524,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 		}
 
-		private static bool IsTargetReachable(Pawn pawn, LocalTargetInfo target)
+		private static bool IsTargetReachable(Pawn pawn, LocalTargetInfo target, bool ignoreAllowedArea = false)
 		{
 			if (!target.IsValid || pawn == null)
 			{
@@ -515,14 +539,23 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					return false;
 				}
 
-				if (!ForbidUtility.InAllowedArea(thing.Position, pawn))
+				if (!ignoreAllowedArea && !ForbidUtility.InAllowedArea(thing.Position, pawn))
 				{
 					return false;
 				}
 
-				return thing.Spawned
-					? pawn.CanReserveAndReach(thing, PathEndMode.Touch, Danger.Some)
-					: pawn.CanReserve(thing);
+				if (!thing.Spawned)
+				{
+					return pawn.CanReserve(thing);
+				}
+
+				PathEndMode pathEndMode = GetPathEndModeForTarget(thing);
+				if (ignoreAllowedArea)
+				{
+					return CanReachThing(pawn, thing, pathEndMode) && pawn.CanReserve(thing, 1, -1, null, true);
+				}
+
+				return pawn.CanReserveAndReach(thing, pathEndMode, Danger.Some);
 			}
 
 			IntVec3 cell = target.Cell;
@@ -531,12 +564,52 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
-			if (!ForbidUtility.InAllowedArea(cell, pawn))
+			if (!ignoreAllowedArea && !ForbidUtility.InAllowedArea(cell, pawn))
 			{
 				return false;
 			}
 
-			return pawn.CanReach(cell, PathEndMode.ClosestTouch, Danger.Some);
+			return CanReachCell(pawn, cell, ignoreAllowedArea);
+		}
+
+		private static bool CanReachThing(Pawn pawn, Thing thing, PathEndMode pathEndMode)
+		{
+			if (pawn == null || thing == null || pawn.Map == null || thing.Map != pawn.Map)
+			{
+				return false;
+			}
+
+			return pawn.Map.reachability.CanReach(pawn.Position, thing, pathEndMode, TraverseParms.For(TraverseMode.ByPawn, Danger.Some));
+		}
+
+		private static bool CanReachCell(Pawn pawn, IntVec3 cell, bool ignoreAllowedArea)
+		{
+			if (pawn == null || pawn.Map == null || !cell.IsValid || !cell.InBounds(pawn.Map))
+			{
+				return false;
+			}
+
+			if (!ignoreAllowedArea)
+			{
+				return pawn.CanReach(cell, PathEndMode.ClosestTouch, Danger.Some);
+			}
+
+			return pawn.Map.reachability.CanReach(pawn.Position, cell, PathEndMode.ClosestTouch, TraverseParms.For(TraverseMode.ByPawn, Danger.Some));
+		}
+
+		private static PathEndMode GetPathEndModeForTarget(Thing thing)
+		{
+			if (IsWashBucket(thing))
+			{
+				return PathEndMode.InteractionCell;
+			}
+
+			if (IsShower(thing))
+			{
+				return PathEndMode.OnCell;
+			}
+
+			return PathEndMode.Touch;
 		}
 
 		public static Need GetHygieneNeed(Pawn pawn)

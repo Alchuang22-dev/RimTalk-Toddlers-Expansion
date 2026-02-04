@@ -8,3 +8,4 @@ RimTalk Expand Toddlers
 - 哭泣应对
 - 搞破坏
 - 抱着幼儿时被攻击应对
+- 给路过小孩送衣服
