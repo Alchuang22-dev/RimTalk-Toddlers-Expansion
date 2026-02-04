@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Patch>
-	<!-- 
+	<!--
+		修改 TravelOrLeave duty，在移动到目标位置之前先检查是否有未被背的幼儿需要抱起
+		这样访客在离开地图前往出口点的途中会先去抱起幼儿
+	-->
+	<Operation Class="PatchOperationInsert">
+		<xpath>/Defs/DutyDef[defName="TravelOrLeave"]/thinkNode/subNodes/li[@Class="JobGiver_GotoTravelDestination"]</xpath>
+		<value>
+			<!-- 在移动到目标位置之前，先检查是否有未被背的幼儿需要抱起 -->
+			<li Class="RimTalk_ToddlersExpansion.AI.JobGiver_PickUpUncarriedToddler" />
+		</value>
+	</Operation>
+
+	<!--
 		修改 Escort duty，在跟随护送对象之前先检查是否有未被背的幼儿需要抱起
 		这样商队成年人在离开地图前会先去抱起幼儿
 	-->

@@ -210,13 +210,36 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			Lord lord = carrier.GetLord();
-			if (lord?.CurLordToil is LordToil_ExitMap)
+			if (lord == null)
+			{
+				return false;
+			}
+
+			// Check if the Lord is in an exit-related LordToil
+			if (lord.CurLordToil is LordToil_ExitMap)
 			{
 				return true;
 			}
 
 			// Trader caravans use a custom exit toil that still represents map-leaving state.
-			return lord?.CurLordToil?.GetType().Name == "LordToil_ExitMapAndEscortCarriers";
+			string toilName = lord.CurLordToil?.GetType().Name;
+			if (toilName == "LordToil_ExitMapAndEscortCarriers")
+			{
+				return true;
+			}
+
+			// Visitors use LordToil_Travel when moving to exit point before actually exiting
+			if (lord.CurLordToil is LordToil_Travel)
+			{
+				// Check if the carrier's duty is TravelOrLeave (moving to exit point)
+				var duty = carrier.mindState?.duty;
+				if (duty?.def == DutyDefOf.TravelOrLeave)
+				{
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		private static bool ShouldSleep(Pawn toddler)

@@ -81,6 +81,44 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				harmony.Patch(getGizmosMethod, postfix: new HarmonyMethod(typeof(Patch_ToddlerCarrying), nameof(Pawn_GetGizmos_Postfix)));
 			}
 
+			// Patch PawnRenderer.BodyAngle - 修复被抱婴儿的渲染角度（让婴儿直立而非横躺）
+			MethodInfo bodyAngleMethod = AccessTools.Method(typeof(PawnRenderer), "BodyAngle");
+			if (bodyAngleMethod != null)
+			{
+				harmony.Patch(bodyAngleMethod, postfix: new HarmonyMethod(typeof(Patch_ToddlerCarrying), nameof(BodyAngle_Postfix)));
+			}
+
+			// Patch PawnRenderer.LayingFacing - 修复被抱婴儿的朝向
+			MethodInfo layingFacingMethod = AccessTools.Method(typeof(PawnRenderer), "LayingFacing");
+			if (layingFacingMethod != null)
+			{
+				harmony.Patch(layingFacingMethod, postfix: new HarmonyMethod(typeof(Patch_ToddlerCarrying), nameof(LayingFacing_Postfix)));
+			}
+
+			// Patch Pawn.CarriedBy getter - 让原版渲染逻辑识别我们的背负系统
+			// 原版代码在渲染时检查 pawn.CarriedBy 来判断是否被携带
+			// 如果 CarriedBy 返回正确的载体，所有原版渲染逻辑（角度、朝向、层级）都会自动正确处理
+			PropertyInfo carriedByProp = AccessTools.Property(typeof(Pawn), "CarriedBy");
+			if (carriedByProp != null)
+			{
+				MethodInfo getter = carriedByProp.GetGetMethod();
+				if (getter != null)
+				{
+					harmony.Patch(getter, postfix: new HarmonyMethod(typeof(Patch_ToddlerCarrying), nameof(CarriedBy_Postfix)));
+				}
+			}
+
+			// Patch ChildcareUtility.FindUnsafeBaby - 阻止"送到安全位置"工作处理正在被背负的婴儿
+			Type childcareUtilityType = AccessTools.TypeByName("RimWorld.ChildcareUtility");
+			if (childcareUtilityType != null)
+			{
+				MethodInfo findUnsafeBabyMethod = AccessTools.Method(childcareUtilityType, "FindUnsafeBaby");
+				if (findUnsafeBabyMethod != null)
+				{
+					harmony.Patch(findUnsafeBabyMethod, postfix: new HarmonyMethod(typeof(Patch_ToddlerCarrying), nameof(FindUnsafeBaby_Postfix)));
+				}
+			}
+
 			Log.Message("[RimTalk_ToddlersExpansion] Toddler carrying patches initialized");
 		}
 
@@ -420,6 +458,107 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				{
 					yield return playGizmo;
 				}
+			}
+		}
+
+		/// <summary>
+		/// 修复被抱婴儿的渲染角度。
+		/// 婴儿默认是Downed状态，会返回wiggler.downedAngle（横躺角度）。
+		/// 此补丁让被我们系统抱着的婴儿返回0度（直立）。
+		/// </summary>
+		private static void BodyAngle_Postfix(PawnRenderer __instance, ref float __result)
+		{
+			Pawn pawn = GetPawnFromRenderer(__instance);
+			if (pawn == null)
+			{
+				return;
+			}
+
+			// 只处理婴儿（Baby阶段）
+			if (!pawn.DevelopmentalStage.Baby())
+			{
+				return;
+			}
+
+			// 检查是否被我们的系统抱着
+			if (!ToddlerCarryingUtility.IsBeingCarried(pawn))
+			{
+				return;
+			}
+
+			// 返回直立角度（0度），而非原本的横躺角度
+			__result = 0f;
+		}
+
+		/// <summary>
+		/// 修复被抱婴儿的朝向。
+		/// 让被抱的婴儿面向与载体相同的方向。
+		/// 只针对Baby（0-1岁），不影响Toddler（1-3岁）。
+		/// </summary>
+		private static void LayingFacing_Postfix(PawnRenderer __instance, ref Rot4 __result)
+		{
+			Pawn pawn = GetPawnFromRenderer(__instance);
+			if (pawn == null)
+			{
+				return;
+			}
+
+			// 只处理婴儿（Baby阶段）
+			if (!pawn.DevelopmentalStage.Baby())
+			{
+				return;
+			}
+
+			// 获取载体
+			Pawn carrier = ToddlerCarryingUtility.GetCarrier(pawn);
+			if (carrier == null)
+			{
+				return;
+			}
+
+			// 使用载体的朝向
+			__result = carrier.Rotation;
+		}
+
+		/// <summary>
+		/// 让原版的 CarriedBy 属性识别我们的背负系统。
+		/// 原版代码在多处检查 pawn.CarriedBy 来判断是否被携带：
+		/// - PawnRenderer.GetBodyPos() 检查 CarriedBy 决定渲染层级
+		/// - 其他各种逻辑也依赖 CarriedBy
+		///
+		/// 通过让 CarriedBy 返回我们系统的载体，可以让原版渲染逻辑自动正确处理。
+		/// </summary>
+		private static void CarriedBy_Postfix(Pawn __instance, ref Pawn __result)
+		{
+			// 如果原版已经返回了载体（通过 Pawn_CarryTracker），不做修改
+			if (__result != null)
+			{
+				return;
+			}
+
+			// 检查是否被我们的背负系统抱着
+			Pawn carrier = ToddlerCarryingUtility.GetCarrier(__instance);
+			if (carrier != null)
+			{
+				__result = carrier;
+			}
+		}
+
+		/// <summary>
+		/// 阻止"送到安全位置"工作处理正在被我们系统背负的婴儿。
+		/// 当成人抱着婴儿时，不应该触发"送到安全位置"的保育工作。
+		/// </summary>
+		private static void FindUnsafeBaby_Postfix(Pawn mom, AutofeedMode priorityLevel, ref Pawn __result)
+		{
+			if (__result == null)
+			{
+				return;
+			}
+
+			// 如果找到的婴儿正在被我们的系统背负，返回null（视为没有不安全的婴儿）
+			if (ToddlerCarryingUtility.IsBeingCarried(__result))
+			{
+				__result = null;
 			}
 		}
 	}
