@@ -49,6 +49,9 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			YayoAnimationCompatUtility.Initialize();
 			YayoAnimationCompatUtility.ApplyPatches(harmony);
 			
+			// 访客幼儿婴儿食品补丁（修复Hospitality mod兼容性）
+			Patch_VisitorToddlerBabyFood.Init(harmony);
+			
 			Log.Message("[RimTalk Toddlers Expansion] All patches applied");
 		}
 	}

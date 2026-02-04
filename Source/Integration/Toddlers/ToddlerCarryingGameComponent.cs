@@ -1,3 +1,4 @@
+using RimTalk_ToddlersExpansion.Harmony;
 using RimWorld;
 using Verse;
 using Verse.AI;
@@ -41,11 +42,13 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		public override void StartedNewGame()
 		{
 			ToddlerCarryingTracker.ClearAll();
+			Patch_VisitorToddlerBabyFood.ClearCache();
 		}
 
 		public override void LoadedGame()
 		{
 			ToddlerCarryingTracker.ClearAll();
+			Patch_VisitorToddlerBabyFood.ClearCache();
 		}
 
 		public override void ExposeData()
