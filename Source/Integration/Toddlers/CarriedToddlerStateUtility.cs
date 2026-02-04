@@ -4,6 +4,7 @@ using RimTalk_ToddlersExpansion.Integration.RimTalk;
 using RimWorld;
 using Verse;
 using Verse.AI;
+using Verse.AI.Group;
 
 namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 {
@@ -181,8 +182,41 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		private static bool ShouldStruggle(Pawn toddler)
 		{
+			if (ShouldSuppressStruggleDuringExit(toddler))
+			{
+				return false;
+			}
+
 			var food = toddler?.needs?.food;
 			return food != null && food.CurLevelPercentage < HungryThreshold;
+		}
+
+		private static bool ShouldSuppressStruggleDuringExit(Pawn toddler)
+		{
+			if (toddler == null || !ToddlerCarryingUtility.IsBeingCarried(toddler))
+			{
+				return false;
+			}
+
+			Pawn carrier = ToddlerCarryingUtility.GetCarrier(toddler);
+			if (carrier == null || carrier.Dead || carrier.Destroyed)
+			{
+				return false;
+			}
+
+			if (carrier.Faction == Faction.OfPlayer)
+			{
+				return false;
+			}
+
+			Lord lord = carrier.GetLord();
+			if (lord?.CurLordToil is LordToil_ExitMap)
+			{
+				return true;
+			}
+
+			// Trader caravans use a custom exit toil that still represents map-leaving state.
+			return lord?.CurLordToil?.GetType().Name == "LordToil_ExitMapAndEscortCarriers";
 		}
 
 		private static bool ShouldSleep(Pawn toddler)

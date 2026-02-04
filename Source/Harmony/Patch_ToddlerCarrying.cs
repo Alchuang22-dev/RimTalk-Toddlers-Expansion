@@ -5,9 +5,11 @@ using System.Reflection;
 using HarmonyLib;
 using RimTalk_ToddlersExpansion.Integration.Toddlers;
 using RimTalk_ToddlersExpansion.UI;
+using RimWorld;
 using UnityEngine;
 using Verse;
 using Verse.AI;
+using Verse.AI.Group;
 
 namespace RimTalk_ToddlersExpansion.Harmony
 {
@@ -122,6 +124,17 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				return;
 			}
 
+			// Keep carried protection hediff in sync during runtime and after load.
+			bool isBeingCarried = ToddlerCarryingUtility.IsBeingCarried(__instance);
+			if (isBeingCarried)
+			{
+				ToddlerCarryProtectionUtility.SetCarryProtectionActive(__instance, true);
+			}
+			else if (ToddlerCarryProtectionUtility.HasCarryProtection(__instance))
+			{
+				ToddlerCarryProtectionUtility.SetCarryProtectionActive(__instance, false);
+			}
+
 			// 如果这个pawn正在被背着，同步位置
 			Pawn carrier = ToddlerCarryingUtility.GetCarrier(__instance);
 			if (carrier != null && carrier.Spawned && carrier.Map == __instance.Map)
@@ -173,6 +186,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				return;
 			}
 
+			TryExitCarriedToddlersWithCarrier(__instance);
 			ToddlerCarryingUtility.ClearAllCarryingRelations(__instance);
 		}
 
@@ -187,6 +201,93 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			}
 
 			ToddlerCarryingUtility.ClearAllCarryingRelations(__instance);
+		}
+
+		private static void TryExitCarriedToddlersWithCarrier(Pawn carrier)
+		{
+			if (carrier == null || !carrier.Spawned || !ToddlerCarryingUtility.IsCarryingToddler(carrier))
+			{
+				return;
+			}
+
+			if (carrier.Faction == Faction.OfPlayer)
+			{
+				return;
+			}
+
+			if (!PawnUtility.IsExitingMap(carrier))
+			{
+				return;
+			}
+
+			Lord lord = carrier.GetLord();
+			bool inExitToil = lord?.CurLordToil is LordToil_ExitMap ||
+			                  lord?.CurLordToil?.GetType().Name == "LordToil_ExitMapAndEscortCarriers";
+			if (!inExitToil)
+			{
+				return;
+			}
+
+			List<Pawn> carriedToddlers = ToddlerCarryingUtility.GetCarriedToddlers(carrier);
+			for (int i = 0; i < carriedToddlers.Count; i++)
+			{
+				Pawn toddler = carriedToddlers[i];
+				if (toddler == null || toddler.Dead || toddler.Destroyed || !toddler.Spawned || toddler.Map != carrier.Map)
+				{
+					continue;
+				}
+
+				if (!ToddlersCompatUtility.IsToddlerOrBaby(toddler) && toddler.DevelopmentalStage != DevelopmentalStage.Child)
+				{
+					continue;
+				}
+
+				if (!TryExitMapImmediately(toddler, carrier.Rotation))
+				{
+					TryQueueExitMapJob(toddler);
+				}
+			}
+		}
+
+		private static bool TryExitMapImmediately(Pawn pawn, Rot4 facing)
+		{
+			if (_pawnExitMapMethod == null || pawn == null)
+			{
+				return false;
+			}
+
+			try
+			{
+				_pawnExitMapMethod.Invoke(pawn, new object[] { false, facing });
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
+		private static void TryQueueExitMapJob(Pawn pawn)
+		{
+			if (pawn == null || pawn.Dead || pawn.Destroyed || !pawn.Spawned)
+			{
+				return;
+			}
+
+			if (PawnUtility.IsExitingMap(pawn) || pawn.jobs?.curJob?.exitMapOnArrival == true)
+			{
+				return;
+			}
+
+			if (!RCellFinder.TryFindBestExitSpot(pawn, out IntVec3 spot, TraverseMode.ByPawn, canBash: false))
+			{
+				return;
+			}
+
+			Job job = JobMaker.MakeJob(JobDefOf.Goto, spot);
+			job.exitMapOnArrival = true;
+			job.locomotionUrgency = LocomotionUrgency.Jog;
+			pawn.jobs?.StartJob(job, JobCondition.InterruptForced);
 		}
 
 		/// <summary>
@@ -212,6 +313,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 		// 缓存反射字段以提高性能
 		private static readonly FieldInfo _healthTrackerPawnField = AccessTools.Field(typeof(Pawn_HealthTracker), "pawn");
+		private static readonly MethodInfo _pawnExitMapMethod = AccessTools.Method(typeof(Pawn), "ExitMap", new[] { typeof(bool), typeof(Rot4) });
 
 		/// <summary>
 		/// 调整被背幼儿的渲染参数

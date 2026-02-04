@@ -116,8 +116,8 @@ namespace RimTalk_ToddlersExpansion.UI
 				return false;
 			}
 			
-			// 检查是否是婴儿
-			if (pawn.DevelopmentalStage.Baby())
+			// 检查是否是新生儿/婴儿（Biotech）
+			if (pawn.DevelopmentalStage.Newborn() || pawn.DevelopmentalStage.Baby())
 			{
 				return true;
 			}

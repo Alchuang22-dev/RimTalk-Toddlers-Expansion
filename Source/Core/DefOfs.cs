@@ -58,6 +58,7 @@ namespace RimTalk_ToddlersExpansion.Core
 		public static HediffDef RimTalk_MissingTooth;
 		public static HediffDef RimTalk_MidnightSnackCooldown;
 		public static HediffDef RimTalk_CarriedPlayCooldown;
+		public static HediffDef RimTalk_CarriedProtection;
 
 		static ToddlersExpansionHediffDefOf()
 		{

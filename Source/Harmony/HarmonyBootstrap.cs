@@ -38,6 +38,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			
 			// 幼儿背负系统补丁
 			Patch_ToddlerCarrying.Init(harmony);
+			Patch_ToddlerCarriedDamageFactor.Init(harmony);
 			
 			// 幼儿无聊机制补丁
 			Patch_ToddlerBoredom.ApplyPatches(harmony);

@@ -217,7 +217,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		/// 获取载体最多可以背几个幼儿
 		/// </summary>
 		/// <param name="carrier">载体</param>
-		/// <returns>最大数�?/returns>
+		/// <returns>最大数/returns>
 		public static int GetMaxCarryCapacity(Pawn carrier)
 		{
 			// 默认最多背1个，可以根据体型、能力等调整
@@ -248,7 +248,9 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
-			if (pawn.DevelopmentalStage.Baby() || pawn.DevelopmentalStage == DevelopmentalStage.Child)
+			if (pawn.DevelopmentalStage.Newborn()
+				|| pawn.DevelopmentalStage.Baby()
+				|| pawn.DevelopmentalStage == DevelopmentalStage.Child)
 			{
 				return false;
 			}
@@ -269,7 +271,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		}
 
 		/// <summary>
-		/// 检查幼儿是否可以被�?
+		/// 检查幼儿是否可以被抱起?
 		/// </summary>
 		/// <param name="pawn">幼儿</param>
 		/// <returns>是否可以</returns>
@@ -281,7 +283,9 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			// 必须是幼儿或婴儿
-			if (!ToddlersCompatUtility.IsToddler(pawn) && !pawn.DevelopmentalStage.Baby())
+			if (!ToddlersCompatUtility.IsToddler(pawn)
+				&& !pawn.DevelopmentalStage.Newborn()
+				&& !pawn.DevelopmentalStage.Baby())
 			{
 				return false;
 			}
@@ -296,9 +300,9 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		}
 
 		/// <summary>
-		/// 获取幼儿被抱着时相对于载体的渲染偏�?
+		/// 获取幼儿被抱着时相对于载体的渲染偏向
 		/// </summary>
-		/// <param name="carrierRotation">载体的朝�?/param>
+		/// <param name="carrierRotation">载体的朝向/param>
 		/// <returns>偏移向量</returns>
 		public static Vector3 GetCarryOffset(Rot4 carrierRotation)
 		{
@@ -320,7 +324,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		}
 
 		/// <summary>
-		/// 让商�?访客组中的成年人背起所有幼�?
+		/// 让商队访客组中的成年人背起所有幼儿
 		/// </summary>
 		/// <param name="pawns">商队成员列表</param>
 		public static void AutoAssignCarryingForGroup(List<Pawn> pawns)
@@ -383,7 +387,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		}
 
 		/// <summary>
-		/// 清除所有与指定pawn相关的背负关�?
+		/// 清除所有与指定pawn相关的背负关系
 		/// </summary>
 		/// <param name="pawn">pawn</param>
 		public static void ClearAllCarryingRelations(Pawn pawn)

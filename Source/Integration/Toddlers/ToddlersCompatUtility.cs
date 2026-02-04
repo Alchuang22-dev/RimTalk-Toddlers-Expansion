@@ -195,7 +195,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return true;
 			}
 
-			return pawn?.DevelopmentalStage.Baby() ?? false;
+			return pawn?.DevelopmentalStage.Baby() == true
+				|| pawn?.DevelopmentalStage.Newborn() == true;
 		}
 
 		public static float GetToddlersAgeYears(Pawn pawn)

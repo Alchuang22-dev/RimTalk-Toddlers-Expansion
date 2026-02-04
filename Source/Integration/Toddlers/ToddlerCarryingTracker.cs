@@ -47,6 +47,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			{
 				toddlers.Add(toddler);
 			}
+
+			ToddlerCarryProtectionUtility.SetCarryProtectionActive(toddler, true);
 		}
 
 		/// <summary>
@@ -75,6 +77,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					CarrierToToddlers.Remove(carrier);
 				}
 			}
+
+			ToddlerCarryProtectionUtility.SetCarryProtectionActive(toddler, false);
 		}
 
 		/// <summary>

@@ -35,8 +35,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		{
 			// 验证幼儿
 			this.FailOnDespawnedNullOrForbidden(TargetIndex.A);
-			this.FailOnDowned(TargetIndex.A);
-
 			// 走到幼儿身边
 			yield return Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.Touch);
 
