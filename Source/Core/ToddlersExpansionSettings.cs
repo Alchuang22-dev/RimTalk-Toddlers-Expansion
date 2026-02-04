@@ -24,7 +24,10 @@ namespace RimTalk_ToddlersExpansion.Core
 		// 语言学习设置
 		public static float learningFactor_Talking = 0.8f; // 与其他学习保持一致
 
-		// AI ????
+		// Toddler eating speed settings
+		public static float toddlerEatingSpeedFactor = 1f; // 1 = Toddlers default (slow)
+
+		// AI 逻辑
 		public static bool enableHostileToddlerColonistBehavior = true;
 
 		public override void ExposeData()
@@ -49,6 +52,7 @@ namespace RimTalk_ToddlersExpansion.Core
 
 			// 语言学习设置
 			Scribe_Values.Look(ref learningFactor_Talking, "learningFactor_Talking", 0.8f);
+			Scribe_Values.Look(ref toddlerEatingSpeedFactor, "toddlerEatingSpeedFactor", 1f);
 
 			// AI 行为修正
 			Scribe_Values.Look(ref enableHostileToddlerColonistBehavior, "enableHostileToddlerColonistBehavior", true);

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using RimTalk_ToddlersExpansion.Core;
 using RimWorld;
 using Toddlers;
+using UnityEngine;
 using Verse;
 using Verse.AI;
 
@@ -340,12 +341,20 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 	public sealed class ToddlerPlayGiver_ObserveAdultWork : ToddlerPlayGiver
 	{
-		private const float MaxDistanceToAdult = 30f;
+		private const float MaxDistanceToAdult = 100f;
 		private const float MaxToddlerFollowDistanceSq = 25f;
+		private const float MaxMovingAdultDistanceSq = 9f;
+		private const int ObserveCooldownTicks = 60;
+		private const int ObserveCooldownKey = 1934182754;
 
 		public override bool CanDo(Pawn pawn)
 		{
 			if (!IsEligiblePawn(pawn))
+			{
+				return false;
+			}
+
+			if (IsOnCooldown(pawn))
 			{
 				return false;
 			}
@@ -366,6 +375,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return null;
 			}
 
+			StartCooldown(pawn);
 			return JobMaker.MakeJob(def.jobDef, adult);
 		}
 
@@ -384,6 +394,33 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			return !PawnUtility.WillSoonHaveBasicNeed(pawn, -0.05f);
 		}
 
+		private static bool IsOnCooldown(Pawn pawn)
+		{
+			if (pawn?.mindState?.thinkData == null)
+			{
+				return false;
+			}
+
+			int now = Find.TickManager?.TicksGame ?? 0;
+			if (!pawn.mindState.thinkData.TryGetValue(ObserveCooldownKey, out int nextTick))
+			{
+				return false;
+			}
+
+			return now < nextTick;
+		}
+
+		private static void StartCooldown(Pawn pawn)
+		{
+			if (pawn?.mindState?.thinkData == null)
+			{
+				return;
+			}
+
+			int now = Find.TickManager?.TicksGame ?? 0;
+			pawn.mindState.thinkData[ObserveCooldownKey] = now + ObserveCooldownTicks;
+		}
+
 		private static Pawn FindBestAdult(Pawn pawn)
 		{
 			Pawn bestAdult = null;
@@ -391,13 +428,17 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 			foreach (Pawn adult in AdultsToObserve(pawn))
 			{
-				if (pawn.Position.DistanceToSquared(adult.Position) > MaxToddlerFollowDistanceSq)
+				float distanceSq = pawn.Position.DistanceToSquared(adult.Position);
+				if (distanceSq > MaxToddlerFollowDistanceSq)
 				{
 					continue;
 				}
 
-				float distance = pawn.Position.DistanceTo(adult.Position);
-				float score = 1f / (distance * distance);
+				float score = 1f / Mathf.Max(1f, distanceSq);
+				if (adult.pather?.Moving == true)
+				{
+					score *= 0.5f;
+				}
 
 				if (score > bestScore)
 				{
@@ -411,17 +452,35 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		private static IEnumerable<Pawn> AdultsToObserve(Pawn toddler)
 		{
-			if (toddler == null || !toddler.Spawned)
+			if (toddler == null || !toddler.Spawned || toddler.Map == null)
 			{
 				yield break;
 			}
 
-			foreach (Thing thing in GenRadial.RadialDistinctThingsAround(toddler.Position, toddler.Map, MaxDistanceToAdult, true))
+			foreach (Pawn pawn in toddler.Map.mapPawns.FreeColonistsSpawned)
 			{
-				if (thing is Pawn pawn && ToddlerCanLearnFromAdult(toddler, pawn))
+				if (pawn == null)
 				{
-					yield return pawn;
+					continue;
 				}
+
+				float distanceSq = pawn.Position.DistanceToSquared(toddler.Position);
+				if (distanceSq > MaxDistanceToAdult * MaxDistanceToAdult)
+				{
+					continue;
+				}
+
+				if (!ToddlerCanLearnFromAdult(toddler, pawn))
+				{
+					continue;
+				}
+
+				if (pawn.pather?.Moving == true && distanceSq > MaxMovingAdultDistanceSq)
+				{
+					continue;
+				}
+
+				yield return pawn;
 			}
 		}
 
@@ -432,7 +491,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
-			if (adult.DevelopmentalStage.Juvenile() || adult == toddler || adult.IsForbidden(adult))
+			if (adult.DevelopmentalStage.Juvenile() || adult == toddler || adult.IsForbidden(toddler))
 			{
 				return false;
 			}
@@ -442,15 +501,15 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
-			if (!adult.CanReach(toddler.Position, PathEndMode.OnCell, Danger.Some))
+			if (!toddler.CanReach(adult, PathEndMode.Touch, Danger.Some))
 			{
 				return false;
 			}
 
-			return ChildCanLearnFromAdultJob(adult);
+			return IsInterestingAdultJob(adult);
 		}
 
-		private static bool ChildCanLearnFromAdultJob(Pawn adult)
+		private static bool IsInterestingAdultJob(Pawn adult)
 		{
 			Job curJob = adult.CurJob;
 			if (curJob == null)
@@ -464,14 +523,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
-			RecipeDef recipe = curJob.RecipeDef;
-			if (recipe?.workSkill != null)
-			{
-				return true;
-			}
-
-			List<SkillDef> relevantSkills = curJob.workGiverDef?.workType?.relevantSkills;
-			return !relevantSkills.NullOrEmpty();
+			return true;
 		}
 	}
 }

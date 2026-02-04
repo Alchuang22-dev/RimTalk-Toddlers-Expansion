@@ -38,6 +38,10 @@
   <RimTalk_Language_Settings_Header>Language Learning</RimTalk_Language_Settings_Header>
   <RimTalk_Language_LearningFactor>Learning speed: {0}</RimTalk_Language_LearningFactor>
 
+  <!-- Feeding Settings -->
+  <RimTalk_ToddlersExpansion_Feeding_Settings_Header>Feeding</RimTalk_ToddlersExpansion_Feeding_Settings_Header>
+  <RimTalk_ToddlersExpansion_ToddlerEatingSpeed>Toddler eating speed: x{0}</RimTalk_ToddlersExpansion_ToddlerEatingSpeed>
+
   <!-- Behavior Settings -->
   <RimTalk_ToddlersExpansion_Behavior_Settings_Header>Behavior Tweaks</RimTalk_ToddlersExpansion_Behavior_Settings_Header>
   <RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior>Treat hostile toddlers/babies as colonists on player maps</RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior>

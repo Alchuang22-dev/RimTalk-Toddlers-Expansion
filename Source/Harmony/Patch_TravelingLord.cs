@@ -116,6 +116,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				// 当 Pawn 离开 Lord 时（比如商队解散）
 				// 清除该pawn的所有背负关系
 				ToddlerCarryingUtility.ClearAllCarryingRelations(p);
+				EnsureExitMapDutyForUncarriedToddlers(__instance);
 	
 				// 检查是否有 toddlers 失去了监护人
 				if (__instance.ownedPawns.NullOrEmpty())
@@ -127,6 +128,42 @@ namespace RimTalk_ToddlersExpansion.Harmony
 					TryReassignGuardians(__instance, p);
 				}
 			}
+
+		private static void EnsureExitMapDutyForUncarriedToddlers(Lord lord)
+		{
+			if (lord == null || lord.ownedPawns.NullOrEmpty())
+			{
+				return;
+			}
+
+			if (lord.CurLordToil is not LordToil_ExitMap)
+			{
+				return;
+			}
+
+			for (int i = 0; i < lord.ownedPawns.Count; i++)
+			{
+				Pawn pawn = lord.ownedPawns[i];
+				if (pawn == null)
+				{
+					continue;
+				}
+
+				bool isYoungPawn = ToddlersCompatUtility.IsToddlerOrBaby(pawn) ||
+				                   pawn.DevelopmentalStage == DevelopmentalStage.Child;
+				if (!isYoungPawn)
+				{
+					continue;
+				}
+
+				if (ToddlerCarryingUtility.IsBeingCarried(pawn))
+				{
+					continue;
+				}
+
+				pawn.mindState.duty = new PawnDuty(DutyDefOf.ExitMapBest);
+			}
+		}
 
 		private static bool IsTravelingLord(LordJob lordJob)
 		{

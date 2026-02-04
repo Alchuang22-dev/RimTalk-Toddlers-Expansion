@@ -2,4 +2,5 @@
 <LanguageData>
   <RimTalk_WantToBeHeld.label>想要抱抱</RimTalk_WantToBeHeld.label>
   <RimTalk_WantToBeHeld.description>我好累...谁来抱抱我？</RimTalk_WantToBeHeld.description>
+  <RimTalk_WantToBeHeld.baseInspectLine>精神状态: 想要抱抱</RimTalk_WantToBeHeld.baseInspectLine>
 </LanguageData>

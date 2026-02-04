@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using RimWorld;
-using UnityEngine;
 using Verse;
 using Verse.AI;
 
@@ -11,6 +10,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private const int FollowDistance = 4;
 		private const int MaxConsecutiveTicksNoSkillJob = 5;
 		private const float JoyGainPerTick = 0.0001f;
+		private int _consecutiveTicksNoSkillJob;
+		private int _lastDebugLogTick = -99999;
 
 		private Pawn AdultToFollow => (Pawn)TargetA;
 
@@ -18,49 +19,93 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		protected override IEnumerable<Toil> MakeNewToils()
 		{
-			this.FailOnDespawnedNullOrForbidden(TargetIndex.A);
+			this.FailOnDespawnedOrNull(TargetIndex.A);
 			yield return FollowAndObserve();
 		}
 
 		private Toil FollowAndObserve()
 		{
 			Toil toil = new Toil();
-			toil.defaultCompleteMode = ToilCompleteMode.Delay;
-			toil.defaultDuration = MaxConsecutiveTicksNoSkillJob;
-			toil.tickAction = () =>
+			toil.defaultCompleteMode = ToilCompleteMode.Never;
+			toil.tickIntervalAction = delta =>
 			{
 				Pawn adult = AdultToFollow;
 				if (adult == null || adult.Destroyed || adult.Dead || !adult.Spawned)
 				{
-					ReadyForNextToil();
+					LogDebug("adult_missing");
+					EndJobWith(JobCondition.Succeeded);
 					return;
 				}
 
 				if (!ToddlerCanLearnFromAdult(pawn, adult))
 				{
-					ReadyForNextToil();
+					_consecutiveTicksNoSkillJob++;
+					if (_consecutiveTicksNoSkillJob >= MaxConsecutiveTicksNoSkillJob)
+					{
+						LogDebug("adult_not_eligible");
+						EndJobWith(JobCondition.Succeeded);
+					}
 					return;
 				}
 
-				if (IsDoingSkillJob(adult))
+				if (IsDoingInterestingJob(adult))
 				{
-					GainJoy();
+					_consecutiveTicksNoSkillJob = 0;
+					GainJoy(delta);
 					MoveToObservationPosition(adult);
 				}
 				else if (adult.CurJob?.def == JobDefOf.Goto)
 				{
+					_consecutiveTicksNoSkillJob = 0;
 					MoveToObservationPosition(adult);
 				}
 				else
 				{
-					ReadyForNextToil();
+					_consecutiveTicksNoSkillJob++;
+					if (_consecutiveTicksNoSkillJob >= MaxConsecutiveTicksNoSkillJob)
+					{
+						LogDebug("adult_not_interesting");
+						EndJobWith(JobCondition.Succeeded);
+					}
 				}
 			};
 
-			toil.AddFailCondition(() => !ToddlersCompatUtility.IsToddler(pawn) || pawn.pather.Moving);
-			toil.AddFailCondition(() => PawnUtility.WillSoonHaveBasicNeed(pawn, -0.05f));
-			toil.AddFailCondition(() => pawn.needs?.joy?.CurLevel > 0.9f);
-			toil.AddEndCondition(() => pawn.needs?.food?.CurLevel < 0.1f ? JobCondition.Incompletable : JobCondition.Ongoing);
+			toil.AddEndCondition(() =>
+			{
+				if (!ToddlersCompatUtility.IsToddler(pawn))
+				{
+					LogDebug("not_toddler");
+					return JobCondition.Incompletable;
+				}
+
+				if (PawnUtility.WillSoonHaveBasicNeed(pawn, -0.05f))
+				{
+					LogDebug("basic_need");
+					return JobCondition.Incompletable;
+				}
+
+				return JobCondition.Ongoing;
+			});
+			toil.AddEndCondition(() =>
+			{
+				if (pawn.needs?.joy?.CurLevel > 0.9f)
+				{
+					LogDebug("joy_full");
+					return JobCondition.Incompletable;
+				}
+
+				return JobCondition.Ongoing;
+			});
+			toil.AddEndCondition(() =>
+			{
+				if (pawn.needs?.food?.CurLevel < 0.1f)
+				{
+					LogDebug("too_hungry");
+					return JobCondition.Incompletable;
+				}
+
+				return JobCondition.Ongoing;
+			});
 
 			return toil;
 		}
@@ -77,7 +122,17 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
+			if (adult.IsForbidden(toddler))
+			{
+				return false;
+			}
+
 			if (!adult.Awake() || adult.IsPrisonerOfColony || adult.IsPrisoner)
+			{
+				return false;
+			}
+
+			if (!toddler.CanReach(adult, PathEndMode.Touch, Danger.Some))
 			{
 				return false;
 			}
@@ -91,7 +146,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			return true;
 		}
 
-		private bool IsDoingSkillJob(Pawn adult)
+		private bool IsDoingInterestingJob(Pawn adult)
 		{
 			Job curJob = adult.CurJob;
 			if (curJob == null)
@@ -105,21 +160,14 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
-			RecipeDef recipe = curJob.RecipeDef;
-			if (recipe?.workSkill != null)
-			{
-				return true;
-			}
-
-			List<SkillDef> relevantSkills = curJob.workGiverDef?.workType?.relevantSkills;
-			return !relevantSkills.NullOrEmpty();
+			return true;
 		}
 
-		private void GainJoy()
+		private void GainJoy(int delta)
 		{
 			if (pawn.needs?.joy != null)
 			{
-				pawn.needs.joy.CurLevel += JoyGainPerTick;
+				pawn.needs.joy.CurLevel += JoyGainPerTick * delta;
 			}
 		}
 
@@ -131,7 +179,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			IntVec3 cell = GetObservationCell(adult);
-			if (cell.IsValid && cell != pawn.Position)
+			if (cell.IsValid && cell != pawn.Position && pawn.CanReach(cell, PathEndMode.OnCell, Danger.Some))
 			{
 				pawn.pather.StartPath(cell, PathEndMode.OnCell);
 			}
@@ -161,6 +209,23 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			return bestCell;
+		}
+
+		private void LogDebug(string reason)
+		{
+			if (!Prefs.DevMode)
+			{
+				return;
+			}
+
+			int now = Find.TickManager?.TicksGame ?? 0;
+			if (now == _lastDebugLogTick)
+			{
+				return;
+			}
+
+			_lastDebugLogTick = now;
+			Log.Message($"[RimTalk_ToddlersExpansion] ObserveAdultWork end: pawn={pawn?.LabelShort ?? "null"} reason={reason} adult={AdultToFollow?.LabelShort ?? "null"}");
 		}
 	}
 }

@@ -7,3 +7,4 @@ RimTalk Expand Toddlers
 - 捉迷藏活动
 - 哭泣应对
 - 搞破坏
+- 抱着幼儿时被攻击应对

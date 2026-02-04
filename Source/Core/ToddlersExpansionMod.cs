@@ -36,7 +36,7 @@ namespace RimTalk_ToddlersExpansion.Core
 			var settings = Settings;
 
 			// 计算内容高度 - 足够容纳所有设置项
-			float contentHeight = 1120f;
+			float contentHeight = 1200f;
 			Rect viewRect = new Rect(0f, 0f, inRect.width - 20f, contentHeight);
 
 			Widgets.BeginScrollView(inRect, ref scrollPosition, viewRect);
@@ -83,6 +83,16 @@ namespace RimTalk_ToddlersExpansion.Core
 
 			listingStandard.Label("RimTalk_Language_LearningFactor".Translate(ToddlersExpansionSettings.learningFactor_Talking.ToStringPercent()));
 			ToddlersExpansionSettings.learningFactor_Talking = listingStandard.Slider(ToddlersExpansionSettings.learningFactor_Talking, 0.01f, 1f);
+			listingStandard.Gap();
+
+			listingStandard.GapLine();
+
+			// ========== Feeding Settings ==========
+			listingStandard.Label("RimTalk_ToddlersExpansion_Feeding_Settings_Header".Translate());
+			listingStandard.GapLine();
+
+			listingStandard.Label("RimTalk_ToddlersExpansion_ToddlerEatingSpeed".Translate(ToddlersExpansionSettings.toddlerEatingSpeedFactor.ToString("0.##")));
+			ToddlersExpansionSettings.toddlerEatingSpeedFactor = listingStandard.Slider(ToddlersExpansionSettings.toddlerEatingSpeedFactor, 0.1f, 10f);
 			listingStandard.Gap();
 
 			listingStandard.GapLine();
