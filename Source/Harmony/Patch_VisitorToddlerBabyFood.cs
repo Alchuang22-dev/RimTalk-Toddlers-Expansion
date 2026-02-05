@@ -15,8 +15,10 @@ namespace RimTalk_ToddlersExpansion.Harmony
 	/// 修复Hospitality mod兼容性问题：
 	/// Hospitality的访客生成逻辑会截断我们注入的toddler pawns，
 	/// 导致来访的幼儿没有婴儿食品。
-	/// 
-	/// 此补丁在toddler实际spawn到地图后检查并补充婴儿食品。
+	///
+	/// 此补丁在toddler实际spawn到地图后：
+	/// 1. 检查并补充婴儿食品
+	/// 2. 尝试为未被背负的幼儿分配背负关系
 	/// </summary>
 	public static class Patch_VisitorToddlerBabyFood
 	{
@@ -27,6 +29,8 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 		// 缓存已经处理过的pawn，避免重复添加食品
 		private static HashSet<int> _processedPawnIds = new HashSet<int>();
+		// 缓存已经处理过背负关系的pawn
+		private static HashSet<int> _processedCarryingIds = new HashSet<int>();
 		private static int _lastCleanupTick = 0;
 		private const int CleanupInterval = 60000; // 每小时清理一次缓存
 
@@ -98,6 +102,110 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 			// 检查并补充婴儿食品
 			TryEnsureBabyFood(pawn);
+
+			// 延后处理背负关系（需要等其他成员也spawn完成）
+			// 使用延迟调用，在下一帧处理背负关系
+			TryScheduleCarryingAssignment(pawn);
+		}
+
+		/// <summary>
+		/// 尝试安排背负关系分配
+		/// 使用延迟机制，确保同一Lord的所有成员都已spawn
+		/// </summary>
+		private static void TryScheduleCarryingAssignment(Pawn toddler)
+		{
+			if (toddler == null || _processedCarryingIds.Contains(toddler.thingIDNumber))
+			{
+				return;
+			}
+
+			// 标记为已处理背负关系
+			_processedCarryingIds.Add(toddler.thingIDNumber);
+
+			// 如果已经被背着，不需要处理
+			if (ToddlerCarryingUtility.IsBeingCarried(toddler))
+			{
+				return;
+			}
+
+			// 延迟60 ticks（约1秒）后处理，确保同一Lord的所有成员都已spawn
+			// 使用LongEventHandler来避免在spawn过程中修改状态
+			LongEventHandler.QueueLongEvent(() =>
+			{
+				TryAssignCarryingForToddler(toddler);
+			}, null, false, null);
+		}
+
+		/// <summary>
+		/// 尝试为单个幼儿分配背负关系
+		/// </summary>
+		private static void TryAssignCarryingForToddler(Pawn toddler)
+		{
+			if (toddler == null || toddler.Dead || toddler.Destroyed || !toddler.Spawned)
+			{
+				return;
+			}
+
+			// 如果已经被背着，不需要处理
+			if (ToddlerCarryingUtility.IsBeingCarried(toddler))
+			{
+				return;
+			}
+
+			// 检查是否仍然是访客幼儿
+			if (!IsVisitorToddler(toddler))
+			{
+				return;
+			}
+
+			// 获取幼儿所属的Lord
+			Lord lord = toddler.GetLord();
+			if (lord == null)
+			{
+				return;
+			}
+
+			// 在Lord成员中找到可以背负幼儿的成年人
+			List<Pawn> lordMembers = lord.ownedPawns;
+			if (lordMembers == null || lordMembers.Count == 0)
+			{
+				return;
+			}
+
+			// 找到一个可用的carrier
+			foreach (Pawn potentialCarrier in lordMembers)
+			{
+				if (potentialCarrier == null || potentialCarrier == toddler)
+				{
+					continue;
+				}
+
+				if (!ToddlerCarryingUtility.IsValidCarrier(potentialCarrier))
+				{
+					continue;
+				}
+
+				// 检查这个carrier是否还有容量
+				if (ToddlerCarryingUtility.GetCarriedToddlerCount(potentialCarrier) >= ToddlerCarryingUtility.GetMaxCarryCapacity(potentialCarrier))
+				{
+					continue;
+				}
+
+				// 尝试分配背负关系
+				if (ToddlerCarryingUtility.TryMountToddler(potentialCarrier, toddler))
+				{
+					if (Prefs.DevMode)
+					{
+						Log.Message($"[RimTalk_ToddlersExpansion] 延后分配背负: {potentialCarrier.Name} 背起访客幼儿 {toddler.Name}");
+					}
+					return;
+				}
+			}
+
+			if (Prefs.DevMode)
+			{
+				Log.Message($"[RimTalk_ToddlersExpansion] 无法为访客幼儿 {toddler.Name} 找到可用的carrier");
+			}
 		}
 
 		private static bool IsVisitorToddler(Pawn pawn)
@@ -224,13 +332,14 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			
 			// 清理缓存中不再存在的pawn IDs
 			// 为了简单起见，我们只在缓存过大时清空
-			if (_processedPawnIds.Count > 1000)
+			if (_processedPawnIds.Count > 1000 || _processedCarryingIds.Count > 1000)
 			{
 				_processedPawnIds.Clear();
+				_processedCarryingIds.Clear();
 				
 				if (Prefs.DevMode)
 				{
-					Log.Message("[RimTalk_ToddlersExpansion] 清理访客幼儿婴儿食品处理缓存");
+					Log.Message("[RimTalk_ToddlersExpansion] 清理访客幼儿处理缓存");
 				}
 			}
 		}
@@ -241,7 +350,18 @@ namespace RimTalk_ToddlersExpansion.Harmony
 		public static void ClearCache()
 		{
 			_processedPawnIds.Clear();
+			_processedCarryingIds.Clear();
 			_lastCleanupTick = 0;
+		}
+
+		/// <summary>
+		/// 清理无效的背负关系（carrier不存在或已离开地图）
+		/// 这可以在GameComponent的tick中定期调用
+		/// </summary>
+		public static void CleanupInvalidCarryingRelations()
+		{
+			// 这个功能由ToddlerCarryingTracker.CleanupInvalidEntries处理
+			// 这里只是提供一个入口点
 		}
 	}
 }

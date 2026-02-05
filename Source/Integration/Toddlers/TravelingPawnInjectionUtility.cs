@@ -57,9 +57,24 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return;
 			}
 
-			// 计算当前组中的幼儿和儿童数量
+			// 计算当前组中的成年人、幼儿和儿童数量
+			int adultCount = CountAdults(pawnList);
 			int existingToddlerCount = pawnList.Count(ToddlersCompatUtility.IsToddler);
 			int existingChildCount = pawnList.Count(IsChildPawn);
+
+			// 如果没有成年人，不生成幼儿（幼儿需要成年人照顾）
+			if (adultCount == 0)
+			{
+				return;
+			}
+
+			// 计算可以生成的最大幼儿数量（不能超过成年人数量，确保每个幼儿都能被抱）
+			int maxToddlersByAdults = adultCount - existingToddlerCount;
+			if (maxToddlersByAdults <= 0)
+			{
+				// 成年人数量已经不足以照顾现有的幼儿，不再生成幼儿
+				maxToddlersByAdults = 0;
+			}
 
 			// 如果已达到最大数量限制，不再生成
 			if (existingToddlerCount >= ToddlersExpansionMod.Settings.MaxToddlersPerGroup &&
@@ -89,11 +104,22 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 													  existingChildCount + childToAdd < ToddlersExpansionMod.Settings.MaxChildrenPerGroup); i++)
 			{
 				bool wantChild;
-				if (existingToddlerCount + toddlerToAdd >= ToddlersExpansionMod.Settings.MaxToddlersPerGroup)
+				
+				// 检查是否还能生成幼儿（受成人数量限制）
+				bool canAddMoreToddlers = (existingToddlerCount + toddlerToAdd) < ToddlersExpansionMod.Settings.MaxToddlersPerGroup
+					&& toddlerToAdd < maxToddlersByAdults;
+				bool canAddMoreChildren = (existingChildCount + childToAdd) < ToddlersExpansionMod.Settings.MaxChildrenPerGroup;
+
+				if (!canAddMoreToddlers && !canAddMoreChildren)
 				{
-					wantChild = true; // 幼儿已达上限，只能生成儿童
+					break; // 都不能再添加了
 				}
-				else if (existingChildCount + childToAdd >= ToddlersExpansionMod.Settings.MaxChildrenPerGroup)
+				
+				if (!canAddMoreToddlers)
+				{
+					wantChild = true; // 幼儿受限，只能生成儿童
+				}
+				else if (!canAddMoreChildren)
 				{
 					wantChild = false; // 儿童已达上限，只能生成幼儿
 				}
@@ -127,24 +153,55 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			if (added > 0)
+			{
+				if (addedToddler)
 				{
-					if (addedToddler)
-					{
-						EnsureWalkDef();
-						EnsureWalkingToddlers(pawnList);
-						
-						// 自动分配背负关系：让成年人背着幼儿
-						ToddlerCarryingUtility.AutoAssignCarryingForGroup(pawnList);
-					}
-	
-					pawns = pawnList;
-					if (Prefs.DevMode)
-					{
-						string kind = parms?.groupKind?.defName ?? "UnknownGroup";
-						string faction = parms?.faction?.Name ?? "NoFaction";
-						Log.Message($"[RimTalk_ToddlersExpansion] Added {added} toddler/child pawns to {kind} group ({faction}) based on settings.");
-					}
+					EnsureWalkDef();
+					EnsureWalkingToddlers(pawnList);
+					
+					// 注意：不再在这里分配背负关系
+					// 因为Hospitality等mod可能会在之后重新处理pawns
+					// 背负关系将在pawn实际spawn到地图后由Patch_VisitorToddlerBabyFood处理
 				}
+
+				pawns = pawnList;
+				if (Prefs.DevMode)
+				{
+					string kind = parms?.groupKind?.defName ?? "UnknownGroup";
+					string faction = parms?.faction?.Name ?? "NoFaction";
+					Log.Message($"[RimTalk_ToddlersExpansion] Added {added} toddler/child pawns to {kind} group ({faction}) based on settings. Adults: {adultCount}, MaxToddlersByAdults: {maxToddlersByAdults}");
+				}
+			}
+		}
+
+		/// <summary>
+		/// 计算列表中的成年人数量
+		/// </summary>
+		private static int CountAdults(List<Pawn> pawns)
+		{
+			int count = 0;
+			for (int i = 0; i < pawns.Count; i++)
+			{
+				Pawn pawn = pawns[i];
+				if (pawn?.RaceProps?.Humanlike != true)
+				{
+					continue;
+				}
+
+				if (pawn.DevelopmentalStage.Newborn() || pawn.DevelopmentalStage.Baby())
+				{
+					continue;
+				}
+
+				if (ToddlersCompatUtility.IsToddler(pawn) || pawn.DevelopmentalStage == DevelopmentalStage.Child)
+				{
+					continue;
+				}
+
+				count++;
+			}
+
+			return count;
 		}
 
 		private static bool IsEligibleGroup(PawnGroupMakerParms parms)
