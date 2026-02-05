@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
   <RimTalk_CarriedProtection.label>being carried</RimTalk_CarriedProtection.label>
-  <RimTalk_CarriedProtection.description>This toddler is being carried and is partially shielded from harm.</RimTalk_CarriedProtection.description>
+  <RimTalk_CarriedProtection.description>This toddler is being carried and is partially shielded from harm. While carried, comfy temperature min -80C and comfy temperature max +80C.</RimTalk_CarriedProtection.description>
 </LanguageData>
