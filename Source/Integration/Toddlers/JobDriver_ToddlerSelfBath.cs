@@ -47,7 +47,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		protected override IEnumerable<Toil> MakeNewToils()
 		{
 			this.FailOn(() => pawn == null || pawn.Map == null);
-			this.FailOn(() => pawn.Downed || pawn.Drafted || pawn.InMentalState);
+			this.FailOn(() => pawn.Downed || pawn.Drafted || ToddlerMentalStateUtility.HasBlockingMentalState(pawn));
 			this.FailOn(() => !ToddlersCompatUtility.IsToddler(pawn));
 			this.FailOn(() => !ToddlersCompatUtility.CanSelfCare(pawn));
 			this.FailOn(() => ToddlerSelfBathUtility.GetHygieneNeed(pawn) == null);

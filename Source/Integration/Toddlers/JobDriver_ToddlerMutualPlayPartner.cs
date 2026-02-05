@@ -21,8 +21,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		protected override IEnumerable<Toil> MakeNewToils()
 		{
 			this.FailOnDestroyedOrNull(InitiatorInd);
-			this.FailOn(() => pawn.Downed || pawn.Drafted || pawn.InMentalState);
-			this.FailOn(() => Initiator == null || Initiator.Downed || Initiator.Drafted || Initiator.InMentalState);
+			this.FailOn(() => pawn.Downed || pawn.Drafted || ToddlerMentalStateUtility.HasBlockingMentalState(pawn));
+			this.FailOn(() => Initiator == null || Initiator.Downed || Initiator.Drafted || ToddlerMentalStateUtility.HasBlockingMentalState(Initiator));
 			this.FailOn(() => Initiator.Map != pawn.Map);
 
 			// Step 1: Wait for initiator to arrive (stop moving and stay in place)

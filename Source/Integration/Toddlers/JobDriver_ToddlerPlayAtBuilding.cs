@@ -31,7 +31,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		protected override IEnumerable<Toil> MakeNewToils()
 		{
 			this.FailOnDestroyedOrNull(ToyInd);
-			this.FailOn(() => pawn.Downed || pawn.Drafted || pawn.InMentalState);
+			this.FailOn(() => pawn.Downed || pawn.Drafted || ToddlerMentalStateUtility.HasBlockingMentalState(pawn));
 
 			yield return Toils_Goto.GotoThing(ToyInd, PathEndMode.InteractionCell);
 

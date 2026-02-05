@@ -30,7 +30,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 		private static void AddHumanlikeOrders_Postfix(Vector3 clickPos, Pawn pawn, List<FloatMenuOption> opts)
 		{
-			if (pawn?.Map == null || opts == null || pawn.Downed || pawn.Drafted || pawn.InMentalState)
+			if (pawn?.Map == null || opts == null || pawn.Downed || pawn.Drafted || ToddlerMentalStateUtility.HasBlockingMentalState(pawn))
 			{
 				return;
 			}

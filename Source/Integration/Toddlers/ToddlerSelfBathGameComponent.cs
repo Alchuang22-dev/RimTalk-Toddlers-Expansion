@@ -66,7 +66,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		private void TryAssignSelfBathJobs(Map map)
 		{
-			List<Pawn> pawns = map.mapPawns?.SpawnedPawnsInFaction(Faction.OfPlayer);
+			// Include colony prisoners as well, otherwise prisoner toddlers never get auto self-bath jobs.
+			List<Pawn> pawns = map.mapPawns?.FreeColonistsAndPrisonersSpawned;
 			if (pawns == null || pawns.Count == 0)
 			{
 				return;
@@ -199,7 +200,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		public static bool IsEligibleSelfBathPawn(Pawn pawn)
 		{
-			if (pawn == null || pawn.Map == null || pawn.Downed || pawn.Drafted || pawn.InMentalState)
+			if (pawn == null || pawn.Map == null || pawn.Downed || pawn.Drafted || ToddlerMentalStateUtility.HasBlockingMentalState(pawn))
 			{
 				return false;
 			}
@@ -260,7 +261,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			sb.AppendLine($"  Map: {(pawn.Map != null ? "✓ Has map" : "✗ No map")}");
 			sb.AppendLine($"  Downed: {(pawn.Downed ? "✗ YES (blocked)" : "✓ No")}");
 			sb.AppendLine($"  Drafted: {(pawn.Drafted ? "✗ YES (blocked)" : "✓ No")}");
-			sb.AppendLine($"  InMentalState: {(pawn.InMentalState ? "✗ YES (blocked)" : "✓ No")}");
+			sb.AppendLine($"  InMentalState: {(ToddlerMentalStateUtility.HasBlockingMentalState(pawn) ? "✗ YES (blocked)" : "✓ No / non-blocking")}");
 			sb.AppendLine($"  Awake: {(pawn.Awake() ? "✓ Yes" : "✗ NO (blocked)")}");
 
 			// 身份检查
@@ -435,7 +436,15 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 			if (_findBestHygieneSource != null)
 			{
-				return TryFindBestAdultHygieneSource(pawn, out target, debugLog);
+				if (TryFindBestAdultHygieneSource(pawn, out target, debugLog))
+				{
+					return true;
+				}
+
+				if (debugLog)
+				{
+					Log.Message($"[SelfBath Debug] {pawn.LabelShort}: Adult hygiene source failed, trying toddler/clean-water fallback");
+				}
 			}
 
 
@@ -899,17 +908,25 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				_findBathOrTub = AccessTools.Method(washUtility, "FindBathOrTub", new[] { typeof(Pawn), typeof(Pawn), typeof(Thing).MakeByRefType() });
 			}
 
-            Type closestSanitation = AccessTools.TypeByName("DubsBadHygiene.ClosestSanitation");
+			Type closestSanitation = AccessTools.TypeByName("DubsBadHygiene.ClosestSanitation");
 			if (closestSanitation != null)
 			{
 				_findBestHygieneSource = AccessTools.Method(closestSanitation, "FindBestHygieneSource", new[] { typeof(Pawn), typeof(bool), typeof(float) });
+				_findBestCleanWaterSource ??= AccessTools.Method(
+					closestSanitation,
+					"FindBestCleanWaterSource",
+					new[] { typeof(Pawn), typeof(Pawn), typeof(bool), typeof(float), typeof(ThingDef), typeof(Pawn) });
 			}
 
 			Type patchDbh = AccessTools.TypeByName("Toddlers.Patch_DBH");
 			if (patchDbh != null)
 			{
-			_findBestCleanWaterSource = AccessTools.Field(patchDbh, "m_FindBestCleanWaterSource")?.GetValue(null) as MethodInfo;
-		}
+				MethodInfo patchMethod = AccessTools.Field(patchDbh, "m_FindBestCleanWaterSource")?.GetValue(null) as MethodInfo;
+				if (patchMethod != null)
+				{
+					_findBestCleanWaterSource = patchMethod;
+				}
+			}
 
 			_bathType = AccessTools.TypeByName("DubsBadHygiene.Building_bath");
 			_showerType = AccessTools.TypeByName("DubsBadHygiene.Building_shower");

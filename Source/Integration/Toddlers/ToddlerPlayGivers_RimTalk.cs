@@ -54,7 +54,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
-			if (pawn.Downed || pawn.Drafted || pawn.InMentalState)
+			if (pawn.Downed || pawn.Drafted || ToddlerMentalStateUtility.HasBlockingMentalState(pawn))
 			{
 				return false;
 			}
@@ -138,7 +138,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
-			if (pawn.Downed || pawn.Drafted || pawn.InMentalState || !pawn.Awake())
+			if (pawn.Downed || pawn.Drafted || ToddlerMentalStateUtility.HasBlockingMentalState(pawn) || !pawn.Awake())
 			{
 				return false;
 			}
@@ -165,7 +165,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					continue;
 				}
 
-				if (other.Downed || other.Drafted || other.InMentalState || !other.Awake())
+				if (other.Downed || other.Drafted || ToddlerMentalStateUtility.HasBlockingMentalState(other) || !other.Awake())
 				{
 					continue;
 				}
@@ -263,7 +263,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
-			if (pawn.Downed || pawn.Drafted || pawn.InMentalState)
+			if (pawn.Downed || pawn.Drafted || ToddlerMentalStateUtility.HasBlockingMentalState(pawn))
 			{
 				return false;
 			}

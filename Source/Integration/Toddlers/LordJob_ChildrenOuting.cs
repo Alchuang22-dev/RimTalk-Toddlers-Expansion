@@ -181,7 +181,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
                 return false;
             }
             
-            if (p.InMentalState)
+            if (ToddlerMentalStateUtility.HasBlockingMentalState(p))
             {
                 return false;
             }
@@ -211,7 +211,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
                 return false;
             }
             
-            if (p.InMentalState)
+            if (ToddlerMentalStateUtility.HasBlockingMentalState(p))
             {
                 return false;
             }
