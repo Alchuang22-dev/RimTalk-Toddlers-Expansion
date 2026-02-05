@@ -35,8 +35,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		protected override IEnumerable<Toil> MakeNewToils()
 		{
 			this.FailOnDestroyedOrNull(PartnerInd);
-			this.FailOn(() => pawn.Downed || pawn.Drafted || pawn.InMentalState);
-			this.FailOn(() => Partner == null || Partner.Downed || Partner.Drafted || Partner.InMentalState);
+			this.FailOn(() => pawn.Downed || pawn.Drafted || ToddlerMentalStateUtility.HasBlockingMentalState(pawn));
+			this.FailOn(() => Partner == null || Partner.Downed || Partner.Drafted || ToddlerMentalStateUtility.HasBlockingMentalState(Partner));
 			this.FailOn(() => Partner.Map != pawn.Map);
 
 			// Step 1: Start partner job first (partner will stop moving and wait)

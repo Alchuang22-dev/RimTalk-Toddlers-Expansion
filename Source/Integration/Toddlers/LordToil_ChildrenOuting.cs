@@ -142,7 +142,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
             }
             
             // Mental state check
-            if (pawn.InMentalState)
+            if (ToddlerMentalStateUtility.HasBlockingMentalState(pawn))
             {
                 return true;
             }

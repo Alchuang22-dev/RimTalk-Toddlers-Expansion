@@ -366,7 +366,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
                 return false;
             }
             
-            if (pawn.InMentalState)
+            if (ToddlerMentalStateUtility.HasBlockingMentalState(pawn))
             {
                 return false;
             }
@@ -440,7 +440,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
                 return false;
             }
             
-            if (pawn.InMentalState)
+            if (ToddlerMentalStateUtility.HasBlockingMentalState(pawn))
             {
                 return false;
             }

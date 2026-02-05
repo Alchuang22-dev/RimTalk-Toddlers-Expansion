@@ -18,7 +18,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		protected override IEnumerable<Toil> MakeNewToils()
 		{
-			this.FailOn(() => pawn.Downed || pawn.Drafted || pawn.InMentalState);
+			this.FailOn(() => pawn.Downed || pawn.Drafted || ToddlerMentalStateUtility.HasBlockingMentalState(pawn));
 
 			yield return Toils_Goto.GotoCell(PlaySpotInd, PathEndMode.OnCell);
 

@@ -216,7 +216,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
                 return false;
             }
             
-            if (pawn.InMentalState)
+            if (ToddlerMentalStateUtility.HasBlockingMentalState(pawn))
             {
                 return false;
             }

@@ -17,7 +17,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return null;
 			}
 
-			if (pawn.Downed || pawn.Drafted || pawn.InMentalState || !IsEligibleWatcher(pawn))
+			if (pawn.Downed || pawn.Drafted || ToddlerMentalStateUtility.HasBlockingMentalState(pawn) || !IsEligibleWatcher(pawn))
 			{
 				return null;
 			}

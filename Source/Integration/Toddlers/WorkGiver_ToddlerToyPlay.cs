@@ -85,7 +85,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		private static bool IsEligiblePawn(Pawn pawn)
 		{
-			if (pawn?.RaceProps?.Humanlike != true || pawn.Downed || pawn.Drafted || pawn.InMentalState)
+			if (pawn?.RaceProps?.Humanlike != true || pawn.Downed || pawn.Drafted || ToddlerMentalStateUtility.HasBlockingMentalState(pawn))
 			{
 				return false;
 			}

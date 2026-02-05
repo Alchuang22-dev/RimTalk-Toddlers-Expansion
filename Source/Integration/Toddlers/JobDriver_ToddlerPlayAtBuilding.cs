@@ -13,6 +13,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private const float DefaultJoyGainPerTick = 0.0002f;
 
 		private AnimationDef _playAnimation;
+		private static ThingDef _toyBoxDef;
+		private static ThingDef _babyDecorationDef;
 
 		private Building Toy => TargetA.Thing as Building;
 
@@ -20,7 +22,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		public override bool TryMakePreToilReservations(bool errorOnFailed)
 		{
-			if (Toy == null)
+			if (Toy == null || !IsSupportedToy(Toy))
 			{
 				return false;
 			}
@@ -31,9 +33,10 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		protected override IEnumerable<Toil> MakeNewToils()
 		{
 			this.FailOnDestroyedOrNull(ToyInd);
-			this.FailOn(() => pawn.Downed || pawn.Drafted || pawn.InMentalState);
+			this.FailOn(() => pawn.Downed || pawn.Drafted || ToddlerMentalStateUtility.HasBlockingMentalState(pawn));
+			this.FailOn(() => Toy == null || !IsSupportedToy(Toy));
 
-			yield return Toils_Goto.GotoThing(ToyInd, PathEndMode.InteractionCell);
+			yield return Toils_Goto.GotoThing(ToyInd, GetToyPathEndMode(Toy));
 
 			Toil play = ToilMaker.MakeToil("ToddlerPlayAtToy");
 			play.initAction = () =>
@@ -46,7 +49,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			};
 			play.tickIntervalAction = delta =>
 			{
-				if (ToyComp == null)
+				if (Toy == null || !IsSupportedToy(Toy))
 				{
 					EndJobWith(JobCondition.Incompletable);
 					return;
@@ -62,11 +65,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				pawn.rotationTracker.FaceCell(Toy.Position);
 				pawn.GainComfortFromCellIfPossible(delta);
 				ApplyToyJoy(pawn, ToyComp, delta);
-
-				if (SocialNeedTuning_Toddlers.IsPlayNeedSatisfied(pawn))
-				{
-					EndJobWith(JobCondition.Succeeded);
-				}
 			};
 			play.handlingFacing = true;
 			play.defaultCompleteMode = ToilCompleteMode.Delay;
@@ -83,6 +81,54 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			});
 
 			yield return play;
+		}
+
+		private static bool IsSupportedToy(Building toy)
+		{
+			if (toy == null)
+			{
+				return false;
+			}
+
+			if (toy.TryGetComp<CompToddlerToy>() != null)
+			{
+				return true;
+			}
+
+			EnsureExternalToyDefs();
+			return toy.def == _toyBoxDef || toy.def == _babyDecorationDef;
+		}
+
+		private static PathEndMode GetToyPathEndMode(Building toy)
+		{
+			if (toy == null)
+			{
+				return PathEndMode.Touch;
+			}
+
+			if (toy.TryGetComp<CompToddlerToy>() != null)
+			{
+				return PathEndMode.InteractionCell;
+			}
+
+			EnsureExternalToyDefs();
+			if (toy.def == _babyDecorationDef && ShouldPlayDecorOnCell(toy))
+			{
+				return PathEndMode.OnCell;
+			}
+
+			return PathEndMode.Touch;
+		}
+
+		private static bool ShouldPlayDecorOnCell(Thing decor)
+		{
+			return decor != null && (decor.thingIDNumber % 5 == 0);
+		}
+
+		private static void EnsureExternalToyDefs()
+		{
+			_toyBoxDef ??= DefDatabase<ThingDef>.GetNamedSilentFail("ToyBox");
+			_babyDecorationDef ??= DefDatabase<ThingDef>.GetNamedSilentFail("BabyDecoration");
 		}
 
 		private static void ApplyToyJoy(Pawn pawn, CompToddlerToy toy, int delta)
