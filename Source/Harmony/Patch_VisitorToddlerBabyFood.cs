@@ -134,6 +134,11 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			{
 				TryAssignCarryingForToddler(toddler);
 			}, null, false, null);
+
+			if (Prefs.DevMode)
+			{
+				Log.Message($"[RimTalk_ToddlersExpansion][CarryDebug] Scheduled carry assignment for {toddler.LabelShort} ({toddler.thingIDNumber}).");
+			}
 		}
 
 		/// <summary>
@@ -162,6 +167,19 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			Lord lord = toddler.GetLord();
 			if (lord == null)
 			{
+				if (Prefs.DevMode)
+				{
+					Log.Warning($"[RimTalk_ToddlersExpansion][CarryDebug] Skip carry assignment for {toddler.LabelShort}: lord is null.");
+				}
+				return;
+			}
+
+			if (lord.CurLordToil == null)
+			{
+				if (Prefs.DevMode)
+				{
+					Log.Warning($"[RimTalk_ToddlersExpansion][CarryDebug] Skip carry assignment for {toddler.LabelShort}: lord {lord.loadID} CurLordToil is null.");
+				}
 				return;
 			}
 
@@ -185,6 +203,15 @@ namespace RimTalk_ToddlersExpansion.Harmony
 					continue;
 				}
 
+				if (!potentialCarrier.Spawned || potentialCarrier.MapHeld != toddler.MapHeld)
+				{
+					if (Prefs.DevMode)
+					{
+						Log.Message($"[RimTalk_ToddlersExpansion][CarryDebug] Ignore carrier {potentialCarrier.LabelShort} for {toddler.LabelShort}: not spawned or different map.");
+					}
+					continue;
+				}
+
 				// 检查这个carrier是否还有容量
 				if (ToddlerCarryingUtility.GetCarriedToddlerCount(potentialCarrier) >= ToddlerCarryingUtility.GetMaxCarryCapacity(potentialCarrier))
 				{
@@ -199,6 +226,11 @@ namespace RimTalk_ToddlersExpansion.Harmony
 						Log.Message($"[RimTalk_ToddlersExpansion] 延后分配背负: {potentialCarrier.Name} 背起访客幼儿 {toddler.Name}");
 					}
 					return;
+				}
+
+				if (Prefs.DevMode)
+				{
+					Log.Message($"[RimTalk_ToddlersExpansion][CarryDebug] TryMountToddler failed: carrier={potentialCarrier.LabelShort}, toddler={toddler.LabelShort}");
 				}
 			}
 

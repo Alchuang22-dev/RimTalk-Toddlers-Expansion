@@ -153,29 +153,71 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		}
 
 		/// <summary>
-		/// 清理无效的条目（死亡、销毁的pawn）
+		/// 清理无效的条目（死亡、销毁、未Spawn或跨地图的关系）
 		/// </summary>
 		public static void CleanupInvalidEntries()
 		{
-			// 找出无效的幼儿
 			List<Pawn> invalidToddlers = new List<Pawn>();
+			List<string> invalidReasons = Prefs.DevMode ? new List<string>() : null;
 			foreach (KeyValuePair<Pawn, Pawn> kvp in ToddlerToCarrier)
 			{
 				Pawn toddler = kvp.Key;
 				Pawn carrier = kvp.Value;
 
-				if (toddler == null || toddler.Dead || toddler.Destroyed ||
-					carrier == null || carrier.Dead || carrier.Destroyed)
+				if (TryGetInvalidReason(toddler, carrier, out string reason))
 				{
 					invalidToddlers.Add(toddler);
+					if (invalidReasons != null)
+					{
+						string toddlerLabel = toddler?.LabelShort ?? "null";
+						string carrierLabel = carrier?.LabelShort ?? "null";
+						invalidReasons.Add($"{toddlerLabel} -> {carrierLabel}: {reason}");
+					}
 				}
 			}
 
-			// 清除无效条目
 			for (int i = 0; i < invalidToddlers.Count; i++)
 			{
 				UnregisterCarrying(invalidToddlers[i]);
 			}
+
+			if (Prefs.DevMode && invalidReasons != null && invalidReasons.Count > 0)
+			{
+				for (int i = 0; i < invalidReasons.Count; i++)
+				{
+					Log.Warning($"[RimTalk_ToddlersExpansion][CarryCleanup] Removed invalid relation: {invalidReasons[i]}");
+				}
+			}
+		}
+
+		private static bool TryGetInvalidReason(Pawn toddler, Pawn carrier, out string reason)
+		{
+			reason = null;
+			if (toddler == null || toddler.Dead || toddler.Destroyed)
+			{
+				reason = "toddler missing/dead/destroyed";
+				return true;
+			}
+
+			if (carrier == null || carrier.Dead || carrier.Destroyed)
+			{
+				reason = "carrier missing/dead/destroyed";
+				return true;
+			}
+
+			if (!toddler.Spawned || !carrier.Spawned)
+			{
+				reason = "toddler or carrier not spawned";
+				return true;
+			}
+
+			if (toddler.MapHeld != carrier.MapHeld)
+			{
+				reason = "toddler and carrier on different maps";
+				return true;
+			}
+
+			return false;
 		}
 
 		/// <summary>
