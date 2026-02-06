@@ -39,11 +39,18 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				harmony.Patch(tickMethod, postfix: new HarmonyMethod(typeof(Patch_ToddlerCarrying), nameof(Pawn_Tick_Postfix)));
 			}
 
-			// Patch Pawn.DeSpawn - 清除背负关系
+			// Patch Pawn.DeSpawn - ?????????
 			MethodInfo despawnMethod = AccessTools.Method(typeof(Pawn), "DeSpawn");
 			if (despawnMethod != null)
 			{
 				harmony.Patch(despawnMethod, prefix: new HarmonyMethod(typeof(Patch_ToddlerCarrying), nameof(Pawn_DeSpawn_Prefix)));
+			}
+
+			// Patch Pawn.ExitMap - ?????????????
+			MethodInfo exitMapMethod = AccessTools.Method(typeof(Pawn), "ExitMap", new[] { typeof(bool), typeof(Rot4) });
+			if (exitMapMethod != null)
+			{
+				harmony.Patch(exitMapMethod, prefix: new HarmonyMethod(typeof(Patch_ToddlerCarrying), nameof(Pawn_ExitMap_Prefix)));
 			}
 
 			// Patch Pawn.Kill - 清除背负关系
@@ -213,9 +220,8 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				}
 			}
 		}
-
 		/// <summary>
-		/// pawn被移除前清除背负关系
+		/// pawn??????????
 		/// </summary>
 		private static void Pawn_DeSpawn_Prefix(Pawn __instance)
 		{
@@ -229,7 +235,33 @@ namespace RimTalk_ToddlersExpansion.Harmony
 		}
 
 		/// <summary>
-		/// pawn死亡前清除背负关系
+		/// pawn?????????????
+		/// </summary>
+		private static void Pawn_ExitMap_Prefix(Pawn __instance, bool allowedToJoinOrCreateCaravan, Rot4 exitDir)
+		{
+			if (__instance == null)
+			{
+				return;
+			}
+
+			int id = __instance.thingIDNumber;
+			if (!_exitHandling.Add(id))
+			{
+				return;
+			}
+
+			try
+			{
+				TryExitCarriedToddlersOnExitMap(__instance, exitDir);
+			}
+			finally
+			{
+				_exitHandling.Remove(id);
+			}
+		}
+
+		/// <summary>
+		/// pawn?????????
 		/// </summary>
 		private static void Pawn_Kill_Prefix(Pawn __instance)
 		{
@@ -239,6 +271,37 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			}
 
 			ToddlerCarryingUtility.ClearAllCarryingRelations(__instance);
+		}
+
+		private static void TryExitCarriedToddlersOnExitMap(Pawn carrier, Rot4 exitDir)
+		{
+			if (carrier == null || !carrier.Spawned || !ToddlerCarryingUtility.IsCarryingToddler(carrier))
+			{
+				return;
+			}
+
+			List<Pawn> carriedToddlers = ToddlerCarryingUtility.GetCarriedToddlers(carrier);
+			for (int i = 0; i < carriedToddlers.Count; i++)
+			{
+				Pawn toddler = carriedToddlers[i];
+				if (toddler == null || toddler.Dead || toddler.Destroyed || !toddler.Spawned || toddler.Map != carrier.Map)
+				{
+					continue;
+				}
+
+				if (!ToddlersCompatUtility.IsToddlerOrBaby(toddler) && toddler.DevelopmentalStage != DevelopmentalStage.Child)
+				{
+					continue;
+				}
+
+				if (TryExitMapImmediately(toddler, exitDir))
+				{
+					continue;
+				}
+
+				ToddlerCarryingUtility.DismountToddler(toddler);
+				TryQueueExitMapJob(toddler);
+			}
 		}
 
 		private static void TryExitCarriedToddlersWithCarrier(Pawn carrier)
@@ -352,6 +415,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 		// 缓存反射字段以提高性能
 		private static readonly FieldInfo _healthTrackerPawnField = AccessTools.Field(typeof(Pawn_HealthTracker), "pawn");
 		private static readonly MethodInfo _pawnExitMapMethod = AccessTools.Method(typeof(Pawn), "ExitMap", new[] { typeof(bool), typeof(Rot4) });
+		private static readonly HashSet<int> _exitHandling = new HashSet<int>();
 
 		/// <summary>
 		/// 调整被背幼儿的渲染参数

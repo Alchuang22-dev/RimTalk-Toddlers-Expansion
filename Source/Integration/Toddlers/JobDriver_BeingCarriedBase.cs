@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using RimWorld;
+using UnityEngine;
 using Verse;
 using Verse.AI;
 
@@ -12,6 +13,10 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		protected virtual string ReportKey => "RimTalk_BeingCarriedBy";
 
 		protected virtual void OnStart()
+		{
+		}
+
+		protected virtual void TickAlways()
 		{
 		}
 
@@ -53,9 +58,16 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					return;
 				}
 
+				Pawn carrier = ToddlerCarryingUtility.GetCarrier(pawn);
+				if (carrier != null && carrier.CurJobDef == JobDefOf.LayDown)
+				{
+					CarriedToddlerStateUtility.EnsureCarriedJob(pawn, carrier, false);
+				}
+
 				// 每tick确保幼儿不会尝试移动
 				StopMovement();
 				SyncRotation();
+				TickAlways();
 
 				if (pawn.IsHashIntervalTick(EffectInterval))
 				{
@@ -96,6 +108,20 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			if (carrier != null)
 			{
 				pawn.Rotation = carrier.Rotation;
+			}
+		}
+
+		protected void ApplyComfortUsed(float comfortValue)
+		{
+			Need_Comfort comfort = pawn?.needs?.comfort;
+			if (comfort == null)
+			{
+				return;
+			}
+
+			if (pawn.IsHashIntervalTick(15))
+			{
+				comfort.ComfortUsed(Mathf.Clamp01(comfortValue));
 			}
 		}
 	}

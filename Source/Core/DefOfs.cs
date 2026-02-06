@@ -23,6 +23,7 @@ namespace RimTalk_ToddlersExpansion.Core
 		public static JobDef RimTalk_BeingCarried_Observe;
 		public static JobDef RimTalk_BeingCarried_Sleep;
 		public static JobDef RimTalk_BeingCarried_Idle;
+		public static JobDef RimTalk_BeingCarried_DiaperChange;
 		public static JobDef RimTalk_BeingCarried_Struggle;
 		public static JobDef RimTalk_FollowNatureRunner;
 

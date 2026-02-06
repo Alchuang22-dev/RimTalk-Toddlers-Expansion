@@ -12,6 +12,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 	{
 		private const float HungryThreshold = 0.10f;
 		private const float RestThreshold = 0.10f;
+		private const float HygieneThreshold = 0.10f;
 		private const float ObserveChance = 0.65f;
 
 		public static void UpdateCarriedJobs()
@@ -56,6 +57,21 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					continue;
 				}
 
+				if (ShouldDiaperChange(toddler))
+				{
+					if (current != ToddlersExpansionJobDefOf.RimTalk_BeingCarried_DiaperChange)
+					{
+						StartCarriedJob(toddler, carrier, ToddlersExpansionJobDefOf.RimTalk_BeingCarried_DiaperChange);
+					}
+					continue;
+				}
+
+				if (current == ToddlersExpansionJobDefOf.RimTalk_BeingCarried_DiaperChange)
+				{
+					StartCarriedJob(toddler, carrier, SelectIdleOrObserveJob());
+					continue;
+				}
+
 				if (!IsCarriedStateJob(current))
 				{
 					StartCarriedJob(toddler, carrier, SelectIdleOrObserveJob());
@@ -95,6 +111,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				|| jobDef == ToddlersExpansionJobDefOf.RimTalk_BeingCarried_Idle
 				|| jobDef == ToddlersExpansionJobDefOf.RimTalk_BeingCarried_Observe
 				|| jobDef == ToddlersExpansionJobDefOf.RimTalk_BeingCarried_Sleep
+				|| jobDef == ToddlersExpansionJobDefOf.RimTalk_BeingCarried_DiaperChange
 				|| jobDef == ToddlersExpansionJobDefOf.RimTalk_BeingCarried_Struggle;
 		}
 
@@ -125,6 +142,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			if (ShouldSleep(toddler))
 			{
 				return ToddlersExpansionJobDefOf.RimTalk_BeingCarried_Sleep;
+			}
+
+			if (ShouldDiaperChange(toddler))
+			{
+				return ToddlersExpansionJobDefOf.RimTalk_BeingCarried_DiaperChange;
 			}
 
 			return SelectIdleOrObserveJob();
@@ -242,10 +264,70 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			return false;
 		}
 
+		private static bool ShouldDiaperChange(Pawn toddler)
+		{
+			if (toddler == null || !ToddlerCarryingUtility.IsBeingCarried(toddler))
+			{
+				return false;
+			}
+
+			if (toddler.IsPrisoner || toddler.IsPrisonerOfColony)
+			{
+				return false;
+			}
+
+			Faction faction = toddler.Faction;
+			if (faction == null || faction == Faction.OfPlayer || faction.HostileTo(Faction.OfPlayer))
+			{
+				return false;
+			}
+
+			if (toddler.Map == null || !toddler.Map.IsPlayerHome)
+			{
+				return false;
+			}
+
+			Need hygiene = ToddlerSelfBathUtility.GetHygieneNeed(toddler);
+			if (hygiene == null)
+			{
+				return false;
+			}
+
+			if (hygiene.CurLevelPercentage < HygieneThreshold)
+			{
+				return true;
+			}
+
+			return toddler.CurJobDef == ToddlersExpansionJobDefOf.RimTalk_BeingCarried_DiaperChange
+				&& hygiene.CurLevelPercentage < 0.999f;
+		}
+
 		private static bool ShouldSleep(Pawn toddler)
 		{
+			if (IsCarrierSleeping(toddler))
+			{
+				return true;
+			}
+
 			var rest = toddler?.needs?.rest;
 			return rest != null && rest.CurLevelPercentage < RestThreshold;
+		}
+
+		private static bool IsCarrierSleeping(Pawn toddler)
+		{
+			if (toddler == null || !ToddlerCarryingUtility.IsBeingCarried(toddler))
+			{
+				return false;
+			}
+
+			Pawn carrier = ToddlerCarryingUtility.GetCarrier(toddler);
+			if (carrier == null)
+			{
+				return false;
+			}
+
+			JobDef jobDef = carrier.CurJobDef;
+			return jobDef == JobDefOf.LayDown;
 		}
 	}
 }

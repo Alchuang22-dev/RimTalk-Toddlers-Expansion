@@ -18,11 +18,6 @@ namespace RimTalk_ToddlersExpansion.Core
 			HarmonyBootstrap.Init();
 			LongEventHandler.ExecuteWhenFinished(() =>
 			{
-				DefOfHelper.EnsureInitializedInCtor(typeof(ToddlersExpansionJobDefOf));
-				DefOfHelper.EnsureInitializedInCtor(typeof(ToddlersExpansionJoyGiverDefOf));
-				DefOfHelper.EnsureInitializedInCtor(typeof(ToddlersExpansionHediffDefOf));
-				DefOfHelper.EnsureInitializedInCtor(typeof(ToddlersExpansionThoughtDefOf));
-				DefOfHelper.EnsureInitializedInCtor(typeof(ToddlersExpansionAnimationDefOf));
 				ToddlersExpansionDiagnostics.Run();
 				RimTalkCompatUtility.TryRegisterToddlerVariables();
 				Integration.Toddlers.MidnightSnackUtility.RegisterGameComponent();

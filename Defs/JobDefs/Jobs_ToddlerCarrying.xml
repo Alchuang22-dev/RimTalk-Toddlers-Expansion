@@ -47,6 +47,17 @@
   </JobDef>
 
   <JobDef>
+    <defName>RimTalk_BeingCarried_DiaperChange</defName>
+    <driverClass>RimTalk_ToddlersExpansion.Integration.Toddlers.JobDriver_BeingCarried_DiaperChange</driverClass>
+    <reportString>getting cleaned while carried by {1}</reportString>
+    <casualInterruptible>false</casualInterruptible>
+    <allowOpportunisticPrefix>false</allowOpportunisticPrefix>
+    <suspendable>false</suspendable>
+    <neverFleeFromEnemies>true</neverFleeFromEnemies>
+    <playerInterruptible>false</playerInterruptible>
+  </JobDef>
+
+  <JobDef>
     <defName>RimTalk_BeingCarried_Struggle</defName>
     <driverClass>RimTalk_ToddlersExpansion.Integration.Toddlers.JobDriver_BeingCarried_Struggle</driverClass>
     <reportString>struggling in {1}'s arms</reportString>

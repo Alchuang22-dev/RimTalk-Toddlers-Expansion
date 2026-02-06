@@ -12,7 +12,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private const int EventCooldownTicks = 30000;
 		private const int FightDurationTicks = 300;
 
-		private const float NeglectStartSeverity = 0.25f;
+		private const float NeglectStartSeverity = 0.0f;
 		private const float NeglectFullSeverity = 0.8f;
 
 		private const float SelfPlayBaseChancePerTick = 1.2e-6f;
