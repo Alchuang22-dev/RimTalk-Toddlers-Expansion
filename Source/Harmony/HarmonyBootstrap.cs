@@ -45,6 +45,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			Patch_ToddlerEatingSpeed.Init(harmony);
 			Patch_ToddlerEatingSafety.Init(harmony);
 			Patch_ThinkNode_ConditionalHasLordDuty.Init(harmony);
+			Patch_AdoptableFriendlyBaby.Init(harmony);
 			
 			// Yayo's Animation 兼容性初始化和补丁
 			YayoAnimationCompatUtility.Initialize();

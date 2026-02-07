@@ -174,6 +174,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private static MethodInfo _findBathOrTub;
 		private static MethodInfo _findBestCleanWaterSource;
 		private static MethodInfo _needHygieneClean;
+		private static FieldInfo _needHygieneLastGainTick;
 		private static MethodInfo _bathTryFillBath;
 		private static MethodInfo _bathTryPullPlug;
 		private static PropertyInfo _bathIsFull;
@@ -760,10 +761,29 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			if (_needHygieneClean != null)
 			{
 				_needHygieneClean.Invoke(hygiene, new object[] { amount });
+				TryMarkHygieneGainTick(hygiene);
 				return;
 			}
 
 			hygiene.CurLevel = Mathf.Min(hygiene.CurLevel + amount, 1f);
+			TryMarkHygieneGainTick(hygiene);
+		}
+
+		private static void TryMarkHygieneGainTick(Need hygiene)
+		{
+			if (hygiene == null || _needHygieneLastGainTick == null)
+			{
+				return;
+			}
+
+			try
+			{
+				_needHygieneLastGainTick.SetValue(hygiene, Find.TickManager.TicksGame);
+			}
+			catch
+			{
+				// Ignore if DBH changes field layout.
+			}
 		}
 
 		private static float GetCleanedPerTick(Thing source, float fallback)
@@ -951,6 +971,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			if (hygieneNeedType != null)
 			{
 				_needHygieneClean = AccessTools.Method(hygieneNeedType, "clean", new[] { typeof(float) });
+				_needHygieneLastGainTick = AccessTools.Field(hygieneNeedType, "lastGainTick");
 			}
 
 			_cleanedPerTickField = AccessTools.Field(_bathType, "cleanedPerTick")
