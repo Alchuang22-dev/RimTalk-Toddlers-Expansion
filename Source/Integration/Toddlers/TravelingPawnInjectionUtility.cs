@@ -21,6 +21,9 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private const float BabyFoodUnitsPerToddlerAgeYear = 2f;
 		private const float MinBabyFoodUnits = 3f;
 		private const float MaxBabyFoodUnits = 15f;
+		private const float MinPositiveAgeYears = 0.01f;
+		private const float FallbackToddlerMinAgeYears = 1f;
+		private const float FallbackToddlerMaxAgeYears = 3f;
 
 		private static bool _walkHediffChecked;
 		private static HediffDef _learningToWalkDef;
@@ -379,12 +382,29 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 			float minToddler = ToddlersCompatUtility.GetToddlerMinAgeYears(samplePawn);
 			float maxToddler = ToddlersCompatUtility.GetToddlerEndAgeYears(samplePawn);
+			if (!IsValidAgeRange(minToddler, maxToddler))
+			{
+				if (Prefs.DevMode)
+				{
+					string kindName = kind?.defName ?? "UnknownKind";
+					string raceName = kind?.race?.defName ?? samplePawn?.def?.defName ?? "UnknownRace";
+					Log.Warning($"[RimTalk_ToddlersExpansion] Invalid toddler age range ({minToddler:F2}-{maxToddler:F2}) for {raceName}/{kindName}. Falling back to {FallbackToddlerMinAgeYears:F2}-{FallbackToddlerMaxAgeYears:F2}.");
+				}
+
+				minToddler = FallbackToddlerMinAgeYears;
+				maxToddler = FallbackToddlerMaxAgeYears;
+			}
+
 			if (maxToddler <= minToddler)
 			{
 				return false;
 			}
 
 			ageYears = Rand.Range(minToddler, maxToddler);
+			if (ageYears <= MinPositiveAgeYears)
+			{
+				ageYears = MinPositiveAgeYears;
+			}
 			return true;
 		}
 
@@ -424,6 +444,16 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		{
 			try
 			{
+				if (float.IsNaN(ageYears) || float.IsInfinity(ageYears) || ageYears <= MinPositiveAgeYears)
+				{
+					if (Prefs.DevMode)
+					{
+						Log.Warning($"[RimTalk_ToddlersExpansion] Invalid ageYears ({ageYears:F2}) for kindDef={kind?.defName ?? "UnknownKind"}. Clamping to {MinPositiveAgeYears:F2}.");
+					}
+
+					ageYears = MinPositiveAgeYears;
+				}
+
 				PawnGenerationRequest request = new PawnGenerationRequest(
 					kind,
 					parms.faction,
@@ -451,6 +481,26 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				}
 				return null;
 			}
+		}
+
+		private static bool IsValidAgeRange(float minAge, float maxAge)
+		{
+			if (float.IsNaN(minAge) || float.IsNaN(maxAge))
+			{
+				return false;
+			}
+
+			if (float.IsInfinity(minAge) || float.IsInfinity(maxAge))
+			{
+				return false;
+			}
+
+			if (minAge < MinPositiveAgeYears || maxAge <= MinPositiveAgeYears)
+			{
+				return false;
+			}
+
+			return maxAge > minAge;
 		}
 
 		private static bool IsChildPawn(Pawn pawn)
