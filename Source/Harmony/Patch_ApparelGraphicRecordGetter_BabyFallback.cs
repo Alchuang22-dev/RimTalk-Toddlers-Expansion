@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using HarmonyLib;
 using RimWorld;
 using UnityEngine;
@@ -7,6 +8,8 @@ namespace RimTalk_ToddlersExpansion.Harmony
 {
 	public static class Patch_ApparelGraphicRecordGetter_BabyFallback
 	{
+		private static readonly HashSet<string> _loggedKeys = new HashSet<string>();
+
 		public static void Init(HarmonyLib.Harmony harmony)
 		{
 			var target = AccessTools.Method(typeof(ApparelGraphicRecordGetter), nameof(ApparelGraphicRecordGetter.TryGetGraphicApparel));
@@ -46,7 +49,12 @@ namespace RimTalk_ToddlersExpansion.Harmony
 					string childPath = $"{apparel.WornGraphicPath}_{BodyTypeDefOf.Child.defName}";
 					if (HasDirectionalTexture(childPath))
 					{
+						LogFallbackOnce(apparel, path, childPath);
 						path = childPath;
+					}
+					else
+					{
+						LogMissingOnce(apparel, path);
 					}
 				}
 			}
@@ -77,6 +85,34 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				|| ContentFinder<Texture2D>.Get(path + "_north", false) != null
 				|| ContentFinder<Texture2D>.Get(path + "_east", false) != null
 				|| ContentFinder<Texture2D>.Get(path + "_west", false) != null;
+		}
+
+		private static void LogFallbackOnce(Apparel apparel, string babyPath, string childPath)
+		{
+			if (!Prefs.DevMode || apparel?.def == null)
+			{
+				return;
+			}
+
+			string key = $"fallback:{apparel.def.defName}:{babyPath}->{childPath}";
+			if (_loggedKeys.Add(key))
+			{
+				Log.Message($"[RimTalk_ToddlersExpansion][PKCCompat] Baby apparel fallback: def={apparel.def.defName} babyPath={babyPath} childPath={childPath}");
+			}
+		}
+
+		private static void LogMissingOnce(Apparel apparel, string babyPath)
+		{
+			if (!Prefs.DevMode || apparel?.def == null)
+			{
+				return;
+			}
+
+			string key = $"missing:{apparel.def.defName}:{babyPath}";
+			if (_loggedKeys.Add(key))
+			{
+				Log.Warning($"[RimTalk_ToddlersExpansion][PKCCompat] Missing baby/child apparel textures: def={apparel.def.defName} babyPath={babyPath}");
+			}
 		}
 	}
 }

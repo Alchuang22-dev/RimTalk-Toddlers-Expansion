@@ -10,11 +10,17 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 	{
 		public static void ApplySleepThoughts(Pawn pawn, Building_Bed bed)
 		{
-			Log.Message($"[RimTalk_ToddlersExpansion] ApplySleepThoughts called for pawn: {pawn?.Name}, bed: {(bed != null ? bed.def.defName : "null")}");
+			if (Prefs.DevMode)
+			{
+				Log.Message($"[RimTalk_ToddlersExpansion] ApplySleepThoughts called for pawn: {pawn?.Name}, bed: {(bed != null ? bed.def.defName : "null")}");
+			}
 
 			if (pawn?.needs?.mood?.thoughts?.memories == null || !ToddlersCompatUtility.IsToddlerOrBaby(pawn))
 			{
-				Log.Warning($"[RimTalk_ToddlersExpansion] ApplySleepThoughts early return: memories null={pawn?.needs?.mood?.thoughts?.memories == null}, IsToddlerOrBaby={ToddlersCompatUtility.IsToddlerOrBaby(pawn)}");
+				if (Prefs.DevMode)
+				{
+					Log.Warning($"[RimTalk_ToddlersExpansion] ApplySleepThoughts early return: memories null={pawn?.needs?.mood?.thoughts?.memories == null}, IsToddlerOrBaby={ToddlersCompatUtility.IsToddlerOrBaby(pawn)}");
+				}
 				return;
 			}
 
@@ -28,24 +34,36 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				string jobDef = pawn?.CurJob?.def?.defName ?? "null";
 				string toil = pawn?.jobs?.curDriver?.CurToilString ?? "null";
 				string position = pawn?.Position.ToString() ?? "null";
-				Log.Warning($"[RimTalk_ToddlersExpansion] ApplySleepThoughts bed is null (job={jobDef}, toil={toil}, pos={position})");
+				if (Prefs.DevMode)
+				{
+					Log.Warning($"[RimTalk_ToddlersExpansion] ApplySleepThoughts bed is null (job={jobDef}, toil={toil}, pos={position})");
+				}
 			}
 
 			Room room = bed?.GetRoom() ?? pawn.GetRoom();
 			if (room == null || room.PsychologicallyOutdoors)
 			{
-				Log.Warning($"[RimTalk_ToddlersExpansion] ApplySleepThoughts early return: room null={room == null}, outdoors={room?.PsychologicallyOutdoors ?? false}");
+				if (Prefs.DevMode)
+				{
+					Log.Warning($"[RimTalk_ToddlersExpansion] ApplySleepThoughts early return: room null={room == null}, outdoors={room?.PsychologicallyOutdoors ?? false}");
+				}
 				return;
 			}
 
 			ThoughtDef thought = GetSleepThought(pawn, bed, room);
 			if (thought == null)
 			{
-				Log.Warning($"[RimTalk_ToddlersExpansion] ApplySleepThoughts early return: thought is null");
+				if (Prefs.DevMode)
+				{
+					Log.Warning($"[RimTalk_ToddlersExpansion] ApplySleepThoughts early return: thought is null");
+				}
 				return;
 			}
 
-			Log.Message($"[RimTalk_ToddlersExpansion] Applying sleep thought '{thought.defName}' to pawn: {pawn.Name}");
+			if (Prefs.DevMode)
+			{
+				Log.Message($"[RimTalk_ToddlersExpansion] Applying sleep thought '{thought.defName}' to pawn: {pawn.Name}");
+			}
 
 			MemoryThoughtHandler memories = pawn.needs.mood.thoughts.memories;
 			RemoveExistingThoughts(memories);
@@ -53,7 +71,10 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			try
 			{
 				memories.TryGainMemory(thought);
-				Log.Message($"[RimTalk_ToddlersExpansion] Successfully added thought '{thought.defName}' to pawn: {pawn.Name}");
+				if (Prefs.DevMode)
+				{
+					Log.Message($"[RimTalk_ToddlersExpansion] Successfully added thought '{thought.defName}' to pawn: {pawn.Name}");
+				}
 			}
 			catch (Exception ex)
 			{
@@ -186,6 +207,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		private static void LogSleepCheck(string branch, Pawn pawn, Room room, SleepRoomInfo info)
 		{
+			if (!Prefs.DevMode)
+			{
+				return;
+			}
+
 			string pawnLabel = pawn?.Name?.ToStringShort ?? "null";
 			string roomRole = room?.Role?.defName ?? "null";
 			Log.Message($"[RimTalk_ToddlersExpansion] SleepCheck {branch} pawn={pawnLabel}, roomRole={roomRole}, bedCount={info.BedCount}, ownerCount={info.OwnerCount}, otherOwner={info.HasOtherOwner}, parentOrGrandparent={info.HasParentOrGrandparent}, nonBabyToddler={info.HasNonBabyToddler}");

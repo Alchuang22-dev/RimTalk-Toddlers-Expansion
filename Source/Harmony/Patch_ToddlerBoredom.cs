@@ -91,11 +91,6 @@ namespace RimTalk_ToddlersExpansion
 
             float multiplier = component.GetBoredomMultiplier(pawn, curJob.def);
             amount *= multiplier;
-
-            if (Prefs.DevMode && multiplier < 1.0f)
-            {
-                Log.Message($"[RimTalk Boredom] {pawn.LabelShort} play gain reduced: {multiplier:F2}x");
-            }
         }
 
         /// <summary>
