@@ -48,6 +48,9 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			Patch_AdoptableFriendlyBaby.Init(harmony);
 			Patch_ApparelGraphicRecordGetter_BabyFallback.Init(harmony);
 			
+			// 婴儿头发渲染补丁（允许婴儿显示头发）
+			Patch_BabyHairRendering.Init(harmony);
+			
 			// Yayo's Animation 兼容性初始化和补丁
 			YayoAnimationCompatUtility.Initialize();
 			YayoAnimationCompatUtility.ApplyPatches(harmony);
