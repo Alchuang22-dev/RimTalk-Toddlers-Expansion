@@ -102,7 +102,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 			// 检查并补充婴儿食品
 			TryEnsureBabyFood(pawn);
-			TravelingPawnInjectionUtility.EnsureToddlerFallbackApparel(pawn, pawn.MapHeld?.Tile ?? -1);
+			ToddlerPawnGenerationUtility.EnsureToddlerFallbackApparel(pawn, pawn.MapHeld?.Tile ?? -1);
 
 			// 延后处理背负关系（需要等其他成员也spawn完成）
 			// 使用延迟调用，在下一帧处理背负关系

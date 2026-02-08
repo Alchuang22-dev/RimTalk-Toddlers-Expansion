@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <!-- 
+    专门用于注入商队/访客的幼儿 PawnKindDef
+    没有任何技能要求和工作标签要求，适用于任何年龄
+  -->
+  <PawnKindDef>
+    <defName>RimTalkToddler_Toddler</defName>
+    <label>toddler</label>
+    <race>Human</race>
+    <defaultFactionType>Villager</defaultFactionType>
+    <backstoryFiltersOverride>
+      <li>
+        <categories>
+          <li>Child</li>
+        </categories>
+      </li>
+    </backstoryFiltersOverride>
+    <apparelMoney>0~0</apparelMoney>
+    <apparelAllowHeadgearChance>0</apparelAllowHeadgearChance>
+    <weaponMoney>0~0</weaponMoney>
+    <techHediffsMoney>0~0</techHediffsMoney>
+    <minGenerationAge>0</minGenerationAge>
+    <maxGenerationAge>3</maxGenerationAge>
+  </PawnKindDef>
+
+  <!-- 
+    专门用于注入商队/访客的儿童 PawnKindDef
+    没有任何技能要求和工作标签要求，适用于儿童年龄段
+  -->
+  <PawnKindDef>
+    <defName>RimTalkToddler_Child</defName>
+    <label>child</label>
+    <race>Human</race>
+    <defaultFactionType>Villager</defaultFactionType>
+    <backstoryFiltersOverride>
+      <li>
+        <categories>
+          <li>Child</li>
+        </categories>
+      </li>
+    </backstoryFiltersOverride>
+    <apparelMoney>0~0</apparelMoney>
+    <apparelAllowHeadgearChance>0</apparelAllowHeadgearChance>
+    <weaponMoney>0~0</weaponMoney>
+    <techHediffsMoney>0~0</techHediffsMoney>
+    <minGenerationAge>3</minGenerationAge>
+    <maxGenerationAge>13</maxGenerationAge>
+  </PawnKindDef>
+
+</Defs>
