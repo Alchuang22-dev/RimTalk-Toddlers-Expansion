@@ -40,6 +40,18 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private static HediffDef _learningToWalkDef;
 		private static HediffDef _learningManipulationDef;
 
+		// 技能-最低年龄缓存：key = (SkillDef, ThingDef raceDef), value = minAge
+		// 缓存在 Def 数据库解析后填充，游戏重载时自动清空（因为 static 变量在程序集重载时会重置）
+		private static readonly Dictionary<(SkillDef, ThingDef), int> _skillMinAgeCache = new Dictionary<(SkillDef, ThingDef), int>();
+
+		/// <summary>
+		/// 清除技能年龄缓存。可在游戏重载或 mod 配置改变时调用。
+		/// </summary>
+		public static void ClearSkillAgeCache()
+		{
+			_skillMinAgeCache.Clear();
+		}
+
 		public static void TryInjectToddlerOrChildPawns(PawnGroupMakerParms parms, ref IEnumerable<Pawn> pawns)
 		{
 			if (!IsEligibleGroup(parms) || pawns == null)
@@ -68,6 +80,12 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			PawnKindDef baseKind = GetBaseKind(pawnList, parms);
 			if (baseKind == null)
 			{
+				// 找不到合适的 PawnKindDef（派系的 kindDef 可能有技能或工作标签要求，幼儿无法满足）
+				if (Prefs.DevMode)
+				{
+					string factionName = parms?.faction?.Name ?? "UnknownFaction";
+					Log.Message($"[RimTalk_ToddlersExpansion] Skipping toddler/child generation for {factionName}: no suitable PawnKindDef without skill/work requirements");
+				}
 				return;
 			}
 
@@ -146,6 +164,18 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 				if (!TryGetTargetAgeYears(baseKind, samplePawn, wantChild, out float ageYears))
 				{
+					continue;
+				}
+
+				// 检查该年龄是否能满足 kindDef 的技能要求
+				ThingDef raceDef = baseKind?.race ?? samplePawn?.def ?? ThingDefOf.Human;
+				if (!CanAgeSatisfySkillRequirements(baseKind, ageYears, raceDef))
+				{
+					// 年龄不足以满足技能要求，跳过本次生成
+					if (Prefs.DevMode)
+					{
+						Log.Message($"[RimTalk_ToddlersExpansion] Skipping generation: age {ageYears:F1} cannot satisfy skill requirements for {baseKind?.defName}");
+					}
 					continue;
 				}
 
@@ -297,16 +327,113 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		}
 
 		/// <summary>
+		/// 获取技能需要的最低年龄（通过查找关联的工作类型的 lifeStageWorkSettings）
+		/// </summary>
+		private static int GetMinAgeForSkill(SkillDef skillDef, ThingDef raceDef)
+		{
+			if (skillDef == null || raceDef?.race?.lifeStageWorkSettings == null)
+			{
+				return 0;
+			}
+
+			// 检查缓存
+			var cacheKey = (skillDef, raceDef);
+			if (_skillMinAgeCache.TryGetValue(cacheKey, out int cachedAge))
+			{
+				return cachedAge;
+			}
+
+			int maxMinAge = 0;
+			List<LifeStageWorkSettings> workSettings = raceDef.race.lifeStageWorkSettings;
+			List<WorkTypeDef> allWorkTypes = DefDatabase<WorkTypeDef>.AllDefsListForReading;
+
+			// 遍历所有工作类型，查找与该技能关联的工作类型
+			for (int i = 0; i < allWorkTypes.Count; i++)
+			{
+				WorkTypeDef workType = allWorkTypes[i];
+				if (workType.relevantSkills == null || !workType.relevantSkills.Contains(skillDef))
+				{
+					continue;
+				}
+
+				// 查找该工作类型在 lifeStageWorkSettings 中的最低年龄
+				for (int j = 0; j < workSettings.Count; j++)
+				{
+					if (workSettings[j].workType == workType)
+					{
+						if (workSettings[j].minAge > maxMinAge)
+						{
+							maxMinAge = workSettings[j].minAge;
+						}
+						break;
+					}
+				}
+			}
+
+			// 存入缓存
+			_skillMinAgeCache[cacheKey] = maxMinAge;
+			return maxMinAge;
+		}
+
+		/// <summary>
+		/// 检查指定年龄是否能满足 PawnKindDef 的技能要求
+		/// </summary>
+		private static bool CanAgeSatisfySkillRequirements(PawnKindDef kind, float ageYears, ThingDef raceDef)
+		{
+			if (kind?.skills == null || kind.skills.Count == 0)
+			{
+				return true; // 无技能要求
+			}
+
+			int ageInYears = Mathf.FloorToInt(ageYears);
+
+			for (int i = 0; i < kind.skills.Count; i++)
+			{
+				SkillRange skillRange = kind.skills[i];
+				if (skillRange.Range.min > 0)
+				{
+					// 需要这个技能，检查该年龄是否可以拥有
+					int minAgeForSkill = GetMinAgeForSkill(skillRange.Skill, raceDef);
+					if (ageInYears < minAgeForSkill)
+					{
+						return false; // 年龄不足以拥有这个技能
+					}
+				}
+			}
+
+			return true;
+		}
+
+		/// <summary>
+		/// 检查 PawnKindDef 是否适合生成幼儿/儿童（无工作标签要求）
+		/// </summary>
+		private static bool IsKindSuitableForChildren(PawnKindDef kind)
+		{
+			if (kind == null)
+			{
+				return false;
+			}
+
+			// 检查工作标签要求
+			if (kind.requiredWorkTags != WorkTags.None)
+			{
+				return false;
+			}
+
+			return true;
+		}
+
+		/// <summary>
 		/// 获取用于生成幼儿/儿童的 PawnKindDef
 		/// 优先使用派系的 basicMemberKind，因为它通常没有工作标签要求
-		/// 商队成员的 kindDef（如 Tribal_Trader）可能有 requiredWorkTags，幼儿无法满足
+		/// 如果都不合适，使用 PawnKindDefOf.Villager 作为后备
 		/// </summary>
 		private static PawnKindDef GetBaseKind(List<Pawn> pawns, PawnGroupMakerParms parms)
 		{
 			// 优先使用派系的 basicMemberKind（通常没有工作标签要求）
 			PawnKindDef basicKind = parms?.faction?.def?.basicMemberKind;
 			
-			if (basicKind != null && basicKind.requiredWorkTags == WorkTags.None)
+			if (IsKindSuitableForChildren(basicKind))
 			{
 				return basicKind;
 			}
@@ -317,35 +444,26 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				Pawn pawn = pawns[i];
 				if (pawn?.RaceProps?.Humanlike == true && pawn.kindDef != null)
 				{
-					if (pawn.kindDef.requiredWorkTags == WorkTags.None)
+					if (IsKindSuitableForChildren(pawn.kindDef))
 					{
 						return pawn.kindDef;
 					}
 				}
 			}
 			
-			// 尝试从 DefDatabase 中找一个通用的无工作标签要求的 kindDef
-			// 优先查找与派系种族相同的
-			ThingDef targetRace = basicKind?.race ?? pawns.FirstOrDefault()?.def;
-			if (targetRace != null)
+			// 使用 PawnKindDefOf.Villager作为回退
+			if (PawnKindDefOf.Villager != null && IsKindSuitableForChildren(PawnKindDefOf.Villager))
 			{
-				// 尝试找 Villager（通常没有工作标签要求）
-				PawnKindDef villager = DefDatabase<PawnKindDef>.GetNamedSilentFail("Villager");
-				if (villager != null && villager.race == targetRace && villager.requiredWorkTags == WorkTags.None)
+				if (Prefs.DevMode)
 				{
-					return villager;
+					string factionName = parms?.faction?.Name ?? "UnknownFaction";
+					Log.Message($"[RimTalk_ToddlersExpansion] Using fallback PawnKindDefOf.Villager for {factionName} (faction's kindDefs have work requirements)");
 				}
-				
-				// 尝试找 Tribesperson
-				PawnKindDef tribesperson = DefDatabase<PawnKindDef>.GetNamedSilentFail("Tribesperson");
-				if (tribesperson != null && tribesperson.race == targetRace && tribesperson.requiredWorkTags == WorkTags.None)
-				{
-					return tribesperson;
-				}
+				return PawnKindDefOf.Villager;
 			}
 			
-			// 最后回退到 basicMemberKind（即使有工作标签要求，生成可能会失败）
-			return basicKind;
+			// 如果连 Villager 都不行（不太可能），返回 null
+			return null;
 		}
 
 		private static Pawn GetSamplePawn(List<Pawn> pawns)
