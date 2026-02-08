@@ -24,6 +24,17 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private const float MinPositiveAgeYears = 0.01f;
 		private const float FallbackToddlerMinAgeYears = 1f;
 		private const float FallbackToddlerMaxAgeYears = 3f;
+		private const float WarmHeadgearThreshold = 15f;
+
+		private static readonly string[] BabyBodyFallback_Industrial = { "Apparel_BabyOnesie", "Apparel_BabyTribal" };
+		private static readonly string[] BabyBodyFallback_Tribal = { "Apparel_BabyTribal", "Apparel_BabyOnesie" };
+		private static readonly string[] BabyHeadFallback_Cold = { "Apparel_BabyTuque", "Apparel_BabyShadecone" };
+		private static readonly string[] BabyHeadFallback_Hot = { "Apparel_BabyShadecone", "Apparel_BabyTuque" };
+
+		private static readonly string[] ChildBodyFallback_Industrial = { "Apparel_KidRomper", "Apparel_KidTribal" };
+		private static readonly string[] ChildBodyFallback_Tribal = { "Apparel_KidTribal", "Apparel_KidRomper" };
+		private static readonly string[] ChildHeadFallback_Cold = { "Apparel_Tuque", "Apparel_Shadecone" };
+		private static readonly string[] ChildHeadFallback_Hot = { "Apparel_Shadecone", "Apparel_Tuque" };
 
 		private static bool _walkHediffChecked;
 		private static HediffDef _learningToWalkDef;
@@ -469,6 +480,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				if (pawn != null && ToddlersCompatUtility.IsToddler(pawn))
 				{
 					TryInjectBabyFood(pawn, ageYears);
+					EnsureToddlerFallbackApparel(pawn, parms?.tile ?? -1);
 				}
 
 				return pawn;
@@ -565,6 +577,285 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					}
 				}
 			}
+		}
+
+		public static void EnsureToddlerFallbackApparel(Pawn pawn, int tile = -1)
+		{
+			if (pawn?.apparel == null || !ToddlersCompatUtility.IsToddler(pawn))
+			{
+				return;
+			}
+
+			ToddlersCompatUtility.ToddlerApparelSetting apparelSetting = ToddlersCompatUtility.GetToddlerApparelSetting();
+			if (apparelSetting == ToddlersCompatUtility.ToddlerApparelSetting.Nude)
+			{
+				return;
+			}
+
+			bool preferTribal = pawn.Faction?.def?.techLevel <= TechLevel.Neolithic;
+			if (apparelSetting == ToddlersCompatUtility.ToddlerApparelSetting.NudeTribal && preferTribal)
+			{
+				return;
+			}
+
+			ToddlersCompatUtility.ToddlerApparelSetting effectiveSetting =
+				apparelSetting == ToddlersCompatUtility.ToddlerApparelSetting.NudeTribal
+					? ToddlersCompatUtility.ToddlerApparelSetting.BabyApparel
+					: apparelSetting;
+
+			bool needsBody = !HasBodyApparel(pawn);
+			bool needsHead = !HasHeadApparel(pawn);
+			if (!needsBody && !needsHead)
+			{
+				return;
+			}
+
+			bool preferWarmHeadgear = ShouldUseWarmHeadgear(pawn, tile);
+
+			if (needsBody && !TryEquipFallbackBody(pawn, effectiveSetting, preferTribal))
+			{
+				// If child apparel fallback is unavailable, fallback to baby apparel.
+				TryEquipFallbackBody(pawn, ToddlersCompatUtility.ToddlerApparelSetting.BabyApparel, preferTribal);
+			}
+
+			if (needsHead && !TryEquipFallbackHead(pawn, effectiveSetting, preferWarmHeadgear))
+			{
+				// Same fallback policy for headgear.
+				TryEquipFallbackHead(pawn, ToddlersCompatUtility.ToddlerApparelSetting.BabyApparel, preferWarmHeadgear);
+			}
+		}
+
+		private static bool TryEquipFallbackBody(Pawn pawn, ToddlersCompatUtility.ToddlerApparelSetting apparelSetting, bool preferTribal)
+		{
+			string[] candidates = apparelSetting == ToddlersCompatUtility.ToddlerApparelSetting.ChildApparel
+				? (preferTribal ? ChildBodyFallback_Tribal : ChildBodyFallback_Industrial)
+				: (preferTribal ? BabyBodyFallback_Tribal : BabyBodyFallback_Industrial);
+
+			if (TryWearFirstAvailable(pawn, candidates))
+			{
+				return true;
+			}
+
+			return TryWearGenericFallback(
+				pawn,
+				apparelSetting == ToddlersCompatUtility.ToddlerApparelSetting.ChildApparel ? DevelopmentalStage.Child : DevelopmentalStage.Baby,
+				requireHead: false,
+				preferTribal: preferTribal);
+		}
+
+		private static bool TryEquipFallbackHead(Pawn pawn, ToddlersCompatUtility.ToddlerApparelSetting apparelSetting, bool preferWarmHeadgear)
+		{
+			string[] candidates = apparelSetting == ToddlersCompatUtility.ToddlerApparelSetting.ChildApparel
+				? (preferWarmHeadgear ? ChildHeadFallback_Cold : ChildHeadFallback_Hot)
+				: (preferWarmHeadgear ? BabyHeadFallback_Cold : BabyHeadFallback_Hot);
+
+			if (TryWearFirstAvailable(pawn, candidates))
+			{
+				return true;
+			}
+
+			bool preferTribal = pawn?.Faction?.def?.techLevel <= TechLevel.Neolithic;
+			return TryWearGenericFallback(
+				pawn,
+				apparelSetting == ToddlersCompatUtility.ToddlerApparelSetting.ChildApparel ? DevelopmentalStage.Child : DevelopmentalStage.Baby,
+				requireHead: true,
+				preferTribal: preferTribal);
+		}
+
+		private static bool TryWearFirstAvailable(Pawn pawn, string[] defNames)
+		{
+			if (pawn?.apparel == null || defNames == null)
+			{
+				return false;
+			}
+
+			for (int i = 0; i < defNames.Length; i++)
+			{
+				ThingDef def = DefDatabase<ThingDef>.GetNamedSilentFail(defNames[i]);
+				if (!CanWearFallbackDef(pawn, def))
+				{
+					continue;
+				}
+
+				if (TryWearFallbackDef(pawn, def))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		private static bool CanWearFallbackDef(Pawn pawn, ThingDef def)
+		{
+			if (pawn?.apparel == null || def?.apparel == null || !def.IsApparel)
+			{
+				return false;
+			}
+
+			if (!pawn.apparel.CanWearWithoutDroppingAnything(def))
+			{
+				return false;
+			}
+
+			return ApparelUtility.HasPartsToWear(pawn, def);
+		}
+
+		private static bool TryWearFallbackDef(Pawn pawn, ThingDef def)
+		{
+			ThingDef stuff = def.MadeFromStuff ? GenStuff.DefaultStuffFor(def) : null;
+			Apparel apparel = ThingMaker.MakeThing(def, stuff) as Apparel;
+			if (apparel == null)
+			{
+				return false;
+			}
+
+			try
+			{
+				if (!apparel.PawnCanWear(pawn) || !ApparelUtility.HasPartsToWear(pawn, def))
+				{
+					apparel.Destroy(DestroyMode.Vanish);
+					return false;
+				}
+
+				PawnGenerator.PostProcessGeneratedGear(apparel, pawn);
+				pawn.apparel.Wear(apparel, false);
+				return true;
+			}
+			catch
+			{
+				if (!apparel.Destroyed)
+				{
+					apparel.Destroy(DestroyMode.Vanish);
+				}
+
+				return false;
+			}
+		}
+
+		private static bool TryWearGenericFallback(Pawn pawn, DevelopmentalStage stage, bool requireHead, bool preferTribal)
+		{
+			if (pawn?.apparel == null)
+			{
+				return false;
+			}
+
+			ThingDef firstBest = null;
+			ThingDef secondBest = null;
+			List<ThingDef> defs = DefDatabase<ThingDef>.AllDefsListForReading;
+			for (int i = 0; i < defs.Count; i++)
+			{
+				ThingDef def = defs[i];
+				if (!CanUseGenericFallbackDef(pawn, def, stage, requireHead))
+				{
+					continue;
+				}
+
+				bool isTribal = def.apparel.tags != null && def.apparel.tags.Contains("Neolithic");
+				if (isTribal == preferTribal)
+				{
+					firstBest = def;
+					break;
+				}
+
+				if (secondBest == null)
+				{
+					secondBest = def;
+				}
+			}
+
+			return TryWearFallbackDef(pawn, firstBest ?? secondBest);
+		}
+
+		private static bool CanUseGenericFallbackDef(Pawn pawn, ThingDef def, DevelopmentalStage stage, bool requireHead)
+		{
+			if (!CanWearFallbackDef(pawn, def))
+			{
+				return false;
+			}
+
+			if (!def.apparel.developmentalStageFilter.Has(stage))
+			{
+				return false;
+			}
+
+			List<BodyPartGroupDef> groups = def.apparel.bodyPartGroups;
+			if (groups == null || groups.Count == 0)
+			{
+				return false;
+			}
+
+			if (requireHead)
+			{
+				return groups.Contains(BodyPartGroupDefOf.UpperHead) || groups.Contains(BodyPartGroupDefOf.FullHead);
+			}
+
+			return groups.Contains(BodyPartGroupDefOf.Torso) || groups.Contains(BodyPartGroupDefOf.Legs);
+		}
+
+		private static bool HasBodyApparel(Pawn pawn)
+		{
+			List<Apparel> worn = pawn?.apparel?.WornApparel;
+			if (worn == null)
+			{
+				return false;
+			}
+
+			for (int i = 0; i < worn.Count; i++)
+			{
+				List<BodyPartGroupDef> groups = worn[i]?.def?.apparel?.bodyPartGroups;
+				if (groups == null)
+				{
+					continue;
+				}
+
+				if (groups.Contains(BodyPartGroupDefOf.Torso) || groups.Contains(BodyPartGroupDefOf.Legs))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		private static bool HasHeadApparel(Pawn pawn)
+		{
+			List<Apparel> worn = pawn?.apparel?.WornApparel;
+			if (worn == null)
+			{
+				return false;
+			}
+
+			for (int i = 0; i < worn.Count; i++)
+			{
+				List<BodyPartGroupDef> groups = worn[i]?.def?.apparel?.bodyPartGroups;
+				if (groups == null)
+				{
+					continue;
+				}
+
+				if (groups.Contains(BodyPartGroupDefOf.UpperHead) || groups.Contains(BodyPartGroupDefOf.FullHead))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		private static bool ShouldUseWarmHeadgear(Pawn pawn, int tile)
+		{
+			float temp = 21f;
+			if (pawn?.Spawned == true)
+			{
+				temp = pawn.AmbientTemperature;
+			}
+			else if (tile >= 0)
+			{
+				temp = GenTemperature.GetTemperatureAtTile(tile);
+			}
+
+			return temp < WarmHeadgearThreshold;
 		}
 
 		private static void TryInjectBabyFood(Pawn toddler, float ageYears)

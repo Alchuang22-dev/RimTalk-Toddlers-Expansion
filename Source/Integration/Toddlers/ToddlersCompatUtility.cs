@@ -11,6 +11,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 	public static class ToddlersCompatUtility
 	{
 		private const string ToddlerUtilityTypeName = "Toddlers.ToddlerUtility";
+		private const string ToddlersSettingsTypeName = "Toddlers.Toddlers_Settings";
 		private const float DefaultMinToddlerAge = 1f;
 		private const float DefaultEndToddlerAge = 3f;
 
@@ -27,6 +28,16 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private static bool _selfCareInitialized;
 		private static Func<Pawn, bool> _canDressSelf;
 		private static HediffDef _learningManipulationDef;
+		private static bool _toddlersApparelSettingResolved;
+		private static FieldInfo _toddlersApparelSettingField;
+
+		public enum ToddlerApparelSetting
+		{
+			BabyApparel,
+			ChildApparel,
+			Nude,
+			NudeTribal
+		}
 
 		public static bool IsToddlersActive
 		{
@@ -204,6 +215,41 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			return pawn?.ageTracker?.AgeBiologicalYearsFloat ?? 0f;
 		}
 
+		public static ToddlerApparelSetting GetToddlerApparelSetting()
+		{
+			ResolveToddlersApparelSettingField();
+			if (_toddlersApparelSettingField == null)
+			{
+				return ToddlerApparelSetting.BabyApparel;
+			}
+
+			try
+			{
+				string settingName = _toddlersApparelSettingField.GetValue(null)?.ToString();
+				if (settingName == "NoBabyApparel")
+				{
+					return ToddlerApparelSetting.Nude;
+				}
+
+				if (settingName == "NoTribal")
+				{
+					return ToddlerApparelSetting.NudeTribal;
+				}
+
+				if (settingName == "AnyChildApparel")
+				{
+					return ToddlerApparelSetting.ChildApparel;
+				}
+
+				return ToddlerApparelSetting.BabyApparel;
+			}
+			catch (Exception ex)
+			{
+				WarnOnce("GetToddlerApparelSetting", ex);
+				return ToddlerApparelSetting.BabyApparel;
+			}
+		}
+
 		private static void EnsureInitialized()
 		{
 			if (_initialized)
@@ -376,6 +422,28 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			_learningManipulationDef = DefDatabase<HediffDef>.GetNamedSilentFail("LearningManipulation");
+		}
+
+		private static void ResolveToddlersApparelSettingField()
+		{
+			if (_toddlersApparelSettingResolved)
+			{
+				return;
+			}
+
+			_toddlersApparelSettingResolved = true;
+			try
+			{
+				Type settingsType = AccessTools.TypeByName(ToddlersSettingsTypeName);
+				if (settingsType != null)
+				{
+					_toddlersApparelSettingField = AccessTools.Field(settingsType, "apparelSetting");
+				}
+			}
+			catch (Exception ex)
+			{
+				WarnOnce("ResolveToddlersApparelSettingField", ex);
+			}
 		}
 
 		private static void WarnOnce(string context, Exception ex)
