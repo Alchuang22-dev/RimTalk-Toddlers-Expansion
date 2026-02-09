@@ -45,6 +45,8 @@
   <RimTalk_ToddlersExpansion_Behavior_Settings_Header>行为修正</RimTalk_ToddlersExpansion_Behavior_Settings_Header>
   <RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior>在殖民地图中将敌对幼儿/婴儿按殖民者处理</RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior>
   <RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior_Tooltip>防止敌对幼儿/婴儿在玩家主地图上尝试离开或砸门，得到更和平的行为。若与袭击/其他AI模组冲突可关闭。</RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior_Tooltip>
+  <RimTalk_ToddlersExpansion_EnableUnder3HairRendering>启用3岁以下婴儿/幼儿显示头发</RimTalk_ToddlersExpansion_EnableUnder3HairRendering>
+  <RimTalk_ToddlersExpansion_EnableUnder3HairRendering_Tooltip>开启后，3岁以下婴儿和幼儿会显示头发；关闭时保持游戏默认显示方案。</RimTalk_ToddlersExpansion_EnableUnder3HairRendering_Tooltip>
 
   <!-- 厌倦度悬浮窗显示 -->
   <RimTalk_Boredom_Header>娱乐类型厌倦:</RimTalk_Boredom_Header>

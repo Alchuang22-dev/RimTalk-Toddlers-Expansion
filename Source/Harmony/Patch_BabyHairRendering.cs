@@ -1,4 +1,5 @@
 using HarmonyLib;
+using RimTalk_ToddlersExpansion.Core;
 using Verse;
 
 namespace RimTalk_ToddlersExpansion.Harmony
@@ -37,6 +38,16 @@ namespace RimTalk_ToddlersExpansion.Harmony
 		{
 			// 如果已经有结果，不需要修改
 			if (__result != null)
+			{
+				return;
+			}
+
+			if (!ToddlersExpansionSettings.enableUnder3HairRendering)
+			{
+				return;
+			}
+
+			if (pawn?.ageTracker == null || pawn.ageTracker.AgeBiologicalYearsFloat >= 3f)
 			{
 				return;
 			}

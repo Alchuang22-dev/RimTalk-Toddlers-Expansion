@@ -100,6 +100,10 @@ namespace RimTalk_ToddlersExpansion.Core
 				ref ToddlersExpansionSettings.enableHostileToddlerColonistBehavior,
 				"RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior_Tooltip".Translate());
 			listingStandard.Gap();
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_EnableUnder3HairRendering".Translate(),
+				ref ToddlersExpansionSettings.enableUnder3HairRendering,
+				"RimTalk_ToddlersExpansion_EnableUnder3HairRendering_Tooltip".Translate());
+			listingStandard.Gap();
 
 			listingStandard.GapLine();
 // ========== 商队/过路者设置 ==========
