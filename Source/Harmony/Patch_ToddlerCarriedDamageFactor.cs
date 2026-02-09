@@ -7,39 +7,63 @@ namespace RimTalk_ToddlersExpansion.Harmony
 {
 	public static class Patch_ToddlerCarriedDamageFactor
 	{
-		private static readonly FieldInfo HediffSetPawnField = AccessTools.Field(typeof(HediffSet), "pawn");
-
 		public static void Init(HarmonyLib.Harmony harmony)
 		{
-			MethodInfo target = AccessTools.Method(typeof(HediffSet), nameof(HediffSet.FactorForDamage), new[] { typeof(DamageInfo) });
+			MethodInfo target = AccessTools.Method(
+				typeof(Pawn),
+				"PreApplyDamage",
+				new[] { typeof(DamageInfo).MakeByRefType(), typeof(bool).MakeByRefType() });
+
 			if (target == null)
 			{
 				return;
 			}
 
-			MethodInfo postfix = AccessTools.Method(typeof(Patch_ToddlerCarriedDamageFactor), nameof(FactorForDamage_Postfix));
-			harmony.Patch(target, postfix: new HarmonyMethod(postfix));
+			MethodInfo prefix = AccessTools.Method(typeof(Patch_ToddlerCarriedDamageFactor), nameof(PreApplyDamage_Prefix));
+			harmony.Patch(target, prefix: new HarmonyMethod(prefix));
 		}
 
-		private static void FactorForDamage_Postfix(HediffSet __instance, ref float __result)
+		private static bool PreApplyDamage_Prefix(Pawn __instance, ref DamageInfo dinfo, ref bool absorbed)
 		{
-			if (__instance == null || __result <= 0f)
+			if (__instance == null || absorbed)
 			{
-				return;
+				return true;
 			}
 
-			Pawn pawn = HediffSetPawnField?.GetValue(__instance) as Pawn;
-			if (pawn == null || !ToddlerCarryingUtility.IsBeingCarried(pawn))
+			if (!ToddlerCarryingUtility.IsBeingCarried(__instance))
 			{
-				return;
+				return true;
 			}
 
-			if (!ToddlerCarryProtectionUtility.HasCarryProtection(pawn))
+			if (!ToddlerCarryProtectionUtility.HasCarryProtection(__instance))
 			{
-				return;
+				return true;
 			}
 
-			__result *= ToddlerCarryProtectionUtility.CarriedDamageFactor;
+			Pawn carrier = ToddlerCarryingUtility.GetCarrier(__instance);
+			if (carrier == null || carrier == __instance || carrier.Dead || carrier.Destroyed || carrier.health == null)
+			{
+				return true;
+			}
+
+			if (dinfo.Amount <= 0f)
+			{
+				absorbed = true;
+				return false;
+			}
+
+			try
+			{
+				// Redirect carried baby/toddler damage to the carrier.
+				carrier.TakeDamage(dinfo);
+				absorbed = true;
+				return false;
+			}
+			catch
+			{
+				// Fall back to vanilla damage flow if redirect fails unexpectedly.
+				return true;
+			}
 		}
 	}
 }

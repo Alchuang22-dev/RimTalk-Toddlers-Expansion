@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Defs>
-  <!-- 和幼儿玩耍的冷却期 - 应用于成年人 -->
+  <!-- Cooldown for carried play. Applied to the carried toddler/baby. -->
   <HediffDef>
     <defName>RimTalk_CarriedPlayCooldown</defName>
-    <label>played with toddler recently</label>
-    <description>This person recently played with a toddler they were carrying. They need a moment before playing again.</description>
+    <label>played while carried recently</label>
+    <description>This carried toddler recently played while being carried. They need a short break before carried play can be used again.</description>
     <hediffClass>HediffWithComps</hediffClass>
     <defaultLabelColor>(0.6, 0.8, 1.0)</defaultLabelColor>
     <isBad>false</isBad>

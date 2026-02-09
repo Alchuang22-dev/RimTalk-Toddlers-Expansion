@@ -5,8 +5,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 {
 	public static class ToddlerCarryProtectionUtility
 	{
-		public const float CarriedDamageFactor = 0.1f;
-
 		private static HediffDef _carryProtectionDef;
 		private static bool _checked;
 

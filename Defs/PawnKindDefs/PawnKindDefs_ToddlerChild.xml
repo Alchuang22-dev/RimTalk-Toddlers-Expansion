@@ -9,7 +9,6 @@
     <defName>RimTalkToddler_Toddler</defName>
     <label>toddler</label>
     <race>Human</race>
-    <defaultFactionType>Villager</defaultFactionType>
     <backstoryFiltersOverride>
       <li>
         <categories>
@@ -33,7 +32,6 @@
     <defName>RimTalkToddler_Child</defName>
     <label>child</label>
     <race>Human</race>
-    <defaultFactionType>Villager</defaultFactionType>
     <backstoryFiltersOverride>
       <li>
         <categories>

@@ -3,7 +3,7 @@
   <HediffDef>
     <defName>RimTalk_CarriedProtection</defName>
     <label>being carried</label>
-    <description>This toddler is being carried and is partially shielded from harm. While carried, their comfortable temperature range is massively increased (cold tolerance and heat tolerance both improved).</description>
+    <description>This toddler is being carried. While carried, incoming damage is redirected to the adult carrying them. Comfy temperature min -80C and comfy temperature max +80C.</description>
     <hediffClass>HediffWithComps</hediffClass>
     <isBad>false</isBad>
     <scenarioCanAdd>false</scenarioCanAdd>
