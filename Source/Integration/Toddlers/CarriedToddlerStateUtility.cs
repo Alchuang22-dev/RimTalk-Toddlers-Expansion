@@ -2,6 +2,7 @@ using System;
 using RimTalk_ToddlersExpansion.Core;
 using RimTalk_ToddlersExpansion.Integration.RimTalk;
 using RimWorld;
+using UnityEngine;
 using Verse;
 using Verse.AI;
 using Verse.AI.Group;
@@ -209,8 +210,19 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
-			var food = toddler?.needs?.food;
-			return food != null && food.CurLevelPercentage < HungryThreshold;
+			Need_Food food = toddler?.needs?.food;
+			if (food == null || food.CurLevelPercentage >= HungryThreshold)
+			{
+				return false;
+			}
+
+			// Avoid pick-up/dismount loops: try to feed carried visitor toddlers first.
+			if (TryFeedHungryVisitorToddler(toddler, food))
+			{
+				return food.CurLevelPercentage < HungryThreshold;
+			}
+
+			return true;
 		}
 
 		private static bool ShouldSuppressStruggleDuringExit(Pawn toddler)
@@ -328,6 +340,93 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 			JobDef jobDef = carrier.CurJobDef;
 			return jobDef == JobDefOf.LayDown;
+		}
+
+		private static bool TryFeedHungryVisitorToddler(Pawn toddler, Need_Food food)
+		{
+			if (!IsVisitorToddlerOnPlayerMap(toddler) || !ToddlerCarryingUtility.IsBeingCarried(toddler))
+			{
+				return false;
+			}
+
+			Thing babyFood = TryFindBabyFoodInInventory(toddler);
+			if (babyFood == null)
+			{
+				Pawn carrier = ToddlerCarryingUtility.GetCarrier(toddler);
+				babyFood = TryFindBabyFoodInInventory(carrier);
+			}
+
+			if (babyFood == null)
+			{
+				return false;
+			}
+
+			try
+			{
+				float wanted = Mathf.Max(food.NutritionWanted, 0.01f);
+				float nutritionGained = babyFood.Ingested(toddler, wanted);
+				if (nutritionGained <= 0f)
+				{
+					return false;
+				}
+
+				food.CurLevel += nutritionGained;
+				if (Prefs.DevMode)
+				{
+					Log.Message($"[RimTalk_ToddlersExpansion][CarryFeeding] {toddler.LabelShort} consumed baby food while being carried.");
+				}
+
+				return true;
+			}
+			catch (Exception ex)
+			{
+				if (Prefs.DevMode)
+				{
+					Log.Warning($"[RimTalk_ToddlersExpansion][CarryFeeding] Failed to feed carried toddler {toddler?.LabelShort ?? "null"}: {ex.Message}");
+				}
+
+				return false;
+			}
+		}
+
+		private static Thing TryFindBabyFoodInInventory(Pawn pawn)
+		{
+			if (pawn?.inventory?.innerContainer == null)
+			{
+				return null;
+			}
+
+			for (int i = 0; i < pawn.inventory.innerContainer.Count; i++)
+			{
+				Thing thing = pawn.inventory.innerContainer[i];
+				if (thing != null && thing.def == ThingDefOf.BabyFood && thing.stackCount > 0)
+				{
+					return thing;
+				}
+			}
+
+			return null;
+		}
+
+		private static bool IsVisitorToddlerOnPlayerMap(Pawn toddler)
+		{
+			if (toddler == null || toddler.Dead || toddler.Destroyed || !ToddlersCompatUtility.IsToddlerOrBaby(toddler))
+			{
+				return false;
+			}
+
+			if (toddler.Map == null || !toddler.Map.IsPlayerHome)
+			{
+				return false;
+			}
+
+			Faction faction = toddler.Faction;
+			if (faction == null || faction == Faction.OfPlayer || faction.HostileTo(Faction.OfPlayer))
+			{
+				return false;
+			}
+
+			return !toddler.IsPrisoner && !toddler.IsPrisonerOfColony;
 		}
 	}
 }
