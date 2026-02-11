@@ -1,0 +1,271 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThoughtDef>
+    <defName>RimTalk_ManyRatkinBabies</defName>
+    <label>many ratkin babies</label>
+    <thoughtClass>Thought_Memory</thoughtClass>
+    <validWhileDespawned>true</validWhileDespawned>
+    <developmentalStageFilter>
+      <li>Newborn</li>
+      <li>Baby</li>
+      <li>Child</li>
+      <li>Adult</li>
+    </developmentalStageFilter>
+    <durationDays>1</durationDays>
+    <stackLimit>1</stackLimit>
+    <stages>
+      <li>
+        <label>many ratkin babies</label>
+        <description>Eeee? I hear squeaks from other little ratkins nearby...</description>
+        <baseMoodEffect>3</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimTalk_LiveInRatkinNursery</defName>
+    <label>live in ratkin nursery</label>
+    <thoughtClass>Thought_Memory</thoughtClass>
+    <validWhileDespawned>true</validWhileDespawned>
+    <developmentalStageFilter>
+      <li>Newborn</li>
+      <li>Baby</li>
+      <li>Child</li>
+      <li>Adult</li>
+    </developmentalStageFilter>
+    <durationDays>1</durationDays>
+    <stackLimit>1</stackLimit>
+    <stages>
+      <li>
+        <label>live in ratkin nursery</label>
+        <description>I played with so many little ratkins and had so much fun!</description>
+        <baseMoodEffect>5</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimTalk_ManyKiiroBabies</defName>
+    <label>many kiiro babies</label>
+    <thoughtClass>Thought_Memory</thoughtClass>
+    <validWhileDespawned>true</validWhileDespawned>
+    <developmentalStageFilter>
+      <li>Newborn</li>
+      <li>Baby</li>
+      <li>Child</li>
+      <li>Adult</li>
+    </developmentalStageFilter>
+    <durationDays>1</durationDays>
+    <stackLimit>1</stackLimit>
+    <stages>
+      <li>
+        <label>many kiiro babies</label>
+        <description>Meow... soft... fluffy...</description>
+        <baseMoodEffect>3</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimTalk_LiveInKiiroNursery</defName>
+    <label>live in kiiro nursery</label>
+    <thoughtClass>Thought_Memory</thoughtClass>
+    <validWhileDespawned>true</validWhileDespawned>
+    <developmentalStageFilter>
+      <li>Newborn</li>
+      <li>Baby</li>
+      <li>Child</li>
+      <li>Adult</li>
+    </developmentalStageFilter>
+    <durationDays>1</durationDays>
+    <stackLimit>1</stackLimit>
+    <stages>
+      <li>
+        <label>live in kiiro nursery</label>
+        <description>Touching other kitten tails is so fun, meow!</description>
+        <baseMoodEffect>5</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimTalk_ManyMoeLotlBabies</defName>
+    <label>gooey together</label>
+    <thoughtClass>Thought_Memory</thoughtClass>
+    <validWhileDespawned>true</validWhileDespawned>
+    <developmentalStageFilter>
+      <li>Newborn</li>
+      <li>Baby</li>
+      <li>Child</li>
+      <li>Adult</li>
+    </developmentalStageFilter>
+    <durationDays>1</durationDays>
+    <stackLimit>1</stackLimit>
+    <stages>
+      <li>
+        <label>gooey together</label>
+        <description>I cuddled up with many other MoeLotl babies.</description>
+        <baseMoodEffect>3</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimTalk_LiveInMoeLotlNursery</defName>
+    <label>damp nursery room</label>
+    <thoughtClass>Thought_Memory</thoughtClass>
+    <validWhileDespawned>true</validWhileDespawned>
+    <developmentalStageFilter>
+      <li>Newborn</li>
+      <li>Baby</li>
+      <li>Child</li>
+      <li>Adult</li>
+    </developmentalStageFilter>
+    <durationDays>1</durationDays>
+    <stackLimit>1</stackLimit>
+    <stages>
+      <li>
+        <label>damp nursery room</label>
+        <description>So many amphibian babies! Warm and wet!</description>
+        <baseMoodEffect>5</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimTalk_ManyMiliraBabies</defName>
+    <label>feathery scent</label>
+    <thoughtClass>Thought_Memory</thoughtClass>
+    <validWhileDespawned>true</validWhileDespawned>
+    <developmentalStageFilter>
+      <li>Newborn</li>
+      <li>Baby</li>
+      <li>Child</li>
+      <li>Adult</li>
+    </developmentalStageFilter>
+    <durationDays>1</durationDays>
+    <stackLimit>1</stackLimit>
+    <stages>
+      <li>
+        <label>feathery scent</label>
+        <description>Huh... that feather smell might not be mine.</description>
+        <baseMoodEffect>3</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimTalk_LiveInMiliraNursery</defName>
+    <label>angel nursery</label>
+    <thoughtClass>Thought_Memory</thoughtClass>
+    <validWhileDespawned>true</validWhileDespawned>
+    <developmentalStageFilter>
+      <li>Newborn</li>
+      <li>Baby</li>
+      <li>Child</li>
+      <li>Adult</li>
+    </developmentalStageFilter>
+    <durationDays>1</durationDays>
+    <stackLimit>1</stackLimit>
+    <stages>
+      <li>
+        <label>angel nursery</label>
+        <description>So many little Milira babies here, just like a sky city!</description>
+        <baseMoodEffect>5</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimTalk_ManyBunnyBabies</defName>
+    <label>many bunnies</label>
+    <thoughtClass>Thought_Memory</thoughtClass>
+    <validWhileDespawned>true</validWhileDespawned>
+    <developmentalStageFilter>
+      <li>Newborn</li>
+      <li>Baby</li>
+      <li>Child</li>
+      <li>Adult</li>
+    </developmentalStageFilter>
+    <durationDays>1</durationDays>
+    <stackLimit>1</stackLimit>
+    <stages>
+      <li>
+        <label>many bunnies</label>
+        <description>There are fluffy little things over there...</description>
+        <baseMoodEffect>3</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimTalk_LiveInBunnyNursery</defName>
+    <label>live in bunny burrow</label>
+    <thoughtClass>Thought_Memory</thoughtClass>
+    <validWhileDespawned>true</validWhileDespawned>
+    <developmentalStageFilter>
+      <li>Newborn</li>
+      <li>Baby</li>
+      <li>Child</li>
+      <li>Adult</li>
+    </developmentalStageFilter>
+    <durationDays>1</durationDays>
+    <stackLimit>1</stackLimit>
+    <stages>
+      <li>
+        <label>live in bunny burrow</label>
+        <description>I live together with lots of other bunny babies!</description>
+        <baseMoodEffect>5</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimTalk_ManyCinderBabies</defName>
+    <label>packed together</label>
+    <thoughtClass>Thought_Memory</thoughtClass>
+    <validWhileDespawned>true</validWhileDespawned>
+    <developmentalStageFilter>
+      <li>Newborn</li>
+      <li>Baby</li>
+      <li>Child</li>
+      <li>Adult</li>
+    </developmentalStageFilter>
+    <durationDays>1</durationDays>
+    <stackLimit>1</stackLimit>
+    <stages>
+      <li>
+        <label>packed together</label>
+        <description>Wow! Tentacles are touching me!</description>
+        <baseMoodEffect>3</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimTalk_LiveInCinderNursery</defName>
+    <label>cinder pile</label>
+    <thoughtClass>Thought_Memory</thoughtClass>
+    <validWhileDespawned>true</validWhileDespawned>
+    <developmentalStageFilter>
+      <li>Newborn</li>
+      <li>Baby</li>
+      <li>Child</li>
+      <li>Adult</li>
+    </developmentalStageFilter>
+    <durationDays>1</durationDays>
+    <stackLimit>1</stackLimit>
+    <stages>
+      <li>
+        <label>cinder pile</label>
+        <description>So warm... all the babies are huddled together.</description>
+        <baseMoodEffect>5</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+</Defs>
+
+
+
+
+

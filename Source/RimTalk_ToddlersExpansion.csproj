@@ -5,7 +5,7 @@
     Build:
       dotnet build -c Release -p:GameVersion=1.6
     Output:
-      <ProjectDir>\<GameVersion>\Assemblies\RimTalk_ToddlersExpansion.dll
+      <ModRoot>\<GameVersion>\Assemblies\RimTalk_ToddlersExpansion.dll
   -->
 
   <PropertyGroup>
@@ -17,8 +17,8 @@
     <RootNamespace>RimTalk_ToddlersExpansion</RootNamespace>
     <AssemblyName>RimTalk_ToddlersExpansion</AssemblyName>
 
-    <!-- RimWorld mod layout: put DLL directly under <GameVersion>/Assemblies -->
-    <OutputPath>$(GameVersion)\Assemblies\</OutputPath>
+    <!-- RimWorld mod layout: put DLL directly under mod root <GameVersion>/Assemblies -->
+    <OutputPath>..\$(GameVersion)\Assemblies\</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 
     <!-- VSCode/OmniSharp: do not fall back to C# 7.3 -->

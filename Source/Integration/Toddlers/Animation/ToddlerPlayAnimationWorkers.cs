@@ -115,8 +115,15 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		protected static bool IsPlayJob(Pawn pawn)
 		{
 			JobDef jobDef = pawn?.CurJobDef;
-			if (jobDef != ToddlersExpansionJobDefOf.RimTalk_ToddlerSelfPlayJob
-				&& jobDef != ToddlersExpansionJobDefOf.RimTalk_ToddlerMutualPlayJob)
+			if (jobDef == null)
+			{
+				return false;
+			}
+
+			bool isSelfPlay = !jobDef.defName.NullOrEmpty()
+				&& jobDef.defName.StartsWith("RimTalk_ToddlerSelfPlay", System.StringComparison.Ordinal);
+			bool isMutualPlay = jobDef == ToddlersExpansionJobDefOf.RimTalk_ToddlerMutualPlayJob;
+			if (!isSelfPlay && !isMutualPlay)
 			{
 				return false;
 			}

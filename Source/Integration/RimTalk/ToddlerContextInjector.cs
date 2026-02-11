@@ -75,7 +75,8 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 			}
 
 			JobDef jobDef = pawn.CurJob.def;
-			if (jobDef == ToddlersExpansionJobDefOf.RimTalk_ToddlerSelfPlayJob)
+			if (!jobDef.defName.NullOrEmpty()
+				&& jobDef.defName.StartsWith("RimTalk_ToddlerSelfPlay", System.StringComparison.Ordinal))
 			{
 				return "self";
 			}

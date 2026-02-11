@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using RimTalk_ToddlersExpansion.Core;
+using RimTalk_ToddlersExpansion.Integration.Toddlers.HAR;
 using RimWorld;
 using Toddlers;
 using UnityEngine;
@@ -20,6 +21,12 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
+			// HAR-specific self play defs should take priority for mapped races.
+			if (HarRaceWhitelistUtility.HasSpecialHarSelfPlay(pawn))
+			{
+				return false;
+			}
+
 			Need_Play play = pawn.needs?.play;
 			if (play != null && play.CurLevelPercentage >= PlayNeedThreshold)
 			{
@@ -32,6 +39,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		public override Job TryGiveJob(Pawn pawn)
 		{
 			if (!IsEligiblePawn(pawn))
+			{
+				return null;
+			}
+
+			if (HarRaceWhitelistUtility.HasSpecialHarSelfPlay(pawn))
 			{
 				return null;
 			}

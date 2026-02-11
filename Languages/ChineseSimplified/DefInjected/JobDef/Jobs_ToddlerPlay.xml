@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
   <RimTalk_ToddlerSelfPlayJob.reportString>自己玩耍。</RimTalk_ToddlerSelfPlayJob.reportString>
+  <RimTalk_ToddlerSelfPlay_Ratkin_PlaywithOwnEar.reportString>在玩自己的耳朵。</RimTalk_ToddlerSelfPlay_Ratkin_PlaywithOwnEar.reportString>
+  <RimTalk_ToddlerSelfPlay_Ratkin_PlaywithOwnTail.reportString>在玩自己的尾巴。</RimTalk_ToddlerSelfPlay_Ratkin_PlaywithOwnTail.reportString>
+  <RimTalk_ToddlerSelfPlay_Kiiro_PlaywithOwnTail.reportString>在玩自己的尾巴。</RimTalk_ToddlerSelfPlay_Kiiro_PlaywithOwnTail.reportString>
+  <RimTalk_ToddlerSelfPlay_Kiiro_PlaywithBobbles.reportString>在玩毛绒球。</RimTalk_ToddlerSelfPlay_Kiiro_PlaywithBobbles.reportString>
+  <RimTalk_ToddlerSelfPlay_MoeLotl_LickOwnBody.reportString>在舔自己的身体。</RimTalk_ToddlerSelfPlay_MoeLotl_LickOwnBody.reportString>
+  <RimTalk_ToddlerSelfPlay_MoeLotl_Wiggle.reportString>在蠕动。</RimTalk_ToddlerSelfPlay_MoeLotl_Wiggle.reportString>
+  <RimTalk_ToddlerSelfPlay_Milira_LearntoFly.reportString>在学习飞行。</RimTalk_ToddlerSelfPlay_Milira_LearntoFly.reportString>
+  <RimTalk_ToddlerSelfPlay_Milira_PlaywithFeathers.reportString>在玩羽毛。</RimTalk_ToddlerSelfPlay_Milira_PlaywithFeathers.reportString>
+  <RimTalk_ToddlerSelfPlay_Bunny_DigHole.reportString>在挖小洞。</RimTalk_ToddlerSelfPlay_Bunny_DigHole.reportString>
+  <RimTalk_ToddlerSelfPlay_Bunny_PickupEars.reportString>在竖起耳朵。</RimTalk_ToddlerSelfPlay_Bunny_PickupEars.reportString>
+  <RimTalk_ToddlerSelfPlay_Cinder_PlaywithOwnTentacle.reportString>在玩自己的触手。</RimTalk_ToddlerSelfPlay_Cinder_PlaywithOwnTentacle.reportString>
+  <RimTalk_ToddlerSelfPlay_Cinder_WatchCrystals.reportString>在观察晶体。</RimTalk_ToddlerSelfPlay_Cinder_WatchCrystals.reportString>
   <RimTalk_ToddlerMutualPlayJob.reportString>在和TargetA玩耍。</RimTalk_ToddlerMutualPlayJob.reportString>
   <RimTalk_ToddlerMutualPlayPartnerJob.reportString>在和TargetA玩耍</RimTalk_ToddlerMutualPlayPartnerJob.reportString>
   <RimTalk_WatchToddlerPlayJob.reportString>在观看TargetA玩耍。</RimTalk_WatchToddlerPlayJob.reportString>

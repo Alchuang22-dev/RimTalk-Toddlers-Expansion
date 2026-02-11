@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimTalk_ManyRatkinBabies.label>好多鼠鼠</RimTalk_ManyRatkinBabies.label>
+  <RimTalk_ManyRatkinBabies.stages.0.label>好多鼠鼠</RimTalk_ManyRatkinBabies.stages.0.label>
+  <RimTalk_ManyRatkinBabies.stages.0.description>咿呀？周围有鼠宝宝在叫...</RimTalk_ManyRatkinBabies.stages.0.description>
+
+  <RimTalk_LiveInRatkinNursery.label>鼠鼠窝</RimTalk_LiveInRatkinNursery.label>
+  <RimTalk_LiveInRatkinNursery.stages.0.label>鼠鼠窝</RimTalk_LiveInRatkinNursery.stages.0.label>
+  <RimTalk_LiveInRatkinNursery.stages.0.description>我和好多鼠宝宝玩得超级开心！</RimTalk_LiveInRatkinNursery.stages.0.description>
+
+  <RimTalk_ManyKiiroBabies.label>好多猫猫</RimTalk_ManyKiiroBabies.label>
+  <RimTalk_ManyKiiroBabies.stages.0.label>好多猫猫</RimTalk_ManyKiiroBabies.stages.0.label>
+  <RimTalk_ManyKiiroBabies.stages.0.description>喵喵...软软...</RimTalk_ManyKiiroBabies.stages.0.description>
+
+  <RimTalk_LiveInKiiroNursery.label>猫猫窝</RimTalk_LiveInKiiroNursery.label>
+  <RimTalk_LiveInKiiroNursery.stages.0.label>猫猫窝</RimTalk_LiveInKiiroNursery.stages.0.label>
+  <RimTalk_LiveInKiiroNursery.stages.0.description>摸了猫宝宝的尾巴，好玩喵！</RimTalk_LiveInKiiroNursery.stages.0.description>
+
+  <RimTalk_ManyMoeLotlBabies.label>黏糊糊</RimTalk_ManyMoeLotlBabies.label>
+  <RimTalk_ManyMoeLotlBabies.stages.0.label>黏糊糊</RimTalk_ManyMoeLotlBabies.stages.0.label>
+  <RimTalk_ManyMoeLotlBabies.stages.0.description>我和其他萌螈宝宝窝在一起。</RimTalk_ManyMoeLotlBabies.stages.0.description>
+
+  <RimTalk_LiveInMoeLotlNursery.label>湿润的宝宝房</RimTalk_LiveInMoeLotlNursery.label>
+  <RimTalk_LiveInMoeLotlNursery.stages.0.label>湿润的宝宝房</RimTalk_LiveInMoeLotlNursery.stages.0.label>
+  <RimTalk_LiveInMoeLotlNursery.stages.0.description>超多两栖动物！湿乎乎！</RimTalk_LiveInMoeLotlNursery.stages.0.description>
+
+  <RimTalk_ManyMiliraBabies.label>羽毛香气</RimTalk_ManyMiliraBabies.label>
+  <RimTalk_ManyMiliraBabies.stages.0.label>羽毛香气</RimTalk_ManyMiliraBabies.stages.0.label>
+  <RimTalk_ManyMiliraBabies.stages.0.description>呜...好像不是我的羽毛？</RimTalk_ManyMiliraBabies.stages.0.description>
+
+  <RimTalk_LiveInMiliraNursery.label>天使托儿所</RimTalk_LiveInMiliraNursery.label>
+  <RimTalk_LiveInMiliraNursery.stages.0.label>天使托儿所</RimTalk_LiveInMiliraNursery.stages.0.label>
+  <RimTalk_LiveInMiliraNursery.stages.0.description>这里有好多米莉拉宝宝！像天空城里一样！</RimTalk_LiveInMiliraNursery.stages.0.description>
+
+  <RimTalk_ManyBunnyBabies.label>好多兔子</RimTalk_ManyBunnyBabies.label>
+  <RimTalk_ManyBunnyBabies.stages.0.label>好多兔子</RimTalk_ManyBunnyBabies.stages.0.label>
+  <RimTalk_ManyBunnyBabies.stages.0.description>那边有毛茸茸的东西...</RimTalk_ManyBunnyBabies.stages.0.description>
+
+  <RimTalk_LiveInBunnyNursery.label>住在兔子洞</RimTalk_LiveInBunnyNursery.label>
+  <RimTalk_LiveInBunnyNursery.stages.0.label>住在兔子洞</RimTalk_LiveInBunnyNursery.stages.0.label>
+  <RimTalk_LiveInBunnyNursery.stages.0.description>我和其他宝宝住在一起！</RimTalk_LiveInBunnyNursery.stages.0.description>
+
+  <RimTalk_ManyCinderBabies.label>挤在一起</RimTalk_ManyCinderBabies.label>
+  <RimTalk_ManyCinderBabies.stages.0.label>挤在一起</RimTalk_ManyCinderBabies.stages.0.label>
+  <RimTalk_ManyCinderBabies.stages.0.description>哇！有触手在碰我！</RimTalk_ManyCinderBabies.stages.0.description>
+
+  <RimTalk_LiveInCinderNursery.label>余烬堆</RimTalk_LiveInCinderNursery.label>
+  <RimTalk_LiveInCinderNursery.stages.0.label>余烬堆</RimTalk_LiveInCinderNursery.stages.0.label>
+  <RimTalk_LiveInCinderNursery.stages.0.description>好暖和...宝宝们挤成一团啦。</RimTalk_LiveInCinderNursery.stages.0.description>
+</LanguageData>

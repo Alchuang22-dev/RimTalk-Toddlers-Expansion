@@ -1,4 +1,5 @@
 using RimWorld;
+using RimTalk_ToddlersExpansion.Integration.Toddlers.HAR;
 using UnityEngine;
 using Verse;
 
@@ -21,6 +22,18 @@ namespace RimTalk_ToddlersExpansion.Core
 			int missingTextures = 0;
 
 			missingDefs += CheckDef<JobDef>("RimTalk_ToddlerSelfPlayJob");
+			missingDefs += CheckDef<JobDef>("RimTalk_ToddlerSelfPlay_Ratkin_PlaywithOwnEar");
+			missingDefs += CheckDef<JobDef>("RimTalk_ToddlerSelfPlay_Ratkin_PlaywithOwnTail");
+			missingDefs += CheckDef<JobDef>("RimTalk_ToddlerSelfPlay_Kiiro_PlaywithOwnTail");
+			missingDefs += CheckDef<JobDef>("RimTalk_ToddlerSelfPlay_Kiiro_PlaywithBobbles");
+			missingDefs += CheckDef<JobDef>("RimTalk_ToddlerSelfPlay_MoeLotl_LickOwnBody");
+			missingDefs += CheckDef<JobDef>("RimTalk_ToddlerSelfPlay_MoeLotl_Wiggle");
+			missingDefs += CheckDef<JobDef>("RimTalk_ToddlerSelfPlay_Milira_LearntoFly");
+			missingDefs += CheckDef<JobDef>("RimTalk_ToddlerSelfPlay_Milira_PlaywithFeathers");
+			missingDefs += CheckDef<JobDef>("RimTalk_ToddlerSelfPlay_Bunny_DigHole");
+			missingDefs += CheckDef<JobDef>("RimTalk_ToddlerSelfPlay_Bunny_PickupEars");
+			missingDefs += CheckDef<JobDef>("RimTalk_ToddlerSelfPlay_Cinder_PlaywithOwnTentacle");
+			missingDefs += CheckDef<JobDef>("RimTalk_ToddlerSelfPlay_Cinder_WatchCrystals");
 			missingDefs += CheckDef<JobDef>("RimTalk_ToddlerMutualPlayJob");
 			missingDefs += CheckDef<JobDef>("RimTalk_ToddlerMutualPlayPartnerJob");
 			missingDefs += CheckDef<JobDef>("RimTalk_WatchToddlerPlayJob");
@@ -43,6 +56,18 @@ namespace RimTalk_ToddlersExpansion.Core
 			missingDefs += CheckDef<ThoughtDef>("RimTalk_ToddlerSleepWithOthers");
 			missingDefs += CheckDef<ThoughtDef>("RimTalk_ToddlerSleepInNursery");
 			missingDefs += CheckDef<ThoughtDef>("RimTalk_ToddlerSleepWithParents");
+			missingDefs += CheckDef<ThoughtDef>("RimTalk_ManyRatkinBabies");
+			missingDefs += CheckDef<ThoughtDef>("RimTalk_LiveInRatkinNursery");
+			missingDefs += CheckDef<ThoughtDef>("RimTalk_ManyKiiroBabies");
+			missingDefs += CheckDef<ThoughtDef>("RimTalk_LiveInKiiroNursery");
+			missingDefs += CheckDef<ThoughtDef>("RimTalk_ManyMoeLotlBabies");
+			missingDefs += CheckDef<ThoughtDef>("RimTalk_LiveInMoeLotlNursery");
+			missingDefs += CheckDef<ThoughtDef>("RimTalk_ManyMiliraBabies");
+			missingDefs += CheckDef<ThoughtDef>("RimTalk_LiveInMiliraNursery");
+			missingDefs += CheckDef<ThoughtDef>("RimTalk_ManyBunnyBabies");
+			missingDefs += CheckDef<ThoughtDef>("RimTalk_LiveInBunnyNursery");
+			missingDefs += CheckDef<ThoughtDef>("RimTalk_ManyCinderBabies");
+			missingDefs += CheckDef<ThoughtDef>("RimTalk_LiveInCinderNursery");
 			missingDefs += CheckDef<AnimationDef>("RimTalk_ToddlerPlay_Wiggle");
 			missingDefs += CheckDef<AnimationDef>("RimTalk_ToddlerPlay_Sway");
 			missingDefs += CheckDef<AnimationDef>("RimTalk_ToddlerPlay_Lay");
@@ -60,6 +85,8 @@ namespace RimTalk_ToddlersExpansion.Core
 			{
 				Log.Warning($"[RimTalk_ToddlersExpansion] Diagnostics: missingDefs={missingDefs}, missingTextures={missingTextures}.");
 			}
+
+			Log.Message($"[RimTalk_ToddlersExpansion] HAR whitelist (Milira aligned): {HarRaceWhitelistUtility.MiliraAlignedRaceDefNames.Count} races.");
 		}
 
 		private static int CheckDef<T>(string defName) where T : Def

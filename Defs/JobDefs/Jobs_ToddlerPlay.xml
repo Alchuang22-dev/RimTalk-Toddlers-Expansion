@@ -10,6 +10,114 @@
   </JobDef>
 
   <JobDef>
+    <defName>RimTalk_ToddlerSelfPlay_Ratkin_PlaywithOwnEar</defName>
+    <driverClass>RimTalk_ToddlersExpansion.Integration.Toddlers.JobDriver_ToddlerSelfPlay</driverClass>
+    <reportString>playing with their own ears.</reportString>
+    <joyDuration>2000</joyDuration>
+    <joyKind>Meditative</joyKind>
+    <joyGainRate>1</joyGainRate>
+  </JobDef>
+
+  <JobDef>
+    <defName>RimTalk_ToddlerSelfPlay_Ratkin_PlaywithOwnTail</defName>
+    <driverClass>RimTalk_ToddlersExpansion.Integration.Toddlers.JobDriver_ToddlerSelfPlay</driverClass>
+    <reportString>playing with their own tail.</reportString>
+    <joyDuration>2000</joyDuration>
+    <joyKind>Meditative</joyKind>
+    <joyGainRate>1</joyGainRate>
+  </JobDef>
+
+  <JobDef>
+    <defName>RimTalk_ToddlerSelfPlay_Kiiro_PlaywithOwnTail</defName>
+    <driverClass>RimTalk_ToddlersExpansion.Integration.Toddlers.JobDriver_ToddlerSelfPlay</driverClass>
+    <reportString>playing with their own tail.</reportString>
+    <joyDuration>2000</joyDuration>
+    <joyKind>Meditative</joyKind>
+    <joyGainRate>1</joyGainRate>
+  </JobDef>
+
+  <JobDef>
+    <defName>RimTalk_ToddlerSelfPlay_Kiiro_PlaywithBobbles</defName>
+    <driverClass>RimTalk_ToddlersExpansion.Integration.Toddlers.JobDriver_ToddlerSelfPlay</driverClass>
+    <reportString>playing with bobbles.</reportString>
+    <joyDuration>2000</joyDuration>
+    <joyKind>Meditative</joyKind>
+    <joyGainRate>1</joyGainRate>
+  </JobDef>
+
+  <JobDef>
+    <defName>RimTalk_ToddlerSelfPlay_MoeLotl_LickOwnBody</defName>
+    <driverClass>RimTalk_ToddlersExpansion.Integration.Toddlers.JobDriver_ToddlerSelfPlay</driverClass>
+    <reportString>licking their own body.</reportString>
+    <joyDuration>2000</joyDuration>
+    <joyKind>Meditative</joyKind>
+    <joyGainRate>1</joyGainRate>
+  </JobDef>
+
+  <JobDef>
+    <defName>RimTalk_ToddlerSelfPlay_MoeLotl_Wiggle</defName>
+    <driverClass>RimTalk_ToddlersExpansion.Integration.Toddlers.JobDriver_ToddlerSelfPlay</driverClass>
+    <reportString>wiggling around.</reportString>
+    <joyDuration>2000</joyDuration>
+    <joyKind>Meditative</joyKind>
+    <joyGainRate>1</joyGainRate>
+  </JobDef>
+
+  <JobDef>
+    <defName>RimTalk_ToddlerSelfPlay_Milira_LearntoFly</defName>
+    <driverClass>RimTalk_ToddlersExpansion.Integration.Toddlers.JobDriver_ToddlerSelfPlay</driverClass>
+    <reportString>trying to learn flight.</reportString>
+    <joyDuration>2000</joyDuration>
+    <joyKind>Meditative</joyKind>
+    <joyGainRate>1</joyGainRate>
+  </JobDef>
+
+  <JobDef>
+    <defName>RimTalk_ToddlerSelfPlay_Milira_PlaywithFeathers</defName>
+    <driverClass>RimTalk_ToddlersExpansion.Integration.Toddlers.JobDriver_ToddlerSelfPlay</driverClass>
+    <reportString>playing with feathers.</reportString>
+    <joyDuration>2000</joyDuration>
+    <joyKind>Meditative</joyKind>
+    <joyGainRate>1</joyGainRate>
+  </JobDef>
+
+  <JobDef>
+    <defName>RimTalk_ToddlerSelfPlay_Bunny_DigHole</defName>
+    <driverClass>RimTalk_ToddlersExpansion.Integration.Toddlers.JobDriver_ToddlerSelfPlay</driverClass>
+    <reportString>digging a small hole.</reportString>
+    <joyDuration>2000</joyDuration>
+    <joyKind>Meditative</joyKind>
+    <joyGainRate>1</joyGainRate>
+  </JobDef>
+
+  <JobDef>
+    <defName>RimTalk_ToddlerSelfPlay_Bunny_PickupEars</defName>
+    <driverClass>RimTalk_ToddlersExpansion.Integration.Toddlers.JobDriver_ToddlerSelfPlay</driverClass>
+    <reportString>lifting up their ears.</reportString>
+    <joyDuration>2000</joyDuration>
+    <joyKind>Meditative</joyKind>
+    <joyGainRate>1</joyGainRate>
+  </JobDef>
+
+  <JobDef>
+    <defName>RimTalk_ToddlerSelfPlay_Cinder_PlaywithOwnTentacle</defName>
+    <driverClass>RimTalk_ToddlersExpansion.Integration.Toddlers.JobDriver_ToddlerSelfPlay</driverClass>
+    <reportString>playing with their own tentacle.</reportString>
+    <joyDuration>2000</joyDuration>
+    <joyKind>Meditative</joyKind>
+    <joyGainRate>1</joyGainRate>
+  </JobDef>
+
+  <JobDef>
+    <defName>RimTalk_ToddlerSelfPlay_Cinder_WatchCrystals</defName>
+    <driverClass>RimTalk_ToddlersExpansion.Integration.Toddlers.JobDriver_ToddlerSelfPlay</driverClass>
+    <reportString>watching crystals.</reportString>
+    <joyDuration>2000</joyDuration>
+    <joyKind>Meditative</joyKind>
+    <joyGainRate>1</joyGainRate>
+  </JobDef>
+
+  <JobDef>
     <defName>RimTalk_ToddlerMutualPlayJob</defName>
     <driverClass>RimTalk_ToddlersExpansion.Integration.Toddlers.JobDriver_ToddlerMutualPlay</driverClass>
     <reportString>playing with TargetA.</reportString>

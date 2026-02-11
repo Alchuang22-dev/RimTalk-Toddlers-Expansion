@@ -7,6 +7,78 @@
   </Toddlers.ToddlerPlayDef>
 
   <Toddlers.ToddlerPlayDef>
+    <defName>RimTalk_ToddlerSelfPlay_Ratkin_PlaywithOwnEar</defName>
+    <jobDef>RimTalk_ToddlerSelfPlay_Ratkin_PlaywithOwnEar</jobDef>
+    <workerClass>RimTalk_ToddlersExpansion.Integration.Toddlers.HAR.ToddlerPlayGiver_HarSelfPlay_Ratkin</workerClass>
+  </Toddlers.ToddlerPlayDef>
+
+  <Toddlers.ToddlerPlayDef>
+    <defName>RimTalk_ToddlerSelfPlay_Ratkin_PlaywithOwnTail</defName>
+    <jobDef>RimTalk_ToddlerSelfPlay_Ratkin_PlaywithOwnTail</jobDef>
+    <workerClass>RimTalk_ToddlersExpansion.Integration.Toddlers.HAR.ToddlerPlayGiver_HarSelfPlay_Ratkin</workerClass>
+  </Toddlers.ToddlerPlayDef>
+
+  <Toddlers.ToddlerPlayDef>
+    <defName>RimTalk_ToddlerSelfPlay_Kiiro_PlaywithOwnTail</defName>
+    <jobDef>RimTalk_ToddlerSelfPlay_Kiiro_PlaywithOwnTail</jobDef>
+    <workerClass>RimTalk_ToddlersExpansion.Integration.Toddlers.HAR.ToddlerPlayGiver_HarSelfPlay_Kiiro</workerClass>
+  </Toddlers.ToddlerPlayDef>
+
+  <Toddlers.ToddlerPlayDef>
+    <defName>RimTalk_ToddlerSelfPlay_Kiiro_PlaywithBobbles</defName>
+    <jobDef>RimTalk_ToddlerSelfPlay_Kiiro_PlaywithBobbles</jobDef>
+    <workerClass>RimTalk_ToddlersExpansion.Integration.Toddlers.HAR.ToddlerPlayGiver_HarSelfPlay_Kiiro</workerClass>
+  </Toddlers.ToddlerPlayDef>
+
+  <Toddlers.ToddlerPlayDef>
+    <defName>RimTalk_ToddlerSelfPlay_MoeLotl_LickOwnBody</defName>
+    <jobDef>RimTalk_ToddlerSelfPlay_MoeLotl_LickOwnBody</jobDef>
+    <workerClass>RimTalk_ToddlersExpansion.Integration.Toddlers.HAR.ToddlerPlayGiver_HarSelfPlay_MoeLotl</workerClass>
+  </Toddlers.ToddlerPlayDef>
+
+  <Toddlers.ToddlerPlayDef>
+    <defName>RimTalk_ToddlerSelfPlay_MoeLotl_Wiggle</defName>
+    <jobDef>RimTalk_ToddlerSelfPlay_MoeLotl_Wiggle</jobDef>
+    <workerClass>RimTalk_ToddlersExpansion.Integration.Toddlers.HAR.ToddlerPlayGiver_HarSelfPlay_MoeLotl</workerClass>
+  </Toddlers.ToddlerPlayDef>
+
+  <Toddlers.ToddlerPlayDef>
+    <defName>RimTalk_ToddlerSelfPlay_Milira_LearntoFly</defName>
+    <jobDef>RimTalk_ToddlerSelfPlay_Milira_LearntoFly</jobDef>
+    <workerClass>RimTalk_ToddlersExpansion.Integration.Toddlers.HAR.ToddlerPlayGiver_HarSelfPlay_Milira</workerClass>
+  </Toddlers.ToddlerPlayDef>
+
+  <Toddlers.ToddlerPlayDef>
+    <defName>RimTalk_ToddlerSelfPlay_Milira_PlaywithFeathers</defName>
+    <jobDef>RimTalk_ToddlerSelfPlay_Milira_PlaywithFeathers</jobDef>
+    <workerClass>RimTalk_ToddlersExpansion.Integration.Toddlers.HAR.ToddlerPlayGiver_HarSelfPlay_Milira</workerClass>
+  </Toddlers.ToddlerPlayDef>
+
+  <Toddlers.ToddlerPlayDef>
+    <defName>RimTalk_ToddlerSelfPlay_Bunny_DigHole</defName>
+    <jobDef>RimTalk_ToddlerSelfPlay_Bunny_DigHole</jobDef>
+    <workerClass>RimTalk_ToddlersExpansion.Integration.Toddlers.HAR.ToddlerPlayGiver_HarSelfPlay_Bunny</workerClass>
+  </Toddlers.ToddlerPlayDef>
+
+  <Toddlers.ToddlerPlayDef>
+    <defName>RimTalk_ToddlerSelfPlay_Bunny_PickupEars</defName>
+    <jobDef>RimTalk_ToddlerSelfPlay_Bunny_PickupEars</jobDef>
+    <workerClass>RimTalk_ToddlersExpansion.Integration.Toddlers.HAR.ToddlerPlayGiver_HarSelfPlay_Bunny</workerClass>
+  </Toddlers.ToddlerPlayDef>
+
+  <Toddlers.ToddlerPlayDef>
+    <defName>RimTalk_ToddlerSelfPlay_Cinder_PlaywithOwnTentacle</defName>
+    <jobDef>RimTalk_ToddlerSelfPlay_Cinder_PlaywithOwnTentacle</jobDef>
+    <workerClass>RimTalk_ToddlersExpansion.Integration.Toddlers.HAR.ToddlerPlayGiver_HarSelfPlay_Cinder</workerClass>
+  </Toddlers.ToddlerPlayDef>
+
+  <Toddlers.ToddlerPlayDef>
+    <defName>RimTalk_ToddlerSelfPlay_Cinder_WatchCrystals</defName>
+    <jobDef>RimTalk_ToddlerSelfPlay_Cinder_WatchCrystals</jobDef>
+    <workerClass>RimTalk_ToddlersExpansion.Integration.Toddlers.HAR.ToddlerPlayGiver_HarSelfPlay_Cinder</workerClass>
+  </Toddlers.ToddlerPlayDef>
+
+  <Toddlers.ToddlerPlayDef>
     <defName>RimTalk_ToddlerMutualPlay</defName>
     <jobDef>RimTalk_ToddlerMutualPlayJob</jobDef>
     <workerClass>RimTalk_ToddlersExpansion.Integration.Toddlers.ToddlerPlayGiver_MutualPlay</workerClass>

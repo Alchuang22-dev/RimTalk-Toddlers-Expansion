@@ -81,6 +81,18 @@ namespace RimTalk_ToddlersExpansion.Core
         {
             // 独自玩�?- 独自玩�?
             Register("RimTalk_ToddlerSelfPlayJob", ToddlerPlayCategory.SoloPlay, 1.0f, "RimTalk_ToddlersExpansion");
+            Register("RimTalk_ToddlerSelfPlay_Ratkin_PlaywithOwnEar", ToddlerPlayCategory.SoloPlay, 1.0f, "RimTalk_ToddlersExpansion");
+            Register("RimTalk_ToddlerSelfPlay_Ratkin_PlaywithOwnTail", ToddlerPlayCategory.SoloPlay, 1.0f, "RimTalk_ToddlersExpansion");
+            Register("RimTalk_ToddlerSelfPlay_Kiiro_PlaywithOwnTail", ToddlerPlayCategory.SoloPlay, 1.0f, "RimTalk_ToddlersExpansion");
+            Register("RimTalk_ToddlerSelfPlay_Kiiro_PlaywithBobbles", ToddlerPlayCategory.SoloPlay, 1.0f, "RimTalk_ToddlersExpansion");
+            Register("RimTalk_ToddlerSelfPlay_MoeLotl_LickOwnBody", ToddlerPlayCategory.SoloPlay, 1.0f, "RimTalk_ToddlersExpansion");
+            Register("RimTalk_ToddlerSelfPlay_MoeLotl_Wiggle", ToddlerPlayCategory.SoloPlay, 1.0f, "RimTalk_ToddlersExpansion");
+            Register("RimTalk_ToddlerSelfPlay_Milira_LearntoFly", ToddlerPlayCategory.SoloPlay, 1.0f, "RimTalk_ToddlersExpansion");
+            Register("RimTalk_ToddlerSelfPlay_Milira_PlaywithFeathers", ToddlerPlayCategory.SoloPlay, 1.0f, "RimTalk_ToddlersExpansion");
+            Register("RimTalk_ToddlerSelfPlay_Bunny_DigHole", ToddlerPlayCategory.SoloPlay, 1.0f, "RimTalk_ToddlersExpansion");
+            Register("RimTalk_ToddlerSelfPlay_Bunny_PickupEars", ToddlerPlayCategory.SoloPlay, 1.0f, "RimTalk_ToddlersExpansion");
+            Register("RimTalk_ToddlerSelfPlay_Cinder_PlaywithOwnTentacle", ToddlerPlayCategory.SoloPlay, 1.0f, "RimTalk_ToddlersExpansion");
+            Register("RimTalk_ToddlerSelfPlay_Cinder_WatchCrystals", ToddlerPlayCategory.SoloPlay, 1.0f, "RimTalk_ToddlersExpansion");
             // 相互玩�?- 社交玩�?
             Register("RimTalk_ToddlerMutualPlayJob", ToddlerPlayCategory.SocialPlay, 1.0f, "RimTalk_ToddlersExpansion");
             // 相互玩�?伙伴) - 社交玩�?

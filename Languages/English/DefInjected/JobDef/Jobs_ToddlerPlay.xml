@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
   <RimTalk_ToddlerSelfPlayJob.reportString>playing by themselves.</RimTalk_ToddlerSelfPlayJob.reportString>
+  <RimTalk_ToddlerSelfPlay_Ratkin_PlaywithOwnEar.reportString>playing with their own ears.</RimTalk_ToddlerSelfPlay_Ratkin_PlaywithOwnEar.reportString>
+  <RimTalk_ToddlerSelfPlay_Ratkin_PlaywithOwnTail.reportString>playing with their own tail.</RimTalk_ToddlerSelfPlay_Ratkin_PlaywithOwnTail.reportString>
+  <RimTalk_ToddlerSelfPlay_Kiiro_PlaywithOwnTail.reportString>playing with their own tail.</RimTalk_ToddlerSelfPlay_Kiiro_PlaywithOwnTail.reportString>
+  <RimTalk_ToddlerSelfPlay_Kiiro_PlaywithBobbles.reportString>playing with bobbles.</RimTalk_ToddlerSelfPlay_Kiiro_PlaywithBobbles.reportString>
+  <RimTalk_ToddlerSelfPlay_MoeLotl_LickOwnBody.reportString>licking their own body.</RimTalk_ToddlerSelfPlay_MoeLotl_LickOwnBody.reportString>
+  <RimTalk_ToddlerSelfPlay_MoeLotl_Wiggle.reportString>wiggling around.</RimTalk_ToddlerSelfPlay_MoeLotl_Wiggle.reportString>
+  <RimTalk_ToddlerSelfPlay_Milira_LearntoFly.reportString>trying to learn flight.</RimTalk_ToddlerSelfPlay_Milira_LearntoFly.reportString>
+  <RimTalk_ToddlerSelfPlay_Milira_PlaywithFeathers.reportString>playing with feathers.</RimTalk_ToddlerSelfPlay_Milira_PlaywithFeathers.reportString>
+  <RimTalk_ToddlerSelfPlay_Bunny_DigHole.reportString>digging a small hole.</RimTalk_ToddlerSelfPlay_Bunny_DigHole.reportString>
+  <RimTalk_ToddlerSelfPlay_Bunny_PickupEars.reportString>lifting up their ears.</RimTalk_ToddlerSelfPlay_Bunny_PickupEars.reportString>
+  <RimTalk_ToddlerSelfPlay_Cinder_PlaywithOwnTentacle.reportString>playing with their own tentacle.</RimTalk_ToddlerSelfPlay_Cinder_PlaywithOwnTentacle.reportString>
+  <RimTalk_ToddlerSelfPlay_Cinder_WatchCrystals.reportString>watching crystals.</RimTalk_ToddlerSelfPlay_Cinder_WatchCrystals.reportString>
   <RimTalk_ToddlerMutualPlayJob.reportString>playing with TargetA.</RimTalk_ToddlerMutualPlayJob.reportString>
   <RimTalk_ToddlerMutualPlayPartnerJob.reportString>playing with TargetA.</RimTalk_ToddlerMutualPlayPartnerJob.reportString>
   <RimTalk_WatchToddlerPlayJob.reportString>watching TargetA play.</RimTalk_WatchToddlerPlayJob.reportString>

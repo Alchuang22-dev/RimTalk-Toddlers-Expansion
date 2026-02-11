@@ -138,8 +138,13 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			JobDef jobDef = pawn.CurJob.def;
-			return jobDef == ToddlersExpansionJobDefOf.RimTalk_ToddlerSelfPlayJob
-				|| jobDef == ToddlersExpansionJobDefOf.RimTalk_ToddlerMutualPlayJob
+			if (!jobDef.defName.NullOrEmpty()
+				&& jobDef.defName.StartsWith("RimTalk_ToddlerSelfPlay", StringComparison.Ordinal))
+			{
+				return true;
+			}
+
+			return jobDef == ToddlersExpansionJobDefOf.RimTalk_ToddlerMutualPlayJob
 				|| jobDef == ToddlersExpansionJobDefOf.RimTalk_ToddlerMutualPlayPartnerJob
 				|| jobDef == ToddlersExpansionJobDefOf.RimTalk_ToddlerPlayAtToy
 				|| jobDef == ToddlersExpansionJobDefOf.RimTalk_FollowNatureRunner;
