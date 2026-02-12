@@ -45,6 +45,8 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			Patch_ToddlerEatingSpeed.Init(harmony);
 			Patch_ToddlerEatingSafety.Init(harmony);
 			Patch_ThinkNode_ConditionalHasLordDuty.Init(harmony);
+			Patch_IgnoreToddlerMentalStates.Init(harmony);
+			Patch_BabyCryMoodOnly.Init(harmony);
 			Patch_AdoptableFriendlyBaby.Init(harmony);
 			Patch_ApparelGraphicRecordGetter_BabyFallback.Init(harmony);
 			Patch_HospitalityBedUtilityIdeology.Init(harmony);

@@ -20,6 +20,12 @@
     <apparelAllowHeadgearChance>0</apparelAllowHeadgearChance>
     <weaponMoney>0~0</weaponMoney>
     <techHediffsMoney>0~0</techHediffsMoney>
+    <combatPower>1</combatPower>
+    <isFighter>false</isFighter>
+    <canMeleeAttack>false</canMeleeAttack>
+    <appearsRandomlyInCombatGroups>false</appearsRandomlyInCombatGroups>
+    <initialResistanceRange>0~1</initialResistanceRange>
+    <initialWillRange>0~0</initialWillRange>
     <minGenerationAge>0</minGenerationAge>
     <maxGenerationAge>3</maxGenerationAge>
   </PawnKindDef>
@@ -43,6 +49,12 @@
     <apparelAllowHeadgearChance>0</apparelAllowHeadgearChance>
     <weaponMoney>0~0</weaponMoney>
     <techHediffsMoney>0~0</techHediffsMoney>
+    <combatPower>1</combatPower>
+    <isFighter>false</isFighter>
+    <canMeleeAttack>false</canMeleeAttack>
+    <appearsRandomlyInCombatGroups>false</appearsRandomlyInCombatGroups>
+    <initialResistanceRange>0~1</initialResistanceRange>
+    <initialWillRange>0~0</initialWillRange>
     <minGenerationAge>3</minGenerationAge>
     <maxGenerationAge>13</maxGenerationAge>
   </PawnKindDef>

@@ -105,6 +105,10 @@ namespace RimTalk_ToddlersExpansion.Core
 				ref ToddlersExpansionSettings.enableUnder3HairRendering,
 				"RimTalk_ToddlersExpansion_EnableUnder3HairRendering_Tooltip".Translate());
 			listingStandard.Gap();
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_BabyCryMoodOnly".Translate(),
+				ref ToddlersExpansionSettings.babyCryAffectsMoodOnly,
+				"RimTalk_ToddlersExpansion_BabyCryMoodOnly_Tooltip".Translate());
+			listingStandard.Gap();
 
 			listingStandard.GapLine();
 // ========== 商队/过路者设置 ==========

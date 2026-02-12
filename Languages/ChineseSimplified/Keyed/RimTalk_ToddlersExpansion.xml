@@ -88,4 +88,6 @@
   <RimTalk_SpinningWithToddler>正在抱着 {0} 转圈圈</RimTalk_SpinningWithToddler>
   <RimTalk_CarriedPlayOnCooldown>小宝宝的脑袋晕晕的，要休息一下。</RimTalk_CarriedPlayOnCooldown>
   <RimTalk_ToddlersExpansion_ToddlerSelfBathTooSmall>太小了，不会自己洗澡。</RimTalk_ToddlersExpansion_ToddlerSelfBathTooSmall>
+  <RimTalk_ToddlersExpansion_BabyCryMoodOnly>婴儿哭泣只影响心情（不降低社交关系）</RimTalk_ToddlersExpansion_BabyCryMoodOnly>
+  <RimTalk_ToddlersExpansion_BabyCryMoodOnly_Tooltip>启用后，婴儿哭泣不会添加原版 BabyCriedSocial 关系记忆；仍会保留对父母和周围殖民者的心情影响。</RimTalk_ToddlersExpansion_BabyCryMoodOnly_Tooltip>
 </LanguageData>

@@ -48,6 +48,8 @@
   <RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior_Tooltip>Prevents hostile toddlers/babies from trying to exit or bash doors on player home maps. Disable if it conflicts with raids or other AI mods.</RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior_Tooltip>
   <RimTalk_ToddlersExpansion_EnableUnder3HairRendering>Enable hair for babies/toddlers under age 3</RimTalk_ToddlersExpansion_EnableUnder3HairRendering>
   <RimTalk_ToddlersExpansion_EnableUnder3HairRendering_Tooltip>When enabled, babies and toddlers younger than 3 will render hair. When disabled, the game keeps default behavior.</RimTalk_ToddlersExpansion_EnableUnder3HairRendering_Tooltip>
+  <RimTalk_ToddlersExpansion_BabyCryMoodOnly>Baby crying affects mood only (no relationship loss)</RimTalk_ToddlersExpansion_BabyCryMoodOnly>
+  <RimTalk_ToddlersExpansion_BabyCryMoodOnly_Tooltip>Prevents the vanilla BabyCriedSocial memory when babies cry. Parents and nearby pawns still get mood impact thoughts.</RimTalk_ToddlersExpansion_BabyCryMoodOnly_Tooltip>
 
   <!-- Boredom Tooltip Display -->
   <RimTalk_Boredom_Header>Play boredom:</RimTalk_Boredom_Header>

@@ -30,6 +30,7 @@ namespace RimTalk_ToddlersExpansion.Core
 		// AI 逻辑
 		public static bool enableHostileToddlerColonistBehavior = true;
 		public static bool enableUnder3HairRendering = false;
+		public static bool babyCryAffectsMoodOnly = true;
 
 		public override void ExposeData()
 		{
@@ -58,6 +59,7 @@ namespace RimTalk_ToddlersExpansion.Core
 			// AI 行为修正
 			Scribe_Values.Look(ref enableHostileToddlerColonistBehavior, "enableHostileToddlerColonistBehavior", true);
 			Scribe_Values.Look(ref enableUnder3HairRendering, "enableUnder3HairRendering", false);
+			Scribe_Values.Look(ref babyCryAffectsMoodOnly, "babyCryAffectsMoodOnly", true);
 		}
 	}
 }

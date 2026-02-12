@@ -140,6 +140,13 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				defName = $"RimTalkTemp_{raceDef.defName}",
 				label = "toddler",
 				race = raceDef,
+				combatPower = 1f,
+				isFighter = false,
+				canMeleeAttack = false,
+				appearsRandomlyInCombatGroups = false,
+				weaponMoney = FloatRange.Zero,
+				initialResistanceRange = new FloatRange(0f, 1f),
+				initialWillRange = new FloatRange(0f, 0f),
 				skills = null,
 				requiredWorkTags = WorkTags.None
 			};
