@@ -24,6 +24,7 @@ namespace RimTalk_ToddlersExpansion.Core
 				Integration.Toddlers.LanguageLearningUtility.RegisterGameComponent();
 				Integration.Toddlers.ToddlerSelfBathUtility.RegisterGameComponent();
 				Integration.Toddlers.HAR.HarNurseryMoodUtility.RegisterGameComponent();
+				Integration.Kiiro.KiiroRefugeeBabyGuardUtility.RegisterGameComponent();
 			});
 		}
 

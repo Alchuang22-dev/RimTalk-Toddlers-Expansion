@@ -45,6 +45,7 @@ namespace RimTalk_ToddlersExpansion.Core
 			missingDefs += CheckDef<ThingDef>("RimTalk_ToyPuzzleTable");
 			missingDefs += CheckDef<HediffDef>("RimTalk_ToddlerLanguageLearning");
 			missingDefs += CheckDef<HediffDef>("RimTalk_BabyBabbling");
+			missingDefs += CheckDef<HediffDef>("RimTalk_KiiroRefugeeConvulsion");
 			missingDefs += CheckDef<ThoughtDef>("RimTalk_MyBabyNearby");
 			missingDefs += CheckDef<JobDef>("RimTalk_BeingCarried_Observe");
 			missingDefs += CheckDef<JobDef>("RimTalk_BeingCarried_Sleep");
