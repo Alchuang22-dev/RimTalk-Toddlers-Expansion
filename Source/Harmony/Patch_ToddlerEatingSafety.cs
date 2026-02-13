@@ -4,6 +4,7 @@ using HarmonyLib;
 using RimTalk_ToddlersExpansion.Core;
 using RimTalk_ToddlersExpansion.Integration.Toddlers;
 using RimWorld;
+using UnityEngine;
 using Verse;
 using Verse.AI;
 
@@ -11,6 +12,8 @@ namespace RimTalk_ToddlersExpansion.Harmony
 {
 	public static class Patch_ToddlerEatingSafety
 	{
+		private const float ToddlerSucklePriorityOffset = 0.02f;
+
 		public static void Init(HarmonyLib.Harmony harmony)
 		{
 			Type utilityType = AccessTools.TypeByName("Toddlers.ToddlerUtility");
@@ -145,9 +148,34 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 		private static void WantsSuckle_Postfix(Pawn baby, ref bool __result)
 		{
-			if (__result && IsAutoTargetProtected(baby))
+			if (baby == null)
+			{
+				return;
+			}
+
+			// Keep original safety behavior: do not auto-target toddlers already eating/bathing.
+			if (IsAutoTargetProtected(baby))
 			{
 				__result = false;
+				return;
+			}
+
+			if (__result || !ToddlersCompatUtility.IsToddler(baby))
+			{
+				return;
+			}
+
+			Need_Food foodNeed = baby.needs?.food;
+			if (foodNeed == null)
+			{
+				return;
+			}
+
+			// Raise toddler suckle trigger above self-eat threshold (FoodLevelPercentageWantEat).
+			float suckleTrigger = Mathf.Clamp01(baby.RaceProps.FoodLevelPercentageWantEat + ToddlerSucklePriorityOffset);
+			if (foodNeed.CurLevelPercentage <= suckleTrigger)
+			{
+				__result = true;
 			}
 		}
 
