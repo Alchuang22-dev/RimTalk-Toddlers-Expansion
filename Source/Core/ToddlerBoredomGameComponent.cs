@@ -11,6 +11,8 @@ namespace RimTalk_ToddlersExpansion
     /// </summary>
     public class ToddlerBoredomGameComponent : GameComponent
     {
+        private const int CleanupIntervalTicks = GenDate.TicksPerHour;
+
         /// <summary>
         /// 所有幼儿的无聊追踪器
         /// </summary>
@@ -25,6 +27,8 @@ namespace RimTalk_ToddlersExpansion
         /// 上次每日更新的 tick
         /// </summary>
         private int _lastDailyTick = 0;
+        private int _lastCleanupTick = 0;
+        private readonly List<int> _cleanupBuffer = new List<int>(64);
 
         public ToddlerBoredomGameComponent(Game game) : base()
         {
@@ -96,8 +100,9 @@ namespace RimTalk_ToddlersExpansion
             }
 
             // 每小时的清理间隔
-            if (currentTick - _lastDailyTick > GenDate.TicksPerHour)
+            if (currentTick - _lastCleanupTick >= CleanupIntervalTicks)
             {
+                _lastCleanupTick = currentTick;
                 CleanupInvalidTrackers();
             }
         }
@@ -107,25 +112,25 @@ namespace RimTalk_ToddlersExpansion
         /// </summary>
         private void CleanupInvalidTrackers()
         {
-            var toRemove = new List<int>();
+            _cleanupBuffer.Clear();
 
             foreach (var kvp in _trackers)
             {
                 var pawn = kvp.Value.Pawn;
                 if (pawn == null || pawn.Dead || pawn.Destroyed || !IsToddler(pawn))
                 {
-                    toRemove.Add(kvp.Key);
+                    _cleanupBuffer.Add(kvp.Key);
                 }
             }
 
-            foreach (var id in toRemove)
+            foreach (var id in _cleanupBuffer)
             {
                 _trackers.Remove(id);
             }
 
-            if (toRemove.Count > 0 && Prefs.DevMode)
+            if (_cleanupBuffer.Count > 0 && Prefs.DevMode)
             {
-                Log.Message($"[RimTalk Boredom] Cleaned up {toRemove.Count} invalid trackers");
+                Log.Message($"[RimTalk Boredom] Cleaned up {_cleanupBuffer.Count} invalid trackers");
             }
         }
 
@@ -219,6 +224,8 @@ namespace RimTalk_ToddlersExpansion
         public override void ExposeData()
         {
             base.ExposeData();
+            Scribe_Values.Look(ref _lastDailyTick, "lastDailyTick", 0);
+            Scribe_Values.Look(ref _lastCleanupTick, "lastCleanupTick", 0);
 
             if (Scribe.mode == LoadSaveMode.Saving)
             {

@@ -10,6 +10,12 @@ namespace RimTalk_ToddlersExpansion.Harmony
 	/// </summary>
 	public static class Patch_BabyHairRendering
 	{
+		private static readonly System.Reflection.MethodInfo _colorForMethod =
+			AccessTools.Method(typeof(PawnRenderNode), "ColorFor", new[] { typeof(Pawn) });
+
+		private static readonly System.Func<PawnRenderNode, Pawn, UnityEngine.Color> _colorForDelegate =
+			CreateColorForDelegate();
+
 		public static void Init(HarmonyLib.Harmony harmony)
 		{
 			// 补丁 PawnRenderNode_Hair.GraphicFor
@@ -25,6 +31,23 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			else
 			{
 				Log.Warning("[RimTalk_ToddlersExpansion] Could not find PawnRenderNode_Hair.GraphicFor method to patch.");
+			}
+		}
+
+		private static System.Func<PawnRenderNode, Pawn, UnityEngine.Color> CreateColorForDelegate()
+		{
+			if (_colorForMethod == null)
+			{
+				return null;
+			}
+
+			try
+			{
+				return AccessTools.MethodDelegate<System.Func<PawnRenderNode, Pawn, UnityEngine.Color>>(_colorForMethod);
+			}
+			catch
+			{
+				return null;
 			}
 		}
 
@@ -69,10 +92,9 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			try
 			{
 				// 使用反射获取ColorFor方法的结果
-				var colorForMethod = AccessTools.Method(typeof(PawnRenderNode), "ColorFor");
-				if (colorForMethod != null)
+				if (_colorForDelegate != null)
 				{
-					var color = (UnityEngine.Color)colorForMethod.Invoke(__instance, new object[] { pawn });
+					var color = _colorForDelegate(__instance, pawn);
 					__result = pawn.story.hairDef.GraphicFor(pawn, color);
 				}
 				else

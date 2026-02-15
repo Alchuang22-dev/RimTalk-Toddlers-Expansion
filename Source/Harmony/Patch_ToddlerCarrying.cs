@@ -200,10 +200,9 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			}
 
 			// 如果这个pawn是载体，检查被背的幼儿
-			if (ToddlerCarryingUtility.IsCarryingToddler(__instance))
+			if (ToddlerCarryingTracker.TryGetCarriedToddlersNoAlloc(__instance, out List<Pawn> toddlers))
 			{
-				var toddlers = ToddlerCarryingUtility.GetCarriedToddlers(__instance);
-				for (int i = 0; i < toddlers.Count; i++)
+				for (int i = toddlers.Count - 1; i >= 0; i--)
 				{
 					Pawn toddler = toddlers[i];
 					if (toddler == null || toddler.Dead || toddler.Destroyed || !toddler.Spawned)
@@ -415,6 +414,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 		// 缓存反射字段以提高性能
 		private static readonly FieldInfo _healthTrackerPawnField = AccessTools.Field(typeof(Pawn_HealthTracker), "pawn");
 		private static readonly MethodInfo _pawnExitMapMethod = AccessTools.Method(typeof(Pawn), "ExitMap", new[] { typeof(bool), typeof(Rot4) });
+		private static readonly FieldInfo _pawnRendererPawnField = AccessTools.Field(typeof(PawnRenderer), "pawn");
 		private static readonly HashSet<int> _exitHandling = new HashSet<int>();
 
 		/// <summary>
@@ -446,26 +446,12 @@ namespace RimTalk_ToddlersExpansion.Harmony
 		/// </summary>
 		private static Pawn GetPawnFromRenderer(PawnRenderer renderer)
 		{
-			if (renderer == null)
+			if (renderer == null || _pawnRendererPawnField == null)
 			{
 				return null;
 			}
 
-			// 尝试通过反射获取pawn字段
-			try
-			{
-				FieldInfo pawnField = AccessTools.Field(typeof(PawnRenderer), "pawn");
-				if (pawnField != null)
-				{
-					return pawnField.GetValue(renderer) as Pawn;
-				}
-			}
-			catch
-			{
-				// 忽略反射失败
-			}
-
-			return null;
+			return _pawnRendererPawnField.GetValue(renderer) as Pawn;
 		}
 
 		/// <summary>

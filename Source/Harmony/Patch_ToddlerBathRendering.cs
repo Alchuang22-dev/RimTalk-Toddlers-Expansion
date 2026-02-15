@@ -18,6 +18,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 	{
 		private static HediffDef _washingHediff;
 		private static bool _hediffChecked;
+		private static readonly FieldInfo _pawnRendererPawnField = AccessTools.Field(typeof(PawnRenderer), "pawn");
 
 		public static void Init(HarmonyLib.Harmony harmony)
 		{
@@ -208,25 +209,12 @@ namespace RimTalk_ToddlersExpansion.Harmony
 		/// </summary>
 		private static Pawn GetPawnFromRenderer(PawnRenderer renderer)
 		{
-			if (renderer == null)
+			if (renderer == null || _pawnRendererPawnField == null)
 			{
 				return null;
 			}
 
-			try
-			{
-				FieldInfo pawnField = AccessTools.Field(typeof(PawnRenderer), "pawn");
-				if (pawnField != null)
-				{
-					return pawnField.GetValue(renderer) as Pawn;
-				}
-			}
-			catch
-			{
-				// 忽略反射失败
-			}
-
-			return null;
+			return _pawnRendererPawnField.GetValue(renderer) as Pawn;
 		}
 	}
 }

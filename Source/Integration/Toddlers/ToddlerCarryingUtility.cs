@@ -200,7 +200,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		/// <returns>是否在背幼儿</returns>
 		public static bool IsCarryingToddler(Pawn carrier)
 		{
-			return GetCarriedToddlerCount(carrier) > 0;
+			return ToddlerCarryingTracker.IsCarryingAny(carrier);
 		}
 
 		/// <summary>
@@ -210,7 +210,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		/// <returns>数量</returns>
 		public static int GetCarriedToddlerCount(Pawn carrier)
 		{
-			return GetCarriedToddlers(carrier).Count;
+			return ToddlerCarryingTracker.GetCarriedCount(carrier);
 		}
 
 		/// <summary>

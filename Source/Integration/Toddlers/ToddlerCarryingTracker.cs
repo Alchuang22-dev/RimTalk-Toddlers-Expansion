@@ -118,6 +118,43 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		}
 
 		/// <summary>
+		/// 无分配检查：载体是否正在背幼儿
+		/// </summary>
+		public static bool IsCarryingAny(Pawn carrier)
+		{
+			return carrier != null
+				&& CarrierToToddlers.TryGetValue(carrier, out List<Pawn> toddlers)
+				&& toddlers.Count > 0;
+		}
+
+		/// <summary>
+		/// 无分配查询：获取载体当前背负数量
+		/// </summary>
+		public static int GetCarriedCount(Pawn carrier)
+		{
+			return carrier != null
+				&& CarrierToToddlers.TryGetValue(carrier, out List<Pawn> toddlers)
+				? toddlers.Count
+				: 0;
+		}
+
+		/// <summary>
+		/// 无分配查询：直接返回内部列表（只读使用，不要修改）
+		/// </summary>
+		public static bool TryGetCarriedToddlersNoAlloc(Pawn carrier, out List<Pawn> toddlers)
+		{
+			if (carrier != null
+				&& CarrierToToddlers.TryGetValue(carrier, out toddlers)
+				&& toddlers.Count > 0)
+			{
+				return true;
+			}
+
+			toddlers = null;
+			return false;
+		}
+
+		/// <summary>
 		/// 清除所有与指定pawn相关的背负数据
 		/// </summary>
 		/// <param name="pawn">pawn</param>
