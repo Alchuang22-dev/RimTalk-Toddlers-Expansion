@@ -233,6 +233,12 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
+			// Avoid self-bath preempting self-feeding.
+			if (IsEatingNow(pawn))
+			{
+				return false;
+			}
+
 			// 主要条件：卫生值低于阈值就去洗澡
 			Need hygiene = GetHygieneNeed(pawn);
 			if (hygiene == null || hygiene.CurLevelPercentage >= MaxHygieneForSelfBath)
@@ -241,6 +247,33 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			return true;
+		}
+
+		/// <summary>
+		/// 检查 pawn 是否处于自助进食流程中。
+		/// </summary>
+		private static bool IsEatingNow(Pawn pawn)
+		{
+			if (pawn?.jobs?.curDriver is JobDriver_Ingest)
+			{
+				return true;
+			}
+
+			JobDef curJobDef = pawn?.CurJobDef;
+			if (curJobDef == JobDefOf.Ingest)
+			{
+				return true;
+			}
+
+			if (curJobDef == JobDefOf.TakeFromOtherInventory
+				&& pawn.CurJob != null
+				&& pawn.CurJob.targetA.HasThing
+				&& FoodUtility.WillEat(pawn, pawn.CurJob.targetA.Thing))
+			{
+				return true;
+			}
+
+			return false;
 		}
 
 		/// <summary>

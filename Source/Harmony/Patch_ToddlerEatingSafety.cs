@@ -126,6 +126,16 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				}
 			}
 
+			Type jobGiverGetFoodType = AccessTools.TypeByName("RimWorld.JobGiver_GetFood");
+			if (jobGiverGetFoodType != null)
+			{
+				MethodInfo tryGiveJob = AccessTools.Method(jobGiverGetFoodType, "TryGiveJob", new[] { typeof(Pawn) });
+				if (tryGiveJob != null)
+				{
+					harmony.Patch(tryGiveJob, postfix: new HarmonyMethod(typeof(Patch_ToddlerEatingSafety), nameof(JobGiver_GetFood_TryGiveJob_Postfix)));
+				}
+			}
+
 		}
 
 		private static void IsBabyBusy_Postfix(Pawn baby, ref bool __result)
@@ -206,6 +216,35 @@ namespace RimTalk_ToddlersExpansion.Harmony
 		private static void FindSadBaby_Postfix(ref Pawn __result)
 		{
 			if (__result != null && IsAutoTargetProtected(__result))
+			{
+				__result = null;
+			}
+		}
+
+		private static void JobGiver_GetFood_TryGiveJob_Postfix(Pawn pawn, ref Job __result)
+		{
+			if (__result == null || pawn == null)
+			{
+				return;
+			}
+
+			if (!ToddlersCompatUtility.IsToddler(pawn))
+			{
+				return;
+			}
+
+			// Do not let auto self-eat jobs interrupt active self-bath.
+			if (pawn.CurJobDef != ToddlersExpansionJobDefOf.RimTalk_ToddlerSelfBath)
+			{
+				return;
+			}
+
+			if (__result.playerForced)
+			{
+				return;
+			}
+
+			if (IsFoodSeekingJob(__result, pawn))
 			{
 				__result = null;
 			}
@@ -346,6 +385,31 @@ namespace RimTalk_ToddlersExpansion.Harmony
 		private static bool IsBathing(Pawn pawn)
 		{
 			return pawn.CurJobDef == ToddlersExpansionJobDefOf.RimTalk_ToddlerSelfBath;
+		}
+
+		private static bool IsFoodSeekingJob(Job job, Pawn pawn)
+		{
+			if (job?.def == null || pawn == null)
+			{
+				return false;
+			}
+
+			if (job.def == JobDefOf.Ingest)
+			{
+				return true;
+			}
+
+			if (job.def == JobDefOf.TakeFromOtherInventory)
+			{
+				return !job.targetA.HasThing || FoodUtility.WillEat(pawn, job.targetA.Thing);
+			}
+
+			if (job.targetA.HasThing && FoodUtility.WillEat(pawn, job.targetA.Thing))
+			{
+				return true;
+			}
+
+			return false;
 		}
 
 		private static void CancelIfProtectedTarget(ref Job job)
