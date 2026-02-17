@@ -20,10 +20,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		/// </summary>
 		private static readonly Dictionary<Rot4, Vector3> CarryOffsets = new Dictionary<Rot4, Vector3>
 		{
-			{ Rot4.North, new Vector3(-0.12f, -0.1f, -0.1f) },    // 面向北（背对镜头），幼儿在背后，图层在大人后�?
-			{ Rot4.South, new Vector3(0.12f, 0.1f, -0.1f) },   // 面向南（正对镜头），幼儿在胸前偏右侧
-			{ Rot4.East, new Vector3(0.15f, -0.05f, -0.05f) }, // 面向东，幼儿在左侧偏�?
-			{ Rot4.West, new Vector3(0.15f, 0.05f, -0.05f) }   // 面向西，幼儿在右侧偏�?
+			// Make all four rotations visibly distinct in world-space (x/z), not just by facing.
+			{ Rot4.North, new Vector3(-0.05f, -0.10f, 0.16f) },
+			{ Rot4.South, new Vector3(0.05f, 0.10f, -0.16f) },
+			{ Rot4.East,  new Vector3(0.16f, -0.04f, -0.05f) },
+			{ Rot4.West,  new Vector3(-0.16f, 0.04f, 0.05f) }
 		};
 
 		/// <summary>

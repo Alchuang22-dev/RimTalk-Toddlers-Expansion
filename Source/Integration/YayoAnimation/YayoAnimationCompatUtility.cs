@@ -159,7 +159,7 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 				{
 					// 忽略错误
 				}
-				return false; // 跳过原方法
+				return true; // Continue original CheckAni so draw position can still update.
 			}
 			
 			// 如果这个 pawn 在我们的抑制列表中（用于其他动画抑制场景）
