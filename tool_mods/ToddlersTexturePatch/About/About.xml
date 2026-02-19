@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+	<packageId>cj.rimtalk.toddlers.texturepatch</packageId>
+	<name>Toddlers Texture Patch (HAR Generic)</name>
+	<author>RimTalk Team</author>
+
+	<description>
+	Apply generic toddler body textures to HAR races to prevent missing-texture rendering issues.
+	</description>
+
+	<supportedVersions>
+		<li>1.6</li>
+	</supportedVersions>
+
+	<modDependencies>
+		<li>
+			<packageId>cyanobot.toddlers</packageId>
+			<displayName>Toddlers</displayName>
+		</li>
+	</modDependencies>
+
+	<loadAfter>
+		<li>cyanobot.toddlers</li>
+		<li>erdelf.humanoidalienraces</li>
+		<li>erdelf.HumanoidAlienRaces</li>
+	</loadAfter>
+</ModMetaData>
