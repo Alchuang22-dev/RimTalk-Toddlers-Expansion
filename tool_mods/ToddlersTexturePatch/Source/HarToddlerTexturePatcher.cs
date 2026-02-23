@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +14,7 @@ namespace ToddlersTexturePatch
 	{
 		private const string LogPrefix = "[ToddlersTexturePatch]";
 		private const string FallbackBodyPath = "Naked_Baby";
+		private static readonly BindingFlags FieldFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.IgnoreCase;
 
 		static HarToddlerTexturePatcher()
 		{
@@ -28,31 +29,29 @@ namespace ToddlersTexturePatch
 			}
 			catch (Exception ex)
 			{
-				Log.Error($"{LogPrefix} Failed to apply patch: {ex}");
+				Log.Error($"{LogPrefix} Failed: {ex}");
 			}
 		}
 
 		private static void Apply()
 		{
-			if (!HasFallbackTextures())
+			if (!HasDirectionalTextures(FallbackBodyPath))
 			{
-				Log.Error($"{LogPrefix} Missing fallback textures at path '{FallbackBodyPath}'. Expected at least _south/_north/_east.");
+				Log.Error($"{LogPrefix} Missing fallback textures for '{FallbackBodyPath}' (_south/_north/_east).");
 				return;
 			}
 
 			Type harThingDefType = GenTypes.GetTypeInAnyAssembly("AlienRace.ThingDef_AlienRace");
 			if (harThingDefType == null)
 			{
-				Log.Message($"{LogPrefix} HAR not detected. Skipping.");
+				Log.Message($"{LogPrefix} HAR not detected. Skip.");
 				return;
 			}
 
 			int raceCount = 0;
 			int changedRaceCount = 0;
-			int agePatched = 0;
-			int ageAdded = 0;
-			int bodyTypePatched = 0;
-			int bodyTypeAdded = 0;
+			int stagePatched = 0;
+			int stageAdded = 0;
 
 			foreach (ThingDef raceDef in DefDatabase<ThingDef>.AllDefsListForReading)
 			{
@@ -62,35 +61,21 @@ namespace ToddlersTexturePatch
 				}
 
 				raceCount++;
-				if (!TryPatchRace(raceDef, out int raceAgePatched, out int raceAgeAdded, out int raceBodyTypePatched, out int raceBodyTypeAdded))
+				if (TryPatchRace(raceDef, out int patched, out int added))
 				{
-					continue;
+					changedRaceCount++;
+					stagePatched += patched;
+					stageAdded += added;
 				}
-
-				changedRaceCount++;
-				agePatched += raceAgePatched;
-				ageAdded += raceAgeAdded;
-				bodyTypePatched += raceBodyTypePatched;
-				bodyTypeAdded += raceBodyTypeAdded;
 			}
 
-			Log.Message(
-				$"{LogPrefix} Done. races={raceCount}, changed={changedRaceCount}, " +
-				$"agePatched={agePatched}, ageAdded={ageAdded}, " +
-				$"bodyTypePatched={bodyTypePatched}, bodyTypeAdded={bodyTypeAdded}, path={FallbackBodyPath}");
+			Log.Message($"{LogPrefix} Done. races={raceCount}, changed={changedRaceCount}, stagePatched={stagePatched}, stageAdded={stageAdded}, path={FallbackBodyPath}");
 		}
 
-		private static bool TryPatchRace(
-			ThingDef raceDef,
-			out int agePatched,
-			out int ageAdded,
-			out int bodyTypePatched,
-			out int bodyTypeAdded)
+		private static bool TryPatchRace(ThingDef raceDef, out int patched, out int added)
 		{
-			agePatched = 0;
-			ageAdded = 0;
-			bodyTypePatched = 0;
-			bodyTypeAdded = 0;
+			patched = 0;
+			added = 0;
 
 			object alienRace = GetFieldValue(raceDef, "alienRace");
 			object graphicPaths = GetFieldValue(alienRace, "graphicPaths");
@@ -100,238 +85,79 @@ namespace ToddlersTexturePatch
 				return false;
 			}
 
-			bool changed = false;
-			if (PatchAgeGraphics(raceDef, bodyGraphic, ref agePatched, ref ageAdded))
+			IList ageGraphics = GetOrCreateListField(bodyGraphic, "ageGraphics", out Type ageGraphicType);
+			if (ageGraphics == null || ageGraphicType == null)
 			{
-				changed = true;
+				return false;
 			}
 
-			if (PatchBodyTypeGraphics(bodyGraphic, ref bodyTypePatched, ref bodyTypeAdded))
-			{
-				changed = true;
-			}
-
-			return changed;
-		}
-
-		private static bool PatchAgeGraphics(ThingDef raceDef, object bodyGraphic, ref int patched, ref int added)
-		{
-			IList ageGraphics = GetListField(bodyGraphic, "ageGraphics", out Type ageGraphicType);
-			if (ageGraphics == null)
+			List<LifeStageDef> targetStages = GetTargetStages(raceDef);
+			if (targetStages.Count == 0)
 			{
 				return false;
 			}
 
 			bool changed = false;
-			bool hasBaby = false;
-			HashSet<LifeStageDef> toddlerStagesSeen = new HashSet<LifeStageDef>();
-
-			foreach (object entry in ageGraphics)
+			foreach (LifeStageDef stage in targetStages)
 			{
-				LifeStageDef stage = GetFieldValue(entry, "age") as LifeStageDef;
-				if (stage == null)
+				object entry = FindAgeGraphicEntry(ageGraphics, stage);
+				if (entry == null)
 				{
-					continue;
-				}
-
-				bool isBaby = IsBabyLifeStage(stage);
-				bool isToddler = IsToddlerLifeStage(stage);
-				if (!isBaby && !isToddler)
-				{
+					if (TryAddAgeGraphicEntry(ageGraphics, ageGraphicType, stage))
+					{
+						added++;
+						changed = true;
+					}
 					continue;
 				}
 
 				if (TrySetFieldValue(entry, FallbackBodyPath, "path"))
 				{
-					changed = true;
 					patched++;
+					changed = true;
 				}
-
-				if (isBaby)
-				{
-					hasBaby = true;
-				}
-
-				if (isToddler)
-				{
-					toddlerStagesSeen.Add(stage);
-				}
-			}
-
-			if (!hasBaby && LifeStageDefOf.HumanlikeBaby != null && TryAddAgeGraphic(ageGraphics, ageGraphicType, LifeStageDefOf.HumanlikeBaby))
-			{
-				changed = true;
-				added++;
-			}
-
-			List<LifeStageDef> toddlerStages = GetToddlerLifeStages(raceDef);
-			foreach (LifeStageDef stage in toddlerStages)
-			{
-				if (toddlerStagesSeen.Contains(stage))
-				{
-					continue;
-				}
-
-				if (!TryAddAgeGraphic(ageGraphics, ageGraphicType, stage))
-				{
-					continue;
-				}
-
-				changed = true;
-				added++;
 			}
 
 			return changed;
 		}
 
-		private static bool PatchBodyTypeGraphics(object bodyGraphic, ref int patched, ref int added)
+		private static List<LifeStageDef> GetTargetStages(ThingDef raceDef)
 		{
-			IList bodyTypeGraphics = GetListField(bodyGraphic, "bodytypeGraphics", out Type bodyTypeGraphicType);
-			if (bodyTypeGraphics == null)
-			{
-				return false;
-			}
+			HashSet<LifeStageDef> result = new HashSet<LifeStageDef>();
 
-			bool changed = false;
-			bool hasBaby = false;
-			bool hasChild = false;
-
-			foreach (object entry in bodyTypeGraphics)
-			{
-				BodyTypeDef bodyType = GetFieldValue(entry, "bodytype", "bodyType") as BodyTypeDef;
-				if (bodyType == null)
-				{
-					continue;
-				}
-
-				if (IsBabyBodyType(bodyType))
-				{
-					hasBaby = true;
-					if (TrySetFieldValue(entry, FallbackBodyPath, "path"))
-					{
-						changed = true;
-						patched++;
-					}
-					continue;
-				}
-
-				if (IsChildBodyType(bodyType))
-				{
-					hasChild = true;
-					if (TrySetFieldValue(entry, FallbackBodyPath, "path"))
-					{
-						changed = true;
-						patched++;
-					}
-				}
-			}
-
-			if (!hasBaby && BodyTypeDefOf.Baby != null && TryAddBodyTypeGraphic(bodyTypeGraphics, bodyTypeGraphicType, BodyTypeDefOf.Baby))
-			{
-				changed = true;
-				added++;
-			}
-
-			if (!hasChild && BodyTypeDefOf.Child != null && TryAddBodyTypeGraphic(bodyTypeGraphics, bodyTypeGraphicType, BodyTypeDefOf.Child))
-			{
-				changed = true;
-				added++;
-			}
-
-			return changed;
-		}
-
-		private static bool TryAddAgeGraphic(IList list, Type entryType, LifeStageDef stage)
-		{
-			if (list == null || entryType == null || stage == null)
-			{
-				return false;
-			}
-
-			try
-			{
-				object entry = Activator.CreateInstance(entryType);
-				if (entry == null)
-				{
-					return false;
-				}
-
-				if (!SetFieldValue(entry, stage, "age"))
-				{
-					return false;
-				}
-
-				SetFieldValue(entry, FallbackBodyPath, "path");
-				SetFieldValue(entry, 1, "variantCount");
-				list.Add(entry);
-				return true;
-			}
-			catch (Exception ex)
-			{
-				Log.Warning($"{LogPrefix} Failed to add age graphic entry for {stage.defName}: {ex.Message}");
-				return false;
-			}
-		}
-
-		private static bool TryAddBodyTypeGraphic(IList list, Type entryType, BodyTypeDef bodyType)
-		{
-			if (list == null || entryType == null || bodyType == null)
-			{
-				return false;
-			}
-
-			try
-			{
-				object entry = Activator.CreateInstance(entryType);
-				if (entry == null)
-				{
-					return false;
-				}
-
-				if (!SetFieldValue(entry, bodyType, "bodytype", "bodyType"))
-				{
-					return false;
-				}
-
-				SetFieldValue(entry, FallbackBodyPath, "path");
-				SetFieldValue(entry, 1, "variantCount");
-				list.Add(entry);
-				return true;
-			}
-			catch (Exception ex)
-			{
-				Log.Warning($"{LogPrefix} Failed to add body type graphic entry for {bodyType.defName}: {ex.Message}");
-				return false;
-			}
-		}
-
-		private static List<LifeStageDef> GetToddlerLifeStages(ThingDef raceDef)
-		{
-			List<LifeStageDef> result = new List<LifeStageDef>();
 			List<LifeStageAge> lifeStages = raceDef?.race?.lifeStageAges;
-			if (lifeStages == null)
+			if (lifeStages != null)
 			{
-				return result;
-			}
-
-			foreach (LifeStageAge stageAge in lifeStages)
-			{
-				LifeStageDef stage = stageAge?.def;
-				if (stage == null || !IsToddlerLifeStage(stage))
+				foreach (LifeStageAge lifeStageAge in lifeStages)
 				{
-					continue;
-				}
+					LifeStageDef stage = lifeStageAge?.def;
+					if (stage == null)
+					{
+						continue;
+					}
 
-				if (!result.Contains(stage))
-				{
-					result.Add(stage);
+					if (IsNewbornStage(stage) || IsToddlerStage(stage))
+					{
+						result.Add(stage);
+					}
 				}
 			}
 
-			return result;
+			if (LifeStageDefOf.HumanlikeBaby != null)
+			{
+				result.Add(LifeStageDefOf.HumanlikeBaby);
+			}
+
+			LifeStageDef humanlikeToddler = DefDatabase<LifeStageDef>.GetNamedSilentFail("HumanlikeToddler");
+			if (humanlikeToddler != null)
+			{
+				result.Add(humanlikeToddler);
+			}
+
+			return result.ToList();
 		}
 
-		private static bool IsBabyLifeStage(LifeStageDef stage)
+		private static bool IsNewbornStage(LifeStageDef stage)
 		{
 			if (stage == null)
 			{
@@ -343,10 +169,15 @@ namespace ToddlersTexturePatch
 				return true;
 			}
 
-			return ContainsIgnoreCase(stage.defName, "baby");
+			if (stage.developmentalStage == DevelopmentalStage.Baby)
+			{
+				return true;
+			}
+
+			return ContainsIgnoreCase(stage.defName, "baby") || ContainsIgnoreCase(stage.defName, "newborn");
 		}
 
-		private static bool IsToddlerLifeStage(LifeStageDef stage)
+		private static bool IsToddlerStage(LifeStageDef stage)
 		{
 			if (stage == null)
 			{
@@ -361,55 +192,65 @@ namespace ToddlersTexturePatch
 			return ContainsIgnoreCase(stage.workerClass?.Name, "toddler");
 		}
 
-		private static bool IsBabyBodyType(BodyTypeDef bodyType)
+		private static object FindAgeGraphicEntry(IList ageGraphics, LifeStageDef stage)
 		{
-			if (bodyType == null)
-			{
-				return false;
-			}
-
-			if (bodyType == BodyTypeDefOf.Baby)
-			{
-				return true;
-			}
-
-			return ContainsIgnoreCase(bodyType.defName, "baby");
-		}
-
-		private static bool IsChildBodyType(BodyTypeDef bodyType)
-		{
-			if (bodyType == null)
-			{
-				return false;
-			}
-
-			if (bodyType == BodyTypeDefOf.Child)
-			{
-				return true;
-			}
-
-			return ContainsIgnoreCase(bodyType.defName, "child");
-		}
-
-		private static bool HasFallbackTextures()
-		{
-			return ContentFinder<Texture2D>.Get($"{FallbackBodyPath}_south", false) != null
-				&& ContentFinder<Texture2D>.Get($"{FallbackBodyPath}_north", false) != null
-				&& ContentFinder<Texture2D>.Get($"{FallbackBodyPath}_east", false) != null;
-		}
-
-		private static object GetFieldValue(object obj, params string[] fieldNames)
-		{
-			if (obj == null)
+			if (ageGraphics == null || stage == null)
 			{
 				return null;
 			}
 
-			FieldInfo field = FindField(obj.GetType(), fieldNames);
-			return field?.GetValue(obj);
+			foreach (object item in ageGraphics)
+			{
+				LifeStageDef age = GetFieldValue(item, "age") as LifeStageDef;
+				if (age == stage)
+				{
+					return item;
+				}
+			}
+
+			return null;
 		}
 
-		private static IList GetListField(object obj, string fieldName, out Type elementType)
+		private static bool TryAddAgeGraphicEntry(IList ageGraphics, Type ageGraphicType, LifeStageDef stage)
+		{
+			try
+			{
+				object entry = Activator.CreateInstance(ageGraphicType);
+				if (entry == null)
+				{
+					return false;
+				}
+
+				if (!SetFieldValue(entry, stage, "age"))
+				{
+					return false;
+				}
+
+				SetFieldValue(entry, FallbackBodyPath, "path");
+				SetFieldValue(entry, 1, "variantCount");
+				ageGraphics.Add(entry);
+				return true;
+			}
+			catch (Exception ex)
+			{
+				Log.Warning($"{LogPrefix} Add ageGraphics failed for {stage?.defName}: {ex.Message}");
+				return false;
+			}
+		}
+
+		private static bool HasDirectionalTextures(string path)
+		{
+			if (path.NullOrEmpty())
+			{
+				return false;
+			}
+
+			return ContentFinder<Texture2D>.Get(path + "_south", false) != null
+				&& ContentFinder<Texture2D>.Get(path + "_north", false) != null
+				&& ContentFinder<Texture2D>.Get(path + "_east", false) != null;
+		}
+
+		private static IList GetOrCreateListField(object obj, string fieldName, out Type elementType)
 		{
 			elementType = null;
 			if (obj == null)
@@ -423,14 +264,49 @@ namespace ToddlersTexturePatch
 				return null;
 			}
 
+			elementType = ResolveListElementType(field.FieldType);
 			object raw = field.GetValue(obj);
-			if (!(raw is IList list))
+			if (raw == null)
+			{
+				IList created = CreateListInstance(field.FieldType, elementType);
+				if (created == null)
+				{
+					return null;
+				}
+
+				field.SetValue(obj, created);
+				return created;
+			}
+
+			return raw as IList;
+		}
+
+		private static IList CreateListInstance(Type listType, Type elementType)
+		{
+			if (listType == null)
 			{
 				return null;
 			}
 
-			elementType = ResolveListElementType(raw.GetType());
-			return list;
+			try
+			{
+				object direct = Activator.CreateInstance(listType);
+				if (direct is IList directList)
+				{
+					return directList;
+				}
+			}
+			catch
+			{
+			}
+
+			if (elementType == null)
+			{
+				elementType = typeof(object);
+			}
+
+			Type fallbackType = typeof(List<>).MakeGenericType(elementType);
+			return Activator.CreateInstance(fallbackType) as IList;
 		}
 
 		private static Type ResolveListElementType(Type listType)
@@ -469,6 +345,17 @@ namespace ToddlersTexturePatch
 			}
 
 			return null;
+		}
+
+		private static object GetFieldValue(object obj, params string[] fieldNames)
+		{
+			if (obj == null)
+			{
+				return null;
+			}
+
+			FieldInfo field = FindField(obj.GetType(), fieldNames);
+			return field?.GetValue(obj);
 		}
 
 		private static bool TrySetFieldValue(object obj, object value, params string[] fieldNames)
@@ -518,12 +405,11 @@ namespace ToddlersTexturePatch
 				return null;
 			}
 
-			const BindingFlags Flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.IgnoreCase;
 			for (Type current = type; current != null; current = current.BaseType)
 			{
 				foreach (string fieldName in fieldNames)
 				{
-					FieldInfo field = current.GetField(fieldName, Flags);
+					FieldInfo field = current.GetField(fieldName, FieldFlags);
 					if (field != null)
 					{
 						return field;
@@ -534,14 +420,14 @@ namespace ToddlersTexturePatch
 			return null;
 		}
 
-		private static bool ContainsIgnoreCase(string text, string needle)
+		private static bool ContainsIgnoreCase(string text, string token)
 		{
-			if (string.IsNullOrEmpty(text) || string.IsNullOrEmpty(needle))
+			if (string.IsNullOrEmpty(text) || string.IsNullOrEmpty(token))
 			{
 				return false;
 			}
 
-			return text.IndexOf(needle, StringComparison.OrdinalIgnoreCase) >= 0;
+			return text.IndexOf(token, StringComparison.OrdinalIgnoreCase) >= 0;
 		}
 	}
 }
