@@ -19,6 +19,9 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		public override void GameComponentTick()
 		{
+			// Process deferred carry assignments outside GenSpawn stack.
+			Patch_VisitorToddlerBabyFood.ProcessPendingCarryingAssignments();
+
 			_tickCounter++;
 			if (_tickCounter >= CleanupInterval)
 			{

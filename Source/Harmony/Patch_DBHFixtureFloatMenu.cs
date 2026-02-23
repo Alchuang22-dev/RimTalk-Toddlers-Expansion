@@ -30,17 +30,29 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 		private static IEnumerable<FloatMenuOption> GetFloatMenuOptions_Postfix(IEnumerable<FloatMenuOption> __result, Thing __instance, Pawn selPawn)
 		{
-			if (selPawn == null || !ToddlersCompatUtility.IsToddler(selPawn))
+			try
 			{
+				if (selPawn == null || !ToddlersCompatUtility.IsToddler(selPawn))
+				{
+					return __result;
+				}
+
+				if (!ToddlerSelfBathUtility.IsBathFixture(__instance))
+				{
+					return __result;
+				}
+
+				return Array.Empty<FloatMenuOption>();
+			}
+			catch (Exception ex)
+			{
+				if (Prefs.DevMode)
+				{
+					Log.Warning($"[RimTalk_ToddlersExpansion][DBHFixtureMenu] postfix failed: {ex.Message}");
+				}
+
 				return __result;
 			}
-
-			if (!ToddlerSelfBathUtility.IsBathFixture(__instance))
-			{
-				return __result;
-			}
-
-			return Array.Empty<FloatMenuOption>();
 		}
 	}
 }

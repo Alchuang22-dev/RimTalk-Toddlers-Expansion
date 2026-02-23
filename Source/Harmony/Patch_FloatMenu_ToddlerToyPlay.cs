@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
@@ -46,58 +47,69 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 		private static void AddHumanlikeOrders_Postfix(Vector3 clickPos, Pawn pawn, List<FloatMenuOption> opts)
 		{
-			if (pawn?.Map == null)
+			try
 			{
-				DebugLog("skip: pawn or map is null");
-				return;
-			}
-
-			if (opts == null)
-			{
-				DebugLog($"skip: options list is null for pawn={pawn.LabelShort}");
-				return;
-			}
-
-			if (pawn.Downed || pawn.Drafted || ToddlerMentalStateUtility.HasBlockingMentalState(pawn))
-			{
-				DebugLog($"skip: pawn unavailable pawn={pawn.LabelShort} downed={pawn.Downed} drafted={pawn.Drafted} blockingMental={ToddlerMentalStateUtility.HasBlockingMentalState(pawn)}");
-				return;
-			}
-
-			if (!ToddlersCompatUtility.IsToddler(pawn))
-			{
-				DebugLog($"skip: selected pawn is not toddler pawn={pawn.LabelShort} stage={pawn.DevelopmentalStage}");
-				return;
-			}
-
-			IntVec3 cell = IntVec3.FromVector3(clickPos);
-			if (!cell.InBounds(pawn.Map))
-			{
-				// DebugLog($"skip: click out of bounds pawn={pawn.LabelShort} cell={cell}");
-				return;
-			}
-
-			List<Thing> things = cell.GetThingList(pawn.Map);
-			// DebugLog($"scan: pawn={pawn.LabelShort} cell={cell} things={things.Count} toddlersActive={ToddlersCompatUtility.IsToddlersActive}");
-			for (int i = 0; i < things.Count; i++)
-			{
-				if (things[i] is not Building building)
+				if (pawn?.Map == null)
 				{
-					continue;
+					DebugLog("skip: pawn or map is null");
+					return;
 				}
 
-				if (!TryCreateToyPlayOption(pawn, building, out FloatMenuOption option, out string reason))
+				if (opts == null)
 				{
-					DebugLog($"skip building: pawn={pawn.LabelShort} building={building.LabelShort} def={building.def?.defName ?? "null"} reason={reason}");
-					continue;
+					DebugLog($"skip: options list is null for pawn={pawn.LabelShort}");
+					return;
 				}
 
-				opts.Add(option);
-				DebugLog($"added option: pawn={pawn.LabelShort} building={building.LabelShort} def={building.def?.defName ?? "null"} source={reason}");
-				return;
-			}
+				// Hard guard: never run toddler-specific menu logic for non-toddlers.
+				if (!ToddlersCompatUtility.IsToddler(pawn))
+				{
+					return;
+				}
 
-			DebugLog($"no option added: pawn={pawn.LabelShort} cell={cell}");
+				bool blockingMental = ToddlerMentalStateUtility.HasBlockingMentalState(pawn);
+				if (pawn.Downed || pawn.Drafted || blockingMental)
+				{
+					DebugLog($"skip: pawn unavailable pawn={pawn.LabelShort} downed={pawn.Downed} drafted={pawn.Drafted} blockingMental={blockingMental}");
+					return;
+				}
+
+				IntVec3 cell = IntVec3.FromVector3(clickPos);
+				if (!cell.InBounds(pawn.Map))
+				{
+					// DebugLog($"skip: click out of bounds pawn={pawn.LabelShort} cell={cell}");
+					return;
+				}
+
+				List<Thing> things = cell.GetThingList(pawn.Map);
+				// DebugLog($"scan: pawn={pawn.LabelShort} cell={cell} things={things.Count} toddlersActive={ToddlersCompatUtility.IsToddlersActive}");
+				for (int i = 0; i < things.Count; i++)
+				{
+					if (things[i] is not Building building)
+					{
+						continue;
+					}
+
+					if (!TryCreateToyPlayOption(pawn, building, out FloatMenuOption option, out string reason))
+					{
+						DebugLog($"skip building: pawn={pawn.LabelShort} building={building.LabelShort} def={building.def?.defName ?? "null"} reason={reason}");
+						continue;
+					}
+
+					opts.Add(option);
+					DebugLog($"added option: pawn={pawn.LabelShort} building={building.LabelShort} def={building.def?.defName ?? "null"} source={reason}");
+					return;
+				}
+
+				DebugLog($"no option added: pawn={pawn.LabelShort} cell={cell}");
+			}
+			catch (Exception ex)
+			{
+				if (Prefs.DevMode)
+				{
+					Log.Warning($"{LogPrefix} AddHumanlikeOrders_Postfix failed: {ex.Message}");
+				}
+			}
 		}
 
 		private static bool TryCreateToyPlayOption(Pawn pawn, Building building, out FloatMenuOption option, out string reason)

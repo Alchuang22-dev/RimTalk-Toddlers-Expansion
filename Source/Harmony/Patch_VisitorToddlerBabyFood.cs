@@ -26,13 +26,31 @@ namespace RimTalk_ToddlersExpansion.Harmony
 		private const float BabyFoodUnitsPerToddlerAgeYear = 2f;
 		private const float MinBabyFoodUnits = 3f;
 		private const float MaxBabyFoodUnits = 15f;
+		private const int CarryAssignmentDelayTicks = 60;
+		private const int CarryAssignmentRetryTicks = 30;
+		private const int MaxCarryAssignmentRetries = 8;
 
 		// 缓存已经处理过的pawn，避免重复添加食品
 		private static HashSet<int> _processedPawnIds = new HashSet<int>();
 		// 缓存已经处理过背负关系的pawn
 		private static HashSet<int> _processedCarryingIds = new HashSet<int>();
+		private static readonly List<PendingCarryAssignment> _pendingCarryAssignments = new List<PendingCarryAssignment>();
 		private static int _lastCleanupTick = 0;
 		private const int CleanupInterval = 60000; // 每小时清理一次缓存
+
+		private sealed class PendingCarryAssignment
+		{
+			public PendingCarryAssignment(Pawn toddler, int dueTick)
+			{
+				Toddler = toddler;
+				DueTick = dueTick;
+				Attempts = 0;
+			}
+
+			public Pawn Toddler;
+			public int DueTick;
+			public int Attempts;
+		}
 
 		public static void Init(HarmonyLib.Harmony harmony)
 		{
@@ -129,16 +147,72 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				return;
 			}
 
-			// 延迟60 ticks（约1秒）后处理，确保同一Lord的所有成员都已spawn
-			// 使用LongEventHandler来避免在spawn过程中修改状态
-			LongEventHandler.QueueLongEvent(() =>
-			{
-				TryAssignCarryingForToddler(toddler);
-			}, null, false, null);
+			// 在 GenSpawn 调用栈之外处理，避免在 spawn 过程中直接改状态。
+			int nowTick = Find.TickManager?.TicksGame ?? 0;
+			_pendingCarryAssignments.Add(new PendingCarryAssignment(toddler, nowTick + CarryAssignmentDelayTicks));
 
 			if (Prefs.DevMode)
 			{
 				Log.Message($"[RimTalk_ToddlersExpansion][CarryDebug] Scheduled carry assignment for {toddler.LabelShort} ({toddler.thingIDNumber}).");
+			}
+		}
+
+		public static void ProcessPendingCarryingAssignments(int maxAssignmentsPerTick = 3)
+		{
+			if (_pendingCarryAssignments.Count == 0 || maxAssignmentsPerTick <= 0)
+			{
+				return;
+			}
+
+			int nowTick = Find.TickManager?.TicksGame ?? 0;
+			int processed = 0;
+
+			for (int i = _pendingCarryAssignments.Count - 1; i >= 0; i--)
+			{
+				if (processed >= maxAssignmentsPerTick)
+				{
+					break;
+				}
+
+				PendingCarryAssignment pending = _pendingCarryAssignments[i];
+				if (pending == null || pending.DueTick > nowTick)
+				{
+					continue;
+				}
+
+				processed++;
+				Pawn toddler = pending.Toddler;
+				if (toddler == null || toddler.Dead || toddler.Destroyed)
+				{
+					_pendingCarryAssignments.RemoveAt(i);
+					continue;
+				}
+
+				if (!toddler.Spawned || toddler.MapHeld == null)
+				{
+					if (pending.Attempts >= MaxCarryAssignmentRetries)
+					{
+						_pendingCarryAssignments.RemoveAt(i);
+					}
+					else
+					{
+						pending.Attempts++;
+						pending.DueTick = nowTick + CarryAssignmentRetryTicks;
+					}
+					continue;
+				}
+
+				TryAssignCarryingForToddler(toddler);
+				bool carried = ToddlerCarryingUtility.IsBeingCarried(toddler);
+				if (carried || !IsVisitorToddler(toddler) || pending.Attempts >= MaxCarryAssignmentRetries)
+				{
+					_pendingCarryAssignments.RemoveAt(i);
+				}
+				else
+				{
+					pending.Attempts++;
+					pending.DueTick = nowTick + CarryAssignmentRetryTicks;
+				}
 			}
 		}
 
@@ -384,6 +458,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 		{
 			_processedPawnIds.Clear();
 			_processedCarryingIds.Clear();
+			_pendingCarryAssignments.Clear();
 			_lastCleanupTick = 0;
 		}
 
