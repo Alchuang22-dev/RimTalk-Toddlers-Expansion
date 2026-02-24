@@ -32,6 +32,12 @@ namespace RimTalk_ToddlersExpansion.Language
 		{
 			base.CompPostPostAdd(dinfo);
 			EnsureStageThresholds();
+			if (LanguageLevelUtility.TryGetToddlersLearningTargetProgress(Pawn, out float target))
+			{
+				SetProgress01(target);
+				return;
+			}
+
 			InitializeProgressFromExisting();
 			UpdateSeverity();
 		}
@@ -42,6 +48,12 @@ namespace RimTalk_ToddlersExpansion.Language
 			if (Scribe.mode == LoadSaveMode.PostLoadInit)
 			{
 				EnsureStageThresholds();
+				if (LanguageLevelUtility.TryGetToddlersLearningTargetProgress(Pawn, out float target))
+				{
+					SetProgress01(target);
+					return;
+				}
+
 				InitializeProgressFromExisting();
 				UpdateSeverity();
 			}
@@ -56,6 +68,20 @@ namespace RimTalk_ToddlersExpansion.Language
 
 			if (!Pawn.IsHashIntervalTick(UpdateIntervalTicks, delta))
 			{
+				return;
+			}
+
+			if (LanguageLevelUtility.TryGetToddlersLearningTargetProgress(Pawn, out float synced))
+			{
+				if (!Mathf.Approximately(_progress01, synced))
+				{
+					SetProgress01(synced);
+				}
+				else
+				{
+					UpdateSeverity();
+				}
+
 				return;
 			}
 

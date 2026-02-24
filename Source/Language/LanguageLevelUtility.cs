@@ -1,4 +1,5 @@
 using RimTalk_ToddlersExpansion.Core;
+using RimWorld;
 using UnityEngine;
 using Verse;
 
@@ -7,6 +8,10 @@ namespace RimTalk_ToddlersExpansion.Language
 	public static class LanguageLevelUtility
 	{
 		private const string VersionKey = "lang1";
+		private const float SyncEpsilon = 0.0001f;
+		private static bool _toddlersLearningDefsResolved;
+		private static HediffDef _learningToWalkDef;
+		private static HediffDef _learningManipulationDef;
 		private static readonly string[] TierKeys =
 		{
 			"babble",
@@ -103,6 +108,118 @@ namespace RimTalk_ToddlersExpansion.Language
 			}
 
 			return comp != null;
+		}
+
+		public static bool TryGetToddlersLearningTargetProgress(Pawn pawn, out float targetProgress)
+		{
+			targetProgress = 0f;
+			if (pawn?.health?.hediffSet == null)
+			{
+				return false;
+			}
+
+			ResolveToddlersLearningDefs();
+
+			float target = 0f;
+			bool hasSource = false;
+
+			if (_learningToWalkDef != null)
+			{
+				Hediff walk = pawn.health.hediffSet.GetFirstHediffOfDef(_learningToWalkDef);
+				if (walk != null)
+				{
+					target = Mathf.Max(target, walk.Severity);
+					hasSource = true;
+				}
+			}
+
+			if (_learningManipulationDef != null)
+			{
+				Hediff manipulation = pawn.health.hediffSet.GetFirstHediffOfDef(_learningManipulationDef);
+				if (manipulation != null)
+				{
+					target = Mathf.Max(target, manipulation.Severity);
+					hasSource = true;
+				}
+			}
+
+			targetProgress = Mathf.Clamp01(target);
+			return hasSource;
+		}
+
+		/// <summary>
+		/// Sync LearningToWalk / LearningManipulation / RimTalk_ToddlerLanguageLearning to one progress.
+		/// </summary>
+		public static bool TrySyncLearningProgress(Pawn pawn, bool createLanguageIfMissing = true)
+		{
+			if (pawn?.health?.hediffSet == null || ToddlersExpansionHediffDefOf.RimTalk_ToddlerLanguageLearning == null)
+			{
+				return false;
+			}
+
+			if (!TryGetToddlersLearningTargetProgress(pawn, out float targetProgress))
+			{
+				return false;
+			}
+
+			ResolveToddlersLearningDefs();
+
+			Hediff walk = _learningToWalkDef == null
+				? null
+				: pawn.health.hediffSet.GetFirstHediffOfDef(_learningToWalkDef);
+			Hediff manipulation = _learningManipulationDef == null
+				? null
+				: pawn.health.hediffSet.GetFirstHediffOfDef(_learningManipulationDef);
+			Hediff language = pawn.health.hediffSet.GetFirstHediffOfDef(ToddlersExpansionHediffDefOf.RimTalk_ToddlerLanguageLearning);
+
+			HediffComp_LanguageLearningProgress languageComp = null;
+			if (language is HediffWithComps withComps)
+			{
+				languageComp = withComps.TryGetComp<HediffComp_LanguageLearningProgress>();
+			}
+			else if (createLanguageIfMissing && TryGetOrCreateProgressComp(pawn, out HediffComp_LanguageLearningProgress created))
+			{
+				languageComp = created;
+				language = pawn.health.hediffSet.GetFirstHediffOfDef(ToddlersExpansionHediffDefOf.RimTalk_ToddlerLanguageLearning);
+			}
+
+			bool changed = false;
+			if (walk != null && Mathf.Abs(walk.Severity - targetProgress) > SyncEpsilon)
+			{
+				walk.Severity = targetProgress;
+				changed = true;
+			}
+
+			if (manipulation != null && Mathf.Abs(manipulation.Severity - targetProgress) > SyncEpsilon)
+			{
+				manipulation.Severity = targetProgress;
+				changed = true;
+			}
+
+			if (languageComp != null && Mathf.Abs(languageComp.Progress01 - targetProgress) > SyncEpsilon)
+			{
+				languageComp.SetProgress01(targetProgress);
+				changed = true;
+			}
+			else if (language != null && Mathf.Abs(language.Severity - targetProgress) > SyncEpsilon)
+			{
+				language.Severity = targetProgress;
+				changed = true;
+			}
+
+			return changed;
+		}
+
+		private static void ResolveToddlersLearningDefs()
+		{
+			if (_toddlersLearningDefsResolved)
+			{
+				return;
+			}
+
+			_toddlersLearningDefsResolved = true;
+			_learningToWalkDef = DefDatabase<HediffDef>.GetNamedSilentFail("LearningToWalk");
+			_learningManipulationDef = DefDatabase<HediffDef>.GetNamedSilentFail("LearningManipulation");
 		}
 	}
 }

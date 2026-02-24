@@ -3,16 +3,22 @@ using RimTalk_ToddlersExpansion.Core;
 using RimTalk_ToddlersExpansion.Integration.BioTech;
 using RimTalk_ToddlersExpansion.Language;
 using RimWorld;
+using UnityEngine;
 using Verse;
 
 namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 {
 	public sealed class LanguageLearningBootstrapComponent : GameComponent
 	{
-		private const int FastRetryIntervalTicks = 600;
-		private const int SlowRetryIntervalTicks = 2500;
-		private bool _initialPassDone;
-		private int _nextRetryTick;
+		private const int BackfillStartDelayTicks = 60;
+		private const int BackfillBatchSize = 64;
+		private bool _backfillCompleted;
+		private bool _backfillQueued;
+		private int _nextBackfillTick;
+		private int _pendingIndex;
+		private int _addedLanguage;
+		private int _addedBabbling;
+		private readonly List<Pawn> _pendingBackfillPawns = new List<Pawn>(256);
 
 		public LanguageLearningBootstrapComponent(Game game)
 		{
@@ -21,76 +27,84 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		public override void StartedNewGame()
 		{
 			base.StartedNewGame();
-			TryInitialize();
+			// New games rely on Toddlers lifecycle hooks for hediff setup.
+			_backfillCompleted = true;
+			_backfillQueued = false;
+			_pendingBackfillPawns.Clear();
+			_pendingIndex = 0;
 		}
 
 		public override void LoadedGame()
 		{
 			base.LoadedGame();
-			TryInitialize();
+			QueueBackfillIfNeeded();
 		}
 
 		public override void GameComponentTick()
 		{
 			base.GameComponentTick();
 
-			if (Find.TickManager == null)
+			if (!_backfillQueued || _backfillCompleted || Find.TickManager == null)
 			{
 				return;
 			}
 
 			int tick = Find.TickManager.TicksGame;
-			if (tick < _nextRetryTick)
+			if (tick < _nextBackfillTick)
 			{
 				return;
 			}
 
-			TryInitialize();
-			_nextRetryTick = tick + (_initialPassDone ? SlowRetryIntervalTicks : FastRetryIntervalTicks);
+			ProcessBackfillBatch();
+			_nextBackfillTick = tick + 1;
 		}
 
 		public override void ExposeData()
 		{
 			base.ExposeData();
-			Scribe_Values.Look(ref _initialPassDone, "initialPassDone");
-			Scribe_Values.Look(ref _nextRetryTick, "nextRetryTick");
+			Scribe_Values.Look(ref _backfillCompleted, "languageBackfillCompleted");
 		}
 
-		private void TryInitialize()
+		private void QueueBackfillIfNeeded()
 		{
+			if (_backfillCompleted || _backfillQueued)
+			{
+				return;
+			}
+
 			bool canAddLanguage = ToddlersExpansionHediffDefOf.RimTalk_ToddlerLanguageLearning != null;
 			bool canAddBabbling = ToddlersExpansionHediffDefOf.RimTalk_BabyBabbling != null;
 			if (!canAddLanguage && !canAddBabbling)
 			{
+				_backfillCompleted = true;
 				return;
 			}
 
-			if (Find.Maps == null || Find.Maps.Count == 0)
-			{
-				return;
-			}
-
-			int addedLanguage = 0;
-			int addedBabbling = 0;
 			HashSet<int> seen = new HashSet<int>();
+			_pendingBackfillPawns.Clear();
+			_pendingIndex = 0;
+			_addedLanguage = 0;
+			_addedBabbling = 0;
 
-			for (int i = 0; i < Find.Maps.Count; i++)
+			if (Find.Maps != null)
 			{
-				Map map = Find.Maps[i];
-				if (map == null)
+				for (int i = 0; i < Find.Maps.Count; i++)
 				{
-					continue;
-				}
+					Map map = Find.Maps[i];
+					List<Pawn> pawns = map?.mapPawns?.AllPawns;
+					if (pawns == null)
+					{
+						continue;
+					}
 
-				List<Pawn> pawns = (List<Pawn>)(map.mapPawns?.AllPawnsSpawned);
-				if (pawns == null)
-				{
-					continue;
-				}
-
-				for (int j = 0; j < pawns.Count; j++)
-				{
-					TryEnsurePawn(pawns[j], seen, canAddLanguage, canAddBabbling, ref addedLanguage, ref addedBabbling);
+					for (int j = 0; j < pawns.Count; j++)
+					{
+						Pawn pawn = pawns[j];
+						if (pawn != null && seen.Add(pawn.thingIDNumber))
+						{
+							_pendingBackfillPawns.Add(pawn);
+						}
+					}
 				}
 			}
 
@@ -99,31 +113,61 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			{
 				for (int i = 0; i < worldPawns.Count; i++)
 				{
-					TryEnsurePawn(worldPawns[i], seen, canAddLanguage, canAddBabbling, ref addedLanguage, ref addedBabbling);
+					Pawn pawn = worldPawns[i];
+					if (pawn != null && seen.Add(pawn.thingIDNumber))
+					{
+						_pendingBackfillPawns.Add(pawn);
+					}
 				}
 			}
 
-			if (addedLanguage > 0 || addedBabbling > 0)
+			if (_pendingBackfillPawns.Count == 0)
 			{
-				Log.Message($"[RimTalk_ToddlersExpansion] Added language learning hediff to {addedLanguage} toddler(s), babbling hediff to {addedBabbling} baby(ies).");
+				_backfillCompleted = true;
+				return;
 			}
 
-			_initialPassDone = true;
+			_backfillQueued = true;
+			_nextBackfillTick = (Find.TickManager?.TicksGame ?? 0) + BackfillStartDelayTicks;
 		}
 
-		private static void TryEnsurePawn(Pawn pawn, HashSet<int> seen, bool canAddLanguage, bool canAddBabbling, ref int addedLanguage, ref int addedBabbling)
+		private void ProcessBackfillBatch()
 		{
-			if (pawn == null || seen == null)
+			bool canAddLanguage = ToddlersExpansionHediffDefOf.RimTalk_ToddlerLanguageLearning != null;
+			bool canAddBabbling = ToddlersExpansionHediffDefOf.RimTalk_BabyBabbling != null;
+			if (!canAddLanguage && !canAddBabbling)
 			{
+				CompleteBackfill();
 				return;
 			}
 
-			if (!seen.Add(pawn.thingIDNumber))
+			int limit = Mathf.Min(_pendingBackfillPawns.Count, _pendingIndex + BackfillBatchSize);
+			for (; _pendingIndex < limit; _pendingIndex++)
 			{
-				return;
+				TryEnsurePawn(_pendingBackfillPawns[_pendingIndex], canAddLanguage, canAddBabbling, ref _addedLanguage, ref _addedBabbling);
 			}
 
-			if (pawn.health?.hediffSet == null)
+			if (_pendingIndex >= _pendingBackfillPawns.Count)
+			{
+				CompleteBackfill();
+			}
+		}
+
+		private void CompleteBackfill()
+		{
+			_backfillCompleted = true;
+			_backfillQueued = false;
+			_pendingBackfillPawns.Clear();
+			_pendingIndex = 0;
+			if (_addedLanguage > 0 || _addedBabbling > 0)
+			{
+				Log.Message($"[RimTalk_ToddlersExpansion] One-time language backfill added language hediff to {_addedLanguage} toddler(s), babbling hediff to {_addedBabbling} baby(ies).");
+			}
+		}
+
+		private static void TryEnsurePawn(Pawn pawn, bool canAddLanguage, bool canAddBabbling, ref int addedLanguage, ref int addedBabbling)
+		{
+			if (pawn == null || pawn.Dead || pawn.Destroyed || pawn.health?.hediffSet == null)
 			{
 				return;
 			}
@@ -134,38 +178,28 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			if (isBabyOnly)
 			{
 				RemoveLanguageHediffIfPresent(pawn, canAddLanguage);
-
-				if (!canAddBabbling)
+				if (canAddBabbling
+					&& pawn.health.hediffSet.GetFirstHediffOfDef(ToddlersExpansionHediffDefOf.RimTalk_BabyBabbling) == null)
 				{
-					return;
+					Hediff babbling = HediffMaker.MakeHediff(ToddlersExpansionHediffDefOf.RimTalk_BabyBabbling, pawn);
+					pawn.health.AddHediff(babbling);
+					addedBabbling += 1;
 				}
-
-				if (pawn.health.hediffSet.GetFirstHediffOfDef(ToddlersExpansionHediffDefOf.RimTalk_BabyBabbling) != null)
-				{
-					return;
-				}
-
-				Hediff babbling = HediffMaker.MakeHediff(ToddlersExpansionHediffDefOf.RimTalk_BabyBabbling, pawn);
-				pawn.health.AddHediff(babbling);
-				addedBabbling += 1;
 				return;
 			}
 
 			RemoveBabblingHediffIfPresent(pawn, canAddBabbling);
-
-			if (!canAddLanguage || !isToddler)
+			if (canAddLanguage && isToddler)
 			{
-				return;
-			}
-
-			if (pawn.health.hediffSet.GetFirstHediffOfDef(ToddlersExpansionHediffDefOf.RimTalk_ToddlerLanguageLearning) != null)
-			{
-				return;
-			}
-
-			if (LanguageLevelUtility.TryGetOrCreateProgressComp(pawn, out _))
-			{
-				addedLanguage += 1;
+				bool hadLanguage = pawn.health.hediffSet.GetFirstHediffOfDef(ToddlersExpansionHediffDefOf.RimTalk_ToddlerLanguageLearning) != null;
+				if (LanguageLevelUtility.TrySyncLearningProgress(pawn, createLanguageIfMissing: true))
+				{
+					bool hasLanguage = pawn.health.hediffSet.GetFirstHediffOfDef(ToddlersExpansionHediffDefOf.RimTalk_ToddlerLanguageLearning) != null;
+					if (!hadLanguage && hasLanguage)
+					{
+						addedLanguage += 1;
+					}
+				}
 			}
 		}
 
