@@ -360,10 +360,10 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				if (carrier == null)
 					continue;
 				
-				bool hasLeaderDuty = pawn.mindState?.duty?.def?.defName == "ExitMapBestAndDefendSelf";
+				bool hasLeaderDuty = pawn.mindState?.duty?.def == DutyDefOf.ExitMapBestAndDefendSelf;
 				
 				// 如果被背着的幼儿有领头 duty（说明他是 trader），把 duty 转移给载体
-				if (hasLeaderDuty)
+				if (hasLeaderDuty && ToddlerCarryingUtility.IsValidCarrier(carrier))
 				{
 					carriersNeedLeaderDuty.Add(carrier);
 				}
@@ -399,22 +399,21 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				if (!isYoungPawn)
 					continue;
 				
-				// 只处理仍然是 TravelOrLeave 的幼儿
-				if (pawn.mindState?.duty?.def != DutyDefOf.TravelOrLeave)
+				// 处理未被背幼儿的退出 duty：
+				// 1) TravelOrLeave（原始漏修场景）
+				// 2) ExitMapBestAndDefendSelf（错误领头场景，会导致队伍围着幼儿）
+				DutyDef currentDutyDef = pawn.mindState?.duty?.def;
+				bool hasLeaderDuty = currentDutyDef == DutyDefOf.ExitMapBestAndDefendSelf;
+				if (currentDutyDef != DutyDefOf.TravelOrLeave && !hasLeaderDuty)
 				{
 					continue;
 				}
 
 				// 找出实际的领路人（可能是原来的 trader，也可能是背着 trader 幼儿的载体）
-				Pawn actualLeader = trader;
-				if (actualLeader != null && ToddlerCarryingUtility.IsBeingCarried(actualLeader))
+				Pawn actualLeader = ResolveActualLeader(lord, trader);
+				if (actualLeader == pawn)
 				{
-					// trader 被背着了，找到背着他的人作为领路人
-					Pawn traderCarrier = ToddlerCarryingUtility.GetCarrier(actualLeader);
-					if (traderCarrier != null)
-					{
-						actualLeader = traderCarrier;
-					}
+					actualLeader = FindFallbackLeader(lord, pawn);
 				}
 
 				// 为未被背的幼儿/儿童分配正确的离开地图 duty
@@ -428,6 +427,50 @@ namespace RimTalk_ToddlersExpansion.Harmony
 					pawn.mindState.duty.locomotion = LocomotionUrgency.Jog;
 				}
 			}
+		}
+
+		private static Pawn ResolveActualLeader(Lord lord, Pawn trader)
+		{
+			Pawn leader = trader;
+			if (leader != null && ToddlerCarryingUtility.IsBeingCarried(leader))
+			{
+				Pawn traderCarrier = ToddlerCarryingUtility.GetCarrier(leader);
+				if (traderCarrier != null)
+				{
+					leader = traderCarrier;
+				}
+			}
+
+			if (ToddlerCarryingUtility.IsValidCarrier(leader))
+			{
+				return leader;
+			}
+
+			return FindFallbackLeader(lord, leader);
+		}
+
+		private static Pawn FindFallbackLeader(Lord lord, Pawn exclude)
+		{
+			if (lord?.ownedPawns == null)
+			{
+				return null;
+			}
+
+			for (int i = 0; i < lord.ownedPawns.Count; i++)
+			{
+				Pawn candidate = lord.ownedPawns[i];
+				if (candidate == null || candidate == exclude)
+				{
+					continue;
+				}
+
+				if (ToddlerCarryingUtility.IsValidCarrier(candidate))
+				{
+					return candidate;
+				}
+			}
+
+			return null;
 		}
 
 		/// <summary>
