@@ -121,6 +121,14 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return;
 			}
 
+			// In Toddlers mode, creation/sync is driven by Toddlers learning lifecycle patches.
+			// Never create or branch by current Toddlers learning hediff state from social gain logic.
+			if (ToddlersCompatUtility.IsToddlersActive)
+			{
+				return;
+			}
+
+			// Fallback path when Toddlers is not active.
 			if (LanguageLevelUtility.TryGetOrCreateProgressComp(pawn, out HediffComp_LanguageLearningProgress comp))
 			{
 				comp.AddProgress(amount);

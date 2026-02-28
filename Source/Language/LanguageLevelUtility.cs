@@ -1,4 +1,7 @@
+using System;
+using System.Reflection;
 using RimTalk_ToddlersExpansion.Core;
+using RimTalk_ToddlersExpansion.Integration.Toddlers;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -9,9 +12,13 @@ namespace RimTalk_ToddlersExpansion.Language
 	{
 		private const string VersionKey = "lang1";
 		private const float SyncEpsilon = 0.0001f;
-		private static bool _toddlersLearningDefsResolved;
-		private static HediffDef _learningToWalkDef;
-		private static HediffDef _learningManipulationDef;
+		private const float DaysPerYear = 60f;
+		private const float TicksPerDay = 60000f;
+		private const float MinLearningFactor = 0.01f;
+		private static bool _toddlersApiResolved;
+		private static MethodInfo _toddlersPercentGrowthMethod;
+		private static MethodInfo _toddlersLearningPerBioTickMethod;
+		private static FieldInfo _toddlersManipulationLearningFactorField;
 		private static readonly string[] TierKeys =
 		{
 			"babble",
@@ -110,46 +117,81 @@ namespace RimTalk_ToddlersExpansion.Language
 			return comp != null;
 		}
 
-		public static bool TryGetToddlersLearningTargetProgress(Pawn pawn, out float targetProgress)
+		// Mirrors Toddlers.ToddlerLearningUtility.ResetHediffsForAge initial severity logic:
+		// severity = PercentGrowth(pawn) / Toddlers_Settings.learningFactor_Manipulation
+		public static bool TryGetToddlersLanguageInitialProgress(Pawn pawn, out float progress01)
 		{
-			targetProgress = 0f;
-			if (pawn?.health?.hediffSet == null)
+			progress01 = 0f;
+			if (pawn?.ageTracker == null)
 			{
 				return false;
 			}
 
-			ResolveToddlersLearningDefs();
-
-			float target = 0f;
-			bool hasSource = false;
-
-			if (_learningToWalkDef != null)
+			if (ToddlersCompatUtility.IsToddlersActive && !ToddlersCompatUtility.IsToddler(pawn))
 			{
-				Hediff walk = pawn.health.hediffSet.GetFirstHediffOfDef(_learningToWalkDef);
-				if (walk != null)
-				{
-					target = Mathf.Max(target, walk.Severity);
-					hasSource = true;
-				}
+				return false;
 			}
 
-			if (_learningManipulationDef != null)
+			if (!TryGetToddlersPercentGrowth(pawn, out float percentGrowth))
 			{
-				Hediff manipulation = pawn.health.hediffSet.GetFirstHediffOfDef(_learningManipulationDef);
-				if (manipulation != null)
-				{
-					target = Mathf.Max(target, manipulation.Severity);
-					hasSource = true;
-				}
+				return false;
 			}
 
-			targetProgress = Mathf.Clamp01(target);
-			return hasSource;
+			progress01 = Mathf.Clamp01(percentGrowth / GetToddlersManipulationLearningFactor());
+			return true;
 		}
 
-		/// <summary>
-		/// Sync LearningToWalk / LearningManipulation / RimTalk_ToddlerLanguageLearning to one progress.
-		/// </summary>
+		public static float GetLearningPerBioTick(Pawn pawn)
+		{
+			if (pawn?.ageTracker == null)
+			{
+				return 1f / (2f * DaysPerYear * TicksPerDay);
+			}
+
+			ResolveToddlersApi();
+			if (_toddlersLearningPerBioTickMethod != null)
+			{
+				try
+				{
+					object value = _toddlersLearningPerBioTickMethod.Invoke(null, new object[] { pawn, null });
+					if (value is float perTick && perTick > 0f)
+					{
+						return perTick;
+					}
+				}
+				catch
+				{
+				}
+			}
+
+			float minAge = ToddlersCompatUtility.GetToddlerMinAgeYears(pawn);
+			float endAge = ToddlersCompatUtility.GetToddlerEndAgeYears(pawn);
+			float stageTicks = Mathf.Max(1f, (endAge - minAge) * DaysPerYear * TicksPerDay);
+			return 1f / stageTicks;
+		}
+
+		public static float GetToddlersManipulationLearningFactor()
+		{
+			ResolveToddlersApi();
+			if (_toddlersManipulationLearningFactorField != null)
+			{
+				try
+				{
+					object value = _toddlersManipulationLearningFactorField.GetValue(null);
+					if (value is float factor && factor > MinLearningFactor)
+					{
+						return factor;
+					}
+				}
+				catch
+				{
+				}
+			}
+
+			float fallback = ToddlersExpansionSettings.learningFactor_Talking;
+			return fallback > MinLearningFactor ? fallback : 1f;
+		}
+
 		public static bool TrySyncLearningProgress(Pawn pawn, bool createLanguageIfMissing = true)
 		{
 			if (pawn?.health?.hediffSet == null || ToddlersExpansionHediffDefOf.RimTalk_ToddlerLanguageLearning == null)
@@ -157,21 +199,12 @@ namespace RimTalk_ToddlersExpansion.Language
 				return false;
 			}
 
-			if (!TryGetToddlersLearningTargetProgress(pawn, out float targetProgress))
+			if (!TryGetToddlersLanguageInitialProgress(pawn, out float targetProgress))
 			{
 				return false;
 			}
 
-			ResolveToddlersLearningDefs();
-
-			Hediff walk = _learningToWalkDef == null
-				? null
-				: pawn.health.hediffSet.GetFirstHediffOfDef(_learningToWalkDef);
-			Hediff manipulation = _learningManipulationDef == null
-				? null
-				: pawn.health.hediffSet.GetFirstHediffOfDef(_learningManipulationDef);
 			Hediff language = pawn.health.hediffSet.GetFirstHediffOfDef(ToddlersExpansionHediffDefOf.RimTalk_ToddlerLanguageLearning);
-
 			HediffComp_LanguageLearningProgress languageComp = null;
 			if (language is HediffWithComps withComps)
 			{
@@ -184,18 +217,6 @@ namespace RimTalk_ToddlersExpansion.Language
 			}
 
 			bool changed = false;
-			if (walk != null && Mathf.Abs(walk.Severity - targetProgress) > SyncEpsilon)
-			{
-				walk.Severity = targetProgress;
-				changed = true;
-			}
-
-			if (manipulation != null && Mathf.Abs(manipulation.Severity - targetProgress) > SyncEpsilon)
-			{
-				manipulation.Severity = targetProgress;
-				changed = true;
-			}
-
 			if (languageComp != null && Mathf.Abs(languageComp.Progress01 - targetProgress) > SyncEpsilon)
 			{
 				languageComp.SetProgress01(targetProgress);
@@ -210,16 +231,65 @@ namespace RimTalk_ToddlersExpansion.Language
 			return changed;
 		}
 
-		private static void ResolveToddlersLearningDefs()
+		private static bool TryGetToddlersPercentGrowth(Pawn pawn, out float percentGrowth)
 		{
-			if (_toddlersLearningDefsResolved)
+			percentGrowth = 0f;
+			if (pawn?.ageTracker == null)
+			{
+				return false;
+			}
+
+			ResolveToddlersApi();
+			if (_toddlersPercentGrowthMethod != null)
+			{
+				try
+				{
+					object value = _toddlersPercentGrowthMethod.Invoke(null, new object[] { pawn });
+					if (value is float percent)
+					{
+						percentGrowth = Mathf.Clamp01(percent);
+						return true;
+					}
+				}
+				catch
+				{
+				}
+			}
+
+			float minAge = ToddlersCompatUtility.GetToddlerMinAgeYears(pawn);
+			float endAge = ToddlersCompatUtility.GetToddlerEndAgeYears(pawn);
+			float stageTicks = Mathf.Max(1f, (endAge - minAge) * DaysPerYear * TicksPerDay);
+			float ticksSinceBaby = pawn.ageTracker.AgeBiologicalTicks - (minAge * DaysPerYear * TicksPerDay);
+			percentGrowth = Mathf.Clamp01(ticksSinceBaby / stageTicks);
+			return true;
+		}
+
+		private static void ResolveToddlersApi()
+		{
+			if (_toddlersApiResolved)
 			{
 				return;
 			}
 
-			_toddlersLearningDefsResolved = true;
-			_learningToWalkDef = DefDatabase<HediffDef>.GetNamedSilentFail("LearningToWalk");
-			_learningManipulationDef = DefDatabase<HediffDef>.GetNamedSilentFail("LearningManipulation");
+			_toddlersApiResolved = true;
+
+			Type toddlerUtilityType = GenTypes.GetTypeInAnyAssembly("Toddlers.ToddlerUtility");
+			if (toddlerUtilityType != null)
+			{
+				_toddlersPercentGrowthMethod = toddlerUtilityType.GetMethod("PercentGrowth", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(Pawn) }, null);
+			}
+
+			Type toddlerLearningUtilityType = GenTypes.GetTypeInAnyAssembly("Toddlers.ToddlerLearningUtility");
+			if (toddlerLearningUtilityType != null)
+			{
+				_toddlersLearningPerBioTickMethod = toddlerLearningUtilityType.GetMethod("GetLearningPerBioTick", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(Pawn), typeof(Storyteller) }, null);
+			}
+
+			Type toddlersSettingsType = GenTypes.GetTypeInAnyAssembly("Toddlers.Toddlers_Settings");
+			if (toddlersSettingsType != null)
+			{
+				_toddlersManipulationLearningFactorField = toddlersSettingsType.GetField("learningFactor_Manipulation", BindingFlags.Public | BindingFlags.Static);
+			}
 		}
 	}
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using HarmonyLib;
+using RimTalk_ToddlersExpansion.Core;
 using RimTalk_ToddlersExpansion.Integration.Toddlers;
 using RimTalk_ToddlersExpansion.Language;
 using Verse;
@@ -9,8 +10,6 @@ namespace RimTalk_ToddlersExpansion.Harmony
 {
 	public static class Patch_ToddlersLearningSync
 	{
-		private const string LearningManipulationDefName = "LearningManipulation";
-
 		public static void Init(HarmonyLib.Harmony harmony)
 		{
 			Type learningUtilityType = AccessTools.TypeByName("Toddlers.ToddlerLearningUtility");
@@ -20,53 +19,59 @@ namespace RimTalk_ToddlersExpansion.Harmony
 					?? AccessTools.Method(learningUtilityType, "ResetHediffsForAge", new[] { typeof(Pawn) });
 				if (resetForAge != null)
 				{
-					MethodInfo postfix = AccessTools.Method(typeof(Patch_ToddlersLearningSync), nameof(ResetHediffsForAge_Postfix));
+					bool hasClearExisting = resetForAge.GetParameters().Length >= 2;
+					MethodInfo postfix = AccessTools.Method(
+						typeof(Patch_ToddlersLearningSync),
+						hasClearExisting ? nameof(ResetHediffsForAge_WithFlag_Postfix) : nameof(ResetHediffsForAge_Postfix));
 					harmony.Patch(resetForAge, postfix: new HarmonyMethod(postfix));
 				}
 			}
+		}
 
-			Type toddlerLearningType = AccessTools.TypeByName("Toddlers.Hediff_ToddlerLearning");
-			if (toddlerLearningType != null)
-			{
-				MethodInfo innerTick = AccessTools.Method(toddlerLearningType, "InnerTick", new[] { typeof(float) });
-				if (innerTick != null)
-				{
-					MethodInfo postfix = AccessTools.Method(typeof(Patch_ToddlersLearningSync), nameof(InnerTick_Postfix));
-					harmony.Patch(innerTick, postfix: new HarmonyMethod(postfix));
-				}
-			}
+		private static void ResetHediffsForAge_WithFlag_Postfix(Pawn p, bool clearExisting)
+		{
+			SyncLanguageForReset(p, clearExisting);
 		}
 
 		private static void ResetHediffsForAge_Postfix(Pawn p)
 		{
-			if (p == null || p.health?.hediffSet == null || !ToddlersCompatUtility.IsToddler(p))
-			{
-				return;
-			}
-
-			LanguageLevelUtility.TrySyncLearningProgress(p, createLanguageIfMissing: true);
+			SyncLanguageForReset(p, clearExisting: true);
 		}
 
-		private static void InnerTick_Postfix(Hediff __instance)
+		private static void SyncLanguageForReset(Pawn p, bool clearExisting)
 		{
-			Pawn pawn = __instance?.pawn;
-			if (pawn == null || pawn.health?.hediffSet == null)
+			if (p == null || !ToddlersCompatUtility.IsToddler(p))
 			{
 				return;
 			}
 
-			HediffDef def = __instance.def;
-			if (def == null || !string.Equals(def.defName, LearningManipulationDefName, StringComparison.Ordinal))
+			if (p.ageTracker == null || p.health == null || p.health.hediffSet == null)
 			{
 				return;
 			}
 
-			if (!ToddlersCompatUtility.IsToddler(pawn))
+			if (ToddlersExpansionHediffDefOf.RimTalk_ToddlerLanguageLearning == null)
 			{
 				return;
 			}
 
-			LanguageLevelUtility.TrySyncLearningProgress(pawn, createLanguageIfMissing: true);
+			if (clearExisting)
+			{
+				Hediff existing = p.health.hediffSet.GetFirstHediffOfDef(ToddlersExpansionHediffDefOf.RimTalk_ToddlerLanguageLearning);
+				if (existing != null)
+				{
+					p.health.RemoveHediff(existing);
+				}
+			}
+
+			if (!LanguageLevelUtility.TryGetToddlersLanguageInitialProgress(p, out float initialProgress))
+			{
+				return;
+			}
+
+			Hediff language = HediffMaker.MakeHediff(ToddlersExpansionHediffDefOf.RimTalk_ToddlerLanguageLearning, p);
+			language.Severity = initialProgress;
+			p.health.AddHediff(language);
 		}
 	}
 }
