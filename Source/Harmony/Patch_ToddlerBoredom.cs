@@ -7,6 +7,7 @@ using RimWorld;
 using Verse;
 using Verse.AI;
 using RimTalk_ToddlersExpansion.Core;
+using RimTalk_ToddlersExpansion.Integration.Toddlers;
 
 namespace RimTalk_ToddlersExpansion
 {
@@ -35,18 +36,8 @@ namespace RimTalk_ToddlersExpansion
                 Log.Message("[RimTalk Toddlers Expansion] Patched JobDriver.Cleanup for boredom tracking");
             }
 
-            // Patch Need_Play.Play 方法（Biotech 中的方法）
-            var playMethod = AccessTools.Method(typeof(Need_Play), "Play");
-            if (playMethod != null)
-            {
-                var playPrefix = AccessTools.Method(typeof(Patch_ToddlerBoredom), nameof(Play_Prefix));
-                harmony.Patch(playMethod, prefix: new HarmonyMethod(playPrefix));
-                Log.Message("[RimTalk Toddlers Expansion] Patched Need_Play.Play for boredom system");
-            }
-            else
-            {
-                Log.Message("[RimTalk Toddlers Expansion] Need_Play.Play not found, boredom will only track activities");
-            }
+            // 不再全局 Patch Need_Play.Play，降低与其他娱乐系统 Mod 的冲突风险。
+            Log.Message("[RimTalk Toddlers Expansion] Boredom avoids global Need_Play.Play patch");
 
             // Patch Need.GetTipString 方法用于显示无聊度
             // 注意：Need_Play 没有重写 GetTipString，所以我们需要 patch 基类 Need.GetTipString
@@ -61,36 +52,29 @@ namespace RimTalk_ToddlersExpansion
         }
 
         /// <summary>
-        /// Prefix for Need_Play.Play
-        /// 使用反射获取 pawn 字段
+        /// 对幼儿的 Play 增益应用无聊倍率（仅用于幼儿专用逻辑路径）
         /// </summary>
-        public static void Play_Prefix(Need_Play __instance, ref float amount)
+        public static float AdjustPlayGainForToddler(Pawn pawn, float amount)
         {
+            if (amount <= 0f)
+                return amount;
+
             if (!ToddlersExpansionSettings.enableBoredomSystem)
-                return;
-
-            // 使用反射获取 pawn 字段
-            var pawnField = AccessTools.Field(typeof(Need), "pawn");
-            if (pawnField == null)
-                return;
-
-            var pawn = pawnField.GetValue(__instance) as Pawn;
-            if (pawn == null)
-                return;
+                return amount;
 
             if (!IsToddler(pawn))
-                return;
+                return amount;
 
             var curJob = pawn.jobs?.curJob;
             if (curJob == null)
-                return;
+                return amount;
 
             var component = ToddlerBoredomGameComponent.GetCurrent();
             if (component == null)
-                return;
+                return amount;
 
             float multiplier = component.GetBoredomMultiplier(pawn, curJob.def);
-            amount *= multiplier;
+            return amount * multiplier;
         }
 
         /// <summary>
@@ -135,14 +119,7 @@ namespace RimTalk_ToddlersExpansion
             if (pawn == null || pawn.Dead || pawn.Destroyed)
                 return false;
 
-            // 检查发育阶段
-            if (pawn.DevelopmentalStage != DevelopmentalStage.Baby &&
-                pawn.DevelopmentalStage != DevelopmentalStage.Child)
-                return false;
-
-            // 检查年龄（幼儿通常是1-3岁）
-            float age = pawn.ageTracker?.AgeBiologicalYearsFloat ?? 0f;
-            return age >= 1f && age < 4f;
+            return ToddlersCompatUtility.IsToddler(pawn);
         }
 
         /// <summary>

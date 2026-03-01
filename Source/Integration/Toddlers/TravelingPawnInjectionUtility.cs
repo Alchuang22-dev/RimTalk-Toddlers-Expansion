@@ -1,8 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using RimTalk_ToddlersExpansion.Core;
+using RimTalk_ToddlersExpansion.Language;
 using RimWorld;
+using UnityEngine;
 using Verse;
 
 namespace RimTalk_ToddlersExpansion.Integration.Toddlers
@@ -12,9 +14,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 	/// </summary>
 	public static class TravelingPawnInjectionUtility
 	{
-		private const int MinBatchCount = 1;
-		private const int MaxBatchCount = 5;
-		private const float ExtraBatchChance = 0.5f;
+		private const int DefaultMinBatchCount = 1;
+		private const int DefaultMaxBatchCount = 3;
+		private const float DefaultExtraBatchChance = 0.3f;
+		private const int HardMaxGeneratedPerGroup = 12;
+		private const int HardMaxExtraRolls = 12;
 		private const float WalkingToddlerSeverity = 0.6f;
 		private const float MinPositiveAgeYears = 0.01f;
 		private const float FallbackToddlerMinAgeYears = 1f;
@@ -250,13 +254,19 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		private static int RollStackedCount()
 		{
-			int count = Rand.RangeInclusive(MinBatchCount, MaxBatchCount);
-			while (Rand.Chance(ExtraBatchChance))
+			int minBatch = Mathf.Clamp(ToddlersExpansionMod.Settings?.MinBatchCount ?? DefaultMinBatchCount, 1, HardMaxGeneratedPerGroup);
+			int maxBatch = Mathf.Clamp(ToddlersExpansionMod.Settings?.MaxBatchCount ?? DefaultMaxBatchCount, minBatch, HardMaxGeneratedPerGroup);
+			float extraChance = Mathf.Clamp01(ToddlersExpansionMod.Settings?.ExtraBatchChance ?? DefaultExtraBatchChance);
+
+			int count = Rand.RangeInclusive(minBatch, maxBatch);
+			int extraRolls = 0;
+			while (extraRolls < HardMaxExtraRolls && count < HardMaxGeneratedPerGroup && Rand.Chance(extraChance))
 			{
-				count += Rand.RangeInclusive(MinBatchCount, MaxBatchCount);
+				count += Rand.RangeInclusive(minBatch, maxBatch);
+				extraRolls++;
 			}
 
-			return count;
+			return Mathf.Clamp(count, 1, HardMaxGeneratedPerGroup);
 		}
 
 		private static bool HasAdultLeader(List<Pawn> pawns, out Pawn adultLeader)
@@ -471,7 +481,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				if (pawn != null && ToddlersCompatUtility.IsToddler(pawn))
 				{
 					ToddlerPawnGenerationUtility.TryInjectBabyFood(pawn, ageYears);
-					ToddlerPawnGenerationUtility.EnsureToddlerFallbackApparel(pawn, parms?.tile ?? -1);
+					// Defer fallback apparel to spawned-map path to keep group generation lightweight.
 				}
 
 				if (Prefs.DevMode && pawn != null)
@@ -550,6 +560,13 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					{
 						manipulationHediff.Severity = WalkingToddlerSeverity;
 					}
+				}
+
+				// 同步抬升语言学习进度，避免与学习自理初始进度不一致。
+				if (LanguageLevelUtility.TryGetOrCreateProgressComp(pawn, out HediffComp_LanguageLearningProgress languageComp)
+					&& languageComp.Progress01 < WalkingToddlerSeverity)
+				{
+					languageComp.SetProgress01(WalkingToddlerSeverity);
 				}
 			}
 		}

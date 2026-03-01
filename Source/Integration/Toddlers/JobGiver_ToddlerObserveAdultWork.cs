@@ -153,12 +153,9 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
-			if (pawn.needs.joy != null)
+			if (!SocialNeedTuning_Toddlers.ShouldDoOptionalActivity(pawn, 0.8f))
 			{
-				if (pawn.needs.joy.CurLevel > 0.8f)
-				{
-					return false;
-				}
+				return false;
 			}
 
 			if (PawnUtility.WillSoonHaveBasicNeed(pawn, -0.05f))

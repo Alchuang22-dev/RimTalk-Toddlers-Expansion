@@ -104,7 +104,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
-			if (pawn.pather.Moving)
+			if (pawn.pather?.MovingNow == true)
 			{
 				return false;
 			}
@@ -123,7 +123,9 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			bool isSelfPlay = !jobDef.defName.NullOrEmpty()
 				&& jobDef.defName.StartsWith("RimTalk_ToddlerSelfPlay", System.StringComparison.Ordinal);
 			bool isMutualPlay = jobDef == ToddlersExpansionJobDefOf.RimTalk_ToddlerMutualPlayJob;
-			if (!isSelfPlay && !isMutualPlay)
+			bool isMutualPlayPartner = jobDef == ToddlersExpansionJobDefOf.RimTalk_ToddlerMutualPlayPartnerJob;
+			bool isPlayAtToy = jobDef == ToddlersExpansionJobDefOf.RimTalk_ToddlerPlayAtToy;
+			if (!isSelfPlay && !isMutualPlay && !isMutualPlayPartner && !isPlayAtToy)
 			{
 				return false;
 			}
@@ -134,7 +136,10 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return true;
 			}
 
-			return toil == "ToddlerSelfPlay" || toil == "ToddlerMutualPlay";
+			return toil == "ToddlerSelfPlay"
+				|| toil == "ToddlerMutualPlay"
+				|| toil == "ToddlerMutualPlayPartner"
+				|| toil == "ToddlerPlayAtToy";
 		}
 	}
 

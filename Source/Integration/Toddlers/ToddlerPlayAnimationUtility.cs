@@ -56,18 +56,24 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			_initialized = true;
+			AnimationDef toddlersCrawl = DefDatabase<AnimationDef>.GetNamedSilentFail("ToddlerCrawl");
+			AnimationDef toddlersWobble = DefDatabase<AnimationDef>.GetNamedSilentFail("ToddlerWobble");
 
 			_selfPlayAnimations = BuildList(
 				ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Wiggle,
 				ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Lay,
 				ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Crawl,
-				ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Sway);
+				ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Sway,
+				toddlersCrawl,
+				toddlersWobble);
 
 			_mutualPlayAnimations = BuildList(
 				ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Wiggle,
 				ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Sway,
 				ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Crawl,
-				ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Lay);
+				ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Lay,
+				toddlersCrawl,
+				toddlersWobble);
 		}
 
 		private static AnimationDef[] BuildList(params AnimationDef[] defs)

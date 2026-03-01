@@ -49,7 +49,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			Need_Play play = pawn.needs?.play;
 			if (play != null && playAmount > 0f)
 			{
-				play.Play(playAmount);
+				play.Play(Patch_ToddlerBoredom.AdjustPlayGainForToddler(pawn, playAmount));
 			}
 
 			Need_Joy joy = pawn.needs?.joy;

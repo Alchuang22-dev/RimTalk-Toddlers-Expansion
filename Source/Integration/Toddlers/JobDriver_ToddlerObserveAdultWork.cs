@@ -88,7 +88,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			});
 			toil.AddEndCondition(() =>
 			{
-				if (pawn.needs?.joy?.CurLevel > 0.9f)
+				if (pawn.needs?.joy?.CurLevel > 0.9f &&
+					!SocialNeedTuning_Toddlers.ShouldDoOptionalActivity(pawn, 0.9f))
 				{
 					LogDebug("joy_full");
 					return JobCondition.Incompletable;

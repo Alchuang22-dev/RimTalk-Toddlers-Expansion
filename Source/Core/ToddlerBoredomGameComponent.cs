@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Verse;
 using RimWorld;
 using RimTalk_ToddlersExpansion.Core;
+using RimTalk_ToddlersExpansion.Integration.Toddlers;
 
 namespace RimTalk_ToddlersExpansion
 {
@@ -65,14 +66,7 @@ namespace RimTalk_ToddlersExpansion
             if (pawn == null || pawn.Dead || pawn.Destroyed)
                 return false;
 
-            // 检查发育阶段
-            if (pawn.DevelopmentalStage != DevelopmentalStage.Baby && 
-                pawn.DevelopmentalStage != DevelopmentalStage.Child)
-                return false;
-
-            // 检查年龄（幼儿通常是1-3岁）
-            float age = pawn.ageTracker?.AgeBiologicalYearsFloat ?? 0f;
-            return age >= 1f && age < 4f;
+            return ToddlersCompatUtility.IsToddler(pawn);
         }
 
         /// <summary>

@@ -27,8 +27,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
-			Need_Play play = pawn.needs?.play;
-			if (play != null && play.CurLevelPercentage >= PlayNeedThreshold)
+			if (!SocialNeedTuning_Toddlers.ShouldDoOptionalActivity(pawn, PlayNeedThreshold))
 			{
 				return false;
 			}
@@ -103,8 +102,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
-			Need_Play play = pawn.needs?.play;
-			if (play != null && play.CurLevelPercentage >= PlayNeedThreshold)
+			if (!SocialNeedTuning_Toddlers.ShouldDoOptionalActivity(pawn, PlayNeedThreshold))
 			{
 				return false;
 			}
@@ -119,8 +117,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return null;
 			}
 
-			Need_Play play = pawn.needs?.play;
-			if (play != null && play.CurLevelPercentage >= PlayNeedThreshold)
+			if (!SocialNeedTuning_Toddlers.ShouldDoOptionalActivity(pawn, PlayNeedThreshold))
 			{
 				return null;
 			}
@@ -187,8 +184,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					continue;
 				}
 
-				Need_Play otherPlay = other.needs?.play;
-				if (otherPlay != null && otherPlay.CurLevelPercentage >= PlayNeedThreshold)
+				if (!SocialNeedTuning_Toddlers.ShouldDoOptionalActivity(other, PlayNeedThreshold))
 				{
 					continue;
 				}
@@ -235,8 +231,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
-			Need_Play play = pawn.needs?.play;
-			if (play != null && play.CurLevelPercentage >= PlayNeedThreshold)
+			if (!SocialNeedTuning_Toddlers.ShouldDoOptionalActivity(pawn, PlayNeedThreshold))
 			{
 				return false;
 			}
@@ -398,7 +393,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
-			if (pawn.needs.joy != null && pawn.needs.joy.CurLevel > 0.8f)
+			if (!SocialNeedTuning_Toddlers.ShouldDoOptionalActivity(pawn, 0.8f))
 			{
 				return false;
 			}

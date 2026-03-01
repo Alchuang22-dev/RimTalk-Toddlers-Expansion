@@ -1,53 +1,59 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
+using RimTalk_ToddlersExpansion.Core;
 using RimTalk_ToddlersExpansion.Integration.Toddlers;
+using RimWorld;
 using UnityEngine;
 using Verse;
 
 namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 {
 	/// <summary>
-	/// Yayo's Animation 兼容性工具类。
-	/// 用于在抱着幼儿玩耍时禁用/重置 Yayo 对幼儿的动画效果，避免冲突。
+	/// Compatibility layer for Yayo's Animation.
 	/// </summary>
 	public static class YayoAnimationCompatUtility
 	{
-		private static bool _initialized = false;
-		private static bool _yayoAnimationLoaded = false;
-		
-		// 需要禁用 Yayo 动画的 pawn 集合（在转圈动画期间）
-		private static readonly HashSet<Pawn> _suppressedPawns = new HashSet<Pawn>();
-		
-		// Yayo's Animation 的相关类型和方法
-		private static Type _animationCoreType = null;
-		private static MethodInfo _checkAniMethod = null;
-		
-		// PawnDataUtility.GetData 方法
-		private static MethodInfo _getDataMethod = null;
-		
-		// PawnDrawData 类型和相关字段/方法
-		private static Type _pawnDrawDataType = null;
-		private static MethodInfo _resetMethod = null;
-		private static FieldInfo _fixedRotField = null;
+		private static bool _initialized;
+		private static bool _yayoAnimationLoaded;
+		private static bool _loggedBabyPlayYayoAnimation;
+		private static readonly Dictionary<int, int> _lastLoggedBabyPlayJobByPawn = new Dictionary<int, int>(32);
+		private static readonly string[] BabyPlayYayoProfiles =
+		{
+			"PlayToys",
+			"Play_Hoopstone",
+			"Play_DartsBoard",
+			"GoldenCubePlay",
+			"ExtinguishSelf",
+			"SocialRelax"
+		};
 
-		/// <summary>
-		/// 初始化兼容层
-		/// </summary>
+		private static readonly HashSet<Pawn> _suppressedPawns = new HashSet<Pawn>();
+
+		private static Type _animationCoreType;
+		private static MethodInfo _checkAniMethod;
+		private static MethodInfo _aniStandingMethod;
+
+		private static Type _pawnDrawDataType;
+		private static MethodInfo _resetMethod;
+		private static FieldInfo _fixedRotField;
+		private static FieldInfo _angleOffsetField;
+		private static FieldInfo _posOffsetField;
+
 		public static void Initialize()
 		{
 			if (_initialized)
 			{
 				return;
 			}
+
 			_initialized = true;
 
 			try
 			{
-				// 查找 Yayo's Animation 程序集
 				Assembly yayoAssembly = null;
-				foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+				foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
 				{
 					if (assembly.GetName().Name == "yayoAni")
 					{
@@ -62,7 +68,6 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 					return;
 				}
 
-				// 获取 AnimationCore 类型
 				_animationCoreType = yayoAssembly.GetType("YayoAnimation.AnimationCore");
 				if (_animationCoreType == null)
 				{
@@ -70,7 +75,6 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 					return;
 				}
 
-				// 获取 CheckAni 方法
 				_checkAniMethod = AccessTools.Method(_animationCoreType, "CheckAni");
 				if (_checkAniMethod == null)
 				{
@@ -78,19 +82,17 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 					return;
 				}
 
-				// 获取 PawnDataUtility 类型
-				Type pawnDataUtilityType = yayoAssembly.GetType("YayoAnimation.Data.PawnDataUtility");
-				if (pawnDataUtilityType != null)
-				{
-					_getDataMethod = AccessTools.Method(pawnDataUtilityType, "GetData", new Type[] { typeof(Pawn) });
-				}
-
-				// 获取 PawnDrawData 类型
 				_pawnDrawDataType = yayoAssembly.GetType("YayoAnimation.Data.PawnDrawData");
 				if (_pawnDrawDataType != null)
 				{
 					_resetMethod = AccessTools.Method(_pawnDrawDataType, "Reset");
 					_fixedRotField = AccessTools.Field(_pawnDrawDataType, "fixedRot");
+					_angleOffsetField = AccessTools.Field(_pawnDrawDataType, "angleOffset");
+					_posOffsetField = AccessTools.Field(_pawnDrawDataType, "posOffset");
+					_aniStandingMethod = AccessTools.Method(
+						_animationCoreType,
+						"AniStanding",
+						new[] { typeof(Pawn), typeof(Rot4).MakeByRefType(), _pawnDrawDataType, typeof(string) });
 				}
 
 				_yayoAnimationLoaded = true;
@@ -102,9 +104,6 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			}
 		}
 
-		/// <summary>
-		/// 应用 Harmony 补丁来处理 Yayo 动画兼容性
-		/// </summary>
 		public static void ApplyPatches(HarmonyLib.Harmony harmony)
 		{
 			if (!IsYayoAnimationLoaded || _checkAniMethod == null)
@@ -114,11 +113,9 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 
 			try
 			{
-				// Patch AnimationCore.CheckAni 的 Prefix
 				harmony.Patch(
 					_checkAniMethod,
-					prefix: new HarmonyMethod(typeof(YayoAnimationCompatUtility), nameof(CheckAni_Prefix))
-				);
+					prefix: new HarmonyMethod(typeof(YayoAnimationCompatUtility), nameof(CheckAni_Prefix)));
 				Log.Message("[RimTalk_ToddlersExpansion] Applied Yayo's Animation CheckAni patch");
 			}
 			catch (Exception ex)
@@ -127,45 +124,35 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			}
 		}
 
-		/// <summary>
-		/// CheckAni 的 Prefix 补丁 - 处理被抱幼儿的朝向同步和动画抑制
-		/// </summary>
 		private static bool CheckAni_Prefix(Pawn pawn, Rot4 rot, object pdd)
 		{
-			// 检查这个pawn是否被抱着
 			Pawn carrier = ToddlerCarryingUtility.GetCarrier(pawn);
 			if (carrier != null)
 			{
-				// 被抱着的幼儿：重置动画并设置朝向为载体朝向
 				try
 				{
 					if (pdd != null)
 					{
-						// 重置 Yayo 的动画数据
 						if (_resetMethod != null)
 						{
 							_resetMethod.Invoke(pdd, null);
 						}
-						
-						// 设置 fixedRot 为载体的朝向
+
 						if (_fixedRotField != null)
 						{
-							// fixedRot 是 Rot4? 类型
 							_fixedRotField.SetValue(pdd, carrier.Rotation);
 						}
 					}
 				}
 				catch
 				{
-					// 忽略错误
 				}
-				return true; // Continue original CheckAni so draw position can still update.
+
+				return true;
 			}
-			
-			// 如果这个 pawn 在我们的抑制列表中（用于其他动画抑制场景）
+
 			if (_suppressedPawns.Contains(pawn))
 			{
-				// 重置 Yayo 的动画数据
 				try
 				{
 					if (_resetMethod != null && pdd != null)
@@ -175,17 +162,19 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 				}
 				catch
 				{
-					// 忽略错误
 				}
-				return false; // 跳过原方法
+
+				return false;
 			}
-			
-			return true; // 继续执行原方法
+
+			if (IsSmallPawnPlayJob(pawn) && TryApplySmallPawnPlayAnimationFromYayo(pawn, rot, pdd))
+			{
+				return false;
+			}
+
+			return true;
 		}
 
-		/// <summary>
-		/// 检查 Yayo's Animation 是否已加载
-		/// </summary>
 		public static bool IsYayoAnimationLoaded
 		{
 			get
@@ -194,13 +183,11 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 				{
 					Initialize();
 				}
+
 				return _yayoAnimationLoaded;
 			}
 		}
 
-		/// <summary>
-		/// 开始抑制指定 pawn 的 Yayo 动画
-		/// </summary>
 		public static void StartSuppression(Pawn pawn)
 		{
 			if (pawn != null)
@@ -209,9 +196,6 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			}
 		}
 
-		/// <summary>
-		/// 停止抑制指定 pawn 的 Yayo 动画
-		/// </summary>
 		public static void StopSuppression(Pawn pawn)
 		{
 			if (pawn != null)
@@ -220,54 +204,182 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			}
 		}
 
-		/// <summary>
-		/// 检查是否正在抑制指定 pawn 的 Yayo 动画
-		/// </summary>
 		public static bool IsSuppressed(Pawn pawn)
 		{
 			return pawn != null && _suppressedPawns.Contains(pawn);
 		}
 
-		/// <summary>
-		/// 清除所有抑制
-		/// </summary>
 		public static void ClearAllSuppressions()
 		{
 			_suppressedPawns.Clear();
 		}
 
-		/// <summary>
-		/// 重置 pawn 的 Yayo 动画数据（使其不受 Yayo 动画影响）
-		/// </summary>
-		/// <param name="pawn">要重置的 pawn</param>
 		[Obsolete("Use StartSuppression instead")]
 		public static void ResetPawnAnimation(Pawn pawn)
 		{
-			// 这个方法不再使用，保留以兼容旧代码
 		}
 
-		/// <summary>
-		/// 设置 pawn 的固定朝向（用于让幼儿跟随载体朝向）
-		/// </summary>
-		/// <param name="pawn">要设置的 pawn</param>
-		/// <param name="rotation">固定朝向</param>
 		[Obsolete("Use StartSuppression instead")]
 		public static void SetFixedRotation(Pawn pawn, Rot4 rotation)
 		{
-			// 这个方法不再使用，改用 StartSuppression
 			StartSuppression(pawn);
 		}
 
-		/// <summary>
-		/// 禁止 Yayo 对指定 pawn 的动画更新（设置 nextUpdateTick 为未来）
-		/// </summary>
-		/// <param name="pawn">要禁止的 pawn</param>
-		/// <param name="durationTicks">禁止持续时间（ticks）</param>
 		[Obsolete("Use StartSuppression instead")]
 		public static void SuppressAnimation(Pawn pawn, int durationTicks = 60)
 		{
-			// 这个方法不再使用，改用 StartSuppression
 			StartSuppression(pawn);
+		}
+
+		private static bool IsSmallPawnPlayJob(Pawn pawn)
+		{
+			if (pawn == null || pawn.CurJobDef == null)
+			{
+				return false;
+			}
+
+			bool isBaby = pawn.DevelopmentalStage.Newborn() || pawn.DevelopmentalStage.Baby();
+			bool isToddler = ToddlersCompatUtility.IsToddler(pawn);
+			if (!isBaby && !isToddler)
+			{
+				return false;
+			}
+
+			JobDef jobDef = pawn.CurJobDef;
+			if (jobDef == ToddlersExpansionJobDefOf.RimTalk_ToddlerPlayAtToy)
+			{
+				return true;
+			}
+
+			string name = jobDef.defName;
+			if (name.NullOrEmpty())
+			{
+				return false;
+			}
+
+			if (isBaby)
+			{
+				return name.StartsWith("RimTalk_ToddlerSelfPlay", StringComparison.Ordinal)
+					|| name == "BabyPlay"
+					|| name == "BePlayedWith"
+					|| name == "PlayStatic"
+					|| name == "PlayWalking"
+					|| name == "PlayToys"
+					|| name == "PlayCrib"
+					|| name == "ToddlerPlayToys"
+					|| name == "ToddlerBugwatching"
+					|| name == "ToddlerSkydreaming"
+					|| name == "ToddlerPlayDecor";
+			}
+
+			// Keep toddler scope to original Toddlers play jobs to avoid overriding RimTalk custom animation jobs.
+			return name == "ToddlerFloordrawing"
+				|| name == "ToddlerSkydreaming"
+				|| name == "ToddlerBugwatching"
+				|| name == "ToddlerPlayToys"
+				|| name == "ToddlerWatchTelevision"
+				|| name == "ToddlerFiregazing"
+				|| name == "ToddlerPlayDecor";
+		}
+
+		private static bool TryApplySmallPawnPlayAnimationFromYayo(Pawn pawn, Rot4 rot, object pdd)
+		{
+			if (_aniStandingMethod == null || pdd == null)
+			{
+				return false;
+			}
+
+			try
+			{
+				string profile = SelectBabyPlayYayoProfile(pawn);
+				if (profile == "ExtinguishSelf" && pawn.pather?.MovingNow == true)
+				{
+					// Extinguish profile has very large translation; avoid it while moving.
+					profile = "PlayToys";
+				}
+
+				object[] args = { pawn, rot, pdd, profile };
+				_aniStandingMethod.Invoke(null, args);
+				ScaleSmallPawnYayoOffsets(pawn, pdd);
+
+				if (Prefs.DevMode)
+				{
+					int pawnId = pawn.thingIDNumber;
+					int jobId = pawn.CurJob?.loadID ?? -1;
+					if (!_loggedBabyPlayYayoAnimation)
+					{
+						_loggedBabyPlayYayoAnimation = true;
+						Log.Message("[RimTalk_ToddlersExpansion] Yayo baby play animation bridge enabled.");
+					}
+
+					if (!_lastLoggedBabyPlayJobByPawn.TryGetValue(pawnId, out int lastJobId) || lastJobId != jobId)
+					{
+						_lastLoggedBabyPlayJobByPawn[pawnId] = jobId;
+						Log.Message($"[RimTalk_ToddlersExpansion] Small-pawn play animation profile: pawn={pawn.LabelShort} profile={profile} job={pawn.CurJobDef?.defName ?? "null"}");
+					}
+				}
+
+				return true;
+			}
+			catch (Exception ex)
+			{
+				if (Prefs.DevMode)
+				{
+					Log.Warning($"[RimTalk_ToddlersExpansion] Failed to apply Yayo baby play animation bridge: {ex.Message}");
+				}
+
+				return false;
+			}
+		}
+
+		private static string SelectBabyPlayYayoProfile(Pawn pawn)
+		{
+			if (BabyPlayYayoProfiles.Length == 0)
+			{
+				return "PlayToys";
+			}
+
+			int seed = Gen.HashCombineInt(pawn?.thingIDNumber ?? 0, pawn?.CurJob?.loadID ?? 0);
+			int index = (seed & int.MaxValue) % BabyPlayYayoProfiles.Length;
+			return BabyPlayYayoProfiles[index];
+		}
+
+		private static void ScaleSmallPawnYayoOffsets(Pawn pawn, object pdd)
+		{
+			if (pawn == null || pdd == null || _angleOffsetField == null || _posOffsetField == null)
+			{
+				return;
+			}
+
+			float angleScale;
+			float posScale;
+			if (pawn.DevelopmentalStage.Newborn() || pawn.DevelopmentalStage.Baby())
+			{
+				angleScale = 0.42f;
+				posScale = 0.18f;
+			}
+			else
+			{
+				angleScale = 0.55f;
+				posScale = 0.24f;
+			}
+
+			if (pawn.pather?.MovingNow == true)
+			{
+				angleScale *= 0.8f;
+				posScale *= 0.65f;
+			}
+
+			try
+			{
+				float angle = (float)_angleOffsetField.GetValue(pdd);
+				Vector3 pos = (Vector3)_posOffsetField.GetValue(pdd);
+				_angleOffsetField.SetValue(pdd, angle * angleScale);
+				_posOffsetField.SetValue(pdd, pos * posScale);
+			}
+			catch
+			{
+			}
 		}
 	}
 }

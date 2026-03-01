@@ -20,8 +20,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers.HAR
 				return false;
 			}
 
-			Need_Play play = pawn.needs?.play;
-			if (play != null && play.CurLevelPercentage >= PlayNeedThreshold)
+			if (!SocialNeedTuning_Toddlers.ShouldDoOptionalActivity(pawn, PlayNeedThreshold))
 			{
 				return false;
 			}

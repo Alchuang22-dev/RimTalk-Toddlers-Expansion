@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using RimTalk_ToddlersExpansion.Core;
 using RimTalk_ToddlersExpansion.Language;
 using RimWorld;
+using UnityEngine;
 using Verse;
 
 namespace RimTalk_ToddlersExpansion.Integration.Toddlers
@@ -16,8 +17,13 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private const float LanguageGainSelfPerTick = 0.00005f;
 		private const float LanguageGainMutualPerTick = 0.00008f;
 		private const float LanguageGainWatchPerTick = 0.00003f;
+		private const int HighPlayDecisionWindowTicks = 180;
+		private const float HighPlayContinueChanceAtThreshold = 0.82f;
+		private const float HighPlayContinueChanceAtFull = 0.97f;
+		private const int HighPlayDebugLogIntervalTicks = 1200;
 
 		private static readonly Dictionary<int, int> LastTickByPawn = new Dictionary<int, int>(64);
+		private static readonly Dictionary<int, int> LastHighPlayLogByPawn = new Dictionary<int, int>(64);
 
 		public static void ApplySelfPlayTickEffects(Pawn toddler, int delta)
 		{
@@ -65,14 +71,38 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		public static bool IsPlayNeedSatisfied(Pawn pawn)
 		{
-			Need_Play play = pawn?.needs?.play;
-			if (play != null)
+			float level = GetPlayOrJoyLevel(pawn);
+			if (level < PlayNeedFullThreshold)
 			{
-				return play.CurLevelPercentage >= PlayNeedFullThreshold;
+				return false;
 			}
 
-			Need_Joy joy = pawn?.needs?.joy;
-			return joy != null && joy.CurLevelPercentage >= PlayNeedFullThreshold;
+			// Even when full, keep optional activities some of the time to avoid excessive idle wandering.
+			return !ShouldDoOptionalActivity(pawn, PlayNeedFullThreshold);
+		}
+
+		public static bool ShouldDoOptionalActivity(Pawn pawn, float threshold)
+		{
+			if (pawn == null)
+			{
+				return false;
+			}
+
+			float level = GetPlayOrJoyLevel(pawn);
+			if (level < 0f || level < threshold)
+			{
+				return true;
+			}
+
+			int now = Find.TickManager?.TicksGame ?? 0;
+			int window = now / HighPlayDecisionWindowTicks;
+			int seed = Gen.HashCombineInt(pawn.thingIDNumber, window);
+			float clampedLevel = Mathf.Clamp01(level);
+			float t = Mathf.InverseLerp(threshold, 1f, clampedLevel);
+			float chance = Mathf.Lerp(HighPlayContinueChanceAtThreshold, HighPlayContinueChanceAtFull, t);
+			bool shouldContinue = Rand.ChanceSeeded(chance, seed);
+			LogHighPlayDecision(pawn, level, threshold, chance, shouldContinue, window);
+			return shouldContinue;
 		}
 
 		public static bool ShouldGainPlayedWithMeThought(float initialPlay, float currentPlay)
@@ -100,17 +130,18 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return;
 			}
 
+			float adjustedAmount = Patch_ToddlerBoredom.AdjustPlayGainForToddler(pawn, amount);
 			Need_Play play = pawn.needs?.play;
 			if (play != null)
 			{
-				play.Play(amount);
+				play.Play(adjustedAmount);
 				return;
 			}
 
 			Need_Joy joy = pawn.needs?.joy;
 			if (joy != null && joyKind != null)
 			{
-				joy.GainJoy(amount, joyKind);
+				joy.GainJoy(adjustedAmount, joyKind);
 			}
 		}
 
@@ -151,6 +182,36 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 			LastTickByPawn[key] = tick;
 			return true;
+		}
+
+		private static float GetPlayOrJoyLevel(Pawn pawn)
+		{
+			Need_Play play = pawn?.needs?.play;
+			if (play != null)
+			{
+				return play.CurLevelPercentage;
+			}
+
+			Need_Joy joy = pawn?.needs?.joy;
+			return joy?.CurLevelPercentage ?? -1f;
+		}
+
+		private static void LogHighPlayDecision(Pawn pawn, float level, float threshold, float chance, bool shouldContinue, int window)
+		{
+			if (shouldContinue || !Prefs.DevMode || pawn == null)
+			{
+				return;
+			}
+
+			int now = Find.TickManager?.TicksGame ?? 0;
+			int key = pawn.thingIDNumber;
+			if (LastHighPlayLogByPawn.TryGetValue(key, out int lastLogTick) && now - lastLogTick < HighPlayDebugLogIntervalTicks)
+			{
+				return;
+			}
+
+			LastHighPlayLogByPawn[key] = now;
+			Log.Message($"[RimTalk_ToddlersExpansion] High-play gate blocked optional activity: pawn={pawn.LabelShort} level={level:F3} threshold={threshold:F2} chance={chance:F2} window={window}");
 		}
 	}
 }

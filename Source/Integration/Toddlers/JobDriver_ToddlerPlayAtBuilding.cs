@@ -1,5 +1,6 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using RimTalk_ToddlersExpansion.Integration.RimTalk;
+using RimTalk_ToddlersExpansion.Integration.YayoAnimation;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -41,7 +42,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			Toil play = ToilMaker.MakeToil("ToddlerPlayAtToy");
 			play.initAction = () =>
 			{
-				if (ToddlersCompatUtility.IsToddlerOrBaby(pawn))
+				if (ShouldUseCustomPlayAnimation(pawn))
 				{
 					_playAnimation = ToddlerPlayAnimationUtility.GetRandomSelfPlayAnimation();
 					ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, _playAnimation);
@@ -55,10 +56,13 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					return;
 				}
 
-				if (ToddlersCompatUtility.IsToddlerOrBaby(pawn))
+				if (_playAnimation != null)
 				{
-					ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, _playAnimation);
-					// 应用玩具盒和咯咯笑动画效果
+					if (pawn.Drawer?.renderer?.CurAnimation != _playAnimation)
+					{
+						ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, _playAnimation);
+					}
+
 					ToddlerPlayEffectUtility.ApplyPlayEffects(pawn, pawn.Map);
 				}
 
@@ -72,7 +76,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 			AddFinishAction(condition =>
 			{
-				ToddlerPlayAnimationUtility.ClearAnimation(pawn, _playAnimation);
+				if (_playAnimation != null)
+				{
+					ToddlerPlayAnimationUtility.ClearAnimation(pawn, _playAnimation);
+				}
+
 				ToddlerPlayEffectUtility.ClearEffects();
 				if (condition == JobCondition.Succeeded && ToddlersCompatUtility.IsToddler(pawn))
 				{
@@ -162,6 +170,23 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			{
 				joy.GainJoy(gain, toy?.JoyKind ?? JoyKindDefOf.Meditative);
 			}
+		}
+
+		private static bool ShouldUseCustomPlayAnimation(Pawn pawn)
+		{
+			if (!ToddlersCompatUtility.IsToddlerOrBaby(pawn))
+			{
+				return false;
+			}
+
+			bool isBaby = pawn.DevelopmentalStage.Newborn() || pawn.DevelopmentalStage.Baby();
+			if (!isBaby)
+			{
+				return true;
+			}
+
+			// Use Yayo animation for babies when Yayo exists.
+			return !YayoAnimationCompatUtility.IsYayoAnimationLoaded;
 		}
 	}
 }
