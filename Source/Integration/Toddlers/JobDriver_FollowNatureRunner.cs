@@ -12,6 +12,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
     public class JobDriver_FollowNatureRunner : JobDriver
     {
         private const TargetIndex LeaderInd = TargetIndex.A;
+        private const float NatureRunningLearningPerTick = 1.2E-05f;
         
         /// <summary>
         /// Follow distance in cells - stay within this distance of the leader
@@ -102,6 +103,21 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
             
             return false;
         }
+
+        private void GainNatureRunningLearning(int delta)
+        {
+            Need_Learning learning = pawn.needs?.learning;
+            if (learning == null)
+            {
+                return;
+            }
+
+            float gain = NatureRunningLearningPerTick * LearningUtility.LearningRateFactor(pawn) * delta;
+            if (gain > 0f)
+            {
+                learning.Learn(gain);
+            }
+        }
         
         protected override IEnumerable<Toil> MakeNewToils()
         {
@@ -127,6 +143,9 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
                     EndJobWith(JobCondition.Succeeded);
                     return;
                 }
+
+                // Match NatureRunning's positive learning effect while this follow job is active.
+                GainNatureRunningLearning(delta);
                 
                 // Check distance to leader
                 float distanceToLeader = (leader.Position - pawn.Position).LengthHorizontal;
@@ -137,7 +156,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
                 {
                     // We're close enough - reset counter and gain some joy
                     consecutiveTicksUnableToFollow = 0;
-                    
+
                     // Give small joy gain for following (social joy from being with friend)
                     pawn.needs?.joy?.GainJoy(0.00002f * delta, JoyKindDefOf.Social);
                     
