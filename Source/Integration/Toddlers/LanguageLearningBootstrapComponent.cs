@@ -192,10 +192,13 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			if (canAddLanguage && isToddler)
 			{
 				bool hadLanguage = pawn.health.hediffSet.GetFirstHediffOfDef(ToddlersExpansionHediffDefOf.RimTalk_ToddlerLanguageLearning) != null;
-				if (LanguageLevelUtility.TrySyncLearningProgress(pawn, createLanguageIfMissing: true))
+				if (!hadLanguage
+					&& LanguageLevelUtility.TryGetToddlersLanguageInitialProgress(pawn, out float initialProgress)
+					&& initialProgress < 1f
+					&& LanguageLevelUtility.TryGetOrCreateLanguageHediff(pawn, out Hediff language))
 				{
-					bool hasLanguage = pawn.health.hediffSet.GetFirstHediffOfDef(ToddlersExpansionHediffDefOf.RimTalk_ToddlerLanguageLearning) != null;
-					if (!hadLanguage && hasLanguage)
+					language.Severity = initialProgress;
+					if (pawn.health.hediffSet.GetFirstHediffOfDef(ToddlersExpansionHediffDefOf.RimTalk_ToddlerLanguageLearning) != null)
 					{
 						addedLanguage += 1;
 					}

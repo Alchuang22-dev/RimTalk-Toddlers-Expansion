@@ -8,12 +8,7 @@
     <isBad>false</isBad>
     <everCurableByItem>false</everCurableByItem>
     <initialSeverity>0.001</initialSeverity>
-	  <maxSeverity>1</maxSeverity>
-    <comps>
-      <li Class="HediffCompProperties">
-        <compClass>RimTalk_ToddlersExpansion.Language.HediffComp_LanguageLearningProgress</compClass>
-      </li>
-    </comps>
+    <maxSeverity>1</maxSeverity>
     <stages>
       <li>
         <label>simple babbling</label>

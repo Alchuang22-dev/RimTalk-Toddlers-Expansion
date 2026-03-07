@@ -160,9 +160,9 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			// Fallback path when Toddlers is not active.
-			if (LanguageLevelUtility.TryGetOrCreateProgressComp(pawn, out HediffComp_LanguageLearningProgress comp))
+			if (LanguageLevelUtility.TryGetOrCreateLanguageHediff(pawn, out Hediff language))
 			{
-				comp.AddProgress(amount);
+				language.Severity = Mathf.Clamp01(language.Severity + amount);
 			}
 		}
 

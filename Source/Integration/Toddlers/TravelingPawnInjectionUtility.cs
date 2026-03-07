@@ -563,10 +563,10 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				}
 
 				// 同步抬升语言学习进度，避免与学习自理初始进度不一致。
-				if (LanguageLevelUtility.TryGetOrCreateProgressComp(pawn, out HediffComp_LanguageLearningProgress languageComp)
-					&& languageComp.Progress01 < WalkingToddlerSeverity)
+				if (LanguageLevelUtility.TryGetOrCreateLanguageHediff(pawn, out Hediff languageHediff)
+					&& languageHediff.Severity < WalkingToddlerSeverity)
 				{
-					languageComp.SetProgress01(WalkingToddlerSeverity);
+					languageHediff.Severity = WalkingToddlerSeverity;
 				}
 			}
 		}

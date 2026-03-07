@@ -1,21 +1,30 @@
 using RimTalk_ToddlersExpansion.Integration.Toddlers;
+using UnityEngine;
 using Verse;
 
 namespace RimTalk_ToddlersExpansion.Language
 {
 	public sealed class Hediff_ToddlerLanguageLearning : HediffWithComps
 	{
+		private const int UpdateIntervalTicks = 2500;
+
 		public override bool ShouldRemove => pawn == null
-			|| Progress01 >= 1f
+			|| Severity >= 1f
 			|| !ToddlersCompatUtility.IsToddler(pawn);
 
-		public float Progress01
+		public float Progress01 => Mathf.Clamp01(Severity);
+
+		public override void TickInterval(int delta)
 		{
-			get
+			base.TickInterval(delta);
+			if (pawn == null || !pawn.IsHashIntervalTick(UpdateIntervalTicks, delta))
 			{
-				HediffComp_LanguageLearningProgress comp = this.TryGetComp<HediffComp_LanguageLearningProgress>();
-				return comp?.Progress01 ?? 0f;
+				return;
 			}
+
+			float agingRateFactor = pawn.ageTracker?.BiologicalTicksPerTick ?? 1f;
+			float factor = UpdateIntervalTicks * agingRateFactor;
+			Severity += LanguageLevelUtility.GetLearningPerBioTick(pawn) * factor * (1f / LanguageLevelUtility.GetToddlersManipulationLearningFactor());
 		}
 
 		public override string SeverityLabel
@@ -35,14 +44,13 @@ namespace RimTalk_ToddlersExpansion.Language
 		{
 			get
 			{
-				float progress = Progress01;
-				if (progress <= 0f)
+				if (Severity <= 0f)
 				{
 					return base.TipStringExtra;
 				}
 
-				string descriptor = LanguageLevelUtility.GetPromptDescriptor(progress);
-				return $"Progress: {progress.ToStringPercent()}\nSpeech: {descriptor}";
+				string descriptor = LanguageLevelUtility.GetPromptDescriptor(Severity);
+				return $"Progress: {Severity.ToStringPercent()}\nSpeech: {descriptor}";
 			}
 		}
 	}

@@ -11,7 +11,6 @@ namespace RimTalk_ToddlersExpansion.Language
 	public static class LanguageLevelUtility
 	{
 		private const string VersionKey = "lang1";
-		private const float SyncEpsilon = 0.0001f;
 		private const float DaysPerYear = 60f;
 		private const float TicksPerDay = 60000f;
 		private const float MinLearningFactor = 0.01f;
@@ -81,40 +80,31 @@ namespace RimTalk_ToddlersExpansion.Language
 			}
 
 			Hediff hediff = pawn.health.hediffSet.GetFirstHediffOfDef(ToddlersExpansionHediffDefOf.RimTalk_ToddlerLanguageLearning);
-			if (hediff is HediffWithComps withComps)
+			if (hediff == null)
 			{
-				HediffComp_LanguageLearningProgress comp = withComps.TryGetComp<HediffComp_LanguageLearningProgress>();
-				if (comp != null)
-				{
-					progress01 = comp.Progress01;
-					return true;
-				}
+				return false;
 			}
 
-			return false;
+			progress01 = Mathf.Clamp01(hediff.Severity);
+			return true;
 		}
 
-		public static bool TryGetOrCreateProgressComp(Pawn pawn, out HediffComp_LanguageLearningProgress comp)
+		public static bool TryGetOrCreateLanguageHediff(Pawn pawn, out Hediff language)
 		{
-			comp = null;
+			language = null;
 			if (pawn?.health?.hediffSet == null || ToddlersExpansionHediffDefOf.RimTalk_ToddlerLanguageLearning == null)
 			{
 				return false;
 			}
 
-			Hediff hediff = pawn.health.hediffSet.GetFirstHediffOfDef(ToddlersExpansionHediffDefOf.RimTalk_ToddlerLanguageLearning);
-			if (hediff == null)
+			language = pawn.health.hediffSet.GetFirstHediffOfDef(ToddlersExpansionHediffDefOf.RimTalk_ToddlerLanguageLearning);
+			if (language == null)
 			{
-				hediff = HediffMaker.MakeHediff(ToddlersExpansionHediffDefOf.RimTalk_ToddlerLanguageLearning, pawn);
-				pawn.health.AddHediff(hediff);
+				language = HediffMaker.MakeHediff(ToddlersExpansionHediffDefOf.RimTalk_ToddlerLanguageLearning, pawn);
+				pawn.health.AddHediff(language);
 			}
 
-			if (hediff is HediffWithComps withComps)
-			{
-				comp = withComps.TryGetComp<HediffComp_LanguageLearningProgress>();
-			}
-
-			return comp != null;
+			return language != null;
 		}
 
 		// Mirrors Toddlers.ToddlerLearningUtility.ResetHediffsForAge initial severity logic:
@@ -188,47 +178,7 @@ namespace RimTalk_ToddlersExpansion.Language
 				}
 			}
 
-			float fallback = ToddlersExpansionSettings.learningFactor_Talking;
-			return fallback > MinLearningFactor ? fallback : 1f;
-		}
-
-		public static bool TrySyncLearningProgress(Pawn pawn, bool createLanguageIfMissing = true)
-		{
-			if (pawn?.health?.hediffSet == null || ToddlersExpansionHediffDefOf.RimTalk_ToddlerLanguageLearning == null)
-			{
-				return false;
-			}
-
-			if (!TryGetToddlersLanguageInitialProgress(pawn, out float targetProgress))
-			{
-				return false;
-			}
-
-			Hediff language = pawn.health.hediffSet.GetFirstHediffOfDef(ToddlersExpansionHediffDefOf.RimTalk_ToddlerLanguageLearning);
-			HediffComp_LanguageLearningProgress languageComp = null;
-			if (language is HediffWithComps withComps)
-			{
-				languageComp = withComps.TryGetComp<HediffComp_LanguageLearningProgress>();
-			}
-			else if (createLanguageIfMissing && TryGetOrCreateProgressComp(pawn, out HediffComp_LanguageLearningProgress created))
-			{
-				languageComp = created;
-				language = pawn.health.hediffSet.GetFirstHediffOfDef(ToddlersExpansionHediffDefOf.RimTalk_ToddlerLanguageLearning);
-			}
-
-			bool changed = false;
-			if (languageComp != null && Mathf.Abs(languageComp.Progress01 - targetProgress) > SyncEpsilon)
-			{
-				languageComp.SetProgress01(targetProgress);
-				changed = true;
-			}
-			else if (language != null && Mathf.Abs(language.Severity - targetProgress) > SyncEpsilon)
-			{
-				language.Severity = targetProgress;
-				changed = true;
-			}
-
-			return changed;
+			return 1f;
 		}
 
 		private static bool TryGetToddlersPercentGrowth(Pawn pawn, out float percentGrowth)
