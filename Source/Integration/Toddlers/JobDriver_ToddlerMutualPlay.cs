@@ -10,7 +10,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 	public sealed class JobDriver_ToddlerMutualPlay : JobDriver
 	{
 		private const TargetIndex PartnerInd = TargetIndex.A;
-		private const TargetIndex PlaySpotInd = TargetIndex.B;
 
 		private float _initialPlayLevel = -1f;
 		private bool _partnerJobStarted;
@@ -19,17 +18,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		public override bool TryMakePreToilReservations(bool errorOnFailed)
 		{
-			if (!pawn.Reserve(TargetA, job, 1, -1, null, errorOnFailed))
-			{
-				return false;
-			}
-
-			if (TargetB.IsValid)
-			{
-				return pawn.Reserve(TargetB, job, 1, -1, null, errorOnFailed);
-			}
-
-			return true;
+			return pawn.Reserve(TargetA, job, 1, -1, null, errorOnFailed);
 		}
 
 		protected override IEnumerable<Toil> MakeNewToils()

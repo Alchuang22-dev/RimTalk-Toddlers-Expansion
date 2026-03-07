@@ -116,9 +116,19 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
                 {
                     continue;
                 }
+
+                if (ToddlersCompatUtility.IsBusyForMutualPlay(otherPawn))
+                {
+                    continue;
+                }
                 
                 // Check if nearby
                 if (!pawn.Position.InHorDistOf(otherPawn.Position, 8f))
+                {
+                    continue;
+                }
+
+                if (!pawn.CanReserve(otherPawn))
                 {
                     continue;
                 }

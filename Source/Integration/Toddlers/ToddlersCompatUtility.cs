@@ -150,6 +150,35 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				|| jobDef == ToddlersExpansionJobDefOf.RimTalk_FollowNatureRunner;
 		}
 
+		public static bool IsBusyForMutualPlay(Pawn pawn)
+		{
+			if (pawn?.jobs == null)
+			{
+				return false;
+			}
+
+			if (IsMutualPlayJobDef(pawn.CurJobDef))
+			{
+				return true;
+			}
+
+			JobQueue queue = pawn.jobs.jobQueue;
+			if (queue == null)
+			{
+				return false;
+			}
+
+			for (int i = 0; i < queue.Count; i++)
+			{
+				if (IsMutualPlayJobDef(queue[i].job?.def))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
 		public static bool IsEngagedInToddlerPlay(Pawn pawn)
 		{
 			if (pawn?.jobs?.curDriver == null)
@@ -357,6 +386,12 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			return false;
+		}
+
+		private static bool IsMutualPlayJobDef(JobDef jobDef)
+		{
+			return jobDef == ToddlersExpansionJobDefOf.RimTalk_ToddlerMutualPlayJob
+				|| jobDef == ToddlersExpansionJobDefOf.RimTalk_ToddlerMutualPlayPartnerJob;
 		}
 
 		private static void EnsurePlayTypesInitialized()

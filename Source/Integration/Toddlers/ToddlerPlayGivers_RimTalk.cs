@@ -179,6 +179,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					continue;
 				}
 
+				if (ToddlersCompatUtility.IsBusyForMutualPlay(other))
+				{
+					continue;
+				}
+
 				if (!pawn.Position.InHorDistOf(other.Position, PartnerSearchRadius))
 				{
 					continue;
