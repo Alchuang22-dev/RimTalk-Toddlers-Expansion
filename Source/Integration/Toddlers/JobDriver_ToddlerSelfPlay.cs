@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using RimTalk_ToddlersExpansion.Integration.RimTalk;
+using RimTalk_ToddlersExpansion.Integration.YayoAnimation;
 using RimWorld;
 using Verse;
 using Verse.AI;
@@ -25,15 +26,22 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			Toil play = ToilMaker.MakeToil("ToddlerSelfPlay");
 			play.initAction = () =>
 			{
-				_playAnimation = ToddlerPlayAnimationUtility.GetRandomSelfPlayAnimation();
-				ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, _playAnimation);
+				if (!YayoAnimationCompatUtility.ShouldUseYayoPlayAnimation(pawn))
+				{
+					_playAnimation = ToddlerPlayAnimationUtility.GetRandomSelfPlayAnimation();
+					ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, _playAnimation);
+				}
+				else
+				{
+					_playAnimation = null;
+				}
+
 				ToddlerPlayReportUtility.EnsureReportRequested(job, pawn, null, ToddlerPlayReportKind.SelfPlay);
 				ToddlerPlayReportUtility.TryApplyPendingReport(job);
 			};
 			play.tickIntervalAction = delta =>
 			{
-				// Only reapply animation if it's not currently set (optimization to avoid flickering)
-				if (pawn.Drawer?.renderer?.CurAnimation != _playAnimation)
+				if (_playAnimation != null && pawn.Drawer?.renderer?.CurAnimation != _playAnimation)
 				{
 					ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, _playAnimation);
 				}

@@ -19,21 +19,48 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
         protected override Job TryGiveJob(Pawn pawn)
         {
-            if (!ShouldAttemptMidnightSnack(pawn))
-                return null;
+            return TryCreateMidnightSnackJob(pawn, ignoreRestrictions: false, out _);
+        }
 
-            var (food, score) = FindBestFoodTarget(pawn);
-            if (food == null || score < 0.1f)
+        internal static Job TryCreateDebugJob(Pawn pawn, out string reason)
+        {
+            return TryCreateMidnightSnackJob(pawn, ignoreRestrictions: true, out reason);
+        }
+
+        private static Job TryCreateMidnightSnackJob(Pawn pawn, bool ignoreRestrictions, out string reason)
+        {
+            reason = null;
+            JobGiver_MidnightSnack helper = new JobGiver_MidnightSnack();
+
+            if (!helper.IsValidPawn(pawn))
+            {
+                reason = "pawn is not a valid toddler/child target";
                 return null;
+            }
+
+            if (!ignoreRestrictions && !helper.ShouldAttemptMidnightSnack(pawn))
+            {
+                reason = "normal midnight snack conditions not met";
+                return null;
+            }
+
+            var (food, score) = helper.FindBestFoodTarget(pawn);
+            if (food == null || score < 0.1f)
+            {
+                reason = "no suitable food found";
+                return null;
+            }
 
             if (!pawn.CanReserveAndReach(food, PathEndMode.ClosestTouch, Danger.None))
+            {
+                reason = "cannot reserve/reach selected food";
                 return null;
+            }
 
-            var job = JobMaker.MakeJob(Core.ToddlersExpansionJobDefOf.RimTalk_MidnightSnack, food);
+            Job job = JobMaker.MakeJob(Core.ToddlersExpansionJobDefOf.RimTalk_MidnightSnack, food);
             job.count = Mathf.Min(food.def.ingestible.maxNumToIngestAtOnce, food.stackCount);
-
-            // 冷却现在在 JobDriver_MidnightSnack.ApplyEffects() 中应用
-
+            job.playerForced = ignoreRestrictions;
+            reason = $"food={food.LabelShort} score={score:F2}";
             return job;
         }
 

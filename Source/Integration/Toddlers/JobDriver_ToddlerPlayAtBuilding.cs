@@ -62,9 +62,9 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					{
 						ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, _playAnimation);
 					}
-
-					ToddlerPlayEffectUtility.ApplyPlayEffects(pawn, pawn.Map);
 				}
+
+				ToddlerPlayEffectUtility.ApplyPlayEffects(pawn, pawn.Map);
 
 				pawn.rotationTracker.FaceCell(Toy.Position);
 				pawn.GainComfortFromCellIfPossible(delta);
@@ -179,14 +179,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
-			bool isBaby = pawn.DevelopmentalStage.Newborn() || pawn.DevelopmentalStage.Baby();
-			if (!isBaby)
-			{
-				return true;
-			}
-
-			// Use Yayo animation for babies when Yayo exists.
-			return !YayoAnimationCompatUtility.IsYayoAnimationLoaded;
+			return !YayoAnimationCompatUtility.ShouldUseYayoPlayAnimation(pawn);
 		}
 	}
 }

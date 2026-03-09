@@ -135,6 +135,27 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		// ==================== 新野游系统 Debug Actions ====================
 
+		[DebugAction("RimTalk Toddlers", "Force midnight snack (selected)", allowedGameStates = AllowedGameStates.PlayingOnMap, actionType = DebugActionType.ToolMapForPawns)]
+		private static void ForceMidnightSnack(Pawn pawn)
+		{
+			if (pawn == null)
+			{
+				Log.Warning("[MidnightSnack] selected pawn is null");
+				return;
+			}
+
+			Job job = JobGiver_MidnightSnack.TryCreateDebugJob(pawn, out string reason);
+			if (job == null)
+			{
+				Log.Warning($"[MidnightSnack] failed for {pawn.LabelShort}: {reason ?? "unknown"}");
+				return;
+			}
+
+			pawn.jobs.EndCurrentJob(JobCondition.InterruptForced, true);
+			pawn.jobs.StartJob(job, JobCondition.InterruptForced, tag: JobTag.Misc);
+			Log.Message($"[MidnightSnack] forced {pawn.LabelShort} to start {job.def.defName}: {reason}");
+		}
+
 		[DebugAction("RimTalk Toddlers", "Force child to nature run", allowedGameStates = AllowedGameStates.PlayingOnMap, actionType = DebugActionType.ToolMapForPawns)]
 		private static void ForceChildNatureRun(Pawn child)
 		{

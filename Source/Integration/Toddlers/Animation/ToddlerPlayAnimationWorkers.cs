@@ -183,12 +183,12 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		{
 			if (parms.facing == Rot4.East)
 			{
-				return LayAngle;
+				return -LayAngle;
 			}
 
 			if (parms.facing == Rot4.West)
 			{
-				return -LayAngle;
+				return LayAngle;
 			}
 
 			if (parms.facing == Rot4.North && parms.flipHead)
