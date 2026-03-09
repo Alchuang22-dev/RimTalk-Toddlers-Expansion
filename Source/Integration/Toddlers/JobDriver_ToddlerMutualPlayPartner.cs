@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using RimTalk_ToddlersExpansion.Core;
+using RimTalk_ToddlersExpansion.Integration.YayoAnimation;
 using RimWorld;
 using Verse;
 using Verse.AI;
@@ -10,6 +11,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 	{
 		private const TargetIndex InitiatorInd = TargetIndex.A;
 		private const int MaxPartnerDistance = 6;
+		private AnimationDef _playAnimation;
 
 		private Pawn Initiator => TargetA.Thing as Pawn;
 
@@ -55,8 +57,21 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 			// Step 2: Play together
 			Toil play = ToilMaker.MakeToil("ToddlerMutualPlayPartner");
+			play.initAction = () =>
+			{
+				if (YayoAnimationCompatUtility.TryGetNativePlayAnimationOverride(pawn, out AnimationDef nativeAnimation))
+				{
+					_playAnimation = nativeAnimation;
+					ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, _playAnimation);
+				}
+			};
 			play.tickAction = () =>
 			{
+				if (_playAnimation != null && pawn.Drawer?.renderer?.CurAnimation != _playAnimation)
+				{
+					ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, _playAnimation);
+				}
+
 				if (Initiator == null
 					|| Initiator.CurJob?.def != ToddlersExpansionJobDefOf.RimTalk_ToddlerMutualPlayJob
 					|| Initiator.CurJob.targetA.Thing != pawn)
@@ -82,6 +97,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			play.handlingFacing = true;
 			play.defaultCompleteMode = ToilCompleteMode.Delay;
 			play.defaultDuration = job.def.joyDuration;
+			play.AddFinishAction(() => ToddlerPlayAnimationUtility.ClearAnimation(pawn, _playAnimation));
 
 			yield return play;
 		}

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using RimTalk_ToddlersExpansion.Core;
 using RimTalk_ToddlersExpansion.Integration.RimTalk;
+using RimTalk_ToddlersExpansion.Integration.YayoAnimation;
 using RimWorld;
 using Verse;
 using Verse.AI;
@@ -13,6 +14,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		private float _initialPlayLevel = -1f;
 		private bool _partnerJobStarted;
+		private AnimationDef _playAnimation;
 
 		private Pawn Partner => TargetA.Thing as Pawn;
 
@@ -51,12 +53,23 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			Toil play = ToilMaker.MakeToil("ToddlerMutualPlay");
 			play.initAction = () =>
 			{
+				if (YayoAnimationCompatUtility.TryGetNativePlayAnimationOverride(pawn, out AnimationDef nativeAnimation))
+				{
+					_playAnimation = nativeAnimation;
+					ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, _playAnimation);
+				}
+
 				_initialPlayLevel = GetPlayLevel(pawn);
 				ToddlerPlayReportUtility.EnsureReportRequested(job, pawn, Partner, ToddlerPlayReportKind.MutualPlay);
 				ToddlerPlayReportUtility.TryApplyPendingReport(job);
 			};
 			play.tickAction = () =>
 			{
+				if (_playAnimation != null && pawn.Drawer?.renderer?.CurAnimation != _playAnimation)
+				{
+					ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, _playAnimation);
+				}
+
 				if (ToddlerCareEventUtility.TryTriggerMutualPlayMishap(pawn, Partner, 1))
 				{
 					return;
@@ -79,6 +92,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			play.handlingFacing = true;
 			play.defaultCompleteMode = ToilCompleteMode.Delay;
 			play.defaultDuration = job.def.joyDuration;
+			play.AddFinishAction(() => ToddlerPlayAnimationUtility.ClearAnimation(pawn, _playAnimation));
 
 			AddFinishAction(condition =>
 			{

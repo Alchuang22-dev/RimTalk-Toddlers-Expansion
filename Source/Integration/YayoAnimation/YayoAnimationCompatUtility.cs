@@ -18,6 +18,7 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 		private enum SmallPawnPlayProfileKind
 		{
 			YayoStanding,
+			CustomYayoSocial,
 			CustomWiggle,
 			CustomSway,
 			CustomLay,
@@ -44,41 +45,17 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 		private const string ToddlerSpinProfile = "RimTalk_ToddlerSpin";
 		private const string ToddlerHopProfile = "RimTalk_ToddlerHop";
 		private const string ToddlerRunLoopProfile = "RimTalk_ToddlerRunLoop";
+		private const float YayoAngleReduce = 0.5f;
+		private const float YayoAngleToPos = 0.01f;
+		private static readonly Vector3 YayoZOffset005 = new Vector3(0f, 0f, 0.05f);
+		private static readonly SmallPawnPlayProfile ToddlerPlayToysProfile =
+			new SmallPawnPlayProfile(SmallPawnPlayProfileKind.CustomYayoSocial, "PlayToys");
 
 		private static bool _initialized;
 		private static bool _yayoAnimationLoaded;
 		private static bool _loggedBabyPlayYayoAnimation;
 		private static bool _walkHediffChecked;
 		private static readonly Dictionary<int, int> _lastLoggedBabyPlayJobByPawn = new Dictionary<int, int>(32);
-		private static readonly SmallPawnPlayProfile[] BabyPlayProfiles =
-		{
-			new SmallPawnPlayProfile(SmallPawnPlayProfileKind.YayoStanding, "PlayToys"),
-			new SmallPawnPlayProfile(SmallPawnPlayProfileKind.YayoStanding, "Play_Hoopstone"),
-			new SmallPawnPlayProfile(SmallPawnPlayProfileKind.YayoStanding, "Play_DartsBoard"),
-			new SmallPawnPlayProfile(SmallPawnPlayProfileKind.YayoStanding, "GoldenCubePlay"),
-			new SmallPawnPlayProfile(SmallPawnPlayProfileKind.CustomRoll, "ExtinguishSelf"),
-			new SmallPawnPlayProfile(SmallPawnPlayProfileKind.YayoStanding, "SocialRelax")
-		};
-		private static readonly SmallPawnPlayProfile[] ToddlerPlayProfiles =
-		{
-			new SmallPawnPlayProfile(SmallPawnPlayProfileKind.CustomWiggle, "RimTalk_ToddlerPlay_Wiggle"),
-			new SmallPawnPlayProfile(SmallPawnPlayProfileKind.CustomLay, "RimTalk_ToddlerPlay_Lay"),
-			new SmallPawnPlayProfile(SmallPawnPlayProfileKind.CustomProne, "RimTalk_ToddlerPlay_Crawl"),
-			new SmallPawnPlayProfile(SmallPawnPlayProfileKind.CustomSway, "RimTalk_ToddlerPlay_Sway"),
-			new SmallPawnPlayProfile(SmallPawnPlayProfileKind.CustomWobble, "ToddlerWobble"),
-			new SmallPawnPlayProfile(SmallPawnPlayProfileKind.YayoStanding, "PlayToys"),
-			new SmallPawnPlayProfile(SmallPawnPlayProfileKind.YayoStanding, "Play_Hoopstone"),
-			new SmallPawnPlayProfile(SmallPawnPlayProfileKind.YayoStanding, "Play_DartsBoard"),
-			new SmallPawnPlayProfile(SmallPawnPlayProfileKind.YayoStanding, "GoldenCubePlay"),
-			new SmallPawnPlayProfile(SmallPawnPlayProfileKind.CustomRoll, "ExtinguishSelf"),
-			new SmallPawnPlayProfile(SmallPawnPlayProfileKind.YayoStanding, "SocialRelax"),
-			new SmallPawnPlayProfile(SmallPawnPlayProfileKind.CustomSpin, ToddlerSpinProfile)
-		};
-		private static readonly SmallPawnPlayProfile[] ToddlerMobileSelfPlayProfiles =
-		{
-			new SmallPawnPlayProfile(SmallPawnPlayProfileKind.CustomHop, ToddlerHopProfile),
-			new SmallPawnPlayProfile(SmallPawnPlayProfileKind.CustomRunLoop, ToddlerRunLoopProfile)
-		};
 
 		private static readonly HashSet<Pawn> _suppressedPawns = new HashSet<Pawn>();
 
@@ -200,10 +177,42 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 				{
 				}
 
-				return true;
+				return false;
 			}
 
 			if (_suppressedPawns.Contains(pawn))
+			{
+				try
+				{
+					if (_resetMethod != null && pdd != null)
+					{
+						_resetMethod.Invoke(pdd, null);
+					}
+				}
+				catch
+				{
+				}
+
+				return false;
+			}
+
+			if (IsSmallPawnPlayJob(pawn) && !HasAnyEnabledPlayProfile(pawn))
+			{
+				try
+				{
+					if (_resetMethod != null && pdd != null)
+					{
+						_resetMethod.Invoke(pdd, null);
+					}
+				}
+				catch
+				{
+				}
+
+				return false;
+			}
+
+			if (TryGetNativePlayAnimationOverride(pawn, out _))
 			{
 				try
 				{
@@ -242,7 +251,42 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 
 		public static bool ShouldUseYayoPlayAnimation(Pawn pawn)
 		{
-			return IsYayoAnimationLoaded && ToddlersCompatUtility.IsToddlerOrBaby(pawn);
+			return IsYayoAnimationLoaded
+				&& ToddlersCompatUtility.IsToddlerOrBaby(pawn)
+				&& ToddlerPlayAnimationUtility.ArePlayAnimationsAllowedForPawn(pawn);
+		}
+
+		public static bool TryGetNativePlayAnimationOverride(Pawn pawn, out AnimationDef animation)
+		{
+			animation = null;
+			if (!ShouldUseYayoPlayAnimation(pawn))
+			{
+				return false;
+			}
+
+			if (!HasAnyEnabledPlayProfile(pawn))
+			{
+				return false;
+			}
+
+			SmallPawnPlayProfile profile = SelectSmallPawnPlayProfile(pawn);
+			switch (profile.Kind)
+			{
+				case SmallPawnPlayProfileKind.CustomWiggle:
+					animation = ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Wiggle;
+					break;
+				case SmallPawnPlayProfileKind.CustomSway:
+					animation = ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Sway;
+					break;
+				case SmallPawnPlayProfileKind.CustomLay:
+					animation = ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Lay;
+					break;
+				case SmallPawnPlayProfileKind.CustomProne:
+					animation = ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Crawl;
+					break;
+			}
+
+			return animation != null;
 		}
 
 		public static void StartSuppression(Pawn pawn)
@@ -361,6 +405,11 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 
 			try
 			{
+				if (!HasAnyEnabledPlayProfile(pawn))
+				{
+					return false;
+				}
+
 				SmallPawnPlayProfile profile = SelectSmallPawnPlayProfile(pawn);
 				if (!TryApplySelectedPlayProfile(pawn, rot, pdd, profile))
 				{
@@ -444,33 +493,35 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 
 		private static SmallPawnPlayProfile SelectSmallPawnPlayProfile(Pawn pawn)
 		{
+			List<SmallPawnPlayProfile> profiles = BuildEnabledPlayProfiles(pawn);
+			if (profiles.Count == 0)
+			{
+				return default;
+			}
+
 			if (pawn != null && ToddlersCompatUtility.IsToddler(pawn))
 			{
 				int seed = Gen.HashCombineInt(pawn.thingIDNumber, pawn.CurJob?.loadID ?? 0) & int.MaxValue;
 				bool allowActiveSelfPlay = IsMobileToddlerSelfPlay(pawn);
-				int total = ToddlerPlayProfiles.Length + (allowActiveSelfPlay ? ToddlerMobileSelfPlayProfiles.Length : 0);
-				if (total <= 0)
+				List<SmallPawnPlayProfile> activeProfiles = allowActiveSelfPlay
+					? profiles
+					: FilterOutMobileOnlyProfiles(profiles);
+
+				if (activeProfiles.Count == 0)
 				{
-					return new SmallPawnPlayProfile(SmallPawnPlayProfileKind.YayoStanding, "PlayToys");
+					activeProfiles = profiles;
 				}
 
-				int index = seed % total;
-				if (index < ToddlerPlayProfiles.Length)
-				{
-					return ToddlerPlayProfiles[index];
-				}
-
-				return ToddlerMobileSelfPlayProfiles[index - ToddlerPlayProfiles.Length];
-			}
-
-			if (BabyPlayProfiles.Length == 0)
-			{
-				return new SmallPawnPlayProfile(SmallPawnPlayProfileKind.YayoStanding, "PlayToys");
+				return activeProfiles[seed % activeProfiles.Count];
 			}
 
 			int babySeed = Gen.HashCombineInt(pawn?.thingIDNumber ?? 0, pawn?.CurJob?.loadID ?? 0);
-			int babyIndex = (babySeed & int.MaxValue) % BabyPlayProfiles.Length;
-			return BabyPlayProfiles[babyIndex];
+			return profiles[(babySeed & int.MaxValue) % profiles.Count];
+		}
+
+		private static bool HasAnyEnabledPlayProfile(Pawn pawn)
+		{
+			return BuildEnabledPlayProfiles(pawn).Count > 0;
 		}
 
 		private static bool TryApplySelectedPlayProfile(Pawn pawn, Rot4 rot, object pdd, SmallPawnPlayProfile profile)
@@ -484,7 +535,7 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 				case SmallPawnPlayProfileKind.CustomLay:
 					return TryApplyToddlerLayProfile(rot, pdd);
 				case SmallPawnPlayProfileKind.CustomProne:
-					return TryApplyToddlerProneProfile(rot, pdd);
+					return TryApplyToddlerProneProfile(pawn, rot, pdd);
 				case SmallPawnPlayProfileKind.CustomWobble:
 					return TryApplyToddlerWobbleProfile(pawn, rot, pdd);
 				case SmallPawnPlayProfileKind.CustomRoll:
@@ -494,10 +545,12 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 							pawn,
 							rot,
 							pdd,
-							new SmallPawnPlayProfile(SmallPawnPlayProfileKind.YayoStanding, "PlayToys"));
+							ToddlerPlayToysProfile);
 					}
 
 					return TryApplyToddlerRollProfile(pawn, rot, pdd);
+				case SmallPawnPlayProfileKind.CustomYayoSocial:
+					return TryApplyToddlerYayoSocialProfile(pawn, rot, pdd);
 				case SmallPawnPlayProfileKind.CustomSpin:
 					return TryApplyToddlerSpinProfile(pawn, rot, pdd);
 				case SmallPawnPlayProfileKind.CustomHop:
@@ -507,6 +560,60 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 				default:
 					return TryApplyYayoStandingProfile(pawn, rot, pdd, profile.YayoProfile);
 			}
+		}
+
+		private static List<SmallPawnPlayProfile> BuildEnabledPlayProfiles(Pawn pawn)
+		{
+			bool isToddler = pawn != null && ToddlersCompatUtility.IsToddler(pawn);
+			List<SmallPawnPlayProfile> profiles = new List<SmallPawnPlayProfile>(16);
+
+			if (isToddler)
+			{
+				AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableNativePlayWiggle, SmallPawnPlayProfileKind.CustomWiggle, "RimTalk_ToddlerPlay_Wiggle");
+				AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableNativePlayLay, SmallPawnPlayProfileKind.CustomLay, "RimTalk_ToddlerPlay_Lay");
+				AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableNativePlayCrawl, SmallPawnPlayProfileKind.CustomProne, "RimTalk_ToddlerPlay_Crawl");
+				AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableNativePlaySway, SmallPawnPlayProfileKind.CustomSway, "RimTalk_ToddlerPlay_Sway");
+				AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableNativePlayToddlerWobble, SmallPawnPlayProfileKind.CustomWobble, "ToddlerWobble");
+			}
+
+			AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableYayoPlayToys, SmallPawnPlayProfileKind.CustomYayoSocial, "PlayToys");
+			AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableYayoPlayHoopstone, SmallPawnPlayProfileKind.YayoStanding, "Play_Hoopstone");
+			AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableYayoPlayDartsBoard, SmallPawnPlayProfileKind.YayoStanding, "Play_DartsBoard");
+			AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableYayoGoldenCube, SmallPawnPlayProfileKind.CustomYayoSocial, "GoldenCubePlay");
+			AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableYayoCustomRoll, SmallPawnPlayProfileKind.CustomRoll, "ExtinguishSelf");
+			AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableYayoSocialRelax, SmallPawnPlayProfileKind.CustomYayoSocial, "SocialRelax");
+
+			if (isToddler)
+			{
+				AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableYayoCustomSpin, SmallPawnPlayProfileKind.CustomSpin, ToddlerSpinProfile);
+				AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableYayoCustomHop, SmallPawnPlayProfileKind.CustomHop, ToddlerHopProfile);
+				AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableYayoCustomRunLoop, SmallPawnPlayProfileKind.CustomRunLoop, ToddlerRunLoopProfile);
+			}
+
+			return profiles;
+		}
+
+		private static void AddEnabledProfile(List<SmallPawnPlayProfile> profiles, bool enabled, SmallPawnPlayProfileKind kind, string profileName)
+		{
+			if (enabled)
+			{
+				profiles.Add(new SmallPawnPlayProfile(kind, profileName));
+			}
+		}
+
+		private static List<SmallPawnPlayProfile> FilterOutMobileOnlyProfiles(List<SmallPawnPlayProfile> profiles)
+		{
+			List<SmallPawnPlayProfile> filtered = new List<SmallPawnPlayProfile>(profiles.Count);
+			for (int i = 0; i < profiles.Count; i++)
+			{
+				if (profiles[i].Kind != SmallPawnPlayProfileKind.CustomHop
+					&& profiles[i].Kind != SmallPawnPlayProfileKind.CustomRunLoop)
+				{
+					filtered.Add(profiles[i]);
+				}
+			}
+
+			return filtered;
 		}
 
 		private static bool TryApplyYayoStandingProfile(Pawn pawn, Rot4 rot, object pdd, string yayoProfile)
@@ -519,6 +626,14 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			object[] args = { pawn, rot, pdd, yayoProfile };
 			_aniStandingMethod.Invoke(null, args);
 			ScaleSmallPawnYayoOffsets(pawn, pdd, yayoProfile);
+
+			// Yayo social/game standing profiles may rewrite fixedRot for adults.
+			// On toddlers this reads like a frame-by-frame spin bug, so keep the current facing stable.
+			if (_fixedRotField != null && ToddlersCompatUtility.IsToddlerOrBaby(pawn))
+			{
+				_fixedRotField.SetValue(pdd, rot);
+			}
+
 			return true;
 		}
 
@@ -603,26 +718,30 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			return true;
 		}
 
-		private static bool TryApplyToddlerProneProfile(Rot4 rot, object pdd)
+		private static bool TryApplyToddlerProneProfile(Pawn pawn, Rot4 rot, object pdd)
 		{
-			if (!TryPrepareCustomPose(pdd, rot))
+			Rot4 proneFacing = ResolveToddlerProneFacing(pawn, rot);
+			if (!TryPrepareCustomPose(pdd, proneFacing))
 			{
 				return false;
 			}
 
-			float angle = 0f;
-			if (rot == Rot4.East)
-			{
-				angle = 40f;
-			}
-			else if (rot == Rot4.West)
-			{
-				angle = -40f;
-			}
+			float angle = proneFacing == Rot4.East ? 40f : -40f;
 
 			_angleOffsetField.SetValue(pdd, angle);
 			_posOffsetField.SetValue(pdd, Vector3.zero);
 			return true;
+		}
+
+		private static Rot4 ResolveToddlerProneFacing(Pawn pawn, Rot4 rot)
+		{
+			if (rot == Rot4.East || rot == Rot4.West)
+			{
+				return rot;
+			}
+
+			int seed = Gen.HashCombineInt(pawn?.thingIDNumber ?? 0, pawn?.CurJob?.loadID ?? 0);
+			return (seed & 1) == 0 ? Rot4.East : Rot4.West;
 		}
 
 		private static bool TryApplyToddlerWobbleProfile(Pawn pawn, Rot4 rot, object pdd)
@@ -639,6 +758,70 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			_angleOffsetField.SetValue(pdd, angleMagnitude * TriangleWave(x));
 			_posOffsetField.SetValue(pdd, Vector3.zero);
 			return true;
+		}
+
+		private static bool TryApplyToddlerYayoSocialProfile(Pawn pawn, Rot4 rot, object pdd)
+		{
+			if (!TryPrepareCustomPose(pdd, rot))
+			{
+				return false;
+			}
+
+			try
+			{
+				float angle = 0f;
+				Vector3 pos = Vector3.zero;
+				int tick = 0;
+				int total = 221;
+				int idTick = (pawn?.thingIDNumber ?? 0) * 20;
+				int doubledTick = ((Find.TickManager?.TicksGame ?? 0) + idTick) % (total * 2);
+				tick = doubledTick % total;
+
+				Rot4 rotated = rot.Rotated(RotationDirection.Clockwise);
+				Rot4 facing = rot;
+
+				if (!TryConsumeYayoTicks(ref tick, 20) &&
+					!TryApplyYayoSegment(ref tick, 5, ref angle, 0f, 10f, -1f, ref pos, rotated) &&
+					!TryApplyYayoHold(ref tick, 20, ref angle, 10f, -1f, ref pos, rotated) &&
+					!TryApplyYayoSegment(ref tick, 5, ref angle, 10f, -10f, -1f, ref pos, rotated) &&
+					!TryApplyYayoHold(ref tick, 20, ref angle, -10f, -1f, ref pos, rotated) &&
+					!TryApplyYayoSegment(ref tick, 5, ref angle, -10f, 0f, -1f, ref pos, rotated))
+				{
+					facing = doubledTick >= total
+						? rot.Rotated(RotationDirection.Clockwise)
+						: rot.Rotated(RotationDirection.Counterclockwise);
+
+					if (!TryApplyYayoHold(ref tick, 15, ref angle, 0f, -1f, ref pos, rot))
+					{
+						facing = rot;
+						if (!TryApplyYayoHold(ref tick, 20, ref angle, 0f, -1f, ref pos, rot) &&
+							!TryApplyYayoSegment(ref tick, 5, ref angle, 0f, 0f, -1f, ref pos, Vector3.zero, YayoZOffset005, rot) &&
+							!TryApplyYayoSegment(ref tick, 6, ref angle, 0f, 0f, -1f, ref pos, YayoZOffset005, Vector3.zero, rot) &&
+							!TryApplyYayoHold(ref tick, 35, ref angle, 0f, -1f, ref pos, rot) &&
+							!TryApplyYayoSegment(ref tick, 10, ref angle, 0f, 10f, -1f, ref pos, rot) &&
+							!TryApplyYayoSegment(ref tick, 10, ref angle, 10f, 0f, -1f, ref pos, rot) &&
+							!TryApplyYayoSegment(ref tick, 10, ref angle, 0f, 10f, -1f, ref pos, rot) &&
+							!TryApplyYayoSegment(ref tick, 10, ref angle, 10f, 0f, -1f, ref pos, rot))
+						{
+							TryApplyYayoHold(ref tick, 25, ref angle, 0f, -1f, ref pos, rot);
+						}
+					}
+				}
+
+				_fixedRotField?.SetValue(pdd, facing);
+				_angleOffsetField.SetValue(pdd, angle);
+				_posOffsetField.SetValue(pdd, pos);
+				return true;
+			}
+			catch (Exception ex)
+			{
+				if (Prefs.DevMode)
+				{
+					Log.Warning($"[RimTalk_ToddlersExpansion] Failed to apply toddler-local Yayo social profile: {ex.Message}");
+				}
+
+				return false;
+			}
 		}
 
 		private static void GetToddlerRollPose(float phase, Pawn pawn, out float angle, out Vector3 pos)
@@ -927,6 +1110,117 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			catch
 			{
 				return false;
+			}
+		}
+
+		private static bool TryConsumeYayoTicks(ref int tick, int duration)
+		{
+			if (tick >= duration)
+			{
+				tick -= duration;
+				return false;
+			}
+
+			return true;
+		}
+
+		private static bool TryApplyYayoHold(ref int tick, int duration, ref float angle, float targetAngle, float centerY, ref Vector3 pos, Rot4? rot = null)
+		{
+			return TryApplyYayoSegment(
+				ref tick,
+				duration,
+				ref angle,
+				targetAngle,
+				targetAngle,
+				centerY,
+				ref pos,
+				Vector3.zero,
+				Vector3.zero,
+				rot,
+				false);
+		}
+
+		private static bool TryApplyYayoSegment(ref int tick, int duration, ref float angle, float startAngle, float targetAngle, float centerY, ref Vector3 pos, Rot4? rot = null)
+		{
+			return TryApplyYayoSegment(
+				ref tick,
+				duration,
+				ref angle,
+				startAngle,
+				targetAngle,
+				centerY,
+				ref pos,
+				Vector3.zero,
+				Vector3.zero,
+				rot,
+				false);
+		}
+
+		private static bool TryApplyYayoSegment(
+			ref int tick,
+			int duration,
+			ref float angle,
+			float startAngle,
+			float targetAngle,
+			float centerY,
+			ref Vector3 pos,
+			Vector3 startPos,
+			Vector3 targetPos,
+			Rot4? rot = null,
+			bool useLineTween = false)
+		{
+			if (tick >= duration)
+			{
+				tick -= duration;
+				return false;
+			}
+
+			ApplyYayoRotationTransform(rot, ref startAngle, ref targetAngle, ref startPos, ref targetPos, centerY);
+
+			float tickPercent = tick / (float)duration;
+			if (!useLineTween)
+			{
+				tickPercent = Mathf.Sin(Mathf.PI * 0.5f * tickPercent);
+			}
+
+			angle += startAngle + (targetAngle - startAngle) * tickPercent;
+			pos += startPos + (targetPos - startPos) * tickPercent;
+			return true;
+		}
+
+		private static void ApplyYayoRotationTransform(Rot4? rot, ref float startAngle, ref float targetAngle, ref Vector3 startPos, ref Vector3 targetPos, float centerY)
+		{
+			if (rot == null)
+			{
+				return;
+			}
+
+			switch (rot.Value.AsByte)
+			{
+				case 3:
+					startAngle = -startAngle;
+					targetAngle = -targetAngle;
+					startPos = new Vector3(-startPos.x, 0f, startPos.z);
+					targetPos = new Vector3(-targetPos.x, 0f, targetPos.z);
+					break;
+				case 2:
+					startAngle *= YayoAngleReduce;
+					targetAngle *= YayoAngleReduce;
+					startPos = new Vector3(0f, 0f, startPos.z - startPos.x - startAngle * YayoAngleToPos);
+					targetPos = new Vector3(0f, 0f, targetPos.z - targetPos.x - targetAngle * YayoAngleToPos);
+					break;
+				case 0:
+					startAngle *= -YayoAngleReduce;
+					targetAngle *= -YayoAngleReduce;
+					startPos = new Vector3(0f, 0f, startPos.z + startPos.x - startAngle * YayoAngleToPos);
+					targetPos = new Vector3(0f, 0f, targetPos.z + targetPos.x - targetAngle * YayoAngleToPos);
+					break;
+			}
+
+			if (centerY != 0f)
+			{
+				startPos += new Vector3(startAngle * -0.01f * centerY, 0f, 0f);
+				targetPos += new Vector3(targetAngle * -0.01f * centerY, 0f, 0f);
 			}
 		}
 

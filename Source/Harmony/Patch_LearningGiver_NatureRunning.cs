@@ -74,8 +74,23 @@ namespace RimTalk_ToddlersExpansion.Harmony
         /// </summary>
         private static void TryGiveJob_Postfix(Pawn pawn, ref Job __result)
         {
-            // We handle the actual recruitment in StartJob_Postfix
-            // This is just here for potential future use
+            if (__result == null || NatureRunningJobDef == null || __result.def != NatureRunningJobDef)
+            {
+                return;
+            }
+
+            if (pawn == null || pawn.Map == null)
+            {
+                return;
+            }
+
+            // Keep vanilla scope: only player children initiate this behavior.
+            if (!pawn.DevelopmentalStage.Child() || pawn.Faction != Faction.OfPlayer)
+            {
+                return;
+            }
+
+            NatureRunningDestinationUtility.TryAssignDestinationAndText(pawn, __result);
         }
         
         /// <summary>
@@ -101,12 +116,18 @@ namespace RimTalk_ToddlersExpansion.Harmony
         /// </summary>
         private static void StartJob_Postfix(Pawn_JobTracker __instance, Job newJob)
         {
-            if (newJob == null || NatureRunningJobDef == null || newJob.def != NatureRunningJobDef)
+            Pawn leader = GetPawnFromJobTracker(__instance);
+            if (leader == null)
             {
                 return;
             }
-            
-            Pawn leader = GetPawnFromJobTracker(__instance);
+
+            if (newJob == null || NatureRunningJobDef == null || newJob.def != NatureRunningJobDef)
+            {
+                NatureRunningDestinationUtility.ClearContext(leader);
+                return;
+            }
+
             if (leader == null || leader.Map == null)
             {
                 return;
@@ -123,6 +144,8 @@ namespace RimTalk_ToddlersExpansion.Harmony
             {
                 return;
             }
+
+            NatureRunningDestinationUtility.EnsureContextForStartedNatureRunning(leader, newJob);
             
             // Recruit nearby children and toddlers
             RecruitNearbyFollowers(leader);
@@ -285,6 +308,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
             
             Job followJob = JobMaker.MakeJob(ToddlersExpansionJobDefOf.RimTalk_FollowNatureRunner, leader);
             followJob.locomotionUrgency = LocomotionUrgency.Jog;
+            NatureRunningDestinationUtility.ApplyFollowJobReport(followJob, leader);
             
             // Start the job, interrupting current job
             follower.jobs.StartJob(followJob, JobCondition.InterruptForced);

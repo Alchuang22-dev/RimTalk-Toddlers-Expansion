@@ -199,8 +199,19 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
         
         public override string GetReport()
         {
+            if (job?.reportStringOverride.NullOrEmpty() == false)
+            {
+                return job.reportStringOverride;
+            }
+
             if (LeaderToFollow != null)
             {
+                string contextualReport = NatureRunningDestinationUtility.GetFollowReport(LeaderToFollow);
+                if (!contextualReport.NullOrEmpty())
+                {
+                    return contextualReport;
+                }
+
                 return "RimTalk_FollowingNatureRunner".Translate(LeaderToFollow.LabelShort);
             }
             return base.GetReport();

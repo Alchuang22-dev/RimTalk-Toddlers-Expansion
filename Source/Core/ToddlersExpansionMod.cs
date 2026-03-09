@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using RimTalk_ToddlersExpansion.Harmony;
 using RimTalk_ToddlersExpansion.Integration.RimTalk;
 using RimWorld;
@@ -9,7 +10,9 @@ namespace RimTalk_ToddlersExpansion.Core
 	public sealed class ToddlersExpansionMod : Mod
 	{
 		public static ToddlersExpansionSettings Settings;
-		private static Vector2 scrollPosition = Vector2.zero;
+		private static Vector2 generalScrollPosition = Vector2.zero;
+		private static Vector2 outingScrollPosition = Vector2.zero;
+		private static Vector2 animationScrollPosition = Vector2.zero;
 
 		public ToddlersExpansionMod(ModContentPack content) : base(content)
 		{
@@ -30,24 +33,52 @@ namespace RimTalk_ToddlersExpansion.Core
 
 		public override void DoSettingsWindowContents(Rect inRect)
 		{
-			var settings = Settings;
+			ToddlersExpansionSettings settings = Settings;
+			if (settings == null)
+			{
+				return;
+			}
 
-			// 计算内容高度 - 足够容纳所有设置项
+			settings.SettingsPageIndex = Mathf.Clamp(settings.SettingsPageIndex, 0, 2);
+
+			Rect titleRect = new Rect(inRect.x, inRect.y, inRect.width, 34f);
+			Text.Font = GameFont.Medium;
+			Widgets.Label(titleRect, "RimTalk_ToddlersExpansion_Settings_Title".Translate());
+			Text.Font = GameFont.Small;
+
+			Rect tabsRect = new Rect(inRect.x, titleRect.yMax + 4f, inRect.width, 32f);
+			List<TabRecord> tabs = new List<TabRecord>
+			{
+				new TabRecord("RimTalk_ToddlersExpansion_Settings_Page1".Translate(), () => settings.SettingsPageIndex = 0, settings.SettingsPageIndex == 0),
+				new TabRecord("RimTalk_ToddlersExpansion_Settings_Page2".Translate(), () => settings.SettingsPageIndex = 1, settings.SettingsPageIndex == 1),
+				new TabRecord("RimTalk_ToddlersExpansion_Settings_Page3".Translate(), () => settings.SettingsPageIndex = 2, settings.SettingsPageIndex == 2)
+			};
+			TabDrawer.DrawTabs(tabsRect, tabs);
+
+			Rect pageRect = new Rect(inRect.x, tabsRect.yMax + 8f, inRect.width, inRect.height - (tabsRect.yMax - inRect.y) - 8f);
+			if (settings.SettingsPageIndex == 0)
+			{
+				DrawGeneralSettingsPage(pageRect, settings);
+			}
+			else if (settings.SettingsPageIndex == 1)
+			{
+				DrawOutingSettingsPage(pageRect, settings);
+			}
+			else
+			{
+				DrawAnimationSettingsPage(pageRect);
+			}
+		}
+
+		private void DrawGeneralSettingsPage(Rect inRect, ToddlersExpansionSettings settings)
+		{
 			float contentHeight = 1200f;
 			Rect viewRect = new Rect(0f, 0f, inRect.width - 20f, contentHeight);
 
-			Widgets.BeginScrollView(inRect, ref scrollPosition, viewRect);
-
-			var listingStandard = new Listing_Standard();
+			Widgets.BeginScrollView(inRect, ref generalScrollPosition, viewRect);
+			Listing_Standard listingStandard = new Listing_Standard();
 			listingStandard.Begin(viewRect);
 
-			// 标题
-			Text.Font = GameFont.Medium;
-			listingStandard.Label("RimTalk_ToddlersExpansion_Settings_Title".Translate());
-			Text.Font = GameFont.Small;
-			listingStandard.Gap();
-
-			// ========== 无聊机制设置 ==========
 			listingStandard.Label("RimTalk_Boredom_Settings_Header".Translate());
 			listingStandard.GapLine();
 
@@ -74,10 +105,6 @@ namespace RimTalk_ToddlersExpansion.Core
 
 			listingStandard.GapLine();
 
-			// ========== 语言学习设置 ==========
-			listingStandard.GapLine();
-
-			// ========== Feeding Settings ==========
 			listingStandard.Label("RimTalk_ToddlersExpansion_Feeding_Settings_Header".Translate());
 			listingStandard.GapLine();
 
@@ -87,30 +114,36 @@ namespace RimTalk_ToddlersExpansion.Core
 
 			listingStandard.GapLine();
 
-			
 			listingStandard.Label("RimTalk_ToddlersExpansion_Behavior_Settings_Header".Translate());
 			listingStandard.GapLine();
 
-			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior".Translate(),
+			listingStandard.CheckboxLabeled(
+				"RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior".Translate(),
 				ref ToddlersExpansionSettings.enableHostileToddlerColonistBehavior,
 				"RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior_Tooltip".Translate());
 			listingStandard.Gap();
-			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_EnableUnder3HairRendering".Translate(),
+
+			listingStandard.CheckboxLabeled(
+				"RimTalk_ToddlersExpansion_EnableUnder3HairRendering".Translate(),
 				ref ToddlersExpansionSettings.enableUnder3HairRendering,
 				"RimTalk_ToddlersExpansion_EnableUnder3HairRendering_Tooltip".Translate());
 			listingStandard.Gap();
-			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_BabyCryMoodOnly".Translate(),
+
+			listingStandard.CheckboxLabeled(
+				"RimTalk_ToddlersExpansion_BabyCryMoodOnly".Translate(),
 				ref ToddlersExpansionSettings.babyCryAffectsMoodOnly,
 				"RimTalk_ToddlersExpansion_BabyCryMoodOnly_Tooltip".Translate());
 			listingStandard.Gap();
 
 			listingStandard.GapLine();
-// ========== 商队/过路者设置 ==========
+
 			listingStandard.Label("RimTalk_Caravan_Settings_Header".Translate());
 			listingStandard.GapLine();
 
-			// 启用过路者/商队幼儿生成
-			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_EnableCaravanToddlerGeneration".Translate(), ref settings.EnableCaravanToddlerGeneration, "RimTalk_ToddlersExpansion_EnableCaravanToddlerGeneration_Tooltip".Translate());
+			listingStandard.CheckboxLabeled(
+				"RimTalk_ToddlersExpansion_EnableCaravanToddlerGeneration".Translate(),
+				ref settings.EnableCaravanToddlerGeneration,
+				"RimTalk_ToddlersExpansion_EnableCaravanToddlerGeneration_Tooltip".Translate());
 			listingStandard.Gap();
 
 			if (settings.EnableCaravanToddlerGeneration)
@@ -139,7 +172,6 @@ namespace RimTalk_ToddlersExpansion.Core
 				settings.MaxBatchCount = (int)listingStandard.Slider(settings.MaxBatchCount, 1, 5);
 				listingStandard.Gap();
 
-				// 确保最小值不大于最大值
 				if (settings.MinBatchCount > settings.MaxBatchCount)
 				{
 					settings.MinBatchCount = settings.MaxBatchCount;
@@ -152,6 +184,125 @@ namespace RimTalk_ToddlersExpansion.Core
 
 			listingStandard.End();
 			Widgets.EndScrollView();
+		}
+
+		private void DrawOutingSettingsPage(Rect inRect, ToddlersExpansionSettings settings)
+		{
+			float contentHeight = 920f;
+			Rect viewRect = new Rect(0f, 0f, inRect.width - 20f, contentHeight);
+
+			Widgets.BeginScrollView(inRect, ref outingScrollPosition, viewRect);
+			Listing_Standard listingStandard = new Listing_Standard();
+			listingStandard.Begin(viewRect);
+
+			listingStandard.Label("RimTalk_ToddlersExpansion_Outing_Settings_Header".Translate());
+			listingStandard.GapLine();
+			listingStandard.Label("RimTalk_ToddlersExpansion_Outing_Settings_Desc".Translate());
+			listingStandard.Gap();
+
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_OutingPool_VanillaEdgeRandom".Translate(), ref settings.EnableOutingPoolVanillaEdgeRandom);
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_OutingPool_GrowingZone".Translate(), ref settings.EnableOutingPoolGrowingZone);
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_OutingPool_StockpileZone".Translate(), ref settings.EnableOutingPoolStockpileZone);
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_OutingPool_ResearchRoom".Translate(), ref settings.EnableOutingPoolResearchRoom);
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_OutingPool_TempleRoom".Translate(), ref settings.EnableOutingPoolTempleRoom);
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_OutingPool_KitchenRoom".Translate(), ref settings.EnableOutingPoolKitchenRoom);
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_OutingPool_RecreationRoom".Translate(), ref settings.EnableOutingPoolRecreationRoom);
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_OutingPool_HospitalRoom".Translate(), ref settings.EnableOutingPoolHospitalRoom);
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_OutingPool_OtherNonBedroomRooms".Translate(), ref settings.EnableOutingPoolOtherNonBedroomRooms);
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_OutingPool_ThingWithCompsLandmark".Translate(), ref settings.EnableOutingPoolThingWithCompsLandmark);
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_OutingPool_River".Translate(), ref settings.EnableOutingPoolRiver);
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_OutingPool_Lake".Translate(), ref settings.EnableOutingPoolLake);
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_OutingPool_Snow".Translate(), ref settings.EnableOutingPoolSnow);
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_OutingPool_Cave".Translate(), ref settings.EnableOutingPoolCave);
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_OutingPool_Sand".Translate(), ref settings.EnableOutingPoolSand);
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_OutingPool_AncientRoad".Translate(), ref settings.EnableOutingPoolAncientRoad);
+
+			if (!HasAnyOutingPoolEnabled(settings))
+			{
+				listingStandard.Gap();
+				GUI.color = Color.yellow;
+				listingStandard.Label("RimTalk_ToddlersExpansion_OutingPool_AllDisabledWarning".Translate());
+				GUI.color = Color.white;
+			}
+
+			listingStandard.End();
+			Widgets.EndScrollView();
+		}
+
+		private void DrawAnimationSettingsPage(Rect inRect)
+		{
+			float contentHeight = 980f;
+			Rect viewRect = new Rect(0f, 0f, inRect.width - 20f, contentHeight);
+
+			Widgets.BeginScrollView(inRect, ref animationScrollPosition, viewRect);
+			Listing_Standard listingStandard = new Listing_Standard();
+			listingStandard.Begin(viewRect);
+
+			bool yayoLoaded = Integration.YayoAnimation.YayoAnimationCompatUtility.IsYayoAnimationLoaded;
+			listingStandard.Label("RimTalk_ToddlersExpansion_Animation_Settings_Header".Translate());
+			listingStandard.GapLine();
+			listingStandard.Label("RimTalk_ToddlersExpansion_Animation_Settings_Desc".Translate());
+			listingStandard.Gap();
+			listingStandard.Label((yayoLoaded
+				? "RimTalk_ToddlersExpansion_Animation_YayoLoaded"
+				: "RimTalk_ToddlersExpansion_Animation_YayoNotLoaded").Translate());
+			listingStandard.Gap();
+
+			listingStandard.CheckboxLabeled(
+				"RimTalk_ToddlersExpansion_Animation_EnableNewborn".Translate(),
+				ref ToddlersExpansionSettings.EnableNewbornPlayAnimations,
+				"RimTalk_ToddlersExpansion_Animation_EnableNewborn_Tooltip".Translate());
+			listingStandard.GapLine();
+
+			listingStandard.Label("RimTalk_ToddlersExpansion_Animation_NoYayo_Header".Translate());
+			listingStandard.Gap();
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_Wiggle".Translate(), ref ToddlersExpansionSettings.EnableNativePlayWiggle);
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_Sway".Translate(), ref ToddlersExpansionSettings.EnableNativePlaySway);
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_Lay".Translate(), ref ToddlersExpansionSettings.EnableNativePlayLay);
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_ProneCrawl".Translate(), ref ToddlersExpansionSettings.EnableNativePlayCrawl);
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_ToddlersCrawl".Translate(), ref ToddlersExpansionSettings.EnableNativePlayToddlerCrawl);
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_ToddlersWobble".Translate(), ref ToddlersExpansionSettings.EnableNativePlayToddlerWobble);
+			listingStandard.GapLine();
+
+			listingStandard.Label("RimTalk_ToddlersExpansion_Animation_Yayo_Header".Translate());
+			listingStandard.Gap();
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_Wiggle".Translate(), ref ToddlersExpansionSettings.EnableNativePlayWiggle);
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_Sway".Translate(), ref ToddlersExpansionSettings.EnableNativePlaySway);
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_Lay".Translate(), ref ToddlersExpansionSettings.EnableNativePlayLay);
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_ProneCrawl".Translate(), ref ToddlersExpansionSettings.EnableNativePlayCrawl);
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_ToddlersWobble".Translate(), ref ToddlersExpansionSettings.EnableNativePlayToddlerWobble);
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_PlayToys".Translate(), ref ToddlersExpansionSettings.EnableYayoPlayToys);
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_Hoopstone".Translate(), ref ToddlersExpansionSettings.EnableYayoPlayHoopstone);
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_DartsBoard".Translate(), ref ToddlersExpansionSettings.EnableYayoPlayDartsBoard);
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_GoldenCube".Translate(), ref ToddlersExpansionSettings.EnableYayoGoldenCube);
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_SocialRelax".Translate(), ref ToddlersExpansionSettings.EnableYayoSocialRelax);
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_Roll".Translate(), ref ToddlersExpansionSettings.EnableYayoCustomRoll);
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_Spin".Translate(), ref ToddlersExpansionSettings.EnableYayoCustomSpin);
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_Hop".Translate(), ref ToddlersExpansionSettings.EnableYayoCustomHop);
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_RunLoop".Translate(), ref ToddlersExpansionSettings.EnableYayoCustomRunLoop);
+
+			listingStandard.End();
+			Widgets.EndScrollView();
+		}
+
+		private static bool HasAnyOutingPoolEnabled(ToddlersExpansionSettings settings)
+		{
+			return settings.EnableOutingPoolVanillaEdgeRandom
+				|| settings.EnableOutingPoolGrowingZone
+				|| settings.EnableOutingPoolStockpileZone
+				|| settings.EnableOutingPoolResearchRoom
+				|| settings.EnableOutingPoolTempleRoom
+				|| settings.EnableOutingPoolKitchenRoom
+				|| settings.EnableOutingPoolRecreationRoom
+				|| settings.EnableOutingPoolHospitalRoom
+				|| settings.EnableOutingPoolOtherNonBedroomRooms
+				|| settings.EnableOutingPoolThingWithCompsLandmark
+				|| settings.EnableOutingPoolRiver
+				|| settings.EnableOutingPoolLake
+				|| settings.EnableOutingPoolSnow
+				|| settings.EnableOutingPoolCave
+				|| settings.EnableOutingPoolSand
+				|| settings.EnableOutingPoolAncientRoad;
 		}
 
 		public override string SettingsCategory() => "RimTalk Toddlers Expansion";

@@ -42,9 +42,14 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			Toil play = ToilMaker.MakeToil("ToddlerPlayAtToy");
 			play.initAction = () =>
 			{
-				if (ShouldUseCustomPlayAnimation(pawn))
+				if (YayoAnimationCompatUtility.TryGetNativePlayAnimationOverride(pawn, out AnimationDef nativeAnimation))
 				{
-					_playAnimation = ToddlerPlayAnimationUtility.GetRandomSelfPlayAnimation();
+					_playAnimation = nativeAnimation;
+					ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, _playAnimation);
+				}
+				else if (ShouldUseCustomPlayAnimation(pawn))
+				{
+					_playAnimation = ToddlerPlayAnimationUtility.GetRandomSelfPlayAnimation(pawn);
 					ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, _playAnimation);
 				}
 			};

@@ -6,26 +6,36 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 {
 	public static class ToddlerPlayAnimationUtility
 	{
-		private static bool _initialized;
-		private static AnimationDef[] _selfPlayAnimations;
-		private static AnimationDef[] _mutualPlayAnimations;
-
-		public static AnimationDef GetRandomSelfPlayAnimation()
+		public static AnimationDef GetRandomSelfPlayAnimation(Pawn pawn)
 		{
-			EnsureInitialized();
-			return PickRandom(_selfPlayAnimations);
+			if (!ArePlayAnimationsAllowedForPawn(pawn))
+			{
+				return null;
+			}
+
+			return PickRandom(BuildSelfPlayAnimations());
 		}
 
-		public static AnimationDef GetRandomMutualPlayAnimation()
+		public static AnimationDef GetRandomMutualPlayAnimation(Pawn pawn)
 		{
-			EnsureInitialized();
-			return PickRandom(_mutualPlayAnimations);
+			if (!ArePlayAnimationsAllowedForPawn(pawn))
+			{
+				return null;
+			}
+
+			return PickRandom(BuildMutualPlayAnimations());
 		}
 
 		public static void TryApplyAnimation(Pawn pawn, AnimationDef animation)
 		{
 			if (pawn?.Drawer?.renderer == null || animation == null)
 			{
+				return;
+			}
+
+			if (ToddlerCarryingUtility.IsBeingCarried(pawn))
+			{
+				ClearCurrentAnimation(pawn);
 				return;
 			}
 
@@ -48,32 +58,60 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 		}
 
-		private static void EnsureInitialized()
+		public static void ClearCurrentAnimation(Pawn pawn)
 		{
-			if (_initialized)
+			if (pawn?.Drawer?.renderer == null)
 			{
 				return;
 			}
 
-			_initialized = true;
+			if (pawn.Drawer.renderer.CurAnimation != null)
+			{
+				pawn.Drawer.renderer.SetAnimation(null);
+			}
+		}
+
+		public static bool ArePlayAnimationsAllowedForPawn(Pawn pawn)
+		{
+			if (pawn == null)
+			{
+				return true;
+			}
+
+			if (pawn.DevelopmentalStage.Newborn() && !ToddlersExpansionSettings.EnableNewbornPlayAnimations)
+			{
+				return false;
+			}
+
+			return true;
+		}
+
+		private static AnimationDef[] BuildSelfPlayAnimations()
+		{
 			AnimationDef toddlersCrawl = DefDatabase<AnimationDef>.GetNamedSilentFail("ToddlerCrawl");
 			AnimationDef toddlersWobble = DefDatabase<AnimationDef>.GetNamedSilentFail("ToddlerWobble");
 
-			_selfPlayAnimations = BuildList(
-				ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Wiggle,
-				ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Lay,
-				ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Crawl,
-				ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Sway,
-				toddlersCrawl,
-				toddlersWobble);
+			return BuildList(
+				ToddlersExpansionSettings.EnableNativePlayWiggle ? ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Wiggle : null,
+				ToddlersExpansionSettings.EnableNativePlayLay ? ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Lay : null,
+				ToddlersExpansionSettings.EnableNativePlayCrawl ? ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Crawl : null,
+				ToddlersExpansionSettings.EnableNativePlaySway ? ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Sway : null,
+				ToddlersExpansionSettings.EnableNativePlayToddlerCrawl ? toddlersCrawl : null,
+				ToddlersExpansionSettings.EnableNativePlayToddlerWobble ? toddlersWobble : null);
+		}
 
-			_mutualPlayAnimations = BuildList(
-				ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Wiggle,
-				ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Sway,
-				ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Crawl,
-				ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Lay,
-				toddlersCrawl,
-				toddlersWobble);
+		private static AnimationDef[] BuildMutualPlayAnimations()
+		{
+			AnimationDef toddlersCrawl = DefDatabase<AnimationDef>.GetNamedSilentFail("ToddlerCrawl");
+			AnimationDef toddlersWobble = DefDatabase<AnimationDef>.GetNamedSilentFail("ToddlerWobble");
+
+			return BuildList(
+				ToddlersExpansionSettings.EnableNativePlayWiggle ? ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Wiggle : null,
+				ToddlersExpansionSettings.EnableNativePlaySway ? ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Sway : null,
+				ToddlersExpansionSettings.EnableNativePlayCrawl ? ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Crawl : null,
+				ToddlersExpansionSettings.EnableNativePlayLay ? ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Lay : null,
+				ToddlersExpansionSettings.EnableNativePlayToddlerCrawl ? toddlersCrawl : null,
+				ToddlersExpansionSettings.EnableNativePlayToddlerWobble ? toddlersWobble : null);
 		}
 
 		private static AnimationDef[] BuildList(params AnimationDef[] defs)

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimTalk_FollowNatureRunner_WithActivity>following {0} while {1}</RimTalk_FollowNatureRunner_WithActivity>
+
+  <RimTalk_NatureRunning_Activity_Default>nature running</RimTalk_NatureRunning_Activity_Default>
+  <RimTalk_NatureRunning_Label_DefaultCrop>crops</RimTalk_NatureRunning_Label_DefaultCrop>
+  <RimTalk_NatureRunning_Label_DefaultRecreationBuilding>a recreation building</RimTalk_NatureRunning_Label_DefaultRecreationBuilding>
+  <RimTalk_NatureRunning_Label_DefaultLandmark>a landmark</RimTalk_NatureRunning_Label_DefaultLandmark>
+
+  <RimTalk_NatureRunning_Activity_Growing_ObservePlants>observing plants</RimTalk_NatureRunning_Activity_Growing_ObservePlants>
+  <RimTalk_NatureRunning_Activity_Growing_CatchInsects>catching insects</RimTalk_NatureRunning_Activity_Growing_CatchInsects>
+  <RimTalk_NatureRunning_Activity_Growing_CollectCrop>collecting {0}</RimTalk_NatureRunning_Activity_Growing_CollectCrop>
+
+  <RimTalk_NatureRunning_Activity_Stockpile_SearchStockpile>digging through stockpiles</RimTalk_NatureRunning_Activity_Stockpile_SearchStockpile>
+  <RimTalk_NatureRunning_Activity_Stockpile_FindToy>looking for toys</RimTalk_NatureRunning_Activity_Stockpile_FindToy>
+
+  <RimTalk_NatureRunning_Activity_Research_Experiment>doing little experiments</RimTalk_NatureRunning_Activity_Research_Experiment>
+  <RimTalk_NatureRunning_Activity_Research_FindBooks>searching for books</RimTalk_NatureRunning_Activity_Research_FindBooks>
+  <RimTalk_NatureRunning_Activity_Research_ViewSpecimens>examining specimens</RimTalk_NatureRunning_Activity_Research_ViewSpecimens>
+
+  <RimTalk_NatureRunning_Activity_Temple_ObserveDecor>observing decorations</RimTalk_NatureRunning_Activity_Temple_ObserveDecor>
+  <RimTalk_NatureRunning_Activity_Temple_RitualGame>playing ritual games</RimTalk_NatureRunning_Activity_Temple_RitualGame>
+
+  <RimTalk_NatureRunning_Activity_Kitchen_HousePlay>playing house</RimTalk_NatureRunning_Activity_Kitchen_HousePlay>
+
+  <RimTalk_NatureRunning_Activity_Recreation_PlayOnBuilding>playing on {0}</RimTalk_NatureRunning_Activity_Recreation_PlayOnBuilding>
+  <RimTalk_NatureRunning_Activity_Recreation_Roughhouse>roughhousing</RimTalk_NatureRunning_Activity_Recreation_Roughhouse>
+  <RimTalk_NatureRunning_Activity_Recreation_HideAndSeek>playing hide-and-seek</RimTalk_NatureRunning_Activity_Recreation_HideAndSeek>
+
+  <RimTalk_NatureRunning_Activity_Hospital_PlayDoctor>playing doctor</RimTalk_NatureRunning_Activity_Hospital_PlayDoctor>
+  <RimTalk_NatureRunning_Activity_OtherRoom_WanderAround>wandering around</RimTalk_NatureRunning_Activity_OtherRoom_WanderAround>
+  <RimTalk_NatureRunning_Activity_Landmark_Visit>visiting {0}</RimTalk_NatureRunning_Activity_Landmark_Visit>
+
+  <RimTalk_NatureRunning_Activity_River_CatchFish>catching fish</RimTalk_NatureRunning_Activity_River_CatchFish>
+  <RimTalk_NatureRunning_Activity_River_PlaySand>playing in the sand</RimTalk_NatureRunning_Activity_River_PlaySand>
+
+  <RimTalk_NatureRunning_Activity_Lake_PlayWater>playing in water</RimTalk_NatureRunning_Activity_Lake_PlayWater>
+  <RimTalk_NatureRunning_Activity_Lake_CatchTadpoles>catching tadpoles</RimTalk_NatureRunning_Activity_Lake_CatchTadpoles>
+
+  <RimTalk_NatureRunning_Activity_Snow_BuildSnowman>building a snowman</RimTalk_NatureRunning_Activity_Snow_BuildSnowman>
+  <RimTalk_NatureRunning_Activity_Snow_SnowballFight>having a snowball fight</RimTalk_NatureRunning_Activity_Snow_SnowballFight>
+
+  <RimTalk_NatureRunning_Activity_Cave_Explore>exploring caves</RimTalk_NatureRunning_Activity_Cave_Explore>
+  <RimTalk_NatureRunning_Activity_Sand_SurvivalGame>playing survival games</RimTalk_NatureRunning_Activity_Sand_SurvivalGame>
+  <RimTalk_NatureRunning_Activity_AncientRoad_Run>running along ancient roads</RimTalk_NatureRunning_Activity_AncientRoad_Run>
+</LanguageData>

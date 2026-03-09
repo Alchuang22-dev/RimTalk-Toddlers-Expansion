@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimTalk_FollowNatureRunner_WithActivity>跟随{0}一起{1}</RimTalk_FollowNatureRunner_WithActivity>
+
+  <RimTalk_NatureRunning_Activity_Default>野游</RimTalk_NatureRunning_Activity_Default>
+  <RimTalk_NatureRunning_Label_DefaultCrop>作物</RimTalk_NatureRunning_Label_DefaultCrop>
+  <RimTalk_NatureRunning_Label_DefaultRecreationBuilding>娱乐建筑</RimTalk_NatureRunning_Label_DefaultRecreationBuilding>
+  <RimTalk_NatureRunning_Label_DefaultLandmark>地标</RimTalk_NatureRunning_Label_DefaultLandmark>
+
+  <RimTalk_NatureRunning_Activity_Growing_ObservePlants>观察植物</RimTalk_NatureRunning_Activity_Growing_ObservePlants>
+  <RimTalk_NatureRunning_Activity_Growing_CatchInsects>捕捉昆虫</RimTalk_NatureRunning_Activity_Growing_CatchInsects>
+  <RimTalk_NatureRunning_Activity_Growing_CollectCrop>收集{0}</RimTalk_NatureRunning_Activity_Growing_CollectCrop>
+
+  <RimTalk_NatureRunning_Activity_Stockpile_SearchStockpile>翻找仓库</RimTalk_NatureRunning_Activity_Stockpile_SearchStockpile>
+  <RimTalk_NatureRunning_Activity_Stockpile_FindToy>找玩具</RimTalk_NatureRunning_Activity_Stockpile_FindToy>
+
+  <RimTalk_NatureRunning_Activity_Research_Experiment>做实验</RimTalk_NatureRunning_Activity_Research_Experiment>
+  <RimTalk_NatureRunning_Activity_Research_FindBooks>寻找书籍</RimTalk_NatureRunning_Activity_Research_FindBooks>
+  <RimTalk_NatureRunning_Activity_Research_ViewSpecimens>看标本</RimTalk_NatureRunning_Activity_Research_ViewSpecimens>
+
+  <RimTalk_NatureRunning_Activity_Temple_ObserveDecor>观察装饰</RimTalk_NatureRunning_Activity_Temple_ObserveDecor>
+  <RimTalk_NatureRunning_Activity_Temple_RitualGame>仪式游戏</RimTalk_NatureRunning_Activity_Temple_RitualGame>
+
+  <RimTalk_NatureRunning_Activity_Kitchen_HousePlay>过家家</RimTalk_NatureRunning_Activity_Kitchen_HousePlay>
+
+  <RimTalk_NatureRunning_Activity_Recreation_PlayOnBuilding>在{0}上玩</RimTalk_NatureRunning_Activity_Recreation_PlayOnBuilding>
+  <RimTalk_NatureRunning_Activity_Recreation_Roughhouse>打闹</RimTalk_NatureRunning_Activity_Recreation_Roughhouse>
+  <RimTalk_NatureRunning_Activity_Recreation_HideAndSeek>捉迷藏</RimTalk_NatureRunning_Activity_Recreation_HideAndSeek>
+
+  <RimTalk_NatureRunning_Activity_Hospital_PlayDoctor>玩医生游戏</RimTalk_NatureRunning_Activity_Hospital_PlayDoctor>
+  <RimTalk_NatureRunning_Activity_OtherRoom_WanderAround>到处乱逛</RimTalk_NatureRunning_Activity_OtherRoom_WanderAround>
+  <RimTalk_NatureRunning_Activity_Landmark_Visit>参观{0}</RimTalk_NatureRunning_Activity_Landmark_Visit>
+
+  <RimTalk_NatureRunning_Activity_River_CatchFish>抓鱼</RimTalk_NatureRunning_Activity_River_CatchFish>
+  <RimTalk_NatureRunning_Activity_River_PlaySand>玩沙</RimTalk_NatureRunning_Activity_River_PlaySand>
+
+  <RimTalk_NatureRunning_Activity_Lake_PlayWater>玩水</RimTalk_NatureRunning_Activity_Lake_PlayWater>
+  <RimTalk_NatureRunning_Activity_Lake_CatchTadpoles>抓蝌蚪</RimTalk_NatureRunning_Activity_Lake_CatchTadpoles>
+
+  <RimTalk_NatureRunning_Activity_Snow_BuildSnowman>堆雪人</RimTalk_NatureRunning_Activity_Snow_BuildSnowman>
+  <RimTalk_NatureRunning_Activity_Snow_SnowballFight>打雪仗</RimTalk_NatureRunning_Activity_Snow_SnowballFight>
+
+  <RimTalk_NatureRunning_Activity_Cave_Explore>探索洞穴</RimTalk_NatureRunning_Activity_Cave_Explore>
+  <RimTalk_NatureRunning_Activity_Sand_SurvivalGame>生存游戏</RimTalk_NatureRunning_Activity_Sand_SurvivalGame>
+  <RimTalk_NatureRunning_Activity_AncientRoad_Run>跑步</RimTalk_NatureRunning_Activity_AncientRoad_Run>
+</LanguageData>

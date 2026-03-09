@@ -13,6 +13,51 @@
 
   <!-- Settings -->
   <RimTalk_ToddlersExpansion_Settings_Title>RimTalk Toddlers Expansion - Settings</RimTalk_ToddlersExpansion_Settings_Title>
+  <RimTalk_ToddlersExpansion_Settings_Page1>General</RimTalk_ToddlersExpansion_Settings_Page1>
+  <RimTalk_ToddlersExpansion_Settings_Page2>Outing Destinations</RimTalk_ToddlersExpansion_Settings_Page2>
+  <RimTalk_ToddlersExpansion_Settings_Page3>Play Animations</RimTalk_ToddlersExpansion_Settings_Page3>
+  <RimTalk_ToddlersExpansion_Animation_Settings_Header>Play Animation Pools</RimTalk_ToddlersExpansion_Animation_Settings_Header>
+  <RimTalk_ToddlersExpansion_Animation_Settings_Desc>Use this page to gradually narrow the toddler play animation pool while debugging animation issues.</RimTalk_ToddlersExpansion_Animation_Settings_Desc>
+  <RimTalk_ToddlersExpansion_Animation_YayoLoaded>Yayo animation detected: the Yayo-compatible pool is currently active.</RimTalk_ToddlersExpansion_Animation_YayoLoaded>
+  <RimTalk_ToddlersExpansion_Animation_YayoNotLoaded>Yayo animation not detected: only the non-Yayo native pool is currently active.</RimTalk_ToddlersExpansion_Animation_YayoNotLoaded>
+  <RimTalk_ToddlersExpansion_Animation_EnableNewborn>Enable play animations for non-mobile newborns</RimTalk_ToddlersExpansion_Animation_EnableNewborn>
+  <RimTalk_ToddlersExpansion_Animation_EnableNewborn_Tooltip>When disabled, newborns without mobility will not play any extra animation. Useful for isolating newborn-only animation bugs.</RimTalk_ToddlersExpansion_Animation_EnableNewborn_Tooltip>
+  <RimTalk_ToddlersExpansion_Animation_NoYayo_Header>Native pool when Yayo is not loaded</RimTalk_ToddlersExpansion_Animation_NoYayo_Header>
+  <RimTalk_ToddlersExpansion_Animation_Yayo_Header>Pool when Yayo is loaded</RimTalk_ToddlersExpansion_Animation_Yayo_Header>
+  <RimTalk_ToddlersExpansion_Animation_Wiggle>Wiggle</RimTalk_ToddlersExpansion_Animation_Wiggle>
+  <RimTalk_ToddlersExpansion_Animation_Sway>Sway</RimTalk_ToddlersExpansion_Animation_Sway>
+  <RimTalk_ToddlersExpansion_Animation_Lay>Lay</RimTalk_ToddlersExpansion_Animation_Lay>
+  <RimTalk_ToddlersExpansion_Animation_ProneCrawl>Prone crawl</RimTalk_ToddlersExpansion_Animation_ProneCrawl>
+  <RimTalk_ToddlersExpansion_Animation_ToddlersCrawl>Toddlers crawl</RimTalk_ToddlersExpansion_Animation_ToddlersCrawl>
+  <RimTalk_ToddlersExpansion_Animation_ToddlersWobble>Toddlers wobble</RimTalk_ToddlersExpansion_Animation_ToddlersWobble>
+  <RimTalk_ToddlersExpansion_Animation_PlayToys>PlayToys / social play</RimTalk_ToddlersExpansion_Animation_PlayToys>
+  <RimTalk_ToddlersExpansion_Animation_Hoopstone>Play_Hoopstone</RimTalk_ToddlersExpansion_Animation_Hoopstone>
+  <RimTalk_ToddlersExpansion_Animation_DartsBoard>Play_DartsBoard</RimTalk_ToddlersExpansion_Animation_DartsBoard>
+  <RimTalk_ToddlersExpansion_Animation_GoldenCube>GoldenCubePlay</RimTalk_ToddlersExpansion_Animation_GoldenCube>
+  <RimTalk_ToddlersExpansion_Animation_SocialRelax>SocialRelax</RimTalk_ToddlersExpansion_Animation_SocialRelax>
+  <RimTalk_ToddlersExpansion_Animation_Roll>Custom roll</RimTalk_ToddlersExpansion_Animation_Roll>
+  <RimTalk_ToddlersExpansion_Animation_Spin>Custom spin</RimTalk_ToddlersExpansion_Animation_Spin>
+  <RimTalk_ToddlersExpansion_Animation_Hop>Custom hop</RimTalk_ToddlersExpansion_Animation_Hop>
+  <RimTalk_ToddlersExpansion_Animation_RunLoop>Custom run loop</RimTalk_ToddlersExpansion_Animation_RunLoop>
+  <RimTalk_ToddlersExpansion_Outing_Settings_Header>Nature Running / Children Outing Destination Pools</RimTalk_ToddlersExpansion_Outing_Settings_Header>
+  <RimTalk_ToddlersExpansion_Outing_Settings_Desc>Each outing picks one enabled pool, then selects a destination from that pool.</RimTalk_ToddlersExpansion_Outing_Settings_Desc>
+  <RimTalk_ToddlersExpansion_OutingPool_VanillaEdgeRandom>Vanilla outing (map edge random)</RimTalk_ToddlersExpansion_OutingPool_VanillaEdgeRandom>
+  <RimTalk_ToddlersExpansion_OutingPool_GrowingZone>Growing zones</RimTalk_ToddlersExpansion_OutingPool_GrowingZone>
+  <RimTalk_ToddlersExpansion_OutingPool_StockpileZone>Stockpile zones</RimTalk_ToddlersExpansion_OutingPool_StockpileZone>
+  <RimTalk_ToddlersExpansion_OutingPool_ResearchRoom>Research rooms</RimTalk_ToddlersExpansion_OutingPool_ResearchRoom>
+  <RimTalk_ToddlersExpansion_OutingPool_TempleRoom>Temple rooms</RimTalk_ToddlersExpansion_OutingPool_TempleRoom>
+  <RimTalk_ToddlersExpansion_OutingPool_KitchenRoom>Kitchen rooms</RimTalk_ToddlersExpansion_OutingPool_KitchenRoom>
+  <RimTalk_ToddlersExpansion_OutingPool_RecreationRoom>Recreation rooms</RimTalk_ToddlersExpansion_OutingPool_RecreationRoom>
+  <RimTalk_ToddlersExpansion_OutingPool_HospitalRoom>Hospital rooms</RimTalk_ToddlersExpansion_OutingPool_HospitalRoom>
+  <RimTalk_ToddlersExpansion_OutingPool_OtherNonBedroomRooms>Other non-bedroom rooms</RimTalk_ToddlersExpansion_OutingPool_OtherNonBedroomRooms>
+  <RimTalk_ToddlersExpansion_OutingPool_ThingWithCompsLandmark>ThingWithComps landmarks</RimTalk_ToddlersExpansion_OutingPool_ThingWithCompsLandmark>
+  <RimTalk_ToddlersExpansion_OutingPool_River>River terrain</RimTalk_ToddlersExpansion_OutingPool_River>
+  <RimTalk_ToddlersExpansion_OutingPool_Lake>Lake terrain</RimTalk_ToddlersExpansion_OutingPool_Lake>
+  <RimTalk_ToddlersExpansion_OutingPool_Snow>Snow-covered terrain</RimTalk_ToddlersExpansion_OutingPool_Snow>
+  <RimTalk_ToddlersExpansion_OutingPool_Cave>Cave cells</RimTalk_ToddlersExpansion_OutingPool_Cave>
+  <RimTalk_ToddlersExpansion_OutingPool_Sand>Sand terrain</RimTalk_ToddlersExpansion_OutingPool_Sand>
+  <RimTalk_ToddlersExpansion_OutingPool_AncientRoad>Ancient roads</RimTalk_ToddlersExpansion_OutingPool_AncientRoad>
+  <RimTalk_ToddlersExpansion_OutingPool_AllDisabledWarning>All pools are disabled. Outings will fall back to vanilla target selection.</RimTalk_ToddlersExpansion_OutingPool_AllDisabledWarning>
   <RimTalk_ToddlersExpansion_EnableCaravanToddlerGeneration>Enable caravan/tourist toddler generation</RimTalk_ToddlersExpansion_EnableCaravanToddlerGeneration>
   <RimTalk_ToddlersExpansion_EnableCaravanToddlerGeneration_Tooltip>Allows toddlers and children to appear in caravans, visitors, and traveling groups</RimTalk_ToddlersExpansion_EnableCaravanToddlerGeneration_Tooltip>
   <RimTalk_ToddlersExpansion_MaxToddlersPerGroup>Max toddlers per group: {0}</RimTalk_ToddlersExpansion_MaxToddlersPerGroup>

@@ -94,6 +94,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return;
 			}
 
+			ToddlerPlayAnimationUtility.ClearCurrentAnimation(toddler);
 			CarriedToddlerStateUtility.EnsureCarriedJob(toddler, carrier, true);
 		}
 
