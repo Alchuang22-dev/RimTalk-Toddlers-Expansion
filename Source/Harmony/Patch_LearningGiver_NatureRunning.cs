@@ -46,13 +46,19 @@ namespace RimTalk_ToddlersExpansion.Harmony
             }
         }
         
+        /// <summary>
+        /// Wandering radius around the custom destination target cell.
+        /// The child will roam within this radius instead of standing on one spot.
+        /// </summary>
+        private const float WanderRadius = 6f;
+        
         public static void Init(HarmonyLib.Harmony harmony)
         {
             // Patch TryGiveJob to recruit followers after job is given
             var tryGiveJobTarget = AccessTools.Method(typeof(LearningGiver_NatureRunning), nameof(LearningGiver_NatureRunning.TryGiveJob));
             if (tryGiveJobTarget != null)
             {
-                harmony.Patch(tryGiveJobTarget, 
+                harmony.Patch(tryGiveJobTarget,
                     postfix: new HarmonyMethod(typeof(Patch_LearningGiver_NatureRunning), nameof(TryGiveJob_Postfix)));
             }
             else
@@ -66,6 +72,20 @@ namespace RimTalk_ToddlersExpansion.Harmony
             {
                 harmony.Patch(startJobTarget,
                     postfix: new HarmonyMethod(typeof(Patch_LearningGiver_NatureRunning), nameof(StartJob_Postfix)));
+            }
+            
+            // Patch NatureRunningUtility.TryFindNatureInterestTarget to redirect the child
+            // to our custom destination area. This is where the vanilla JobDriver_NatureRunning
+            // asks "where to go next?" — we intercept the answer.
+            var tryFindTarget = AccessTools.Method(typeof(NatureRunningUtility), nameof(NatureRunningUtility.TryFindNatureInterestTarget));
+            if (tryFindTarget != null)
+            {
+                harmony.Patch(tryFindTarget,
+                    postfix: new HarmonyMethod(typeof(Patch_LearningGiver_NatureRunning), nameof(TryFindNatureInterestTarget_Postfix)));
+            }
+            else
+            {
+                Log.Warning("[RimTalk_ToddlersExpansion] Could not find NatureRunningUtility.TryFindNatureInterestTarget.");
             }
         }
         
@@ -312,6 +332,46 @@ namespace RimTalk_ToddlersExpansion.Harmony
             
             // Start the job, interrupting current job
             follower.jobs.StartJob(followJob, JobCondition.InterruptForced);
+        }
+        
+        /// <summary>
+        /// Postfix on NatureRunningUtility.TryFindNatureInterestTarget.
+        /// When the vanilla JobDriver asks "where to go next?", we replace the answer
+        /// with a random walkable cell near our pre-computed destination so the child
+        /// naturally roams around the target area using the vanilla go→wait→repeat loop.
+        /// </summary>
+        private static void TryFindNatureInterestTarget_Postfix(Pawn searcher, ref LocalTargetInfo interestTarget, ref bool __result)
+        {
+            if (searcher == null || searcher.Map == null)
+            {
+                return;
+            }
+            
+            if (!NatureRunningDestinationUtility.TryGetContext(searcher, out var context))
+            {
+                return;
+            }
+            
+            // Pick a random standable & reachable cell near our target so the child
+            // wanders around the area instead of standing on one exact spot.
+            if (CellFinder.TryFindRandomCellNear(
+                context.TargetCell,
+                searcher.Map,
+                (int)WanderRadius,
+                c => c.InBounds(searcher.Map)
+                     && c.Standable(searcher.Map)
+                     && searcher.CanReach(c, PathEndMode.OnCell, Danger.Some),
+                out IntVec3 wanderCell))
+            {
+                interestTarget = wanderCell;
+                __result = true;
+            }
+            else
+            {
+                // Fallback: use the exact target cell if no nearby cell found
+                interestTarget = context.TargetCell;
+                __result = true;
+            }
         }
     }
 }
