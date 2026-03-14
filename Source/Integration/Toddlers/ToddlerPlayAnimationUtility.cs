@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using RimTalk_ToddlersExpansion.Core;
+using RimTalk_ToddlersExpansion.Integration.BioTech;
+using UnityEngine;
 using Verse;
 
 namespace RimTalk_ToddlersExpansion.Integration.Toddlers
@@ -24,6 +26,25 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			return PickRandom(BuildMutualPlayAnimations());
+		}
+
+		public static AnimationDef GetSharedMutualPlayAnimation(Pawn pawn, Pawn partner)
+		{
+			if (!ArePlayAnimationsAllowedForPawn(pawn))
+			{
+				return null;
+			}
+
+			AnimationDef[] defs = BuildMutualPlayAnimations();
+			if (defs == null || defs.Length == 0)
+			{
+				return null;
+			}
+
+			int first = Mathf.Min(pawn?.thingIDNumber ?? 0, partner?.thingIDNumber ?? 0);
+			int second = Mathf.Max(pawn?.thingIDNumber ?? 0, partner?.thingIDNumber ?? 0);
+			int seed = Gen.HashCombineInt(first, second) & int.MaxValue;
+			return defs[seed % defs.Length];
 		}
 
 		public static void TryApplyAnimation(Pawn pawn, AnimationDef animation)
@@ -71,6 +92,26 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 		}
 
+		public static bool ClearManagedNativePlayAnimation(Pawn pawn)
+		{
+			AnimationDef current = pawn?.Drawer?.renderer?.CurAnimation;
+			if (current == null)
+			{
+				return false;
+			}
+
+			if (current == ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Wiggle
+				|| current == ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Sway
+				|| current == ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Lay
+				|| current == ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Crawl)
+			{
+				pawn.Drawer.renderer.SetAnimation(null);
+				return true;
+			}
+
+			return false;
+		}
+
 		public static bool ArePlayAnimationsAllowedForPawn(Pawn pawn)
 		{
 			if (pawn == null)
@@ -78,7 +119,9 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return true;
 			}
 
-			if (pawn.DevelopmentalStage.Newborn() && !ToddlersExpansionSettings.EnableNewbornPlayAnimations)
+			if (BiotechCompatUtility.IsBaby(pawn)
+				&& !ToddlersCompatUtility.IsToddler(pawn)
+				&& !ToddlersExpansionSettings.EnableNewbornPlayAnimations)
 			{
 				return false;
 			}

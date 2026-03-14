@@ -27,6 +27,7 @@ namespace RimTalk_ToddlersExpansion.Core
 				Integration.Toddlers.LanguageLearningUtility.RegisterGameComponent();
 				Integration.Toddlers.ToddlerSelfBathUtility.RegisterGameComponent();
 				Integration.Toddlers.HAR.HarNurseryMoodUtility.RegisterGameComponent();
+				Integration.YayoAnimation.YayoAnimationSafeFallbackUtility.RegisterGameComponent();
 				Integration.Kiiro.KiiroRefugeeBabyGuardUtility.RegisterGameComponent();
 			});
 		}
@@ -41,12 +42,8 @@ namespace RimTalk_ToddlersExpansion.Core
 
 			settings.SettingsPageIndex = Mathf.Clamp(settings.SettingsPageIndex, 0, 2);
 
-			Rect titleRect = new Rect(inRect.x, inRect.y, inRect.width, 34f);
-			Text.Font = GameFont.Medium;
-			Widgets.Label(titleRect, "RimTalk_ToddlersExpansion_Settings_Title".Translate());
-			Text.Font = GameFont.Small;
-
-			Rect tabsRect = new Rect(inRect.x, titleRect.yMax + 4f, inRect.width, 32f);
+			const float topPadding = 40f;
+			Rect tabsRect = new Rect(inRect.x, inRect.y + topPadding, inRect.width, 32f);
 			List<TabRecord> tabs = new List<TabRecord>
 			{
 				new TabRecord("RimTalk_ToddlersExpansion_Settings_Page1".Translate(), () => settings.SettingsPageIndex = 0, settings.SettingsPageIndex == 0),
@@ -305,6 +302,6 @@ namespace RimTalk_ToddlersExpansion.Core
 				|| settings.EnableOutingPoolAncientRoad;
 		}
 
-		public override string SettingsCategory() => "RimTalk Toddlers Expansion";
+		public override string SettingsCategory() => "RimTalk_ToddlersExpansion_Settings_Title".Translate();
 	}
 }

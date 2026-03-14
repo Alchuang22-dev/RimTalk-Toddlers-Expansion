@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
 using RimTalk_ToddlersExpansion.Core;
+using RimTalk_ToddlersExpansion.Integration.BioTech;
 using RimTalk_ToddlersExpansion.Integration.Toddlers;
 using RimWorld;
 using UnityEngine;
@@ -54,8 +55,10 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 		private static bool _initialized;
 		private static bool _yayoAnimationLoaded;
 		private static bool _loggedBabyPlayYayoAnimation;
+		private static bool _loggedCustomYayoSocialRotationLock;
 		private static bool _walkHediffChecked;
 		private static readonly Dictionary<int, int> _lastLoggedBabyPlayJobByPawn = new Dictionary<int, int>(32);
+		private static readonly Dictionary<int, string> _lastLoggedPlayDecisionByPawn = new Dictionary<int, string>(32);
 
 		private static readonly HashSet<Pawn> _suppressedPawns = new HashSet<Pawn>();
 
@@ -155,6 +158,8 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 
 		private static bool CheckAni_Prefix(Pawn pawn, Rot4 rot, object pdd)
 		{
+			bool isSmallPlayJob = IsSmallPawnPlayJob(pawn);
+			bool isEngagedPlay = ToddlersCompatUtility.IsEngagedInToddlerPlay(pawn);
 			Pawn carrier = ToddlerCarryingUtility.GetCarrier(pawn);
 			if (carrier != null)
 			{
@@ -177,7 +182,13 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 				{
 				}
 
+				LogPlayAnimationDecision(pawn, $"suppressed: custom-carried by {carrier.LabelShort}");
 				return false;
+			}
+
+			if (isEngagedPlay && !isSmallPlayJob && ShouldLogMissingPlayClassification(pawn))
+			{
+				LogPlayAnimationDecision(pawn, "engaged play job not classified as small-pawn play");
 			}
 
 			if (_suppressedPawns.Contains(pawn))
@@ -193,10 +204,11 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 				{
 				}
 
+				LogPlayAnimationDecision(pawn, "suppressed: explicit suppression active");
 				return false;
 			}
 
-			if (IsSmallPawnPlayJob(pawn) && !HasAnyEnabledPlayProfile(pawn))
+			if (isSmallPlayJob && !HasAnyEnabledPlayProfile(pawn))
 			{
 				try
 				{
@@ -209,10 +221,11 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 				{
 				}
 
+				LogPlayAnimationDecision(pawn, "fallback: no enabled play profiles");
 				return false;
 			}
 
-			if (TryGetNativePlayAnimationOverride(pawn, out _))
+			if (isSmallPlayJob && TryGetNativePlayAnimationOverride(pawn, out AnimationDef nativeAnimation))
 			{
 				try
 				{
@@ -225,12 +238,22 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 				{
 				}
 
+				LogPlayAnimationDecision(pawn, $"native animation selected: {nativeAnimation?.defName ?? "null"}");
 				return false;
 			}
 
-			if (IsSmallPawnPlayJob(pawn) && TryApplySmallPawnPlayAnimationFromYayo(pawn, rot, pdd))
+			if (isSmallPlayJob && TryApplySmallPawnPlayAnimationFromYayo(pawn, rot, pdd))
 			{
 				return false;
+			}
+
+			if (isSmallPlayJob)
+			{
+				LogPlayAnimationDecision(pawn, "fallback: no native or custom Yayo profile applied");
+			}
+			else
+			{
+				ToddlerPlayAnimationUtility.ClearManagedNativePlayAnimation(pawn);
 			}
 
 			return true;
@@ -289,6 +312,34 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			return animation != null;
 		}
 
+		public static void SyncSafeNativePlayAnimation(Pawn pawn)
+		{
+			if (pawn?.Drawer?.renderer == null)
+			{
+				return;
+			}
+
+			if (!ShouldUseYayoPlayAnimation(pawn)
+				|| IsSuppressed(pawn)
+				|| ToddlerCarryingUtility.IsBeingCarried(pawn)
+				|| !IsSmallPawnPlayJob(pawn)
+				|| !TryGetNativePlayAnimationOverride(pawn, out AnimationDef animation))
+			{
+				if (ToddlerPlayAnimationUtility.ClearManagedNativePlayAnimation(pawn))
+				{
+					LogPlayAnimationDecision(pawn, "safe native fallback cleared");
+				}
+
+				return;
+			}
+
+			if (pawn.Drawer.renderer.CurAnimation != animation)
+			{
+				ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, animation);
+				LogPlayAnimationDecision(pawn, $"safe native fallback applied: {animation.defName}");
+			}
+		}
+
 		public static void StartSuppression(Pawn pawn)
 		{
 			if (pawn != null)
@@ -315,6 +366,27 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			_suppressedPawns.Clear();
 		}
 
+		private static void LogPlayAnimationDecision(Pawn pawn, string decision)
+		{
+			if (!Prefs.DevMode || pawn == null)
+			{
+				return;
+			}
+
+			int pawnId = pawn.thingIDNumber;
+			int jobId = pawn.CurJob?.loadID ?? -1;
+			string jobName = pawn.CurJobDef?.defName ?? "null";
+			string toil = pawn.jobs?.curDriver?.CurToilString ?? "null";
+			string message = $"{jobId}|{jobName}|{toil}|{decision}";
+			if (_lastLoggedPlayDecisionByPawn.TryGetValue(pawnId, out string lastMessage) && lastMessage == message)
+			{
+				return;
+			}
+
+			_lastLoggedPlayDecisionByPawn[pawnId] = message;
+			Log.Message($"[RimTalk_ToddlersExpansion] Play animation decision: pawn={pawn.LabelShort} job={jobName} toil={toil} {decision}");
+		}
+
 		[Obsolete("Use StartSuppression instead")]
 		public static void ResetPawnAnimation(Pawn pawn)
 		{
@@ -339,7 +411,7 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 				return false;
 			}
 
-			bool isBaby = pawn.DevelopmentalStage.Newborn() || pawn.DevelopmentalStage.Baby();
+			bool isBaby = IsBabyOnly(pawn);
 			bool isToddler = ToddlersCompatUtility.IsToddler(pawn);
 			if (!isBaby && !isToddler)
 			{
@@ -368,6 +440,11 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 				return false;
 			}
 
+			if (IsExcludedNativeOrNonPlayJob(name) || IsExcludedByAdultPlayJob(pawn, name))
+			{
+				return false;
+			}
+
 			if (name.StartsWith("RimTalk_ToddlerSelfPlay", StringComparison.Ordinal))
 			{
 				return pawn.jobs?.curDriver?.CurToilString == "ToddlerSelfPlay";
@@ -375,25 +452,70 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 
 			if (isBaby)
 			{
-				return name == "BabyPlay"
-					|| name == "BePlayedWith"
-					|| name == "PlayStatic"
-					|| name == "PlayWalking"
-					|| name == "PlayToys"
-					|| name == "PlayCrib"
-					|| name == "ToddlerPlayToys"
-					|| name == "ToddlerBugwatching"
-					|| name == "ToddlerSkydreaming"
-					|| name == "ToddlerPlayDecor";
+				return name == "BePlayedWith";
 			}
 
-			return name == "ToddlerFloordrawing"
+			return isToddler && (name == "BabyPlay"
+				|| name == "BePlayedWith"
+				|| name == "PlayStatic"
+				|| name == "PlayToys"
+				|| name == "PlayCrib"
+				|| name == "PlayRead"
+				|| name == "ToddlerFloordrawing"
 				|| name == "ToddlerSkydreaming"
 				|| name == "ToddlerBugwatching"
 				|| name == "ToddlerPlayToys"
 				|| name == "ToddlerWatchTelevision"
 				|| name == "ToddlerFiregazing"
-				|| name == "ToddlerPlayDecor";
+				|| name == "ToddlerPlayDecor");
+		}
+
+		private static bool IsExcludedNativeOrNonPlayJob(string jobDefName)
+		{
+			return jobDefName == "PlayWalking"
+				|| jobDefName == "LayAngleInCrib"
+				|| jobDefName == "WiggleInCrib"
+				|| jobDefName == "RestIdleInCrib"
+				|| jobDefName == "ToddlerFloordrawing"
+				|| jobDefName == "ToddlerSkydreaming"
+				|| jobDefName == "ToddlerBugwatching"
+				|| jobDefName == "ToddlerWatchTelevision"
+				|| jobDefName == "ToddlerFiregazing"
+				|| jobDefName == "ToddlerPlayDecor";
+		}
+
+		private static bool IsExcludedByAdultPlayJob(Pawn pawn, string jobDefName)
+		{
+			if (pawn?.CurJob == null || jobDefName != "BePlayedWith")
+			{
+				return false;
+			}
+
+			Pawn adult = pawn.CurJob.targetA.Thing as Pawn;
+			string adultJobName = adult?.CurJobDef?.defName;
+			return adultJobName == "PlayWalking";
+		}
+
+		private static bool ShouldLogMissingPlayClassification(Pawn pawn)
+		{
+			if (pawn?.CurJobDef == null)
+			{
+				return false;
+			}
+
+			if (pawn.CurJobDef == ToddlersExpansionJobDefOf.RimTalk_ToddlerMutualPlayJob
+				&& pawn.jobs?.curDriver?.CurToilString == "GotoThing")
+			{
+				return false;
+			}
+
+			if (pawn.CurJobDef == ToddlersExpansionJobDefOf.RimTalk_ToddlerMutualPlayPartnerJob
+				&& pawn.jobs?.curDriver?.CurToilString == "WaitForInitiator")
+			{
+				return false;
+			}
+
+			return true;
 		}
 
 		private static bool TryApplySmallPawnPlayAnimationFromYayo(Pawn pawn, Rot4 rot, object pdd)
@@ -470,7 +592,7 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 					return false;
 				}
 
-				int cycleTicks = pawn.DevelopmentalStage.Newborn() || pawn.DevelopmentalStage.Baby() ? 240 : 210;
+				int cycleTicks = IsBabyOnly(pawn) ? 240 : 210;
 				int tick = Find.TickManager?.TicksGame ?? 0;
 				int seedOffset = Mathf.Abs(Gen.HashCombineInt(pawn.thingIDNumber, pawn.CurJob?.loadID ?? 0)) % cycleTicks;
 				float phase = ((tick + seedOffset) % cycleTicks) / (float)cycleTicks;
@@ -501,7 +623,6 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 
 			if (pawn != null && ToddlersCompatUtility.IsToddler(pawn))
 			{
-				int seed = Gen.HashCombineInt(pawn.thingIDNumber, pawn.CurJob?.loadID ?? 0) & int.MaxValue;
 				bool allowActiveSelfPlay = IsMobileToddlerSelfPlay(pawn);
 				List<SmallPawnPlayProfile> activeProfiles = allowActiveSelfPlay
 					? profiles
@@ -512,11 +633,46 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 					activeProfiles = profiles;
 				}
 
+				int seed = GetPlayProfileSeed(pawn) & int.MaxValue;
 				return activeProfiles[seed % activeProfiles.Count];
 			}
 
 			int babySeed = Gen.HashCombineInt(pawn?.thingIDNumber ?? 0, pawn?.CurJob?.loadID ?? 0);
 			return profiles[(babySeed & int.MaxValue) % profiles.Count];
+		}
+
+		private static int GetPlayProfileSeed(Pawn pawn)
+		{
+			if (TryGetMutualPlayPartner(pawn, out Pawn partner))
+			{
+				return GetSharedMutualPlaySeed(pawn, partner);
+			}
+
+			return Gen.HashCombineInt(pawn?.thingIDNumber ?? 0, pawn?.CurJob?.loadID ?? 0);
+		}
+
+		private static bool TryGetMutualPlayPartner(Pawn pawn, out Pawn partner)
+		{
+			partner = null;
+			if (pawn?.CurJob == null)
+			{
+				return false;
+			}
+
+			if (pawn.CurJobDef == ToddlersExpansionJobDefOf.RimTalk_ToddlerMutualPlayJob
+				|| pawn.CurJobDef == ToddlersExpansionJobDefOf.RimTalk_ToddlerMutualPlayPartnerJob)
+			{
+				partner = pawn.CurJob.targetA.Thing as Pawn;
+			}
+
+			return partner != null;
+		}
+
+		private static int GetSharedMutualPlaySeed(Pawn pawn, Pawn partner)
+		{
+			int first = Mathf.Min(pawn?.thingIDNumber ?? 0, partner?.thingIDNumber ?? 0);
+			int second = Mathf.Max(pawn?.thingIDNumber ?? 0, partner?.thingIDNumber ?? 0);
+			return Gen.HashCombineInt(first, second);
 		}
 
 		private static bool HasAnyEnabledPlayProfile(Pawn pawn)
@@ -550,7 +706,7 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 
 					return TryApplyToddlerRollProfile(pawn, rot, pdd);
 				case SmallPawnPlayProfileKind.CustomYayoSocial:
-					return TryApplyToddlerYayoSocialProfile(pawn, rot, pdd);
+					return TryApplyToddlerYayoSocialProfile(pawn, rot, pdd, profile.YayoProfile);
 				case SmallPawnPlayProfileKind.CustomSpin:
 					return TryApplyToddlerSpinProfile(pawn, rot, pdd);
 				case SmallPawnPlayProfileKind.CustomHop:
@@ -760,7 +916,7 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			return true;
 		}
 
-		private static bool TryApplyToddlerYayoSocialProfile(Pawn pawn, Rot4 rot, object pdd)
+		private static bool TryApplyToddlerYayoSocialProfile(Pawn pawn, Rot4 rot, object pdd, string yayoProfile)
 		{
 			if (!TryPrepareCustomPose(pdd, rot))
 			{
@@ -809,6 +965,7 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 				}
 
 				_fixedRotField?.SetValue(pdd, facing);
+				ApplySmallPawnRotationLock(pawn, pdd, rot, yayoProfile);
 				_angleOffsetField.SetValue(pdd, angle);
 				_posOffsetField.SetValue(pdd, pos);
 				return true;
@@ -826,8 +983,8 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 
 		private static void GetToddlerRollPose(float phase, Pawn pawn, out float angle, out Vector3 pos)
 		{
-			float angleAmplitude = pawn.DevelopmentalStage.Newborn() || pawn.DevelopmentalStage.Baby() ? 18f : 24f;
-			float posAmplitude = pawn.DevelopmentalStage.Newborn() || pawn.DevelopmentalStage.Baby() ? 0.035f : 0.05f;
+			float angleAmplitude = IsBabyOnly(pawn) ? 18f : 24f;
+			float posAmplitude = IsBabyOnly(pawn) ? 0.035f : 0.05f;
 
 			if (phase < 0.20f)
 			{
@@ -1113,6 +1270,21 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			}
 		}
 
+		private static void ApplySmallPawnRotationLock(Pawn pawn, object pdd, Rot4 rot, string yayoProfile)
+		{
+			if (_fixedRotField == null || pdd == null || !ToddlersCompatUtility.IsToddlerOrBaby(pawn))
+			{
+				return;
+			}
+
+			_fixedRotField.SetValue(pdd, rot);
+			if (!_loggedCustomYayoSocialRotationLock)
+			{
+				_loggedCustomYayoSocialRotationLock = true;
+				Log.Message($"[RimTalk_ToddlersExpansion] Locked custom Yayo social rotation for small pawns (profile={yayoProfile ?? "unknown"}).");
+			}
+		}
+
 		private static bool TryConsumeYayoTicks(ref int tick, int duration)
 		{
 			if (tick >= duration)
@@ -1285,6 +1457,11 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			return -4f * (1f - x);
 		}
 
+		private static bool IsBabyOnly(Pawn pawn)
+		{
+			return BiotechCompatUtility.IsBaby(pawn) && !ToddlersCompatUtility.IsToddler(pawn);
+		}
+
 		private static void ScaleSmallPawnYayoOffsets(Pawn pawn, object pdd, string profile)
 		{
 			if (pawn == null || pdd == null || _angleOffsetField == null || _posOffsetField == null)
@@ -1294,7 +1471,7 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 
 			float angleScale;
 			float posScale;
-			if (pawn.DevelopmentalStage.Newborn() || pawn.DevelopmentalStage.Baby())
+			if (IsBabyOnly(pawn))
 			{
 				angleScale = 0.42f;
 				posScale = 0.18f;

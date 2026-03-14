@@ -58,6 +58,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					_playAnimation = nativeAnimation;
 					ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, _playAnimation);
 				}
+				else if (!YayoAnimationCompatUtility.ShouldUseYayoPlayAnimation(pawn))
+				{
+					_playAnimation = ToddlerPlayAnimationUtility.GetSharedMutualPlayAnimation(pawn, Partner);
+					ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, _playAnimation);
+				}
 
 				_initialPlayLevel = GetPlayLevel(pawn);
 				ToddlerPlayReportUtility.EnsureReportRequested(job, pawn, Partner, ToddlerPlayReportKind.MutualPlay);

@@ -64,6 +64,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					_playAnimation = nativeAnimation;
 					ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, _playAnimation);
 				}
+				else if (!YayoAnimationCompatUtility.ShouldUseYayoPlayAnimation(pawn))
+				{
+					_playAnimation = ToddlerPlayAnimationUtility.GetSharedMutualPlayAnimation(pawn, Initiator);
+					ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, _playAnimation);
+				}
 			};
 			play.tickAction = () =>
 			{
