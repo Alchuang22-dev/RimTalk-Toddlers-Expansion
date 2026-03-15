@@ -118,7 +118,10 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		public static void TryQueueStruggleTalk(Pawn carrier, Pawn toddler)
 		{
-			if (carrier == null || toddler == null || !RimTalkCompatUtility.IsRimTalkActive)
+			if (carrier == null
+				|| toddler == null
+				|| !RimTalkCompatUtility.IsRimTalkActive
+				|| !ToddlersExpansionSettings.EnableRimTalkStruggleEventTalkRequests)
 			{
 				return;
 			}

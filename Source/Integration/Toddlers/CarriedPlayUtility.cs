@@ -188,7 +188,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		/// <param name="playType">玩耍类型</param>
 		private static void TryQueueRimTalkConversation(Pawn carrier, Pawn toddler, string playType)
 		{
-			if (!RimTalkCompatUtility.IsRimTalkActive)
+			if (!RimTalkCompatUtility.IsRimTalkActive
+				|| !ToddlersExpansionSettings.EnableRimTalkCarriedPlayEventTalkRequests)
 			{
 				return;
 			}

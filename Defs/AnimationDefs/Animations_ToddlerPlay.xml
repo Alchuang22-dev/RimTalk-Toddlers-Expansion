@@ -64,12 +64,6 @@
           <workerType>RimTalk_ToddlersExpansion.Integration.Toddlers.AnimationWorker_ToddlerPlayCrawl_Root</workerType>
         </value>
       </li>
-      <li>
-        <key>Head</key>
-        <value>
-          <workerType>RimTalk_ToddlersExpansion.Integration.Toddlers.AnimationWorker_ToddlerPlayCrawl_Head</workerType>
-        </value>
-      </li>
     </keyframeParts>
   </AnimationDef>
 </Defs>

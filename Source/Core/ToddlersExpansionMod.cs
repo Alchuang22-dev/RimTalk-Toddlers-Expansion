@@ -13,6 +13,7 @@ namespace RimTalk_ToddlersExpansion.Core
 		private static Vector2 generalScrollPosition = Vector2.zero;
 		private static Vector2 outingScrollPosition = Vector2.zero;
 		private static Vector2 animationScrollPosition = Vector2.zero;
+		private static Vector2 talkScrollPosition = Vector2.zero;
 
 		public ToddlersExpansionMod(ModContentPack content) : base(content)
 		{
@@ -40,7 +41,7 @@ namespace RimTalk_ToddlersExpansion.Core
 				return;
 			}
 
-			settings.SettingsPageIndex = Mathf.Clamp(settings.SettingsPageIndex, 0, 2);
+			settings.SettingsPageIndex = Mathf.Clamp(settings.SettingsPageIndex, 0, 3);
 
 			const float topPadding = 40f;
 			Rect tabsRect = new Rect(inRect.x, inRect.y + topPadding, inRect.width, 32f);
@@ -48,7 +49,8 @@ namespace RimTalk_ToddlersExpansion.Core
 			{
 				new TabRecord("RimTalk_ToddlersExpansion_Settings_Page1".Translate(), () => settings.SettingsPageIndex = 0, settings.SettingsPageIndex == 0),
 				new TabRecord("RimTalk_ToddlersExpansion_Settings_Page2".Translate(), () => settings.SettingsPageIndex = 1, settings.SettingsPageIndex == 1),
-				new TabRecord("RimTalk_ToddlersExpansion_Settings_Page3".Translate(), () => settings.SettingsPageIndex = 2, settings.SettingsPageIndex == 2)
+				new TabRecord("RimTalk_ToddlersExpansion_Settings_Page3".Translate(), () => settings.SettingsPageIndex = 2, settings.SettingsPageIndex == 2),
+				new TabRecord("RimTalk_ToddlersExpansion_Settings_Page4".Translate(), () => settings.SettingsPageIndex = 3, settings.SettingsPageIndex == 3)
 			};
 			TabDrawer.DrawTabs(tabsRect, tabs);
 
@@ -61,9 +63,13 @@ namespace RimTalk_ToddlersExpansion.Core
 			{
 				DrawOutingSettingsPage(pageRect, settings);
 			}
-			else
+			else if (settings.SettingsPageIndex == 2)
 			{
 				DrawAnimationSettingsPage(pageRect);
+			}
+			else
+			{
+				DrawTalkSettingsPage(pageRect);
 			}
 		}
 
@@ -277,6 +283,44 @@ namespace RimTalk_ToddlersExpansion.Core
 			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_Spin".Translate(), ref ToddlersExpansionSettings.EnableYayoCustomSpin);
 			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_Hop".Translate(), ref ToddlersExpansionSettings.EnableYayoCustomHop);
 			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_RunLoop".Translate(), ref ToddlersExpansionSettings.EnableYayoCustomRunLoop);
+
+			listingStandard.End();
+			Widgets.EndScrollView();
+		}
+
+		private void DrawTalkSettingsPage(Rect inRect)
+		{
+			float contentHeight = 320f;
+			Rect viewRect = new Rect(0f, 0f, inRect.width - 20f, contentHeight);
+
+			Widgets.BeginScrollView(inRect, ref talkScrollPosition, viewRect);
+			Listing_Standard listingStandard = new Listing_Standard();
+			listingStandard.Begin(viewRect);
+
+			listingStandard.Label("RimTalk_ToddlersExpansion_Talk_Settings_Header".Translate());
+			listingStandard.GapLine();
+			listingStandard.Label("RimTalk_ToddlersExpansion_Talk_Settings_Desc".Translate());
+			listingStandard.Gap();
+			listingStandard.CheckboxLabeled(
+				"RimTalk_ToddlersExpansion_Talk_EnableSelfPlay".Translate(),
+				ref ToddlersExpansionSettings.EnableRimTalkSelfPlayEventTalkRequests,
+				"RimTalk_ToddlersExpansion_Talk_EnableSelfPlay_Tooltip".Translate());
+			listingStandard.CheckboxLabeled(
+				"RimTalk_ToddlersExpansion_Talk_EnableMutualPlay".Translate(),
+				ref ToddlersExpansionSettings.EnableRimTalkMutualPlayEventTalkRequests,
+				"RimTalk_ToddlersExpansion_Talk_EnableMutualPlay_Tooltip".Translate());
+			listingStandard.CheckboxLabeled(
+				"RimTalk_ToddlersExpansion_Talk_EnableWatchPlay".Translate(),
+				ref ToddlersExpansionSettings.EnableRimTalkWatchPlayEventTalkRequests,
+				"RimTalk_ToddlersExpansion_Talk_EnableWatchPlay_Tooltip".Translate());
+			listingStandard.CheckboxLabeled(
+				"RimTalk_ToddlersExpansion_Talk_EnableCarriedPlay".Translate(),
+				ref ToddlersExpansionSettings.EnableRimTalkCarriedPlayEventTalkRequests,
+				"RimTalk_ToddlersExpansion_Talk_EnableCarriedPlay_Tooltip".Translate());
+			listingStandard.CheckboxLabeled(
+				"RimTalk_ToddlersExpansion_Talk_EnableStruggle".Translate(),
+				ref ToddlersExpansionSettings.EnableRimTalkStruggleEventTalkRequests,
+				"RimTalk_ToddlersExpansion_Talk_EnableStruggle_Tooltip".Translate());
 
 			listingStandard.End();
 			Widgets.EndScrollView();

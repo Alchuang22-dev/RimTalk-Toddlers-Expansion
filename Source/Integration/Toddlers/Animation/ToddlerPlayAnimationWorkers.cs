@@ -221,11 +221,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return -CrawlAngle;
 			}
 
-			if (parms.facing == Rot4.North && parms.flipHead)
-			{
-				return 180f;
-			}
-
 			return 0f;
 		}
 

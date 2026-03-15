@@ -16,6 +16,19 @@
   <RimTalk_ToddlersExpansion_Settings_Page1>General</RimTalk_ToddlersExpansion_Settings_Page1>
   <RimTalk_ToddlersExpansion_Settings_Page2>Outing Destinations</RimTalk_ToddlersExpansion_Settings_Page2>
   <RimTalk_ToddlersExpansion_Settings_Page3>Play Animations</RimTalk_ToddlersExpansion_Settings_Page3>
+  <RimTalk_ToddlersExpansion_Settings_Page4>Talk</RimTalk_ToddlersExpansion_Settings_Page4>
+  <RimTalk_ToddlersExpansion_Talk_Settings_Header>RimTalk Talk Settings</RimTalk_ToddlersExpansion_Talk_Settings_Header>
+  <RimTalk_ToddlersExpansion_Talk_Settings_Desc>Configure Event-type TalkRequest sources independently.</RimTalk_ToddlersExpansion_Talk_Settings_Desc>
+  <RimTalk_ToddlersExpansion_Talk_EnableSelfPlay>Enable self-play Event talks</RimTalk_ToddlersExpansion_Talk_EnableSelfPlay>
+  <RimTalk_ToddlersExpansion_Talk_EnableSelfPlay_Tooltip>Controls Event TalkRequest sending for toddler self-play and toy-play completion.</RimTalk_ToddlersExpansion_Talk_EnableSelfPlay_Tooltip>
+  <RimTalk_ToddlersExpansion_Talk_EnableMutualPlay>Enable mutual-play Event talks</RimTalk_ToddlersExpansion_Talk_EnableMutualPlay>
+  <RimTalk_ToddlersExpansion_Talk_EnableMutualPlay_Tooltip>Controls Event TalkRequest sending for toddler mutual-play completion.</RimTalk_ToddlersExpansion_Talk_EnableMutualPlay_Tooltip>
+  <RimTalk_ToddlersExpansion_Talk_EnableWatchPlay>Enable watch-play Event talks</RimTalk_ToddlersExpansion_Talk_EnableWatchPlay>
+  <RimTalk_ToddlersExpansion_Talk_EnableWatchPlay_Tooltip>Controls Event TalkRequest sending when adults finish watching toddler play.</RimTalk_ToddlersExpansion_Talk_EnableWatchPlay_Tooltip>
+  <RimTalk_ToddlersExpansion_Talk_EnableCarriedPlay>Enable carried-play Event talks</RimTalk_ToddlersExpansion_Talk_EnableCarriedPlay>
+  <RimTalk_ToddlersExpansion_Talk_EnableCarriedPlay_Tooltip>Controls Event TalkRequest sending for carried play interactions like toss, tickle, and spin.</RimTalk_ToddlersExpansion_Talk_EnableCarriedPlay_Tooltip>
+  <RimTalk_ToddlersExpansion_Talk_EnableStruggle>Enable struggle Event talks</RimTalk_ToddlersExpansion_Talk_EnableStruggle>
+  <RimTalk_ToddlersExpansion_Talk_EnableStruggle_Tooltip>Controls Event TalkRequest sending when a carried toddler struggles and is put down.</RimTalk_ToddlersExpansion_Talk_EnableStruggle_Tooltip>
   <RimTalk_ToddlersExpansion_Animation_Settings_Header>Play Animation Pools</RimTalk_ToddlersExpansion_Animation_Settings_Header>
   <RimTalk_ToddlersExpansion_Animation_Settings_Desc>Use this page to gradually narrow the toddler play animation pool while debugging animation issues.</RimTalk_ToddlersExpansion_Animation_Settings_Desc>
   <RimTalk_ToddlersExpansion_Animation_YayoLoaded>Yayo animation detected: the Yayo-compatible pool is currently active.</RimTalk_ToddlersExpansion_Animation_YayoLoaded>

@@ -55,6 +55,13 @@ namespace RimTalk_ToddlersExpansion.Core
 		// Play animation pool settings
 		public static bool EnableNewbornPlayAnimations = true;
 
+		// RimTalk event talk settings
+		public static bool EnableRimTalkSelfPlayEventTalkRequests = true;
+		public static bool EnableRimTalkMutualPlayEventTalkRequests = true;
+		public static bool EnableRimTalkWatchPlayEventTalkRequests = true;
+		public static bool EnableRimTalkCarriedPlayEventTalkRequests = true;
+		public static bool EnableRimTalkStruggleEventTalkRequests = true;
+
 		public static bool EnableNativePlayWiggle = true;
 		public static bool EnableNativePlaySway = true;
 		public static bool EnableNativePlayLay = true;
@@ -118,6 +125,11 @@ namespace RimTalk_ToddlersExpansion.Core
 			Scribe_Values.Look(ref EnableOutingPoolAncientRoad, "EnableOutingPoolAncientRoad", true);
 
 			Scribe_Values.Look(ref EnableNewbornPlayAnimations, "EnableNewbornPlayAnimations", true);
+			Scribe_Values.Look(ref EnableRimTalkSelfPlayEventTalkRequests, "EnableRimTalkSelfPlayEventTalkRequests", true);
+			Scribe_Values.Look(ref EnableRimTalkMutualPlayEventTalkRequests, "EnableRimTalkMutualPlayEventTalkRequests", true);
+			Scribe_Values.Look(ref EnableRimTalkWatchPlayEventTalkRequests, "EnableRimTalkWatchPlayEventTalkRequests", true);
+			Scribe_Values.Look(ref EnableRimTalkCarriedPlayEventTalkRequests, "EnableRimTalkCarriedPlayEventTalkRequests", true);
+			Scribe_Values.Look(ref EnableRimTalkStruggleEventTalkRequests, "EnableRimTalkStruggleEventTalkRequests", true);
 
 			Scribe_Values.Look(ref EnableNativePlayWiggle, "EnableNativePlayWiggle", true);
 			Scribe_Values.Look(ref EnableNativePlaySway, "EnableNativePlaySway", true);

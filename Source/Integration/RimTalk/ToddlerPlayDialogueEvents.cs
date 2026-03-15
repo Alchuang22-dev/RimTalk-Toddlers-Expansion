@@ -1,3 +1,4 @@
+using RimTalk_ToddlersExpansion.Core;
 using RimTalk_ToddlersExpansion.Integration.Toddlers;
 using RimTalk_ToddlersExpansion.Language;
 using RimWorld;
@@ -12,7 +13,9 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 
 		public static void OnToddlerSelfPlayCompleted(Pawn toddler, Job job, Map map)
 		{
-			if (!RimTalkCompatUtility.IsRimTalkActive || toddler == null)
+			if (!RimTalkCompatUtility.IsRimTalkActive
+				|| !ToddlersExpansionSettings.EnableRimTalkSelfPlayEventTalkRequests
+				|| toddler == null)
 			{
 				return;
 			}
@@ -23,7 +26,10 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 
 		public static void OnToddlerMutualPlayCompleted(Pawn toddlerA, Pawn toddlerB, Job job, Map map)
 		{
-			if (!RimTalkCompatUtility.IsRimTalkActive || toddlerA == null || toddlerB == null)
+			if (!RimTalkCompatUtility.IsRimTalkActive
+				|| !ToddlersExpansionSettings.EnableRimTalkMutualPlayEventTalkRequests
+				|| toddlerA == null
+				|| toddlerB == null)
 			{
 				return;
 			}
@@ -34,7 +40,10 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 
 		public static void OnAdultWatchToddlerPlay(Pawn adult, Pawn toddler, Job job, Map map)
 		{
-			if (!RimTalkCompatUtility.IsRimTalkActive || adult == null || toddler == null)
+			if (!RimTalkCompatUtility.IsRimTalkActive
+				|| !ToddlersExpansionSettings.EnableRimTalkWatchPlayEventTalkRequests
+				|| adult == null
+				|| toddler == null)
 			{
 				return;
 			}
