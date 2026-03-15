@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+	<packageId>cj.rimtalk.ratbabymod</packageId>
+	<name>RatBabyRefugee</name>
+	<author>changlusss</author>
+
+	<description>
+	Adds a Ratkin "entrust orphan" style quest: a Ratkin baby is left at the colony together with a dead mother, an injured mother, or a guardian mouse.
+	</description>
+
+	<supportedVersions>
+		<li>1.6</li>
+	</supportedVersions>
+
+	<loadAfter>
+		<li>Solaris.RatkinRaceMod</li>
+		<li>fxz.Solaris.RatkinRaceMod.odyssey</li>
+		<li>erdelf.HumanoidAlienRaces</li>
+		<li>erdelf.humanoidalienraces</li>
+	</loadAfter>
+</ModMetaData>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+
+  <Operation Class="PatchOperationAdd" MayRequire="Ludeon.RimWorld.Biotech">
+    <xpath>Defs/StorytellerDef[@Name="BaseStoryteller"]/comps</xpath>
+    <value>
+      <li Class="StorytellerCompProperties_OnOffCycle">
+        <incident>RatBaby_RatkinOrphan</incident>
+        <onDays>20</onDays>
+        <offDays>40</offDays>
+        <minSpacingDays>18</minSpacingDays>
+        <numIncidentsRange>0~1</numIncidentsRange>
+        <allowedTargetTags>
+          <li>Map_PlayerHome</li>
+        </allowedTargetTags>
+        <enableIfAnyModActive>
+          <li>Solaris.RatkinRaceMod</li>
+          <li>fxz.Solaris.RatkinRaceMod.odyssey</li>
+        </enableIfAnyModActive>
+      </li>
+    </value>
+  </Operation>
+
+</Patch>

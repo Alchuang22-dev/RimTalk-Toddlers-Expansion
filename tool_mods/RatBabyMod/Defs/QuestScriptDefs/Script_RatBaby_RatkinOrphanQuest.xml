@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <QuestScriptDef MayRequire="Ludeon.RimWorld.Biotech">
+    <defName>RatBaby_RatkinOrphanQuest</defName>
+    <autoAccept>true</autoAccept>
+    <defaultCharity>true</defaultCharity>
+    <successHistoryEvent MayRequire="Ludeon.RimWorld.Ideology">CharityFulfilled_WandererJoins</successHistoryEvent>
+    <failedOrExpiredHistoryEvent MayRequire="Ludeon.RimWorld.Ideology">CharityRefused_WandererJoins</failedOrExpiredHistoryEvent>
+    <defaultHidden>true</defaultHidden>
+    <isRootSpecial>true</isRootSpecial>
+    <layerWhitelist>
+      <li>Surface</li>
+    </layerWhitelist>
+    <questNameRules>
+      <rulesStrings>
+        <li>questName->ratkin orphan</li>
+      </rulesStrings>
+    </questNameRules>
+    <questDescriptionRules>
+      <rulesStrings>
+        <li>questDescription-></li>
+      </rulesStrings>
+    </questDescriptionRules>
+    <root Class="RatBabyMod.QuestNode_Root_RatkinRefugeeBaby" />
+  </QuestScriptDef>
+
+</Defs>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+  <RatBaby_LetterLabel>Ratkin infant left behind</RatBaby_LetterLabel>
+  <RatBaby_LetterBase>A Ratkin baby, {PAWN_nameDef}, has been found at the edge of the colony. Whoever brought the child here left no explanation, only a hurried trail leading back into the wild.</RatBaby_LetterBase>
+  <RatBaby_LetterDeadMother>A dead Ratkin mother lies beside {PAWN_nameDef}. It looks as if she dragged herself here to leave the baby with the only people she thought might help.</RatBaby_LetterDeadMother>
+  <RatBaby_LetterInjuredMother>A badly injured Ratkin mother has collapsed near {PAWN_nameDef}. She is alive, barely, and seems to have come here to entrust the baby to your colony.</RatBaby_LetterInjuredMother>
+  <RatBaby_LetterMouseGuardian>A large domesticated rat is circling protectively around {PAWN_nameDef}. Somehow, the animal stayed with the baby all the way to your colony.</RatBaby_LetterMouseGuardian>
+</LanguageData>

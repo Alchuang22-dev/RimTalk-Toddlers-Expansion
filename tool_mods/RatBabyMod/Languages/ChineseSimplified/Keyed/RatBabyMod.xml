@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+  <RatBaby_LetterLabel>鼠鼠托孤</RatBaby_LetterLabel>
+  <RatBaby_LetterBase>殖民地边缘发现了一名 Ratkin 婴儿，{PAWN_nameDef}。带孩子来到这里的人没有留下任何解释，只留下了一串匆忙折返荒野的痕迹。</RatBaby_LetterBase>
+  <RatBaby_LetterDeadMother>{PAWN_nameDef} 身旁躺着一名已经死去的 Ratkin 母亲。看起来她是在生命最后时刻把孩子拖到了这里，希望你们能收留这个婴儿。</RatBaby_LetterDeadMother>
+  <RatBaby_LetterInjuredMother>{PAWN_nameDef} 附近倒着一名身受重伤的 Ratkin 母亲。她还活着，但已经奄奄一息，显然是想把孩子托付给你们。</RatBaby_LetterInjuredMother>
+  <RatBaby_LetterMouseGuardian>一只体型异常大的家鼠正围着 {PAWN_nameDef} 打转，警惕地守着四周。它不知为何一路护送着这个 Ratkin 婴儿来到你们的殖民地。</RatBaby_LetterMouseGuardian>
+</LanguageData>

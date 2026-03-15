@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <IncidentDef MayRequire="Ludeon.RimWorld.Biotech">
+    <defName>RatBaby_RatkinOrphan</defName>
+    <label>ratkin orphan</label>
+    <category>Misc</category>
+    <targetTags>
+      <li>Map_PlayerHome</li>
+    </targetTags>
+    <workerClass>RatBabyMod.IncidentWorker_GiveRatBabyQuest</workerClass>
+    <baseChance>0.16</baseChance>
+    <minRefireDays>40</minRefireDays>
+    <questScriptDef>RatBaby_RatkinOrphanQuest</questScriptDef>
+    <populationEffect>IncreaseEasy</populationEffect>
+    <requireColonistsPresent>True</requireColonistsPresent>
+  </IncidentDef>
+
+</Defs>
