@@ -29,6 +29,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			this.FailOn(() => pawn.Downed || pawn.Drafted || ToddlerMentalStateUtility.HasBlockingMentalState(pawn));
 			this.FailOn(() => Partner == null || Partner.Downed || Partner.Drafted || ToddlerMentalStateUtility.HasBlockingMentalState(Partner));
 			this.FailOn(() => Partner.Map != pawn.Map);
+			this.FailOn(() => _partnerJobStarted && !IsPartnerStillCommitted());
 
 			// Step 1: Start partner job first (partner will stop moving and wait)
 			Toil startPartnerJob = ToilMaker.MakeToil("StartPartnerJob");
@@ -159,6 +160,18 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			return pawn?.needs?.joy?.CurLevelPercentage ?? -1f;
+		}
+
+		private bool IsPartnerStillCommitted()
+		{
+			if (Partner == null)
+			{
+				return false;
+			}
+
+			Job curJob = Partner.CurJob;
+			return curJob?.def == ToddlersExpansionJobDefOf.RimTalk_ToddlerMutualPlayPartnerJob
+				&& curJob.targetA.Thing == pawn;
 		}
 	}
 }
