@@ -66,7 +66,6 @@ namespace RimTalk_ToddlersExpansion.Core
 		public static bool EnableNativePlaySway = true;
 		public static bool EnableNativePlayLay = true;
 		public static bool EnableNativePlayCrawl = true;
-		public static bool EnableNativePlayToddlerCrawl = true;
 		public static bool EnableNativePlayToddlerWobble = true;
 
 		public static bool EnableYayoPlayToys = true;
@@ -135,7 +134,6 @@ namespace RimTalk_ToddlersExpansion.Core
 			Scribe_Values.Look(ref EnableNativePlaySway, "EnableNativePlaySway", true);
 			Scribe_Values.Look(ref EnableNativePlayLay, "EnableNativePlayLay", true);
 			Scribe_Values.Look(ref EnableNativePlayCrawl, "EnableNativePlayCrawl", true);
-			Scribe_Values.Look(ref EnableNativePlayToddlerCrawl, "EnableNativePlayToddlerCrawl", true);
 			Scribe_Values.Look(ref EnableNativePlayToddlerWobble, "EnableNativePlayToddlerWobble", true);
 
 			Scribe_Values.Look(ref EnableYayoPlayToys, "EnableYayoPlayToys", true);

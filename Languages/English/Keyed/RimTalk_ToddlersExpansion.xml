@@ -5,6 +5,7 @@
   <RimTalk_ToddlersExpansion_ToddlerScuffleLabel>Toddler scuffle</RimTalk_ToddlersExpansion_ToddlerScuffleLabel>
   <RimTalk_ToddlersExpansion_ToddlerScuffleText>{TODDLER} got into a brief scuffle with {PARTNER}.</RimTalk_ToddlersExpansion_ToddlerScuffleText>
   <RimTalk_ToddlersExpansion_PlayReport_SelfPrefix>self play -> </RimTalk_ToddlersExpansion_PlayReport_SelfPrefix>
+  <RimTalk_ToddlersExpansion_PlayReport_SelfMoving>getting ready to play.</RimTalk_ToddlersExpansion_PlayReport_SelfMoving>
   <RimTalk_ToddlersExpansion_PlayReport_MutualPrefix>play with {PARTNER} -> </RimTalk_ToddlersExpansion_PlayReport_MutualPrefix>
   <RimTalk_ToddlersExpansion_PlayReport_AnotherToddler>another toddler</RimTalk_ToddlersExpansion_PlayReport_AnotherToddler>
   <RimTalk_ToddlersExpansion_ToddlerLanguageDescriptor>Toddler language level descriptor</RimTalk_ToddlersExpansion_ToddlerLanguageDescriptor>
@@ -41,7 +42,6 @@
   <RimTalk_ToddlersExpansion_Animation_Sway>Sway</RimTalk_ToddlersExpansion_Animation_Sway>
   <RimTalk_ToddlersExpansion_Animation_Lay>Lay</RimTalk_ToddlersExpansion_Animation_Lay>
   <RimTalk_ToddlersExpansion_Animation_ProneCrawl>Prone crawl</RimTalk_ToddlersExpansion_Animation_ProneCrawl>
-  <RimTalk_ToddlersExpansion_Animation_ToddlersCrawl>Toddlers crawl</RimTalk_ToddlersExpansion_Animation_ToddlersCrawl>
   <RimTalk_ToddlersExpansion_Animation_ToddlersWobble>Toddlers wobble</RimTalk_ToddlersExpansion_Animation_ToddlersWobble>
   <RimTalk_ToddlersExpansion_Animation_PlayToys>PlayToys / social play</RimTalk_ToddlersExpansion_Animation_PlayToys>
   <RimTalk_ToddlersExpansion_Animation_Hoopstone>Play_Hoopstone</RimTalk_ToddlersExpansion_Animation_Hoopstone>

@@ -37,7 +37,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			{
 				if (Initiator == null
 					|| Initiator.CurJob?.def != ToddlersExpansionJobDefOf.RimTalk_ToddlerMutualPlayJob
-					|| Initiator.CurJob.targetA.Thing != pawn)
+					|| Initiator.CurJob.targetA.Thing != pawn
+					|| !Initiator.CanReach(pawn, PathEndMode.Touch, Danger.Some))
 				{
 					EndJobWith(JobCondition.Incompletable);
 					return;

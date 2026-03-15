@@ -1,4 +1,5 @@
 using RimTalk_ToddlersExpansion.Core;
+using RimTalk_ToddlersExpansion.Integration.YayoAnimation;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -114,32 +115,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		protected static bool IsPlayJob(Pawn pawn)
 		{
-			JobDef jobDef = pawn?.CurJobDef;
-			if (jobDef == null)
-			{
-				return false;
-			}
-
-			bool isSelfPlay = !jobDef.defName.NullOrEmpty()
-				&& jobDef.defName.StartsWith("RimTalk_ToddlerSelfPlay", System.StringComparison.Ordinal);
-			bool isMutualPlay = jobDef == ToddlersExpansionJobDefOf.RimTalk_ToddlerMutualPlayJob;
-			bool isMutualPlayPartner = jobDef == ToddlersExpansionJobDefOf.RimTalk_ToddlerMutualPlayPartnerJob;
-			bool isPlayAtToy = jobDef == ToddlersExpansionJobDefOf.RimTalk_ToddlerPlayAtToy;
-			if (!isSelfPlay && !isMutualPlay && !isMutualPlayPartner && !isPlayAtToy)
-			{
-				return false;
-			}
-
-			string toil = pawn.jobs?.curDriver?.CurToilString;
-			if (string.IsNullOrEmpty(toil))
-			{
-				return true;
-			}
-
-			return toil == "ToddlerSelfPlay"
-				|| toil == "ToddlerMutualPlay"
-				|| toil == "ToddlerMutualPlayPartner"
-				|| toil == "ToddlerPlayAtToy";
+			return YayoAnimationCompatUtility.ShouldAllowManagedPlayAnimation(pawn);
 		}
 	}
 

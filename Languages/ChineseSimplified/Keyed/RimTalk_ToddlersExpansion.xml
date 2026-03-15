@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
+  <RimTalk_ToddlersExpansion_PlayReport_SelfMoving>找地方玩耍。</RimTalk_ToddlersExpansion_PlayReport_SelfMoving>
   <RimTalk_ToddlersExpansion_ToddlerTumbleLabel>摔跤</RimTalk_ToddlersExpansion_ToddlerTumbleLabel>
   <RimTalk_ToddlersExpansion_ToddlerTumbleText>{TODDLER}在玩耍时摔倒了，坐在地上哇哇大哭。</RimTalk_ToddlersExpansion_ToddlerTumbleText>
   <RimTalk_ToddlersExpansion_ToddlerScuffleLabel>打架</RimTalk_ToddlersExpansion_ToddlerScuffleLabel>
@@ -41,7 +42,6 @@
   <RimTalk_ToddlersExpansion_Animation_Sway>摇摆</RimTalk_ToddlersExpansion_Animation_Sway>
   <RimTalk_ToddlersExpansion_Animation_Lay>躺下</RimTalk_ToddlersExpansion_Animation_Lay>
   <RimTalk_ToddlersExpansion_Animation_ProneCrawl>趴地</RimTalk_ToddlersExpansion_Animation_ProneCrawl>
-  <RimTalk_ToddlersExpansion_Animation_ToddlersCrawl>爬行</RimTalk_ToddlersExpansion_Animation_ToddlersCrawl>
   <RimTalk_ToddlersExpansion_Animation_ToddlersWobble>摇晃</RimTalk_ToddlersExpansion_Animation_ToddlersWobble>
   <RimTalk_ToddlersExpansion_Animation_PlayToys>玩玩具</RimTalk_ToddlersExpansion_Animation_PlayToys>
   <RimTalk_ToddlersExpansion_Animation_Hoopstone>Yayo玩马蹄铁</RimTalk_ToddlersExpansion_Animation_Hoopstone>

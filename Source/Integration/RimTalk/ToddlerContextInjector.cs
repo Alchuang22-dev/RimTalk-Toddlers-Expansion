@@ -2,6 +2,8 @@ using RimTalk_ToddlersExpansion.Core;
 using RimTalk_ToddlersExpansion.Integration.BioTech;
 using RimTalk_ToddlersExpansion.Integration.Toddlers;
 using RimTalk_ToddlersExpansion.Language;
+using System;
+using System.Collections.Generic;
 using Verse;
 
 namespace RimTalk_ToddlersExpansion.Integration.RimTalk
@@ -10,6 +12,9 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 	{
 		private const string LanguagePrefix = "Language: ";
 		private const string PlayPrefix = "Play: ";
+		private const string BabyStatePrefix = "Baby state: ";
+		private const string CryingDefName = "Crying";
+		private const string GigglingDefName = "Giggling";
 
 		public static string InjectToddlerLanguageContext(string context, Pawn pawn)
 		{
@@ -20,9 +25,12 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 				return context;
 			}
 
+			context = RewriteBabyMentalStateContext(context, pawn);
+
 			string language = GetToddlerLanguageDescriptor(pawn);
 			string play = GetToddlerPlayDescriptor(pawn);
-			if (string.IsNullOrEmpty(language) && string.IsNullOrEmpty(play))
+			string babyState = GetBabyStateDescriptor(pawn);
+			if (string.IsNullOrEmpty(language) && string.IsNullOrEmpty(play) && string.IsNullOrEmpty(babyState))
 			{
 				return context;
 			}
@@ -37,6 +45,12 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 			{
 				string playLine = PlayPrefix + play;
 				appended = string.IsNullOrEmpty(appended) ? playLine : appended + "\n" + playLine;
+			}
+
+			if (!string.IsNullOrEmpty(babyState))
+			{
+				string babyStateLine = BabyStatePrefix + babyState;
+				appended = string.IsNullOrEmpty(appended) ? babyStateLine : appended + "\n" + babyStateLine;
 			}
 
 			if (string.IsNullOrEmpty(context))
@@ -92,6 +106,74 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 			}
 
 			return string.Empty;
+		}
+
+		public static string GetBabyStateDescriptor(Pawn pawn)
+		{
+			if (!IsBabyFitMentalState(pawn))
+			{
+				return string.Empty;
+			}
+
+			return pawn.MentalStateDef.defName == GigglingDefName
+				? "giggling (normal infant behavior, not a mental break)"
+				: "crying (normal infant behavior, not a mental break)";
+		}
+
+		private static string RewriteBabyMentalStateContext(string context, Pawn pawn)
+		{
+			if (string.IsNullOrEmpty(context) || !IsBabyFitMentalState(pawn))
+			{
+				return context;
+			}
+
+			string[] split = context.Split(new[] { '\n' }, StringSplitOptions.None);
+			var rebuilt = new List<string>(split.Length);
+			bool replacedMood = false;
+
+			for (int i = 0; i < split.Length; i++)
+			{
+				string line = split[i]?.TrimEnd('\r') ?? string.Empty;
+				if (!replacedMood && line.StartsWith("Mood:", StringComparison.OrdinalIgnoreCase))
+				{
+					rebuilt.Add(BuildBabyMoodLine(pawn));
+					replacedMood = true;
+					continue;
+				}
+
+				if (line.IndexOf("be dramatic (mental break)", StringComparison.OrdinalIgnoreCase) >= 0)
+				{
+					continue;
+				}
+
+				rebuilt.Add(line.Replace("(in mental break)", string.Empty).Replace("(mental break)", string.Empty).TrimEnd());
+			}
+
+			if (!replacedMood)
+			{
+				rebuilt.Add(BuildBabyMoodLine(pawn));
+			}
+
+			return string.Join("\n", rebuilt).Trim();
+		}
+
+		private static string BuildBabyMoodLine(Pawn pawn)
+		{
+			var mood = pawn?.needs?.mood;
+			string moodString = mood?.MoodString ?? "distressed";
+			int moodPercent = mood != null ? (int)(mood.CurLevelPercentage * 100f) : 0;
+			return $"Mood: {moodString} ({moodPercent}%)";
+		}
+
+		private static bool IsBabyFitMentalState(Pawn pawn)
+		{
+			if (!BiotechCompatUtility.IsBaby(pawn) || pawn?.InMentalState != true || pawn.MentalStateDef == null)
+			{
+				return false;
+			}
+
+			string defName = pawn.MentalStateDef.defName;
+			return defName == CryingDefName || defName == GigglingDefName;
 		}
 	}
 }

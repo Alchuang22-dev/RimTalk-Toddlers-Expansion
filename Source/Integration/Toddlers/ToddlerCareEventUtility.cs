@@ -50,7 +50,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			float stageFactor = GetSelfPlayStageFactor(toddler);
-			float chance = SelfPlayBaseChancePerTick * stageFactor * neglect * delta;
+			float chance = GetEffectiveCheckChance(SelfPlayBaseChancePerTick, stageFactor, neglect, delta);
 			if (!Rand.Chance(chance))
 			{
 				return false;
@@ -79,7 +79,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			float stageFactor = GetMutualPlayStageFactor(toddler);
-			float chance = MutualPlayBaseChancePerTick * stageFactor * neglect * delta;
+			float chance = GetEffectiveCheckChance(MutualPlayBaseChancePerTick, stageFactor, neglect, delta);
 			if (!Rand.Chance(chance))
 			{
 				return false;
@@ -119,6 +119,13 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			return true;
+		}
+
+		private static float GetEffectiveCheckChance(float baseChancePerTick, float stageFactor, float neglect, int delta)
+		{
+			int effectiveTicks = Mathf.Max(CheckIntervalTicks, delta);
+			float chance = baseChancePerTick * stageFactor * neglect * effectiveTicks;
+			return Mathf.Clamp01(chance);
 		}
 
 		private static float GetNeglectFactor(Pawn toddler)

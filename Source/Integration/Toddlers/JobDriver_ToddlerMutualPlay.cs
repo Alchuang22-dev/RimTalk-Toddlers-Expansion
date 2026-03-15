@@ -129,6 +129,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
+			if (!pawn.CanReach(Partner, PathEndMode.Touch, Danger.Some))
+			{
+				return false;
+			}
+
 			JobDef partnerJobDef = ToddlersExpansionJobDefOf.RimTalk_ToddlerMutualPlayPartnerJob;
 			if (partnerJobDef == null)
 			{

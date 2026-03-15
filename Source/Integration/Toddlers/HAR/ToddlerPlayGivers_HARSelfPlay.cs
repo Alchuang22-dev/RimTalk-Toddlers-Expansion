@@ -10,6 +10,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers.HAR
 	{
 		private const float PlayNeedThreshold = 0.92f;
 		private const int SearchRadius = 6;
+		private const float EasterEggChancePerCheck = 0.12f;
 
 		protected abstract HarRaceWhitelistUtility.MiliraAlignedRaceGroup TargetGroup { get; }
 
@@ -21,6 +22,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers.HAR
 			}
 
 			if (!SocialNeedTuning_Toddlers.ShouldDoOptionalActivity(pawn, PlayNeedThreshold))
+			{
+				return false;
+			}
+
+			if (!Rand.Chance(EasterEggChancePerCheck))
 			{
 				return false;
 			}

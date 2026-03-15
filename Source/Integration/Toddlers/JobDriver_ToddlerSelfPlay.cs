@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using RimTalk_ToddlersExpansion.Core;
 using RimTalk_ToddlersExpansion.Integration.RimTalk;
 using RimTalk_ToddlersExpansion.Integration.YayoAnimation;
 using RimWorld;
@@ -20,6 +21,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		protected override IEnumerable<Toil> MakeNewToils()
 		{
 			this.FailOn(() => pawn.Downed || pawn.Drafted || ToddlerMentalStateUtility.HasBlockingMentalState(pawn));
+			job.reportStringOverride = "RimTalk_ToddlersExpansion_PlayReport_SelfMoving".Translate();
 
 			yield return Toils_Goto.GotoCell(PlaySpotInd, PathEndMode.OnCell);
 
@@ -41,8 +43,12 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					_playAnimation = null;
 				}
 
-				ToddlerPlayReportUtility.EnsureReportRequested(job, pawn, null, ToddlerPlayReportKind.SelfPlay);
-				ToddlerPlayReportUtility.TryApplyPendingReport(job);
+				job.reportStringOverride = null;
+				if (UsesGenericSelfPlayReport(job))
+				{
+					ToddlerPlayReportUtility.EnsureReportRequested(job, pawn, null, ToddlerPlayReportKind.SelfPlay);
+					ToddlerPlayReportUtility.TryApplyPendingReport(job);
+				}
 			};
 			play.tickIntervalAction = delta =>
 			{
@@ -58,7 +64,10 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					return;
 				}
 
-				ToddlerPlayReportUtility.TryApplyPendingReport(job);
+				if (UsesGenericSelfPlayReport(job))
+				{
+					ToddlerPlayReportUtility.TryApplyPendingReport(job);
+				}
 				pawn.GainComfortFromCellIfPossible(delta);
 				SocialNeedTuning_Toddlers.ApplySelfPlayTickEffects(pawn, delta);
 				if (SocialNeedTuning_Toddlers.IsPlayNeedSatisfied(pawn))
@@ -85,6 +94,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			});
 
 			yield return play;
+		}
+
+		private static bool UsesGenericSelfPlayReport(Job job)
+		{
+			return job?.def == ToddlersExpansionJobDefOf.RimTalk_ToddlerSelfPlayJob;
 		}
 	}
 }

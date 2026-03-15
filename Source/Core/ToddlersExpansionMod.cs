@@ -263,7 +263,6 @@ namespace RimTalk_ToddlersExpansion.Core
 			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_Sway".Translate(), ref ToddlersExpansionSettings.EnableNativePlaySway);
 			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_Lay".Translate(), ref ToddlersExpansionSettings.EnableNativePlayLay);
 			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_ProneCrawl".Translate(), ref ToddlersExpansionSettings.EnableNativePlayCrawl);
-			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_ToddlersCrawl".Translate(), ref ToddlersExpansionSettings.EnableNativePlayToddlerCrawl);
 			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_ToddlersWobble".Translate(), ref ToddlersExpansionSettings.EnableNativePlayToddlerWobble);
 			listingStandard.GapLine();
 

@@ -21,12 +21,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
-			// HAR-specific self play defs should take priority for mapped races.
-			if (HarRaceWhitelistUtility.HasSpecialHarSelfPlay(pawn))
-			{
-				return false;
-			}
-
 			if (!SocialNeedTuning_Toddlers.ShouldDoOptionalActivity(pawn, PlayNeedThreshold))
 			{
 				return false;
@@ -38,11 +32,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		public override Job TryGiveJob(Pawn pawn)
 		{
 			if (!IsEligiblePawn(pawn))
-			{
-				return null;
-			}
-
-			if (HarRaceWhitelistUtility.HasSpecialHarSelfPlay(pawn))
 			{
 				return null;
 			}
@@ -195,6 +184,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				}
 
 				if (!pawn.CanReserve(other))
+				{
+					continue;
+				}
+
+				if (!pawn.CanReach(other, PathEndMode.Touch, Danger.Some))
 				{
 					continue;
 				}

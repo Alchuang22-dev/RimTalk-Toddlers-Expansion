@@ -131,7 +131,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		private static AnimationDef[] BuildSelfPlayAnimations()
 		{
-			AnimationDef toddlersCrawl = DefDatabase<AnimationDef>.GetNamedSilentFail("ToddlerCrawl");
 			AnimationDef toddlersWobble = DefDatabase<AnimationDef>.GetNamedSilentFail("ToddlerWobble");
 
 			return BuildList(
@@ -139,13 +138,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				ToddlersExpansionSettings.EnableNativePlayLay ? ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Lay : null,
 				ToddlersExpansionSettings.EnableNativePlayCrawl ? ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Crawl : null,
 				ToddlersExpansionSettings.EnableNativePlaySway ? ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Sway : null,
-				ToddlersExpansionSettings.EnableNativePlayToddlerCrawl ? toddlersCrawl : null,
 				ToddlersExpansionSettings.EnableNativePlayToddlerWobble ? toddlersWobble : null);
 		}
 
 		private static AnimationDef[] BuildMutualPlayAnimations()
 		{
-			AnimationDef toddlersCrawl = DefDatabase<AnimationDef>.GetNamedSilentFail("ToddlerCrawl");
 			AnimationDef toddlersWobble = DefDatabase<AnimationDef>.GetNamedSilentFail("ToddlerWobble");
 
 			return BuildList(
@@ -153,7 +150,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				ToddlersExpansionSettings.EnableNativePlaySway ? ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Sway : null,
 				ToddlersExpansionSettings.EnableNativePlayCrawl ? ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Crawl : null,
 				ToddlersExpansionSettings.EnableNativePlayLay ? ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Lay : null,
-				ToddlersExpansionSettings.EnableNativePlayToddlerCrawl ? toddlersCrawl : null,
 				ToddlersExpansionSettings.EnableNativePlayToddlerWobble ? toddlersWobble : null);
 		}
 

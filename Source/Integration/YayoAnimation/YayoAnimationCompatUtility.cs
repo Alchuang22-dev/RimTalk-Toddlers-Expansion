@@ -279,6 +279,15 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 				&& ToddlerPlayAnimationUtility.ArePlayAnimationsAllowedForPawn(pawn);
 		}
 
+		public static bool ShouldAllowManagedPlayAnimation(Pawn pawn)
+		{
+			return ToddlersCompatUtility.IsToddlerOrBaby(pawn)
+				&& ToddlerPlayAnimationUtility.ArePlayAnimationsAllowedForPawn(pawn)
+				&& IsSmallPawnPlayJob(pawn)
+				&& !IsSuppressed(pawn)
+				&& !ToddlerCarryingUtility.IsBeingCarried(pawn);
+		}
+
 		public static bool TryGetNativePlayAnimationOverride(Pawn pawn, out AnimationDef animation)
 		{
 			animation = null;
@@ -312,6 +321,11 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			return animation != null;
 		}
 
+		public static bool ShouldEnableManagedPlayAnimation(Pawn pawn)
+		{
+			return IsYayoAnimationLoaded && ShouldAllowManagedPlayAnimation(pawn);
+		}
+
 		public static void SyncSafeNativePlayAnimation(Pawn pawn)
 		{
 			if (pawn?.Drawer?.renderer == null)
@@ -319,10 +333,7 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 				return;
 			}
 
-			if (!ShouldUseYayoPlayAnimation(pawn)
-				|| IsSuppressed(pawn)
-				|| ToddlerCarryingUtility.IsBeingCarried(pawn)
-				|| !IsSmallPawnPlayJob(pawn)
+			if (!ShouldEnableManagedPlayAnimation(pawn)
 				|| !TryGetNativePlayAnimationOverride(pawn, out AnimationDef animation))
 			{
 				if (ToddlerPlayAnimationUtility.ClearManagedNativePlayAnimation(pawn))
@@ -445,9 +456,9 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 				return false;
 			}
 
-			if (name.StartsWith("RimTalk_ToddlerSelfPlay", StringComparison.Ordinal))
+			if (IsToddlerSelfPlayJobDef(name))
 			{
-				return pawn.jobs?.curDriver?.CurToilString == "ToddlerSelfPlay";
+				return IsToddlerSelfPlayToil(pawn);
 			}
 
 			if (isBaby)
@@ -503,6 +514,12 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 				return false;
 			}
 
+			string jobDefName = pawn.CurJobDef.defName;
+			if (IsToddlerSelfPlayJobDef(jobDefName) && pawn.jobs?.curDriver?.CurToilString == "GotoCell")
+			{
+				return false;
+			}
+
 			if (pawn.CurJobDef == ToddlersExpansionJobDefOf.RimTalk_ToddlerMutualPlayJob
 				&& pawn.jobs?.curDriver?.CurToilString == "GotoThing")
 			{
@@ -516,6 +533,17 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			}
 
 			return true;
+		}
+
+		private static bool IsToddlerSelfPlayJobDef(string jobDefName)
+		{
+			return !jobDefName.NullOrEmpty()
+				&& jobDefName.StartsWith("RimTalk_ToddlerSelfPlay", StringComparison.Ordinal);
+		}
+
+		private static bool IsToddlerSelfPlayToil(Pawn pawn)
+		{
+			return pawn?.jobs?.curDriver?.CurToilString == "ToddlerSelfPlay";
 		}
 
 		private static bool TryApplySmallPawnPlayAnimationFromYayo(Pawn pawn, Rot4 rot, object pdd)
