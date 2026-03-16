@@ -2,7 +2,7 @@
 <LanguageData>
   <RimTalk_MyBabyNearby.label>我的宝宝在身边</RimTalk_MyBabyNearby.label>
   <RimTalk_MyBabyNearby.stages.0.label>我的宝宝在身边</RimTalk_MyBabyNearby.stages.0.label>
-  <RimTalk_MyBabyNearby.stages.0.description>我的宝宝在身边安静地睡着呢...看看多可爱！</RimTalk_MyBabyNearby.stages.0.description>
+  <RimTalk_MyBabyNearby.stages.0.description>我的宝宝在旁边安静地睡着呢...看看多可爱！</RimTalk_MyBabyNearby.stages.0.description>
 
   <RimTalk_ToddlerSleepAlone.label>自己睡</RimTalk_ToddlerSleepAlone.label>
   <RimTalk_ToddlerSleepAlone.stages.0.label>自己睡</RimTalk_ToddlerSleepAlone.stages.0.label>
@@ -18,5 +18,5 @@
 
   <RimTalk_ToddlerSleepWithParents.label>和家人一起睡</RimTalk_ToddlerSleepWithParents.label>
   <RimTalk_ToddlerSleepWithParents.stages.0.label>和家人一起睡</RimTalk_ToddlerSleepWithParents.stages.0.label>
-  <RimTalk_ToddlerSleepWithParents.stages.0.description>枕头软软的！呼噜呼噜...妈妈...</RimTalk_ToddlerSleepWithParents.stages.0.description>
+  <RimTalk_ToddlerSleepWithParents.stages.0.description>枕头...软软！呼噜呼噜...妈妈...</RimTalk_ToddlerSleepWithParents.stages.0.description>
 </LanguageData>
