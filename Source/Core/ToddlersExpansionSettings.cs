@@ -73,6 +73,7 @@ namespace RimTalk_ToddlersExpansion.Core
 		public static bool EnableYayoPlayDartsBoard = true;
 		public static bool EnableYayoGoldenCube = true;
 		public static bool EnableYayoSocialRelax = true;
+		public static bool EnableYayoBabyRoll = true;
 		public static bool EnableYayoCustomRoll = true;
 		public static bool EnableYayoCustomSpin = true;
 		public static bool EnableYayoCustomHop = true;
@@ -141,6 +142,7 @@ namespace RimTalk_ToddlersExpansion.Core
 			Scribe_Values.Look(ref EnableYayoPlayDartsBoard, "EnableYayoPlayDartsBoard", true);
 			Scribe_Values.Look(ref EnableYayoGoldenCube, "EnableYayoGoldenCube", true);
 			Scribe_Values.Look(ref EnableYayoSocialRelax, "EnableYayoSocialRelax", true);
+			Scribe_Values.Look(ref EnableYayoBabyRoll, "EnableYayoBabyRoll", true);
 			Scribe_Values.Look(ref EnableYayoCustomRoll, "EnableYayoCustomRoll", true);
 			Scribe_Values.Look(ref EnableYayoCustomSpin, "EnableYayoCustomSpin", true);
 			Scribe_Values.Look(ref EnableYayoCustomHop, "EnableYayoCustomHop", true);

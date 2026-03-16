@@ -25,6 +25,7 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			CustomLay,
 			CustomProne,
 			CustomWobble,
+			CustomBabyRoll,
 			CustomRoll,
 			CustomSpin,
 			CustomHop,
@@ -722,6 +723,8 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 					return TryApplyToddlerProneProfile(pawn, rot, pdd);
 				case SmallPawnPlayProfileKind.CustomWobble:
 					return TryApplyToddlerWobbleProfile(pawn, rot, pdd);
+				case SmallPawnPlayProfileKind.CustomBabyRoll:
+					return TryApplyBabyRollProfile(pawn, rot, pdd);
 				case SmallPawnPlayProfileKind.CustomRoll:
 					if (pawn.pather?.MovingNow == true)
 					{
@@ -764,7 +767,8 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableYayoPlayHoopstone, SmallPawnPlayProfileKind.YayoStanding, "Play_Hoopstone");
 			AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableYayoPlayDartsBoard, SmallPawnPlayProfileKind.YayoStanding, "Play_DartsBoard");
 			AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableYayoGoldenCube, SmallPawnPlayProfileKind.CustomYayoSocial, "GoldenCubePlay");
-			AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableYayoCustomRoll, SmallPawnPlayProfileKind.CustomRoll, "ExtinguishSelf");
+			AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableYayoBabyRoll && CanUseBabyRollProfile(pawn), SmallPawnPlayProfileKind.CustomBabyRoll, "BabyRoll");
+			AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableYayoCustomRoll, SmallPawnPlayProfileKind.CustomRoll, "BabyWiggle");
 			AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableYayoSocialRelax, SmallPawnPlayProfileKind.CustomYayoSocial, "SocialRelax");
 
 			if (isToddler)
@@ -847,6 +851,73 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 
 			Hediff hediff = pawn.health.hediffSet.GetFirstHediffOfDef(_learningToWalkDef);
 			return hediff == null || hediff.Severity >= 0.5f;
+		}
+
+		private static bool CanUseBabyRollProfile(Pawn pawn)
+		{
+			if (pawn == null || ToddlerCarryingUtility.IsBeingCarried(pawn) || IsPawnInBedOrCrib(pawn))
+			{
+				return false;
+			}
+
+			JobDef jobDef = pawn.CurJobDef;
+			string jobName = jobDef?.defName;
+			if (jobName.NullOrEmpty() || jobName == "PlayCrib" || jobName == "PlayWalking")
+			{
+				return false;
+			}
+
+			if (jobName == "BePlayedWith")
+			{
+				return !IsExcludedByAdultPlayJob(pawn, jobName);
+			}
+
+			if (IsToddlerSelfPlayJobDef(jobName))
+			{
+				return IsToddlerSelfPlayToil(pawn);
+			}
+
+			if (jobDef == ToddlersExpansionJobDefOf.RimTalk_ToddlerMutualPlayJob)
+			{
+				return pawn.jobs?.curDriver?.CurToilString == "ToddlerMutualPlay";
+			}
+
+			if (jobDef == ToddlersExpansionJobDefOf.RimTalk_ToddlerMutualPlayPartnerJob)
+			{
+				return pawn.jobs?.curDriver?.CurToilString == "ToddlerMutualPlayPartner";
+			}
+
+			return false;
+		}
+
+		private static bool IsPawnInBedOrCrib(Pawn pawn)
+		{
+			if (pawn == null)
+			{
+				return false;
+			}
+
+			if (pawn.CurrentBed() != null)
+			{
+				return true;
+			}
+
+			Map map = pawn.Map;
+			if (map == null || !pawn.Position.IsValid)
+			{
+				return false;
+			}
+
+			List<Thing> thingList = pawn.Position.GetThingList(map);
+			for (int i = 0; i < thingList.Count; i++)
+			{
+				if (thingList[i] is Building_Bed)
+				{
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		private static bool TryApplyToddlerWiggleProfile(Rot4 rot, object pdd)
@@ -942,6 +1013,102 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			_angleOffsetField.SetValue(pdd, angleMagnitude * TriangleWave(x));
 			_posOffsetField.SetValue(pdd, Vector3.zero);
 			return true;
+		}
+
+		private static bool TryApplyBabyRollProfile(Pawn pawn, Rot4 rot, object pdd)
+		{
+			if (!TryPrepareCustomPose(pdd, rot) || pawn == null)
+			{
+				return false;
+			}
+
+			try
+			{
+				int stepTicks = IsBabyOnly(pawn) ? 12 : 10;
+				int cycleTicks = stepTicks * 12;
+				int tick = Find.TickManager?.TicksGame ?? 0;
+				int seedOffset = Mathf.Abs(Gen.HashCombineInt(pawn.thingIDNumber ^ 9137, pawn.CurJob?.loadID ?? 0)) % cycleTicks;
+				tick = (tick + seedOffset) % cycleTicks;
+
+				float angle = 0f;
+				Vector3 pos = Vector3.zero;
+				float rollAngle = IsBabyOnly(pawn) ? 24f : 30f;
+				Rot4 facing = rot;
+
+				Vector3 posStepM3 = GetScaledBabyRollStepPos(-3, pawn);
+				Vector3 posStepM2 = GetScaledBabyRollStepPos(-2, pawn);
+				Vector3 posStepM1 = GetScaledBabyRollStepPos(-1, pawn);
+				Vector3 posStep0 = GetScaledBabyRollStepPos(0, pawn);
+				Vector3 posStep1 = GetScaledBabyRollStepPos(1, pawn);
+				Vector3 posStep2 = GetScaledBabyRollStepPos(2, pawn);
+				Vector3 posStep3 = GetScaledBabyRollStepPos(3, pawn);
+
+				if (!TryApplyYayoSegment(ref tick, stepTicks, ref angle, rollAngle, rollAngle, -1f, ref pos, posStep0, posStep1, rot, true))
+				{
+					facing = rot.Rotated(RotationDirection.Clockwise);
+					if (!TryApplyYayoSegment(ref tick, stepTicks, ref angle, rollAngle, rollAngle, -1f, ref pos, posStep1, posStep2, rot, true))
+					{
+						facing = facing.Rotated(RotationDirection.Clockwise);
+						if (!TryApplyYayoSegment(ref tick, stepTicks, ref angle, rollAngle, rollAngle, -1f, ref pos, posStep2, posStep3, rot, true))
+						{
+							facing = facing.Rotated(RotationDirection.Clockwise);
+							if (!TryApplyYayoSegment(ref tick, stepTicks, ref angle, rollAngle, rollAngle, -1f, ref pos, posStep3, posStep2, rot, true))
+							{
+								facing = facing.Rotated(RotationDirection.Counterclockwise);
+								if (!TryApplyYayoSegment(ref tick, stepTicks, ref angle, rollAngle, rollAngle, -1f, ref pos, posStep2, posStep1, rot, true))
+								{
+									facing = facing.Rotated(RotationDirection.Counterclockwise);
+									if (!TryApplyYayoSegment(ref tick, stepTicks, ref angle, rollAngle, rollAngle, -1f, ref pos, posStep1, posStep0, rot, true))
+									{
+										facing = facing.Rotated(RotationDirection.Counterclockwise);
+										if (!TryApplyYayoSegment(ref tick, stepTicks, ref angle, rollAngle, rollAngle, -1f, ref pos, posStep0, posStepM1, rot, true))
+										{
+											facing = facing.Rotated(RotationDirection.Counterclockwise);
+											if (!TryApplyYayoSegment(ref tick, stepTicks, ref angle, rollAngle, rollAngle, -1f, ref pos, posStepM1, posStepM2, rot, true))
+											{
+												facing = facing.Rotated(RotationDirection.Counterclockwise);
+												if (!TryApplyYayoSegment(ref tick, stepTicks, ref angle, rollAngle, rollAngle, -1f, ref pos, posStepM2, posStepM3, rot, true))
+												{
+													facing = facing.Rotated(RotationDirection.Counterclockwise);
+													if (!TryApplyYayoSegment(ref tick, stepTicks, ref angle, rollAngle, rollAngle, -1f, ref pos, posStepM3, posStepM2, rot, true))
+													{
+														facing = facing.Rotated(RotationDirection.Clockwise);
+														if (!TryApplyYayoSegment(ref tick, stepTicks, ref angle, rollAngle, rollAngle, -1f, ref pos, posStepM2, posStepM1, rot, true))
+														{
+															facing = facing.Rotated(RotationDirection.Clockwise);
+															TryApplyYayoSegment(ref tick, stepTicks, ref angle, rollAngle, rollAngle, -1f, ref pos, posStepM1, posStep0, rot, true);
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+
+				_fixedRotField?.SetValue(pdd, facing);
+				_angleOffsetField.SetValue(pdd, angle);
+				_posOffsetField.SetValue(pdd, pos);
+				return true;
+			}
+			catch (Exception ex)
+			{
+				if (Prefs.DevMode)
+				{
+					Log.Warning($"[RimTalk_ToddlersExpansion] Failed to apply baby roll profile: {ex.Message}");
+				}
+
+				return false;
+			}
+		}
+
+		private static Vector3 GetScaledBabyRollStepPos(int step, Pawn pawn)
+		{
+			float scale = IsBabyOnly(pawn) ? 0.080f : 0.110f;
+			return new Vector3((-0.5f + -0.25f * step) * scale, 0f, (0.25f * step) * scale);
 		}
 
 		private static bool TryApplyToddlerYayoSocialProfile(Pawn pawn, Rot4 rot, object pdd, string yayoProfile)

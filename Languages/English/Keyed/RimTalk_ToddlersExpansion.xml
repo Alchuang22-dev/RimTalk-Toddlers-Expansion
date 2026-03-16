@@ -48,7 +48,8 @@
   <RimTalk_ToddlersExpansion_Animation_DartsBoard>Play_DartsBoard</RimTalk_ToddlersExpansion_Animation_DartsBoard>
   <RimTalk_ToddlersExpansion_Animation_GoldenCube>GoldenCubePlay</RimTalk_ToddlersExpansion_Animation_GoldenCube>
   <RimTalk_ToddlersExpansion_Animation_SocialRelax>SocialRelax</RimTalk_ToddlersExpansion_Animation_SocialRelax>
-  <RimTalk_ToddlersExpansion_Animation_Roll>Custom roll</RimTalk_ToddlersExpansion_Animation_Roll>
+  <RimTalk_ToddlersExpansion_Animation_BabyRoll>Baby roll</RimTalk_ToddlersExpansion_Animation_BabyRoll>
+  <RimTalk_ToddlersExpansion_Animation_Roll>Baby wiggle</RimTalk_ToddlersExpansion_Animation_Roll>
   <RimTalk_ToddlersExpansion_Animation_Spin>Custom spin</RimTalk_ToddlersExpansion_Animation_Spin>
   <RimTalk_ToddlersExpansion_Animation_Hop>Custom hop</RimTalk_ToddlersExpansion_Animation_Hop>
   <RimTalk_ToddlersExpansion_Animation_RunLoop>Custom run loop</RimTalk_ToddlersExpansion_Animation_RunLoop>

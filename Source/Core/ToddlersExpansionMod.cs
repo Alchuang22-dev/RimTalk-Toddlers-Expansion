@@ -278,6 +278,7 @@ namespace RimTalk_ToddlersExpansion.Core
 			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_DartsBoard".Translate(), ref ToddlersExpansionSettings.EnableYayoPlayDartsBoard);
 			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_GoldenCube".Translate(), ref ToddlersExpansionSettings.EnableYayoGoldenCube);
 			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_SocialRelax".Translate(), ref ToddlersExpansionSettings.EnableYayoSocialRelax);
+			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_BabyRoll".Translate(), ref ToddlersExpansionSettings.EnableYayoBabyRoll);
 			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_Roll".Translate(), ref ToddlersExpansionSettings.EnableYayoCustomRoll);
 			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_Spin".Translate(), ref ToddlersExpansionSettings.EnableYayoCustomSpin);
 			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_Animation_Hop".Translate(), ref ToddlersExpansionSettings.EnableYayoCustomHop);
