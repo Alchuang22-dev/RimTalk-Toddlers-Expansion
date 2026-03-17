@@ -23,6 +23,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private static Func<Pawn, float> _toddlerEndAge;
 		private static bool _playTypesInitialized;
 		private static Func<Pawn, bool> _toddlersIsPlaying;
+		private static Func<Pawn, bool> _isBabyBusy;
 		private static Type _toddlersWatchTelevisionDriverType;
 		private static Type[] _toddlersExtraPlayDriverTypes;
 		private static bool _selfCareInitialized;
@@ -150,11 +151,40 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				|| jobDef == ToddlersExpansionJobDefOf.RimTalk_FollowNatureRunner;
 		}
 
+		public static bool IsBabyBusy(Pawn pawn)
+		{
+			if (pawn == null)
+			{
+				return false;
+			}
+
+			EnsureInitialized();
+			if (!_isActive || _isBabyBusy == null)
+			{
+				return false;
+			}
+
+			try
+			{
+				return _isBabyBusy(pawn);
+			}
+			catch (Exception ex)
+			{
+				WarnOnce("IsBabyBusy", ex);
+				return false;
+			}
+		}
+
 		public static bool IsBusyForMutualPlay(Pawn pawn)
 		{
 			if (pawn?.jobs == null)
 			{
 				return false;
+			}
+
+			if (IsBabyBusy(pawn))
+			{
+				return true;
 			}
 
 			if (IsMutualPlayJobDef(pawn.CurJobDef))
@@ -306,6 +336,12 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				if (isToddlerMethod != null)
 				{
 					_isToddler = (Func<Pawn, bool>)Delegate.CreateDelegate(typeof(Func<Pawn, bool>), isToddlerMethod);
+				}
+
+				MethodInfo isBabyBusyMethod = AccessTools.Method(utilityType, "IsBabyBusy", new[] { typeof(Pawn) });
+				if (isBabyBusyMethod != null)
+				{
+					_isBabyBusy = (Func<Pawn, bool>)Delegate.CreateDelegate(typeof(Func<Pawn, bool>), isBabyBusyMethod);
 				}
 
 				MethodInfo minAgeMethod = AccessTools.Method(utilityType, "ToddlerMinAge", new[] { typeof(Pawn) });

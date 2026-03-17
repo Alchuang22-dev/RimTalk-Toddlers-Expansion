@@ -149,6 +149,10 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			Job partnerJob = JobMaker.MakeJob(partnerJobDef, pawn);
 			partnerJob.ignoreJoyTimeAssignment = true;
 			partnerJob.expiryInterval = job.expiryInterval > 0 ? job.expiryInterval : partnerJob.def.joyDuration;
+			if (job.targetB.IsValid)
+			{
+				partnerJob.targetB = job.targetB;
+			}
 			return Partner.jobs.TryTakeOrderedJob(partnerJob);
 		}
 

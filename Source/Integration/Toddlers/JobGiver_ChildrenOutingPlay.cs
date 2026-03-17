@@ -12,6 +12,9 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
     /// </summary>
     public class JobGiver_ChildrenOutingPlay : ThinkNode_JobGiver
     {
+        private const float MutualPlayPartnerSearchRadius = 8f;
+        private const int MutualPlaySpotSearchRadius = 6;
+        private const int MutualPlaySharedSpotDistance = 3;
         
         /// <summary>
         /// Duration range for play activities (in ticks)
@@ -97,7 +100,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
         /// </summary>
         private Pawn FindPlayPartner(Pawn pawn)
         {
-            if (pawn.GetLord() == null)
+            if (pawn.GetLord() == null || ToddlersCompatUtility.IsBusyForMutualPlay(pawn))
             {
                 return null;
             }
@@ -123,12 +126,17 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
                 }
                 
                 // Check if nearby
-                if (!pawn.Position.InHorDistOf(otherPawn.Position, 8f))
+                if (!pawn.Position.InHorDistOf(otherPawn.Position, MutualPlayPartnerSearchRadius))
                 {
                     continue;
                 }
 
                 if (!pawn.CanReserve(otherPawn))
+                {
+                    continue;
+                }
+
+                if (!TryFindMutualPlaySpot(pawn, otherPawn, out _))
                 {
                     continue;
                 }
@@ -198,6 +206,10 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
             if (partner != null && JobRequiresPartner(jobDef))
             {
                 job = JobMaker.MakeJob(jobDef, partner);
+                if (TryFindMutualPlaySpot(pawn, partner, out IntVec3 playSpot))
+                {
+                    job.targetB = playSpot;
+                }
             }
             else
             {
@@ -238,6 +250,31 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
             }
             
             return IntVec3.Invalid;
+        }
+
+        private bool TryFindMutualPlaySpot(Pawn pawn, Pawn partner, out IntVec3 spot)
+        {
+            Map map = pawn?.Map;
+            if (map == null || partner == null || partner.Map != map)
+            {
+                spot = IntVec3.Invalid;
+                return false;
+            }
+
+            IntVec3 root = new IntVec3((pawn.Position.x + partner.Position.x) / 2, 0, (pawn.Position.z + partner.Position.z) / 2);
+            return CellFinder.TryFindRandomCellNear(
+                root,
+                map,
+                MutualPlaySpotSearchRadius,
+                c =>
+                    c.Standable(map)
+                    && !c.IsForbidden(pawn)
+                    && !c.IsForbidden(partner)
+                    && c.InHorDistOf(pawn.Position, MutualPlaySharedSpotDistance)
+                    && c.InHorDistOf(partner.Position, MutualPlaySharedSpotDistance)
+                    && pawn.CanReach(c, PathEndMode.OnCell, Danger.Some)
+                    && partner.CanReach(c, PathEndMode.OnCell, Danger.Some),
+                out spot);
         }
     }
 }

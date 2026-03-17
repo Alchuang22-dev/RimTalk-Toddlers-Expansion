@@ -83,6 +83,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private const float PlayNeedThreshold = 0.85f;
 		private const int PartnerSearchRadius = 10;
 		private const int SpotSearchRadius = 6;
+		private const int SharedSpotDistance = 3;
 
 		public override bool CanDo(Pawn pawn)
 		{
@@ -96,7 +97,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
-			return FindPartner(pawn) != null;
+			return TryFindPartnerAndSpot(pawn, out _, out _);
 		}
 
 		public override Job TryGiveJob(Pawn pawn)
@@ -111,8 +112,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return null;
 			}
 
-			Pawn partner = FindPartner(pawn);
-			if (partner == null)
+			if (!TryFindPartnerAndSpot(pawn, out Pawn partner, out IntVec3 spot))
 			{
 				return null;
 			}
@@ -120,11 +120,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			Job job = JobMaker.MakeJob(def.jobDef, partner);
 			job.ignoreJoyTimeAssignment = true;
 			job.expiryInterval = 2000;
-
-			if (TryFindPlaySpot(pawn, out IntVec3 spot))
-			{
-				job.targetB = spot;
-			}
+			job.targetB = spot;
 
 			return job;
 		}
@@ -141,11 +137,13 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
-			return true;
+			return !ToddlersCompatUtility.IsBusyForMutualPlay(pawn);
 		}
 
-		private static Pawn FindPartner(Pawn pawn)
+		private static bool TryFindPartnerAndSpot(Pawn pawn, out Pawn partner, out IntVec3 spot)
 		{
+			partner = null;
+			spot = IntVec3.Invalid;
 			Map map = pawn.Map;
 			var pawns = pawn.Faction != null
 				? map.mapPawns.SpawnedPawnsInFaction(pawn.Faction)
@@ -193,19 +191,36 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					continue;
 				}
 
-				return other;
+				if (!TryFindPlaySpot(pawn, other, out IntVec3 sharedSpot))
+				{
+					continue;
+				}
+
+				partner = other;
+				spot = sharedSpot;
+				return true;
 			}
 
-			return null;
+			return false;
 		}
 
-		private static bool TryFindPlaySpot(Pawn pawn, out IntVec3 spot)
+		private static bool TryFindPlaySpot(Pawn pawn, Pawn partner, out IntVec3 spot)
 		{
 			Map map = pawn.Map;
-			IntVec3 root = pawn.Position;
+			IntVec3 root = new IntVec3((pawn.Position.x + partner.Position.x) / 2, 0, (pawn.Position.z + partner.Position.z) / 2);
 			return CellFinder.TryFindRandomCellNear(root, map, SpotSearchRadius, cell =>
 			{
-				if (!cell.Standable(map) || cell.IsForbidden(pawn))
+				if (!cell.Standable(map) || cell.IsForbidden(pawn) || cell.IsForbidden(partner))
+				{
+					return false;
+				}
+
+				if (!cell.InHorDistOf(pawn.Position, SharedSpotDistance) || !cell.InHorDistOf(partner.Position, SharedSpotDistance))
+				{
+					return false;
+				}
+
+				if (!pawn.CanReach(cell, PathEndMode.OnCell, Danger.Some) || !partner.CanReach(cell, PathEndMode.OnCell, Danger.Some))
 				{
 					return false;
 				}
