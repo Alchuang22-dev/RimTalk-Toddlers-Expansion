@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using RimWorld;
 using Verse;
 
 namespace RimTalk_ToddlersExpansion.Integration.Toddlers
@@ -251,6 +252,14 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			if (toddler.MapHeld != carrier.MapHeld)
 			{
 				reason = "toddler and carrier on different maps";
+				return true;
+			}
+
+			if (!ToddlerCarryingUtility.IsCarryRelationStillValid(carrier, toddler))
+			{
+				reason = toddler.Faction == Faction.OfPlayer && carrier.Faction != Faction.OfPlayer
+					? "player toddler can only be carried by player faction pawns"
+					: "carrier or toddler no longer valid for carrying";
 				return true;
 			}
 

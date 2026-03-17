@@ -40,6 +40,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		/// <returns>是否成功</returns>
 		public static bool TryMountToddler(Pawn carrier, Pawn toddler)
 		{
+			if (!CanCarryToddler(carrier, toddler))
+			{
+				return false;
+			}
+
 			if (carrier == null || toddler == null)
 			{
 				return false;
@@ -299,6 +304,73 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			return true;
+		}
+
+		public static bool CanCarryToddler(Pawn carrier, Pawn toddler, bool allowAlreadyCarried = false, bool ignoreCapacity = false)
+		{
+			if (!IsValidCarrier(carrier))
+			{
+				return false;
+			}
+
+			if (!IsCarryableToddler(toddler))
+			{
+				return false;
+			}
+
+			if (!allowAlreadyCarried && IsBeingCarried(toddler))
+			{
+				return false;
+			}
+
+			if (toddler.Faction == Faction.OfPlayer && carrier.Faction != Faction.OfPlayer)
+			{
+				return false;
+			}
+
+			if (!ignoreCapacity && GetCarriedToddlerCount(carrier) >= GetMaxCarryCapacity(carrier))
+			{
+				return false;
+			}
+
+			return true;
+		}
+
+		public static bool IsCarryRelationStillValid(Pawn carrier, Pawn toddler)
+		{
+			if (carrier == null || toddler == null)
+			{
+				return false;
+			}
+
+			if (!IsValidCarrier(carrier))
+			{
+				return false;
+			}
+
+			if (!IsCarryableToddler(toddler))
+			{
+				return false;
+			}
+
+			if (toddler.Faction == Faction.OfPlayer && carrier.Faction != Faction.OfPlayer)
+			{
+				return false;
+			}
+
+			return true;
+		}
+
+		private static bool IsCarryableToddler(Pawn pawn)
+		{
+			if (pawn == null)
+			{
+				return false;
+			}
+
+			return ToddlersCompatUtility.IsToddler(pawn)
+				|| pawn.DevelopmentalStage.Newborn()
+				|| pawn.DevelopmentalStage.Baby();
 		}
 
 		/// <summary>

@@ -53,6 +53,14 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				harmony.Patch(exitMapMethod, prefix: new HarmonyMethod(typeof(Patch_ToddlerCarrying), nameof(Pawn_ExitMap_Prefix)));
 			}
 
+			MethodInfo setFactionMethod = AccessTools.Method(typeof(Pawn), nameof(Pawn.SetFaction), new[] { typeof(Faction), typeof(Pawn) });
+			if (setFactionMethod != null)
+			{
+				harmony.Patch(setFactionMethod,
+					prefix: new HarmonyMethod(typeof(Patch_ToddlerCarrying), nameof(Pawn_SetFaction_Prefix)),
+					postfix: new HarmonyMethod(typeof(Patch_ToddlerCarrying), nameof(Pawn_SetFaction_Postfix)));
+			}
+
 			// Patch Pawn.Kill - 清除背负关系
 			MethodInfo killMethod = AccessTools.Method(typeof(Pawn), "Kill");
 			if (killMethod != null)
@@ -169,8 +177,16 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				return;
 			}
 
+			Pawn carrier = ToddlerCarryingUtility.GetCarrier(__instance);
+			bool isBeingCarried = carrier != null;
+			if (isBeingCarried && !ToddlerCarryingUtility.IsCarryRelationStillValid(carrier, __instance))
+			{
+				ToddlerCarryingUtility.DismountToddler(__instance);
+				carrier = null;
+				isBeingCarried = false;
+			}
+
 			// Keep carried protection hediff in sync during runtime and after load.
-			bool isBeingCarried = ToddlerCarryingUtility.IsBeingCarried(__instance);
 			if (isBeingCarried)
 			{
 				ToddlerCarryProtectionUtility.SetCarryProtectionActive(__instance, true);
@@ -181,7 +197,6 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			}
 
 			// 如果这个pawn正在被背着，同步位置
-			Pawn carrier = ToddlerCarryingUtility.GetCarrier(__instance);
 			if (carrier != null && carrier.Spawned && carrier.Map == __instance.Map)
 			{
 				// 同步位置到载体位置
@@ -212,6 +227,12 @@ namespace RimTalk_ToddlersExpansion.Harmony
 					}
 
 					// 确保幼儿在同一地图
+					if (!ToddlerCarryingUtility.IsCarryRelationStillValid(__instance, toddler))
+					{
+						ToddlerCarryingUtility.DismountToddler(toddler);
+						continue;
+					}
+
 					if (toddler.Map != __instance.Map)
 					{
 						ToddlerCarryingUtility.DismountToddler(toddler);
@@ -259,6 +280,21 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			}
 		}
 
+		private static void Pawn_SetFaction_Prefix(Pawn __instance, ref Faction __state)
+		{
+			__state = __instance?.Faction;
+		}
+
+		private static void Pawn_SetFaction_Postfix(Pawn __instance, Faction newFaction, Faction __state)
+		{
+			if (__instance == null || __state == newFaction)
+			{
+				return;
+			}
+
+			DropInvalidCarryRelations(__instance);
+		}
+
 		/// <summary>
 		/// pawn?????????
 		/// </summary>
@@ -270,6 +306,37 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			}
 
 			ToddlerCarryingUtility.ClearAllCarryingRelations(__instance);
+		}
+
+		private static void DropInvalidCarryRelations(Pawn pawn)
+		{
+			if (pawn == null)
+			{
+				return;
+			}
+
+			if (ToddlerCarryingTracker.TryGetCarriedToddlersNoAlloc(pawn, out List<Pawn> carriedToddlers))
+			{
+				for (int i = carriedToddlers.Count - 1; i >= 0; i--)
+				{
+					Pawn toddler = carriedToddlers[i];
+					if (toddler == null || !ToddlerCarryingUtility.IsCarryRelationStillValid(pawn, toddler))
+					{
+						ToddlerCarryingUtility.DismountToddler(toddler);
+					}
+				}
+			}
+
+			if (!ToddlerCarryingUtility.IsBeingCarried(pawn))
+			{
+				return;
+			}
+
+			Pawn carrier = ToddlerCarryingUtility.GetCarrier(pawn);
+			if (!ToddlerCarryingUtility.IsCarryRelationStillValid(carrier, pawn))
+			{
+				ToddlerCarryingUtility.DismountToddler(pawn);
+			}
 		}
 
 		private static void TryExitCarriedToddlersOnExitMap(Pawn carrier, Rot4 exitDir)
@@ -290,6 +357,12 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 				if (!ToddlersCompatUtility.IsToddlerOrBaby(toddler) && toddler.DevelopmentalStage != DevelopmentalStage.Child)
 				{
+					continue;
+				}
+
+				if (!ToddlerCarryingUtility.IsCarryRelationStillValid(carrier, toddler))
+				{
+					ToddlerCarryingUtility.DismountToddler(toddler);
 					continue;
 				}
 
@@ -339,6 +412,12 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 				if (!ToddlersCompatUtility.IsToddlerOrBaby(toddler) && toddler.DevelopmentalStage != DevelopmentalStage.Child)
 				{
+					continue;
+				}
+
+				if (!ToddlerCarryingUtility.IsCarryRelationStillValid(carrier, toddler))
+				{
+					ToddlerCarryingUtility.DismountToddler(toddler);
 					continue;
 				}
 

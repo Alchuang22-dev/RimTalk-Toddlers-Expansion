@@ -65,6 +65,11 @@ namespace RimTalk_ToddlersExpansion.AI
 					continue;
 				}
 
+				if (!ToddlerCarryingUtility.CanCarryToddler(carrier, p, ignoreCapacity: true))
+				{
+					continue;
+				}
+
 				if (ToddlerCarryingUtility.IsBeingCarried(p))
 				{
 					continue;
