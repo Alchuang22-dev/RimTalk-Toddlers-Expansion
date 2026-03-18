@@ -855,7 +855,7 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 
 		private static bool CanUseBabyRollProfile(Pawn pawn)
 		{
-			if (pawn == null || ToddlerCarryingUtility.IsBeingCarried(pawn) || IsPawnInBedOrCrib(pawn))
+			if (pawn == null || IsBabyOnly(pawn) || ToddlerCarryingUtility.IsBeingCarried(pawn) || IsPawnInBedOrCrib(pawn))
 			{
 				return false;
 			}
