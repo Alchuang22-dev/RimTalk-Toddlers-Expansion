@@ -58,7 +58,7 @@ namespace RimTalk_ToddlersExpansion
             float multiplier = 1.0f - boredomValue;
 
             // 确保不低于最小值
-            return Math.Max(multiplier, 0.3f);
+            return Math.Max(multiplier, 0f);
         }
 
         /// <summary>
