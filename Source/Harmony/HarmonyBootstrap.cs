@@ -54,6 +54,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			Patch_BabyCryMoodOnly.Init(harmony);
 			Patch_AdoptableFriendlyBaby.Init(harmony);
 			Patch_ApparelGraphicRecordGetter_BabyFallback.Init(harmony);
+			Patch_ToddlersRemoveClothes.Init(harmony);
 			Patch_HospitalityBedUtilityIdeology.Init(harmony);
 			
 			// 婴儿头发渲染补丁（允许婴儿显示头发）
