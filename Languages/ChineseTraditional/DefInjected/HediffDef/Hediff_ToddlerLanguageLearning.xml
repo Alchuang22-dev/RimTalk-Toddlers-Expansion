@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimTalk_ToddlerLanguageLearning.label>語言學習</RimTalk_ToddlerLanguageLearning.label>
+  <RimTalk_ToddlerLanguageLearning.description>幼兒正在學習說話，并會逐步進步。</RimTalk_ToddlerLanguageLearning.description>
+  <RimTalk_ToddlerLanguageLearning.stages.0.label>簡單發聲</RimTalk_ToddlerLanguageLearning.stages.0.label>
+  <RimTalk_ToddlerLanguageLearning.stages.0.overrideTooltip>幼兒還太小，只能發出一些含糊不清的音節。</RimTalk_ToddlerLanguageLearning.stages.0.overrideTooltip>
+  <RimTalk_ToddlerLanguageLearning.stages.1.label>牙牙學語</RimTalk_ToddlerLanguageLearning.stages.1.label>
+  <RimTalk_ToddlerLanguageLearning.stages.1.overrideTooltip>幼兒剛剛學會稱呼媽媽，現在正在嘗試說出簡單的詞語。</RimTalk_ToddlerLanguageLearning.stages.1.overrideTooltip>
+  <RimTalk_ToddlerLanguageLearning.stages.2.label>嘗試對話</RimTalk_ToddlerLanguageLearning.stages.2.label>
+  <RimTalk_ToddlerLanguageLearning.stages.2.overrideTooltip>幼兒能說出一兩個簡短的句子，還會表達自己的需求。</RimTalk_ToddlerLanguageLearning.stages.2.overrideTooltip>
+</LanguageData>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+    <!-- 獨自玩耍 -->
+    <ToddlerPlayCategory_SoloPlay.label>獨自玩耍</ToddlerPlayCategory_SoloPlay.label>
+    <ToddlerPlayCategory_SoloPlay.description>幼兒獨自進行的玩耍活動。</ToddlerPlayCategory_SoloPlay.description>
+
+    <!-- 社交玩耍 -->
+    <ToddlerPlayCategory_SocialPlay.label>社交玩耍</ToddlerPlayCategory_SocialPlay.label>
+    <ToddlerPlayCategory_SocialPlay.description>與其他幼兒或成人互動的玩耍活動。</ToddlerPlayCategory_SocialPlay.description>
+
+    <!-- 玩具玩耍 -->
+    <ToddlerPlayCategory_ToyPlay.label>玩具玩耍</ToddlerPlayCategory_ToyPlay.label>
+    <ToddlerPlayCategory_ToyPlay.description>使用玩具進行的玩耍活動。</ToddlerPlayCategory_ToyPlay.description>
+
+    <!-- 觀察學習 -->
+    <ToddlerPlayCategory_Observation.label>觀察學習</ToddlerPlayCategory_Observation.label>
+    <ToddlerPlayCategory_Observation.description>觀察成人工作或其他活動。</ToddlerPlayCategory_Observation.description>
+
+    <!-- 媒體娛樂 -->
+    <ToddlerPlayCategory_Media.label>媒體娛樂</ToddlerPlayCategory_Media.label>
+    <ToddlerPlayCategory_Media.description>觀看電視或其他媒體。</ToddlerPlayCategory_Media.description>
+
+    <!-- 被動娛樂 -->
+    <ToddlerPlayCategory_Passive.label>被動娛樂</ToddlerPlayCategory_Passive.label>
+    <ToddlerPlayCategory_Passive.description>被成人照顧時獲得的娛樂。</ToddlerPlayCategory_Passive.description>
+
+    <!-- 探索 -->
+    <ToddlerPlayCategory_Exploration.label>探索</ToddlerPlayCategory_Exploration.label>
+    <ToddlerPlayCategory_Exploration.description>探索環境的活動。</ToddlerPlayCategory_Exploration.description>
+
+    <!-- 創意活動 -->
+    <ToddlerPlayCategory_Creative.label>創意活動</ToddlerPlayCategory_Creative.label>
+    <ToddlerPlayCategory_Creative.description>創意和藝術相關的活動。</ToddlerPlayCategory_Creative.description>
+</LanguageData>

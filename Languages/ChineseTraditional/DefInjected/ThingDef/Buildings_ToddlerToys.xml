@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimTalk_ToyBlockPile.label>積木堆</RimTalk_ToyBlockPile.label>
+  <RimTalk_ToyBlockPile.description>一小堆柔軟的積木，適合幼小的手。</RimTalk_ToyBlockPile.description>
+
+  <RimTalk_ToyRockingHorse.label>搖搖馬</RimTalk_ToyRockingHorse.label>
+  <RimTalk_ToyRockingHorse.description>一個小搖搖馬，可以安撫嬰兒并訓練平衡。</RimTalk_ToyRockingHorse.description>
+
+  <RimTalk_ToyPuzzleTable.label>拼圖桌</RimTalk_ToyPuzzleTable.label>
+  <RimTalk_ToyPuzzleTable.description>一張擺放簡單拼圖和玩具的小桌子。</RimTalk_ToyPuzzleTable.description>
+</LanguageData>

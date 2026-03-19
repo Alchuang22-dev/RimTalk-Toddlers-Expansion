@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimTalk_ToddlerTossedUp.label>飛高高</RimTalk_ToddlerTossedUp.label>
+  <RimTalk_ToddlerTossedUp.stages.0.label>飛高高</RimTalk_ToddlerTossedUp.stages.0.label>
+  <RimTalk_ToddlerTossedUp.stages.0.description>有人把我拋到高高的地方！咿呀！</RimTalk_ToddlerTossedUp.stages.0.description>
+
+  <RimTalk_ToddlerTickled.label>被撓癢癢</RimTalk_ToddlerTickled.label>
+  <RimTalk_ToddlerTickled.stages.0.label>被撓癢癢</RimTalk_ToddlerTickled.stages.0.label>
+  <RimTalk_ToddlerTickled.stages.0.description>肚肚癢癢！咯咯咯！</RimTalk_ToddlerTickled.stages.0.description>
+
+  <RimTalk_ToddlerSpunAround.label>轉圈</RimTalk_ToddlerSpunAround.label>
+  <RimTalk_ToddlerSpunAround.stages.0.label>轉圈</RimTalk_ToddlerSpunAround.stages.0.label>
+  <RimTalk_ToddlerSpunAround.stages.0.description>有人抱著我轉圈圈，轉呀轉呀轉！</RimTalk_ToddlerSpunAround.stages.0.description>
+
+  <RimTalk_PlayedWithToddler.label>和幼兒玩耍</RimTalk_PlayedWithToddler.label>
+  <RimTalk_PlayedWithToddler.stages.0.label>和幼兒玩耍</RimTalk_PlayedWithToddler.stages.0.label>
+  <RimTalk_PlayedWithToddler.stages.0.description>和小家伙一起玩耍，心里暖暖的。</RimTalk_PlayedWithToddler.stages.0.description>
+</LanguageData>

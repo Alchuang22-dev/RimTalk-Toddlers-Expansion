@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimTalk_BabyBabbling.label>嬰兒咿呀</RimTalk_BabyBabbling.label>
+  <RimTalk_BabyBabbling.description>嬰兒只能發出含糊的咿呀聲。</RimTalk_BabyBabbling.description>
+  <RimTalk_BabyBabbling.stages.0.label>咿呀咿呀</RimTalk_BabyBabbling.stages.0.label>
+  <RimTalk_BabyBabbling.stages.0.overrideTooltip>哇哇！咯咯！咿呀！咿呀！</RimTalk_BabyBabbling.stages.0.overrideTooltip>
+</LanguageData>

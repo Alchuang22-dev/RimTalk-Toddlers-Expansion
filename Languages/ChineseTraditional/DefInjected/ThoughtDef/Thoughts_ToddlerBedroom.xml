@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimTalk_MyBabyNearby.label>我的寶寶在身邊</RimTalk_MyBabyNearby.label>
+  <RimTalk_MyBabyNearby.stages.0.label>我的寶寶在身邊</RimTalk_MyBabyNearby.stages.0.label>
+  <RimTalk_MyBabyNearby.stages.0.description>我的寶寶在旁邊安靜地睡著呢...看看多可愛！</RimTalk_MyBabyNearby.stages.0.description>
+
+  <RimTalk_ToddlerSleepAlone.label>自己睡</RimTalk_ToddlerSleepAlone.label>
+  <RimTalk_ToddlerSleepAlone.stages.0.label>自己睡</RimTalk_ToddlerSleepAlone.stages.0.label>
+  <RimTalk_ToddlerSleepAlone.stages.0.description>媽媽，媽媽在哪里？有點怕...</RimTalk_ToddlerSleepAlone.stages.0.description>
+
+  <RimTalk_ToddlerSleepWithOthers.label>被大人帶著睡</RimTalk_ToddlerSleepWithOthers.label>
+  <RimTalk_ToddlerSleepWithOthers.stages.0.label>被大人帶著睡</RimTalk_ToddlerSleepWithOthers.stages.0.label>
+  <RimTalk_ToddlerSleepWithOthers.stages.0.description>好擠哦...那個人為什么不抱我？</RimTalk_ToddlerSleepWithOthers.stages.0.description>
+
+  <RimTalk_ToddlerSleepInNursery.label>在育兒室睡覺</RimTalk_ToddlerSleepInNursery.label>
+  <RimTalk_ToddlerSleepInNursery.stages.0.label>在育兒室睡覺</RimTalk_ToddlerSleepInNursery.stages.0.label>
+  <RimTalk_ToddlerSleepInNursery.stages.0.description>好多寶寶！窩不想睡覺，要和別的寶寶玩！</RimTalk_ToddlerSleepInNursery.stages.0.description>
+
+  <RimTalk_ToddlerSleepWithParents.label>和家人一起睡</RimTalk_ToddlerSleepWithParents.label>
+  <RimTalk_ToddlerSleepWithParents.stages.0.label>和家人一起睡</RimTalk_ToddlerSleepWithParents.stages.0.label>
+  <RimTalk_ToddlerSleepWithParents.stages.0.description>枕頭...軟軟！呼嚕呼嚕...媽媽...</RimTalk_ToddlerSleepWithParents.stages.0.description>
+</LanguageData>

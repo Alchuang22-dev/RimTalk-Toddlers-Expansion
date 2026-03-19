@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimTalk_AttendedChildrenOuting.label>參加郊游</RimTalk_AttendedChildrenOuting.label>
+  <RimTalk_OrganizedChildrenOuting.label>組織郊游</RimTalk_OrganizedChildrenOuting.label>
+  <!-- 參加兒童野游 -->
+  <RimTalk_AttendedChildrenOuting.stages.0.label>參加郊游</RimTalk_AttendedChildrenOuting.stages.0.label>
+  <RimTalk_AttendedChildrenOuting.stages.0.description>我還要和大家一起探險！好玩！</RimTalk_AttendedChildrenOuting.stages.0.description>
+  
+  <!-- 組織兒童野游 -->
+  <RimTalk_OrganizedChildrenOuting.stages.0.label>郊游小隊長</RimTalk_OrganizedChildrenOuting.stages.0.label>
+  <RimTalk_OrganizedChildrenOuting.stages.0.description>我是最厲害的小隊長，所有寶寶都聽我的！</RimTalk_OrganizedChildrenOuting.stages.0.description>
+</LanguageData>
