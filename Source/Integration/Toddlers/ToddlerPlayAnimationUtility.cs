@@ -10,8 +10,9 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 	{
 		public static AnimationDef GetRandomSelfPlayAnimation(Pawn pawn)
 		{
-			if (!ArePlayAnimationsAllowedForPawn(pawn))
+			if (!CanUseManagedPlayAnimations(pawn))
 			{
+				ClearManagedNativePlayAnimation(pawn);
 				return null;
 			}
 
@@ -20,8 +21,9 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		public static AnimationDef GetRandomMutualPlayAnimation(Pawn pawn)
 		{
-			if (!ArePlayAnimationsAllowedForPawn(pawn))
+			if (!CanUseManagedPlayAnimations(pawn))
 			{
+				ClearManagedNativePlayAnimation(pawn);
 				return null;
 			}
 
@@ -30,8 +32,9 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		public static AnimationDef GetSharedMutualPlayAnimation(Pawn pawn, Pawn partner)
 		{
-			if (!ArePlayAnimationsAllowedForPawn(pawn))
+			if (!CanUseManagedPlayAnimations(pawn))
 			{
+				ClearManagedNativePlayAnimation(pawn);
 				return null;
 			}
 
@@ -51,6 +54,12 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		{
 			if (pawn?.Drawer?.renderer == null || animation == null)
 			{
+				return;
+			}
+
+			if (!CanUseManagedPlayAnimations(pawn))
+			{
+				ClearManagedNativePlayAnimation(pawn);
 				return;
 			}
 
@@ -100,10 +109,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
-			if (current == ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Wiggle
-				|| current == ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Sway
-				|| current == ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Lay
-				|| current == ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Crawl)
+			if (IsManagedPlayAnimation(current))
 			{
 				pawn.Drawer.renderer.SetAnimation(null);
 				return true;
@@ -127,6 +133,32 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			return true;
+		}
+
+		private static bool CanUseManagedPlayAnimations(Pawn pawn)
+		{
+			return pawn != null
+				&& ToddlersCompatUtility.IsToddlerOrBaby(pawn)
+				&& ArePlayAnimationsAllowedForPawn(pawn);
+		}
+
+		private static bool IsManagedPlayAnimation(AnimationDef animation)
+		{
+			if (animation == null)
+			{
+				return false;
+			}
+
+			if (animation == ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Wiggle
+				|| animation == ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Sway
+				|| animation == ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Lay
+				|| animation == ToddlersExpansionAnimationDefOf.RimTalk_ToddlerPlay_Crawl)
+			{
+				return true;
+			}
+
+			AnimationDef toddlerWobble = DefDatabase<AnimationDef>.GetNamedSilentFail("ToddlerWobble");
+			return animation == toddlerWobble;
 		}
 
 		private static AnimationDef[] BuildSelfPlayAnimations()
