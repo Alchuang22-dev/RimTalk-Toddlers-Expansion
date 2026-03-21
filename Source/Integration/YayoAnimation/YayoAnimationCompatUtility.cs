@@ -164,49 +164,24 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			Pawn carrier = ToddlerCarryingUtility.GetCarrier(pawn);
 			if (carrier != null)
 			{
-				try
-				{
-					if (pdd != null)
-					{
-						if (_resetMethod != null)
-						{
-							_resetMethod.Invoke(pdd, null);
-						}
-
-						if (_fixedRotField != null)
-						{
-							_fixedRotField.SetValue(pdd, carrier.Rotation);
-						}
-					}
-				}
-				catch
-				{
-				}
-
-				LogPlayAnimationDecision(pawn, $"suppressed: custom-carried by {carrier.LabelShort}");
-				return false;
+				LogPlayAnimationDecision(pawn, $"default render allowed: custom-carried by {carrier.LabelShort}");
+				return true;
 			}
 
-			if (isEngagedPlay && !isSmallPlayJob && ShouldLogMissingPlayClassification(pawn))
+			if (isEngagedPlay && !isSmallPlayJob)
 			{
-				LogPlayAnimationDecision(pawn, "engaged play job not classified as small-pawn play");
+				if (ShouldLogMissingPlayClassification(pawn))
+				{
+					LogPlayAnimationDecision(pawn, "default render allowed: engaged play job not classified as small-pawn play");
+				}
+
+				return true;
 			}
 
 			if (_suppressedPawns.Contains(pawn))
 			{
-				try
-				{
-					if (_resetMethod != null && pdd != null)
-					{
-						_resetMethod.Invoke(pdd, null);
-					}
-				}
-				catch
-				{
-				}
-
-				LogPlayAnimationDecision(pawn, "suppressed: explicit suppression active");
-				return false;
+				LogPlayAnimationDecision(pawn, "default render allowed: explicit suppression active");
+				return true;
 			}
 
 			if (isSmallPlayJob && !HasAnyEnabledPlayProfile(pawn))
@@ -224,6 +199,15 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 
 				LogPlayAnimationDecision(pawn, "fallback: no enabled play profiles");
 				return false;
+			}
+
+			if (isSmallPlayJob && ShouldUseStandingOnlySmallPlayProfile(pawn))
+			{
+				if (TryApplyStandingOnlySmallPlayProfile(pawn, rot, pdd))
+				{
+					LogPlayAnimationDecision(pawn, "standing-only small-pawn play profile applied");
+					return false;
+				}
 			}
 
 			if (isSmallPlayJob && TryGetNativePlayAnimationOverride(pawn, out AnimationDef nativeAnimation))
@@ -251,10 +235,6 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			if (isSmallPlayJob)
 			{
 				LogPlayAnimationDecision(pawn, "fallback: no native or custom Yayo profile applied");
-			}
-			else
-			{
-				ToddlerPlayAnimationUtility.ClearManagedNativePlayAnimation(pawn);
 			}
 
 			return true;
@@ -334,14 +314,11 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 				return;
 			}
 
-			if (!ShouldEnableManagedPlayAnimation(pawn)
-				|| !TryGetNativePlayAnimationOverride(pawn, out AnimationDef animation))
+			bool shouldEnableManaged = ShouldEnableManagedPlayAnimation(pawn);
+			AnimationDef animation = null;
+			bool hasNativeOverride = shouldEnableManaged && TryGetNativePlayAnimationOverride(pawn, out animation);
+			if (!shouldEnableManaged || !hasNativeOverride)
 			{
-				if (ToddlerPlayAnimationUtility.ClearManagedNativePlayAnimation(pawn))
-				{
-					LogPlayAnimationDecision(pawn, "safe native fallback cleared");
-				}
-
 				return;
 			}
 
@@ -488,12 +465,10 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 				|| jobDefName == "LayAngleInCrib"
 				|| jobDefName == "WiggleInCrib"
 				|| jobDefName == "RestIdleInCrib"
-				|| jobDefName == "ToddlerFloordrawing"
 				|| jobDefName == "ToddlerSkydreaming"
 				|| jobDefName == "ToddlerBugwatching"
 				|| jobDefName == "ToddlerWatchTelevision"
-				|| jobDefName == "ToddlerFiregazing"
-				|| jobDefName == "ToddlerPlayDecor";
+				|| jobDefName == "ToddlerFiregazing";
 		}
 
 		private static bool IsExcludedByAdultPlayJob(Pawn pawn, string jobDefName)
@@ -534,6 +509,43 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			}
 
 			return true;
+		}
+
+		private static bool ShouldUseStandingOnlySmallPlayProfile(Pawn pawn)
+		{
+			return pawn?.CurJobDef?.defName == "ToddlerFloordrawing";
+		}
+
+		private static bool TryApplyStandingOnlySmallPlayProfile(Pawn pawn, Rot4 rot, object pdd)
+		{
+			if (pdd == null)
+			{
+				return false;
+			}
+
+			try
+			{
+				if (_resetMethod != null)
+				{
+					_resetMethod.Invoke(pdd, null);
+				}
+
+				if (_fixedRotField != null)
+				{
+					_fixedRotField.SetValue(pdd, rot);
+				}
+
+				return true;
+			}
+			catch (Exception ex)
+			{
+				if (Prefs.DevMode)
+				{
+					Log.Warning($"[RimTalk_ToddlersExpansion] Failed to apply standing-only play profile: {ex.Message}");
+				}
+
+				return false;
+			}
 		}
 
 		private static bool IsToddlerSelfPlayJobDef(string jobDefName)

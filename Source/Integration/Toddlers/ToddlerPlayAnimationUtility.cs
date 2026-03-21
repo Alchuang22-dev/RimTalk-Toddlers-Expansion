@@ -4,12 +4,12 @@ using RimTalk_ToddlersExpansion.Integration.BioTech;
 using UnityEngine;
 using Verse;
 
-namespace RimTalk_ToddlersExpansion.Integration.Toddlers
-{
-	public static class ToddlerPlayAnimationUtility
+	namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 	{
-		public static AnimationDef GetRandomSelfPlayAnimation(Pawn pawn)
+		public static class ToddlerPlayAnimationUtility
 		{
+			public static AnimationDef GetRandomSelfPlayAnimation(Pawn pawn)
+			{
 			if (!CanUseManagedPlayAnimations(pawn))
 			{
 				ClearManagedNativePlayAnimation(pawn);
