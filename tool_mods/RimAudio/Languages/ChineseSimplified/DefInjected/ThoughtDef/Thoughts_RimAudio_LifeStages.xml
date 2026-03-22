@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+  <RimAudio_RainSound_Adult.stages.0.label>安宁雨声</RimAudio_RainSound_Adult.stages.0.label>
+  <RimAudio_RainSound_Adult.stages.0.description>雨声滴滴答答，放松身心。</RimAudio_RainSound_Adult.stages.0.description>
+  <RimAudio_RainSound_Child.stages.0.label>安宁雨声</RimAudio_RainSound_Child.stages.0.label>
+  <RimAudio_RainSound_Child.stages.0.description>下雨啦，小草在喝水呢。</RimAudio_RainSound_Child.stages.0.description>
+  <RimAudio_RainSound_Baby.stages.0.label>安宁雨声</RimAudio_RainSound_Baby.stages.0.label>
+  <RimAudio_RainSound_Baby.stages.0.description>今天不能出去玩...要抱抱...</RimAudio_RainSound_Baby.stages.0.description>
+
+  <RimAudio_ThunderSound_Adult.stages.0.label>滚滚雷鸣</RimAudio_ThunderSound_Adult.stages.0.label>
+  <RimAudio_ThunderSound_Adult.stages.0.description>又是闪电，我要去看看燃料有没有收好。</RimAudio_ThunderSound_Adult.stages.0.description>
+  <RimAudio_ThunderSound_Child.stages.0.label>滚滚雷鸣</RimAudio_ThunderSound_Child.stages.0.label>
+  <RimAudio_ThunderSound_Child.stages.0.description>雷电公公来啦，我要玩打架的游戏！战斗雷电！</RimAudio_ThunderSound_Child.stages.0.description>
+  <RimAudio_ThunderSound_Baby.stages.0.label>滚滚雷鸣</RimAudio_ThunderSound_Baby.stages.0.label>
+  <RimAudio_ThunderSound_Baby.stages.0.description>呜哇！好害怕...屋顶会掉下来吗？</RimAudio_ThunderSound_Baby.stages.0.description>
+
+  <RimAudio_ToxicWind_Adult.stages.0.label>毒风警报</RimAudio_ToxicWind_Adult.stages.0.label>
+  <RimAudio_ToxicWind_Adult.stages.0.description>殖民地广播了有毒烟尘的警报。</RimAudio_ToxicWind_Adult.stages.0.description>
+  <RimAudio_ToxicWind_Child.stages.0.label>毒风警报</RimAudio_ToxicWind_Child.stages.0.label>
+  <RimAudio_ToxicWind_Child.stages.0.description>殖民地广播了有毒烟尘的警报。</RimAudio_ToxicWind_Child.stages.0.description>
+  <RimAudio_ToxicWind_Baby.stages.0.label>毒风警报</RimAudio_ToxicWind_Baby.stages.0.label>
+  <RimAudio_ToxicWind_Baby.stages.0.description>婴儿不知道什么是警报，它在摇篮里看着大人走来走去。</RimAudio_ToxicWind_Baby.stages.0.description>
+
+  <RimAudio_AshWind_Adult.stages.0.label>火山警报</RimAudio_AshWind_Adult.stages.0.label>
+  <RimAudio_AshWind_Adult.stages.0.description>火山喷发了，这么远都能听到...</RimAudio_AshWind_Adult.stages.0.description>
+  <RimAudio_AshWind_Child.stages.0.label>火山警报</RimAudio_AshWind_Child.stages.0.label>
+  <RimAudio_AshWind_Child.stages.0.description>我听到奇怪的声音！像怪兽在叫！</RimAudio_AshWind_Child.stages.0.description>
+  <RimAudio_AshWind_Baby.stages.0.label>火山警报</RimAudio_AshWind_Baby.stages.0.label>
+  <RimAudio_AshWind_Baby.stages.0.description>咿呀...地在动？</RimAudio_AshWind_Baby.stages.0.description>
+
+  <RimAudio_CampfireCrackle_Adult.stages.0.label>火焰噼啪</RimAudio_CampfireCrackle_Adult.stages.0.label>
+  <RimAudio_CampfireCrackle_Adult.stages.0.description>安宁地围在火焰边上真是一种乐事。</RimAudio_CampfireCrackle_Adult.stages.0.description>
+  <RimAudio_CampfireCrackle_Child.stages.0.label>火焰噼啪</RimAudio_CampfireCrackle_Child.stages.0.label>
+  <RimAudio_CampfireCrackle_Child.stages.0.description>我们要烧烤吗？烤棉花糖？还是玩手影游戏？</RimAudio_CampfireCrackle_Child.stages.0.description>
+  <RimAudio_CampfireCrackle_Baby.stages.0.label>火焰噼啪</RimAudio_CampfireCrackle_Baby.stages.0.label>
+  <RimAudio_CampfireCrackle_Baby.stages.0.description>呐呐...暖暖...</RimAudio_CampfireCrackle_Baby.stages.0.description>
+
+  <RimAudio_FireCrackle_Adult.stages.0.label>火焰呼啸</RimAudio_FireCrackle_Adult.stages.0.label>
+  <RimAudio_FireCrackle_Adult.stages.0.description>是火焰的声音，快去叫人来灭火！</RimAudio_FireCrackle_Adult.stages.0.description>
+  <RimAudio_FireCrackle_Child.stages.0.label>火焰呼啸</RimAudio_FireCrackle_Child.stages.0.label>
+  <RimAudio_FireCrackle_Child.stages.0.description>好害怕，灭火器在哪里？</RimAudio_FireCrackle_Child.stages.0.description>
+  <RimAudio_FireCrackle_Baby.stages.0.label>火焰呼啸</RimAudio_FireCrackle_Baby.stages.0.label>
+  <RimAudio_FireCrackle_Baby.stages.0.description>好热...不舒服...想脱衣服...扭扭</RimAudio_FireCrackle_Baby.stages.0.description>
+  
+  <RimAudio_GeneratorHum_Adult.stages.0.label>机械噪声</RimAudio_GeneratorHum_Adult.stages.0.label>
+  <RimAudio_GeneratorHum_Adult.stages.0.description>又来了，这些电器真有点吵。不能放远一点吗？</RimAudio_GeneratorHum_Adult.stages.0.description>
+  <RimAudio_GeneratorHum_Child.stages.0.label>机械噪声</RimAudio_GeneratorHum_Child.stages.0.label>
+  <RimAudio_GeneratorHum_Child.stages.0.description>电器嗡嗡响，脑子有点晕晕的。</RimAudio_GeneratorHum_Child.stages.0.description>
+  <RimAudio_GeneratorHum_Baby.stages.0.label>机械噪声</RimAudio_GeneratorHum_Baby.stages.0.label>
+  <RimAudio_GeneratorHum_Baby.stages.0.description>嗡嗡...电电是什么？</RimAudio_GeneratorHum_Baby.stages.0.description>
+
+  <RimAudio_TelevisionNoise_Adult.stages.0.label>柔和的音乐</RimAudio_TelevisionNoise_Adult.stages.0.label>
+  <RimAudio_TelevisionNoise_Adult.stages.0.description>这种音乐听在耳朵里就是享受啊。接着奏乐！</RimAudio_TelevisionNoise_Adult.stages.0.description>
+  <RimAudio_TelevisionNoise_Child.stages.0.label>柔和的音乐</RimAudio_TelevisionNoise_Child.stages.0.label>
+  <RimAudio_TelevisionNoise_Child.stages.0.description>do re mi fa sol la ci！哼哼...</RimAudio_TelevisionNoise_Child.stages.0.description>
+  <RimAudio_TelevisionNoise_Baby.stages.0.label>柔和的音乐</RimAudio_TelevisionNoise_Baby.stages.0.label>
+  <RimAudio_TelevisionNoise_Baby.stages.0.description>咿呀...啦啦？...好听的声音</RimAudio_TelevisionNoise_Baby.stages.0.description>
+
+  <RimAudio_LeisureNoise_Adult.stages.0.label>欢声笑语</RimAudio_LeisureNoise_Adult.stages.0.label>
+  <RimAudio_LeisureNoise_Adult.stages.0.description>我们的殖民地简直是娱乐圣地。</RimAudio_LeisureNoise_Adult.stages.0.description>
+  <RimAudio_LeisureNoise_Child.stages.0.label>欢声笑语</RimAudio_LeisureNoise_Child.stages.0.label>
+  <RimAudio_LeisureNoise_Child.stages.0.description>大人都在玩，我们也要玩！</RimAudio_LeisureNoise_Child.stages.0.description>
+  <RimAudio_LeisureNoise_Baby.stages.0.label>欢声笑语</RimAudio_LeisureNoise_Baby.stages.0.label>
+  <RimAudio_LeisureNoise_Baby.stages.0.description>好多人，窝要闹了哦！</RimAudio_LeisureNoise_Baby.stages.0.description>
+
+  <RimAudio_CoolerHum_Adult.stages.0.label>压缩机嗡鸣</RimAudio_CoolerHum_Adult.stages.0.label>
+  <RimAudio_CoolerHum_Adult.stages.0.description>什么时候这空调能静音就好了。</RimAudio_CoolerHum_Adult.stages.0.description>
+  <RimAudio_CoolerHum_Child.stages.0.label>压缩机嗡鸣</RimAudio_CoolerHum_Child.stages.0.label>
+  <RimAudio_CoolerHum_Child.stages.0.description>什么时候这空调能静音就好了。</RimAudio_CoolerHum_Child.stages.0.description>
+  <RimAudio_CoolerHum_Baby.stages.0.label>压缩机嗡鸣</RimAudio_CoolerHum_Baby.stages.0.label>
+  <RimAudio_CoolerHum_Baby.stages.0.description>冷风吹吹...热气吹吹...遥控器真好玩！</RimAudio_CoolerHum_Baby.stages.0.description>
+
+  <RimAudio_AnimalNoise_Adult.stages.0.label>鸡犬之声相闻</RimAudio_AnimalNoise_Adult.stages.0.label>
+  <RimAudio_AnimalNoise_Adult.stages.0.description>家里动物的声音令人安心。</RimAudio_AnimalNoise_Adult.stages.0.description>
+  <RimAudio_AnimalNoise_Child.stages.0.label>鸡犬之声相闻</RimAudio_AnimalNoise_Child.stages.0.label>
+  <RimAudio_AnimalNoise_Child.stages.0.description>动物们有点吵，但是都是我们的朋友。</RimAudio_AnimalNoise_Child.stages.0.description>
+  <RimAudio_AnimalNoise_Baby.stages.0.label>鸡犬之声相闻</RimAudio_AnimalNoise_Baby.stages.0.label>
+  <RimAudio_AnimalNoise_Baby.stages.0.description>嘎嘎！吱吱！哞哞！咩咩！</RimAudio_AnimalNoise_Baby.stages.0.description>
+
+  <RimAudio_MechNoise_Adult.stages.0.label>机仆语音</RimAudio_MechNoise_Adult.stages.0.label>
+  <RimAudio_MechNoise_Adult.stages.0.description>这些机器家伙们很勤劳，但是声学模型真不咋地。</RimAudio_MechNoise_Adult.stages.0.description>
+  <RimAudio_MechNoise_Child.stages.0.label>机仆语音</RimAudio_MechNoise_Child.stages.0.label>
+  <RimAudio_MechNoise_Child.stages.0.description>等我长大了，要让这些机器人像我一样说话。</RimAudio_MechNoise_Child.stages.0.description>
+  <RimAudio_MechNoise_Baby.stages.0.label>机仆语音</RimAudio_MechNoise_Baby.stages.0.label>
+  <RimAudio_MechNoise_Baby.stages.0.description>窝不喜欢机器人说话，拿掉！</RimAudio_MechNoise_Baby.stages.0.description>
+
+  <RimAudio_BabyRoomNoise_Adult.stages.0.label>婴儿摇篮曲</RimAudio_BabyRoomNoise_Adult.stages.0.label>
+  <RimAudio_BabyRoomNoise_Adult.stages.0.description>小家伙的风铃真可爱。</RimAudio_BabyRoomNoise_Adult.stages.0.description>
+  <RimAudio_BabyRoomNoise_Child.stages.0.label>婴儿摇篮曲</RimAudio_BabyRoomNoise_Child.stages.0.label>
+  <RimAudio_BabyRoomNoise_Child.stages.0.description>这是宝宝的音乐盒吗？想摸一下。</RimAudio_BabyRoomNoise_Child.stages.0.description>
+  <RimAudio_BabyRoomNoise_Baby.stages.0.label>婴儿摇篮曲</RimAudio_BabyRoomNoise_Baby.stages.0.label>
+  <RimAudio_BabyRoomNoise_Baby.stages.0.description>咿呀！宝宝喜欢这个，呼噜呼噜...</RimAudio_BabyRoomNoise_Baby.stages.0.description>
+
+  <RimAudio_ParentVoice_Adult.stages.0.label>父母的声音</RimAudio_ParentVoice_Adult.stages.0.label>
+  <RimAudio_ParentVoice_Adult.stages.0.description>家人陪着我，真好。</RimAudio_ParentVoice_Adult.stages.0.description>
+  <RimAudio_ParentVoice_Child.stages.0.label>父母的声音</RimAudio_ParentVoice_Child.stages.0.label>
+  <RimAudio_ParentVoice_Child.stages.0.description>是谁在叫我呀？我在写作业呢。</RimAudio_ParentVoice_Child.stages.0.description>
+  <RimAudio_ParentVoice_Baby.stages.0.label>父母的声音</RimAudio_ParentVoice_Baby.stages.0.label>
+  <RimAudio_ParentVoice_Baby.stages.0.description>咿呀！咿呀！巴巴！麻麻！</RimAudio_ParentVoice_Baby.stages.0.description>
+
+  <RimAudio_WoundedEnemy_Adult.stages.0.label>敌人哀嚎</RimAudio_WoundedEnemy_Adult.stages.0.label>
+  <RimAudio_WoundedEnemy_Adult.stages.0.description>尽管是我们的敌人，听到他们的哀嚎仍然不免心烦。</RimAudio_WoundedEnemy_Adult.stages.0.description>
+  <RimAudio_WoundedEnemy_Child.stages.0.label>敌人哀嚎</RimAudio_WoundedEnemy_Child.stages.0.label>
+  <RimAudio_WoundedEnemy_Child.stages.0.description>好吵，他们为什么要打架？</RimAudio_WoundedEnemy_Child.stages.0.description>
+  <RimAudio_WoundedEnemy_Baby.stages.0.label>敌人哀嚎</RimAudio_WoundedEnemy_Baby.stages.0.label>
+  <RimAudio_WoundedEnemy_Baby.stages.0.description>大人说今天不能出门，窝要蒙住耳朵。</RimAudio_WoundedEnemy_Baby.stages.0.description>
+
+  <RimAudio_CombatNoise_Adult.stages.0.label>战斗噪音</RimAudio_CombatNoise_Adult.stages.0.label>
+  <RimAudio_CombatNoise_Adult.stages.0.description>爆炸、枪声和号令在边缘世界像呼吸一样自然。</RimAudio_CombatNoise_Adult.stages.0.description>
+  <RimAudio_CombatNoise_Child.stages.0.label>战斗噪音</RimAudio_CombatNoise_Child.stages.0.label>
+  <RimAudio_CombatNoise_Child.stages.0.description>好吵！可是他们都让我待在家里。</RimAudio_CombatNoise_Child.stages.0.description>
+  <RimAudio_CombatNoise_Baby.stages.0.label>战斗噪音</RimAudio_CombatNoise_Baby.stages.0.label>
+  <RimAudio_CombatNoise_Baby.stages.0.description>大人说今天不能出门，窝要蒙住耳朵...呜哇！</RimAudio_CombatNoise_Baby.stages.0.description>
+  
+  <RimAudio_RiverWater_Adult.stages.0.label>潺潺流水</RimAudio_RiverWater_Adult.stages.0.label>
+  <RimAudio_RiverWater_Adult.stages.0.description>沧浪之水清兮...住在河边上挺不错的。</RimAudio_RiverWater_Adult.stages.0.description>
+  <RimAudio_RiverWater_Child.stages.0.label>潺潺流水</RimAudio_RiverWater_Child.stages.0.label>
+  <RimAudio_RiverWater_Child.stages.0.description>小河在流淌，小青蛙呱呱叫。</RimAudio_RiverWater_Child.stages.0.description>
+  <RimAudio_RiverWater_Baby.stages.0.label>潺潺流水</RimAudio_RiverWater_Baby.stages.0.label>
+  <RimAudio_RiverWater_Baby.stages.0.description>噗噗，那边的水一直在响。</RimAudio_RiverWater_Baby.stages.0.description>
+
+  <RimAudio_OceanWaves_Adult.stages.0.label>涛声</RimAudio_OceanWaves_Adult.stages.0.label>
+  <RimAudio_OceanWaves_Adult.stages.0.description>波浪声让我回忆起海上的时光。</RimAudio_OceanWaves_Adult.stages.0.description>
+  <RimAudio_OceanWaves_Child.stages.0.label>涛声</RimAudio_OceanWaves_Child.stages.0.label>
+  <RimAudio_OceanWaves_Child.stages.0.description>海的那边是什么？</RimAudio_OceanWaves_Child.stages.0.description>
+  <RimAudio_OceanWaves_Baby.stages.0.label>涛声</RimAudio_OceanWaves_Baby.stages.0.label>
+  <RimAudio_OceanWaves_Baby.stages.0.description>噗噗，那边的水一直在响。</RimAudio_OceanWaves_Baby.stages.0.description>
+
+  <RimAudio_Birdsong_Adult.stages.0.label>鸟鸣</RimAudio_Birdsong_Adult.stages.0.label>
+  <RimAudio_Birdsong_Adult.stages.0.description>鸟儿鸣唱，还有怎么有只斑鸠？</RimAudio_Birdsong_Adult.stages.0.description>
+  <RimAudio_Birdsong_Child.stages.0.label>鸟鸣</RimAudio_Birdsong_Child.stages.0.label>
+  <RimAudio_Birdsong_Child.stages.0.description>小鸟向我问好啦！开心！</RimAudio_Birdsong_Child.stages.0.description>
+  <RimAudio_Birdsong_Baby.stages.0.label>鸟鸣</RimAudio_Birdsong_Baby.stages.0.label>
+  <RimAudio_Birdsong_Baby.stages.0.description>啾啾...小飞飞...</RimAudio_Birdsong_Baby.stages.0.description>
+
+  <RimAudio_WildlifeNoise_Adult.stages.0.label>动物的叫声</RimAudio_WildlifeNoise_Adult.stages.0.label>
+  <RimAudio_WildlifeNoise_Adult.stages.0.description>有什么动物在草丛中行走，该狩猎了。</RimAudio_WildlifeNoise_Adult.stages.0.description>
+  <RimAudio_WildlifeNoise_Child.stages.0.label>动物的叫声</RimAudio_WildlifeNoise_Child.stages.0.label>
+  <RimAudio_WildlifeNoise_Child.stages.0.description>这是什么动物？嘬嘬嘬！过来！</RimAudio_WildlifeNoise_Child.stages.0.description>
+  <RimAudio_WildlifeNoise_Baby.stages.0.label>动物的叫声</RimAudio_WildlifeNoise_Baby.stages.0.label>
+  <RimAudio_WildlifeNoise_Baby.stages.0.description>在边缘世界，不要把婴儿放得离动物这么近。</RimAudio_WildlifeNoise_Baby.stages.0.description>
+
+  <RimAudio_PredatorNoise_Adult.stages.0.label>捕食者的吼声</RimAudio_PredatorNoise_Adult.stages.0.label>
+  <RimAudio_PredatorNoise_Adult.stages.0.description>我听见有什么在喘息，是狼吗？</RimAudio_PredatorNoise_Adult.stages.0.description>
+  <RimAudio_PredatorNoise_Child.stages.0.label>捕食者的吼声</RimAudio_PredatorNoise_Child.stages.0.label>
+  <RimAudio_PredatorNoise_Child.stages.0.description>前面的草丛好恐怖...我要回家了...</RimAudio_PredatorNoise_Child.stages.0.description>
+  <RimAudio_PredatorNoise_Baby.stages.0.label>捕食者的吼声</RimAudio_PredatorNoise_Baby.stages.0.label>
+  <RimAudio_PredatorNoise_Baby.stages.0.description>在边缘世界，不要把婴儿放得离动物这么近。</RimAudio_PredatorNoise_Baby.stages.0.description>
+
+  <RimAudio_PetNoise_Adult.stages.0.label>宠物呢喃</RimAudio_PetNoise_Adult.stages.0.label>
+  <RimAudio_PetNoise_Adult.stages.0.description>小动物哼唧真好玩呢。</RimAudio_PetNoise_Adult.stages.0.description>
+  <RimAudio_PetNoise_Child.stages.0.label>宠物呢喃</RimAudio_PetNoise_Child.stages.0.label>
+  <RimAudio_PetNoise_Child.stages.0.description>它是不是饿了呀？一直在叫。</RimAudio_PetNoise_Child.stages.0.description>
+  <RimAudio_PetNoise_Baby.stages.0.label>宠物呢喃</RimAudio_PetNoise_Baby.stages.0.label>
+  <RimAudio_PetNoise_Baby.stages.0.description>在边缘世界，不要把婴儿放得离动物这么近，即使是宠物。</RimAudio_PetNoise_Baby.stages.0.description>
+
+  <RimAudio_TreeRustle_Adult.stages.0.label>树叶沙沙</RimAudio_TreeRustle_Adult.stages.0.label>
+  <RimAudio_TreeRustle_Adult.stages.0.description>树林阴翳，鸣声上下。</RimAudio_TreeRustle_Adult.stages.0.description>
+  <RimAudio_TreeRustle_Child.stages.0.label>树叶沙沙</RimAudio_TreeRustle_Child.stages.0.label>
+  <RimAudio_TreeRustle_Child.stages.0.description>树叶在微风中沙沙作响。</RimAudio_TreeRustle_Child.stages.0.description>
+  <RimAudio_TreeRustle_Baby.stages.0.label>树叶沙沙</RimAudio_TreeRustle_Baby.stages.0.label>
+  <RimAudio_TreeRustle_Baby.stages.0.description>呀呀...叶子好玩。</RimAudio_TreeRustle_Baby.stages.0.description>
+
+  <RimAudio_CrowdNoise_Adult.stages.0.label>人声鼎沸</RimAudio_CrowdNoise_Adult.stages.0.label>
+  <RimAudio_CrowdNoise_Adult.stages.0.description>有些人喜欢和人们交谈，但对于独居者这可能是噩梦。</RimAudio_CrowdNoise_Adult.stages.0.description>
+  <RimAudio_CrowdNoise_Child.stages.0.label>人声鼎沸</RimAudio_CrowdNoise_Child.stages.0.label>
+  <RimAudio_CrowdNoise_Child.stages.0.description>有些人喜欢和人们交谈，但对于独居者这可能是噩梦。</RimAudio_CrowdNoise_Child.stages.0.description>
+  <RimAudio_CrowdNoise_Baby.stages.0.label>人声鼎沸</RimAudio_CrowdNoise_Baby.stages.0.label>
+  <RimAudio_CrowdNoise_Baby.stages.0.description>好多人，是来找宝宝玩的吗？</RimAudio_CrowdNoise_Baby.stages.0.description>
+</LanguageData>

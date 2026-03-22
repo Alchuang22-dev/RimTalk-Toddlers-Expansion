@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Patch>
+
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="Campfire"]/modExtensions</xpath>
+    <match Class="PatchOperationAdd">
+      <xpath>Defs/ThingDef[defName="Campfire"]/modExtensions</xpath>
+      <value>
+        <li Class="RimAudio.ModExtension_Audio">
+          <thought>RimAudio_CampfireCrackle</thought>
+          <radius>8</radius>
+          <loudness>0.9</loudness>
+        </li>
+      </value>
+    </match>
+    <nomatch Class="PatchOperationAdd">
+      <xpath>Defs/ThingDef[defName="Campfire"]</xpath>
+      <value>
+        <modExtensions>
+          <li Class="RimAudio.ModExtension_Audio">
+            <thought>RimAudio_CampfireCrackle</thought>
+            <radius>8</radius>
+            <loudness>0.9</loudness>
+          </li>
+        </modExtensions>
+      </value>
+    </nomatch>
+  </Operation>
+
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="Fire"]/modExtensions</xpath>
+    <match Class="PatchOperationAdd">
+      <xpath>Defs/ThingDef[defName="Fire"]/modExtensions</xpath>
+      <value>
+        <li Class="RimAudio.ModExtension_Audio">
+          <thought>RimAudio_FireCrackle</thought>
+          <radius>12</radius>
+          <loudness>1.3</loudness>
+        </li>
+      </value>
+    </match>
+    <nomatch Class="PatchOperationAdd">
+      <xpath>Defs/ThingDef[defName="Fire"]</xpath>
+      <value>
+        <modExtensions>
+          <li Class="RimAudio.ModExtension_Audio">
+            <thought>RimAudio_FireCrackle</thought>
+            <radius>12</radius>
+            <loudness>1.3</loudness>
+          </li>
+        </modExtensions>
+      </value>
+    </nomatch>
+  </Operation>
+
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="WoodFiredGenerator" or defName="ChemfuelPoweredGenerator" or defName="GeothermalGenerator" or defName="WatermillGenerator" or defName="VanometricPowerCell" or defName="ShipReactor"]/modExtensions</xpath>
+    <match Class="PatchOperationAdd">
+      <xpath>Defs/ThingDef[defName="WoodFiredGenerator" or defName="ChemfuelPoweredGenerator" or defName="GeothermalGenerator" or defName="WatermillGenerator" or defName="VanometricPowerCell" or defName="ShipReactor"]/modExtensions</xpath>
+      <value>
+        <li Class="RimAudio.ModExtension_Audio">
+          <thought>RimAudio_GeneratorHum</thought>
+          <radius>12</radius>
+          <loudness>1.2</loudness>
+        </li>
+      </value>
+    </match>
+    <nomatch Class="PatchOperationAdd">
+      <xpath>Defs/ThingDef[defName="WoodFiredGenerator" or defName="ChemfuelPoweredGenerator" or defName="GeothermalGenerator" or defName="WatermillGenerator" or defName="VanometricPowerCell" or defName="ShipReactor"]</xpath>
+      <value>
+        <modExtensions>
+          <li Class="RimAudio.ModExtension_Audio">
+            <thought>RimAudio_GeneratorHum</thought>
+            <radius>12</radius>
+            <loudness>1.2</loudness>
+          </li>
+        </modExtensions>
+      </value>
+    </nomatch>
+  </Operation>
+
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="Cooler"]/modExtensions</xpath>
+    <match Class="PatchOperationAdd">
+      <xpath>Defs/ThingDef[defName="Cooler"]/modExtensions</xpath>
+      <value>
+        <li Class="RimAudio.ModExtension_Audio">
+          <thought>RimAudio_CoolerHum</thought>
+          <radius>10</radius>
+          <loudness>1.1</loudness>
+        </li>
+      </value>
+    </match>
+    <nomatch Class="PatchOperationAdd">
+      <xpath>Defs/ThingDef[defName="Cooler"]</xpath>
+      <value>
+        <modExtensions>
+          <li Class="RimAudio.ModExtension_Audio">
+            <thought>RimAudio_CoolerHum</thought>
+            <radius>10</radius>
+            <loudness>1.1</loudness>
+          </li>
+        </modExtensions>
+      </value>
+    </nomatch>
+  </Operation>
+
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="TubeTelevision" or defName="FlatscreenTelevision" or defName="MegascreenTelevision"]/modExtensions</xpath>
+    <match Class="PatchOperationAdd">
+      <xpath>Defs/ThingDef[defName="TubeTelevision" or defName="FlatscreenTelevision" or defName="MegascreenTelevision"]/modExtensions</xpath>
+      <value>
+        <li Class="RimAudio.ModExtension_Audio">
+          <thought>RimAudio_TelevisionNoise</thought>
+          <radius>14</radius>
+          <loudness>1.2</loudness>
+        </li>
+      </value>
+    </match>
+    <nomatch Class="PatchOperationAdd">
+      <xpath>Defs/ThingDef[defName="TubeTelevision" or defName="FlatscreenTelevision" or defName="MegascreenTelevision"]</xpath>
+      <value>
+        <modExtensions>
+          <li Class="RimAudio.ModExtension_Audio">
+            <thought>RimAudio_TelevisionNoise</thought>
+            <radius>14</radius>
+            <loudness>1.2</loudness>
+          </li>
+        </modExtensions>
+      </value>
+    </nomatch>
+  </Operation>
+
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="HorseshoesPin" or defName="HoopstoneRing" or defName="GameOfUrBoard" or defName="ChessTable" or defName="PokerTable" or defName="BilliardsTable"]/modExtensions</xpath>
+    <match Class="PatchOperationAdd">
+      <xpath>Defs/ThingDef[defName="HorseshoesPin" or defName="HoopstoneRing" or defName="GameOfUrBoard" or defName="ChessTable" or defName="PokerTable" or defName="BilliardsTable"]/modExtensions</xpath>
+      <value>
+        <li Class="RimAudio.ModExtension_Audio">
+          <thought>RimAudio_LeisureNoise</thought>
+          <radius>10</radius>
+          <loudness>0.8</loudness>
+          <requireLineOfSight>false</requireLineOfSight>
+        </li>
+      </value>
+    </match>
+    <nomatch Class="PatchOperationAdd">
+      <xpath>Defs/ThingDef[defName="HorseshoesPin" or defName="HoopstoneRing" or defName="GameOfUrBoard" or defName="ChessTable" or defName="PokerTable" or defName="BilliardsTable"]</xpath>
+      <value>
+        <modExtensions>
+          <li Class="RimAudio.ModExtension_Audio">
+            <thought>RimAudio_LeisureNoise</thought>
+            <radius>10</radius>
+            <loudness>0.8</loudness>
+            <requireLineOfSight>false</requireLineOfSight>
+          </li>
+        </modExtensions>
+      </value>
+    </nomatch>
+  </Operation>
+
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/ThingDef[defName="BabySleepingSpot" or defName="Crib" or defName="ToyBox"]/modExtensions</xpath>
+    <match Class="PatchOperationAdd">
+      <xpath>Defs/ThingDef[defName="BabySleepingSpot" or defName="Crib" or defName="ToyBox"]/modExtensions</xpath>
+      <value>
+        <li Class="RimAudio.ModExtension_Audio">
+          <thought>RimAudio_BabyRoomNoise</thought>
+          <radius>10</radius>
+          <loudness>1.0</loudness>
+          <requireLineOfSight>false</requireLineOfSight>
+        </li>
+      </value>
+    </match>
+    <nomatch Class="PatchOperationAdd">
+      <xpath>Defs/ThingDef[defName="BabySleepingSpot" or defName="Crib" or defName="ToyBox"]</xpath>
+      <value>
+        <modExtensions>
+          <li Class="RimAudio.ModExtension_Audio">
+            <thought>RimAudio_BabyRoomNoise</thought>
+            <radius>10</radius>
+            <loudness>1.0</loudness>
+            <requireLineOfSight>false</requireLineOfSight>
+          </li>
+        </modExtensions>
+      </value>
+    </nomatch>
+  </Operation>
+
+</Patch>

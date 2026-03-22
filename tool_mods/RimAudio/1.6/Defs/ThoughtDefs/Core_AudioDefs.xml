@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Defs>
+
+  <!-- Core environmental audio thoughts. Baby cry / giggle reuse vanilla Biotech thoughts. -->
+
+  <ThoughtDef>
+    <defName>RimAudio_RainSound</defName>
+    <developmentalStageFilter>Baby, Child, Adult</developmentalStageFilter>
+    <durationDays>0.05</durationDays>
+    <stackLimit>3</stackLimit>
+    <stages>
+      <li>
+        <label>steady rain</label>
+        <description>The soft rhythm of rain settles the nerves.</description>
+        <baseMoodEffect>2</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimAudio_ThunderSound</defName>
+    <developmentalStageFilter>Baby, Child, Adult</developmentalStageFilter>
+    <durationDays>0.05</durationDays>
+    <stackLimit>2</stackLimit>
+    <stages>
+      <li>
+        <label>rolling thunder</label>
+        <description>The sky is loud and unstable.</description>
+        <baseMoodEffect>-1</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimAudio_ToxicWind</defName>
+    <developmentalStageFilter>Baby, Child, Adult</developmentalStageFilter>
+    <durationDays>0.05</durationDays>
+    <stackLimit>3</stackLimit>
+    <stages>
+      <li>
+        <label>harsh toxic wind</label>
+        <description>The outside air hisses with a sickening chemical edge.</description>
+        <baseMoodEffect>-2</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimAudio_AshWind</defName>
+    <developmentalStageFilter>Baby, Child, Adult</developmentalStageFilter>
+    <durationDays>0.05</durationDays>
+    <stackLimit>3</stackLimit>
+    <stages>
+      <li>
+        <label>dry ashfall hush</label>
+        <description>The world sounds muted under drifting ash.</description>
+        <baseMoodEffect>-1</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimAudio_CampfireCrackle</defName>
+    <developmentalStageFilter>Baby, Child, Adult</developmentalStageFilter>
+    <durationDays>0.05</durationDays>
+    <stackLimit>3</stackLimit>
+    <stages>
+      <li>
+        <label>campfire crackle</label>
+        <description>The crackling of a nearby fire feels warm and familiar.</description>
+        <baseMoodEffect>2</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimAudio_FireCrackle</defName>
+    <developmentalStageFilter>Baby, Child, Adult</developmentalStageFilter>
+    <durationDays>0.05</durationDays>
+    <stackLimit>3</stackLimit>
+    <stages>
+      <li>
+        <label>uncontrolled fire</label>
+        <description>A nearby blaze snaps and roars in a way that feels dangerous.</description>
+        <baseMoodEffect>-2</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimAudio_GeneratorHum</defName>
+    <developmentalStageFilter>Baby, Child, Adult</developmentalStageFilter>
+    <durationDays>0.05</durationDays>
+    <stackLimit>4</stackLimit>
+    <stages>
+      <li>
+        <label>generator hum</label>
+        <description>A machine drones nearby without pause.</description>
+        <baseMoodEffect>-1</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimAudio_RiverWater</defName>
+    <developmentalStageFilter>Baby, Child, Adult</developmentalStageFilter>
+    <durationDays>0.05</durationDays>
+    <stackLimit>3</stackLimit>
+    <stages>
+      <li>
+        <label>running water</label>
+        <description>Nearby flowing water adds a steady natural backdrop.</description>
+        <baseMoodEffect>1</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimAudio_OceanWaves</defName>
+    <developmentalStageFilter>Baby, Child, Adult</developmentalStageFilter>
+    <durationDays>0.05</durationDays>
+    <stackLimit>3</stackLimit>
+    <stages>
+      <li>
+        <label>ocean surf</label>
+        <description>Rolling surf can be heard nearby.</description>
+        <baseMoodEffect>2</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimAudio_TelevisionNoise</defName>
+    <developmentalStageFilter>Baby, Child, Adult</developmentalStageFilter>
+    <durationDays>0.05</durationDays>
+    <stackLimit>2</stackLimit>
+    <stages>
+      <li>
+        <label>television chatter</label>
+        <description>Broadcast voices and music spill through the room.</description>
+        <baseMoodEffect>1</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimAudio_LeisureNoise</defName>
+    <developmentalStageFilter>Baby, Child, Adult</developmentalStageFilter>
+    <durationDays>0.05</durationDays>
+    <stackLimit>2</stackLimit>
+    <stages>
+      <li>
+        <label>playroom noise</label>
+        <description>Nearby recreation spaces make the room feel lived in.</description>
+        <baseMoodEffect>1</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimAudio_CoolerHum</defName>
+    <developmentalStageFilter>Baby, Child, Adult</developmentalStageFilter>
+    <durationDays>0.05</durationDays>
+    <stackLimit>3</stackLimit>
+    <stages>
+      <li>
+        <label>cooler hum</label>
+        <description>A nearby cooler drones steadily.</description>
+        <baseMoodEffect>-1</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimAudio_AnimalNoise</defName>
+    <developmentalStageFilter>Baby, Child, Adult</developmentalStageFilter>
+    <durationDays>0.05</durationDays>
+    <stackLimit>3</stackLimit>
+    <stages>
+      <li>
+        <label>animal sounds</label>
+        <description>Nearby animals rustle, breathe, and vocalize.</description>
+        <baseMoodEffect>1</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimAudio_Birdsong</defName>
+    <developmentalStageFilter>Baby, Child, Adult</developmentalStageFilter>
+    <durationDays>0.05</durationDays>
+    <stackLimit>3</stackLimit>
+    <stages>
+      <li>
+        <label>birdsong</label>
+        <description>Short calls and chirps drift in from nearby birds.</description>
+        <baseMoodEffect>2</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimAudio_WildlifeNoise</defName>
+    <developmentalStageFilter>Baby, Child, Adult</developmentalStageFilter>
+    <durationDays>0.05</durationDays>
+    <stackLimit>3</stackLimit>
+    <stages>
+      <li>
+        <label>wildlife nearby</label>
+        <description>Unfamiliar animal sounds carry in from the wild.</description>
+        <baseMoodEffect>1</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimAudio_PredatorNoise</defName>
+    <developmentalStageFilter>Baby, Child, Adult</developmentalStageFilter>
+    <durationDays>0.05</durationDays>
+    <stackLimit>2</stackLimit>
+    <stages>
+      <li>
+        <label>predator sounds</label>
+        <description>Heavy movement and threatening calls suggest a predator nearby.</description>
+        <baseMoodEffect>-2</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimAudio_PetNoise</defName>
+    <developmentalStageFilter>Baby, Child, Adult</developmentalStageFilter>
+    <durationDays>0.05</durationDays>
+    <stackLimit>2</stackLimit>
+    <stages>
+      <li>
+        <label>pet sounds</label>
+        <description>Familiar animal noises make the area feel domestic.</description>
+        <baseMoodEffect>2</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimAudio_MechNoise</defName>
+    <developmentalStageFilter>Baby, Child, Adult</developmentalStageFilter>
+    <durationDays>0.05</durationDays>
+    <stackLimit>3</stackLimit>
+    <stages>
+      <li>
+        <label>mechanical servos</label>
+        <description>Metallic whirs and actuator clicks echo nearby.</description>
+        <baseMoodEffect>-1</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimAudio_TreeRustle</defName>
+    <developmentalStageFilter>Baby, Child, Adult</developmentalStageFilter>
+    <durationDays>0.05</durationDays>
+    <stackLimit>3</stackLimit>
+    <stages>
+      <li>
+        <label>trees rustling</label>
+        <description>Leaves and branches shift softly in the wind.</description>
+        <baseMoodEffect>1</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimAudio_CrowdNoise</defName>
+    <developmentalStageFilter>Baby, Child, Adult</developmentalStageFilter>
+    <durationDays>0.05</durationDays>
+    <stackLimit>4</stackLimit>
+    <stages>
+      <li>
+        <label>crowd murmur</label>
+        <description>Many nearby voices and footsteps blend into a constant background murmur.</description>
+        <baseMoodEffect>1</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimAudio_BabyRoomNoise</defName>
+    <developmentalStageFilter>Baby, Child, Adult</developmentalStageFilter>
+    <durationDays>0.05</durationDays>
+    <stackLimit>2</stackLimit>
+    <stages>
+      <li>
+        <label>nursery ambience</label>
+        <description>Soft domestic sounds from baby furniture make the area feel comforting.</description>
+        <baseMoodEffect>2</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimAudio_ParentVoice</defName>
+    <developmentalStageFilter>Baby, Child, Adult</developmentalStageFilter>
+    <durationDays>0.05</durationDays>
+    <stackLimit>1</stackLimit>
+    <stages>
+      <li>
+        <label>familiar parent voice</label>
+        <description>A familiar parent is close enough to hear.</description>
+        <baseMoodEffect>3</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimAudio_WoundedEnemy</defName>
+    <developmentalStageFilter>Baby, Child, Adult</developmentalStageFilter>
+    <durationDays>0.03</durationDays>
+    <stackLimit>2</stackLimit>
+    <stages>
+      <li>
+        <label>enemy pain nearby</label>
+        <description>Hostile cries and labored movement carry across the area.</description>
+        <baseMoodEffect>-3</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>RimAudio_CombatNoise</defName>
+    <developmentalStageFilter>Baby, Child, Adult</developmentalStageFilter>
+    <durationDays>0.03</durationDays>
+    <stackLimit>2</stackLimit>
+    <stages>
+      <li>
+        <label>combat noise</label>
+        <description>Violence nearby keeps the nerves on edge.</description>
+        <baseMoodEffect>-2</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+</Defs>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Patch>
+
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WeatherDef[defName="Rain" or defName="FoggyRain"]/modExtensions</xpath>
+    <match Class="PatchOperationAdd">
+      <xpath>Defs/WeatherDef[defName="Rain" or defName="FoggyRain"]/modExtensions</xpath>
+      <value>
+        <li Class="RimAudio.ModExtension_Audio">
+          <thought>RimAudio_RainSound</thought>
+          <loudness>1.0</loudness>
+          <outdoorsOnly>true</outdoorsOnly>
+        </li>
+      </value>
+    </match>
+    <nomatch Class="PatchOperationAdd">
+      <xpath>Defs/WeatherDef[defName="Rain" or defName="FoggyRain"]</xpath>
+      <value>
+        <modExtensions>
+          <li Class="RimAudio.ModExtension_Audio">
+            <thought>RimAudio_RainSound</thought>
+            <loudness>1.0</loudness>
+            <outdoorsOnly>true</outdoorsOnly>
+          </li>
+        </modExtensions>
+      </value>
+    </nomatch>
+  </Operation>
+
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/WeatherDef[defName="RainyThunderstorm"]/modExtensions</xpath>
+    <match Class="PatchOperationAdd">
+      <xpath>Defs/WeatherDef[defName="RainyThunderstorm"]/modExtensions</xpath>
+      <value>
+        <li Class="RimAudio.ModExtension_Audio">
+          <thought>RimAudio_ThunderSound</thought>
+          <loudness>1.3</loudness>
+          <outdoorsOnly>true</outdoorsOnly>
+        </li>
+      </value>
+    </match>
+    <nomatch Class="PatchOperationAdd">
+      <xpath>Defs/WeatherDef[defName="RainyThunderstorm"]</xpath>
+      <value>
+        <modExtensions>
+          <li Class="RimAudio.ModExtension_Audio">
+            <thought>RimAudio_ThunderSound</thought>
+            <loudness>1.3</loudness>
+            <outdoorsOnly>true</outdoorsOnly>
+          </li>
+        </modExtensions>
+      </value>
+    </nomatch>
+  </Operation>
+
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/GameConditionDef[defName="ToxicFallout"]/modExtensions</xpath>
+    <match Class="PatchOperationAdd">
+      <xpath>Defs/GameConditionDef[defName="ToxicFallout"]/modExtensions</xpath>
+      <value>
+        <li Class="RimAudio.ModExtension_Audio">
+          <thought>RimAudio_ToxicWind</thought>
+          <loudness>1.2</loudness>
+          <outdoorsOnly>true</outdoorsOnly>
+        </li>
+      </value>
+    </match>
+    <nomatch Class="PatchOperationAdd">
+      <xpath>Defs/GameConditionDef[defName="ToxicFallout"]</xpath>
+      <value>
+        <modExtensions>
+          <li Class="RimAudio.ModExtension_Audio">
+            <thought>RimAudio_ToxicWind</thought>
+            <loudness>1.2</loudness>
+            <outdoorsOnly>true</outdoorsOnly>
+          </li>
+        </modExtensions>
+      </value>
+    </nomatch>
+  </Operation>
+
+  <Operation Class="PatchOperationConditional">
+    <xpath>Defs/GameConditionDef[defName="VolcanicWinter"]/modExtensions</xpath>
+    <match Class="PatchOperationAdd">
+      <xpath>Defs/GameConditionDef[defName="VolcanicWinter"]/modExtensions</xpath>
+      <value>
+        <li Class="RimAudio.ModExtension_Audio">
+          <thought>RimAudio_AshWind</thought>
+          <loudness>1.0</loudness>
+          <outdoorsOnly>true</outdoorsOnly>
+        </li>
+      </value>
+    </match>
+    <nomatch Class="PatchOperationAdd">
+      <xpath>Defs/GameConditionDef[defName="VolcanicWinter"]</xpath>
+      <value>
+        <modExtensions>
+          <li Class="RimAudio.ModExtension_Audio">
+            <thought>RimAudio_AshWind</thought>
+            <loudness>1.0</loudness>
+            <outdoorsOnly>true</outdoorsOnly>
+          </li>
+        </modExtensions>
+      </value>
+    </nomatch>
+  </Operation>
+
+</Patch>

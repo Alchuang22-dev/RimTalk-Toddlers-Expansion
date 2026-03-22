@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Defs>
+
+  <PawnCapacityDef>
+    <defName>RimAudio_Hearing</defName>
+    <label>hearing</label>
+    <listOrder>61</listOrder>
+    <workerClass>RimAudio.PawnCapacityWorker_Hearing</workerClass>
+    <showOnAnomalyEntities>false</showOnAnomalyEntities>
+  </PawnCapacityDef>
+
+</Defs>

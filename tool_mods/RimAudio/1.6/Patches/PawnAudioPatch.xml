@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/*[race/intelligence="Humanlike"]/comps</xpath>
+    <value>
+      <li>
+        <compClass>RimAudio.Pawn_AudioTracker</compClass>
+      </li>
+    </value>
+  </Operation>
+
+</Patch>

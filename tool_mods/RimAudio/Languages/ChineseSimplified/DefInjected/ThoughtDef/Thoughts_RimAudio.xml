@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+  <RimAudio_RainSound.stages.0.label>安宁雨声</RimAudio_RainSound.stages.0.label>
+  <RimAudio_RainSound.stages.0.description>The soft rhythm of rain settles the nerves.</RimAudio_RainSound.stages.0.description>
+
+  <RimAudio_ThunderSound.stages.0.label>rolling thunder</RimAudio_ThunderSound.stages.0.label>
+  <RimAudio_ThunderSound.stages.0.description>The sky is loud and unstable.</RimAudio_ThunderSound.stages.0.description>
+
+  <RimAudio_ToxicWind.stages.0.label>harsh toxic wind</RimAudio_ToxicWind.stages.0.label>
+  <RimAudio_ToxicWind.stages.0.description>The outside air hisses with a sickening chemical edge.</RimAudio_ToxicWind.stages.0.description>
+
+  <RimAudio_AshWind.stages.0.label>dry ashfall hush</RimAudio_AshWind.stages.0.label>
+  <RimAudio_AshWind.stages.0.description>The world sounds muted under drifting ash.</RimAudio_AshWind.stages.0.description>
+
+  <RimAudio_CampfireCrackle.stages.0.label>campfire crackle</RimAudio_CampfireCrackle.stages.0.label>
+  <RimAudio_CampfireCrackle.stages.0.description>The crackling of a nearby fire feels warm and familiar.</RimAudio_CampfireCrackle.stages.0.description>
+
+  <RimAudio_FireCrackle.stages.0.label>uncontrolled fire</RimAudio_FireCrackle.stages.0.label>
+  <RimAudio_FireCrackle.stages.0.description>A nearby blaze snaps and roars in a way that feels dangerous.</RimAudio_FireCrackle.stages.0.description>
+
+  <RimAudio_GeneratorHum.stages.0.label>generator hum</RimAudio_GeneratorHum.stages.0.label>
+  <RimAudio_GeneratorHum.stages.0.description>A machine drones nearby without pause.</RimAudio_GeneratorHum.stages.0.description>
+
+  <RimAudio_RiverWater.stages.0.label>running water</RimAudio_RiverWater.stages.0.label>
+  <RimAudio_RiverWater.stages.0.description>Nearby flowing water adds a steady natural backdrop.</RimAudio_RiverWater.stages.0.description>
+
+  <RimAudio_OceanWaves.stages.0.label>ocean surf</RimAudio_OceanWaves.stages.0.label>
+  <RimAudio_OceanWaves.stages.0.description>Rolling surf can be heard nearby.</RimAudio_OceanWaves.stages.0.description>
+
+  <RimAudio_TelevisionNoise.stages.0.label>television chatter</RimAudio_TelevisionNoise.stages.0.label>
+  <RimAudio_TelevisionNoise.stages.0.description>Broadcast voices and music spill through the room.</RimAudio_TelevisionNoise.stages.0.description>
+
+  <RimAudio_LeisureNoise.stages.0.label>playroom noise</RimAudio_LeisureNoise.stages.0.label>
+  <RimAudio_LeisureNoise.stages.0.description>Nearby recreation spaces make the room feel lived in.</RimAudio_LeisureNoise.stages.0.description>
+
+  <RimAudio_CoolerHum.stages.0.label>cooler hum</RimAudio_CoolerHum.stages.0.label>
+  <RimAudio_CoolerHum.stages.0.description>A nearby cooler drones steadily.</RimAudio_CoolerHum.stages.0.description>
+
+  <RimAudio_AnimalNoise.stages.0.label>animal sounds</RimAudio_AnimalNoise.stages.0.label>
+  <RimAudio_AnimalNoise.stages.0.description>Nearby animals rustle, breathe, and vocalize.</RimAudio_AnimalNoise.stages.0.description>
+
+  <RimAudio_Birdsong.stages.0.label>birdsong</RimAudio_Birdsong.stages.0.label>
+  <RimAudio_Birdsong.stages.0.description>Short calls and chirps drift in from nearby birds.</RimAudio_Birdsong.stages.0.description>
+
+  <RimAudio_WildlifeNoise.stages.0.label>wildlife nearby</RimAudio_WildlifeNoise.stages.0.label>
+  <RimAudio_WildlifeNoise.stages.0.description>Unfamiliar animal sounds carry in from the wild.</RimAudio_WildlifeNoise.stages.0.description>
+
+  <RimAudio_PredatorNoise.stages.0.label>predator sounds</RimAudio_PredatorNoise.stages.0.label>
+  <RimAudio_PredatorNoise.stages.0.description>Heavy movement and threatening calls suggest a predator nearby.</RimAudio_PredatorNoise.stages.0.description>
+
+  <RimAudio_PetNoise.stages.0.label>pet sounds</RimAudio_PetNoise.stages.0.label>
+  <RimAudio_PetNoise.stages.0.description>Familiar animal noises make the area feel domestic.</RimAudio_PetNoise.stages.0.description>
+
+  <RimAudio_MechNoise.stages.0.label>mechanical servos</RimAudio_MechNoise.stages.0.label>
+  <RimAudio_MechNoise.stages.0.description>Metallic whirs and actuator clicks echo nearby.</RimAudio_MechNoise.stages.0.description>
+
+  <RimAudio_TreeRustle.stages.0.label>trees rustling</RimAudio_TreeRustle.stages.0.label>
+  <RimAudio_TreeRustle.stages.0.description>Leaves and branches shift softly in the wind.</RimAudio_TreeRustle.stages.0.description>
+
+  <RimAudio_CrowdNoise.stages.0.label>crowd murmur</RimAudio_CrowdNoise.stages.0.label>
+  <RimAudio_CrowdNoise.stages.0.description>Many nearby voices and footsteps blend into a constant background murmur.</RimAudio_CrowdNoise.stages.0.description>
+
+  <RimAudio_BabyRoomNoise.stages.0.label>nursery ambience</RimAudio_BabyRoomNoise.stages.0.label>
+  <RimAudio_BabyRoomNoise.stages.0.description>Soft domestic sounds from baby furniture make the area feel comforting.</RimAudio_BabyRoomNoise.stages.0.description>
+
+  <RimAudio_ParentVoice.stages.0.label>familiar parent voice</RimAudio_ParentVoice.stages.0.label>
+  <RimAudio_ParentVoice.stages.0.description>A familiar parent is close enough to hear.</RimAudio_ParentVoice.stages.0.description>
+
+  <RimAudio_WoundedEnemy.stages.0.label>enemy pain nearby</RimAudio_WoundedEnemy.stages.0.label>
+  <RimAudio_WoundedEnemy.stages.0.description>Hostile cries and labored movement carry across the area.</RimAudio_WoundedEnemy.stages.0.description>
+
+  <RimAudio_CombatNoise.stages.0.label>combat noise</RimAudio_CombatNoise.stages.0.label>
+  <RimAudio_CombatNoise.stages.0.description>Violence nearby keeps the nerves on edge.</RimAudio_CombatNoise.stages.0.description>
+</LanguageData>

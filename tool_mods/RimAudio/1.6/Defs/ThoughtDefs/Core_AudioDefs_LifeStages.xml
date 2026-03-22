@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Defs>
+
+  <ThoughtDef Name="RimAudio_BaseMemoryThought" Abstract="True">
+    <thoughtClass>Thought_Memory</thoughtClass>
+    <validWhileDespawned>true</validWhileDespawned>
+  </ThoughtDef>
+
+  <ThoughtDef Name="RimAudio_RainSound_StageBase" ParentName="RimAudio_BaseMemoryThought" Abstract="True">
+    <label>steady rain</label>
+    <durationDays>0.05</durationDays>
+    <stackLimit>3</stackLimit>
+    <stages>
+      <li>
+        <label>steady rain</label>
+        <description>The soft rhythm of rain settles the nerves.</description>
+        <baseMoodEffect>2</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_RainSound_StageBase"><defName>RimAudio_RainSound_Adult</defName><developmentalStageFilter>Adult</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_RainSound_StageBase"><defName>RimAudio_RainSound_Child</defName><developmentalStageFilter>Child</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_RainSound_StageBase"><defName>RimAudio_RainSound_Baby</defName><developmentalStageFilter>Baby</developmentalStageFilter></ThoughtDef>
+
+  <ThoughtDef Name="RimAudio_ThunderSound_StageBase" ParentName="RimAudio_BaseMemoryThought" Abstract="True">
+    <label>rolling thunder</label>
+    <durationDays>0.05</durationDays>
+    <stackLimit>2</stackLimit>
+    <stages>
+      <li>
+        <label>rolling thunder</label>
+        <description>The sky is loud and unstable.</description>
+        <baseMoodEffect>-1</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_ThunderSound_StageBase"><defName>RimAudio_ThunderSound_Adult</defName><developmentalStageFilter>Adult</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_ThunderSound_StageBase"><defName>RimAudio_ThunderSound_Child</defName><developmentalStageFilter>Child</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_ThunderSound_StageBase"><defName>RimAudio_ThunderSound_Baby</defName><developmentalStageFilter>Baby</developmentalStageFilter></ThoughtDef>
+
+  <ThoughtDef Name="RimAudio_ToxicWind_StageBase" ParentName="RimAudio_BaseMemoryThought" Abstract="True">
+    <label>harsh toxic wind</label>
+    <durationDays>0.05</durationDays>
+    <stackLimit>3</stackLimit>
+    <stages>
+      <li>
+        <label>harsh toxic wind</label>
+        <description>The outside air hisses with a sickening chemical edge.</description>
+        <baseMoodEffect>-2</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_ToxicWind_StageBase"><defName>RimAudio_ToxicWind_Adult</defName><developmentalStageFilter>Adult</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_ToxicWind_StageBase"><defName>RimAudio_ToxicWind_Child</defName><developmentalStageFilter>Child</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_ToxicWind_StageBase"><defName>RimAudio_ToxicWind_Baby</defName><developmentalStageFilter>Baby</developmentalStageFilter></ThoughtDef>
+
+  <ThoughtDef Name="RimAudio_AshWind_StageBase" ParentName="RimAudio_BaseMemoryThought" Abstract="True">
+    <label>dry ashfall hush</label>
+    <durationDays>0.05</durationDays>
+    <stackLimit>3</stackLimit>
+    <stages>
+      <li>
+        <label>dry ashfall hush</label>
+        <description>The world sounds muted under drifting ash.</description>
+        <baseMoodEffect>-1</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_AshWind_StageBase"><defName>RimAudio_AshWind_Adult</defName><developmentalStageFilter>Adult</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_AshWind_StageBase"><defName>RimAudio_AshWind_Child</defName><developmentalStageFilter>Child</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_AshWind_StageBase"><defName>RimAudio_AshWind_Baby</defName><developmentalStageFilter>Baby</developmentalStageFilter></ThoughtDef>
+
+  <ThoughtDef Name="RimAudio_CampfireCrackle_StageBase" ParentName="RimAudio_BaseMemoryThought" Abstract="True">
+    <label>campfire crackle</label>
+    <durationDays>0.05</durationDays>
+    <stackLimit>3</stackLimit>
+    <stages>
+      <li>
+        <label>campfire crackle</label>
+        <description>The crackling of a nearby fire feels warm and familiar.</description>
+        <baseMoodEffect>2</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_CampfireCrackle_StageBase"><defName>RimAudio_CampfireCrackle_Adult</defName><developmentalStageFilter>Adult</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_CampfireCrackle_StageBase"><defName>RimAudio_CampfireCrackle_Child</defName><developmentalStageFilter>Child</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_CampfireCrackle_StageBase"><defName>RimAudio_CampfireCrackle_Baby</defName><developmentalStageFilter>Baby</developmentalStageFilter></ThoughtDef>
+
+  <ThoughtDef Name="RimAudio_FireCrackle_StageBase" ParentName="RimAudio_BaseMemoryThought" Abstract="True">
+    <label>uncontrolled fire</label>
+    <durationDays>0.05</durationDays>
+    <stackLimit>3</stackLimit>
+    <stages>
+      <li>
+        <label>uncontrolled fire</label>
+        <description>A nearby blaze snaps and roars in a way that feels dangerous.</description>
+        <baseMoodEffect>-2</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_FireCrackle_StageBase"><defName>RimAudio_FireCrackle_Adult</defName><developmentalStageFilter>Adult</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_FireCrackle_StageBase"><defName>RimAudio_FireCrackle_Child</defName><developmentalStageFilter>Child</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_FireCrackle_StageBase"><defName>RimAudio_FireCrackle_Baby</defName><developmentalStageFilter>Baby</developmentalStageFilter></ThoughtDef>
+
+  <ThoughtDef Name="RimAudio_GeneratorHum_StageBase" ParentName="RimAudio_BaseMemoryThought" Abstract="True">
+    <label>generator hum</label>
+    <durationDays>0.05</durationDays>
+    <stackLimit>4</stackLimit>
+    <stages>
+      <li>
+        <label>generator hum</label>
+        <description>A machine drones nearby without pause.</description>
+        <baseMoodEffect>-1</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_GeneratorHum_StageBase"><defName>RimAudio_GeneratorHum_Adult</defName><developmentalStageFilter>Adult</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_GeneratorHum_StageBase"><defName>RimAudio_GeneratorHum_Child</defName><developmentalStageFilter>Child</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_GeneratorHum_StageBase"><defName>RimAudio_GeneratorHum_Baby</defName><developmentalStageFilter>Baby</developmentalStageFilter></ThoughtDef>
+
+  <ThoughtDef Name="RimAudio_RiverWater_StageBase" ParentName="RimAudio_BaseMemoryThought" Abstract="True">
+    <label>running water</label>
+    <durationDays>0.05</durationDays>
+    <stackLimit>3</stackLimit>
+    <stages>
+      <li>
+        <label>running water</label>
+        <description>Nearby flowing water adds a steady natural backdrop.</description>
+        <baseMoodEffect>1</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_RiverWater_StageBase"><defName>RimAudio_RiverWater_Adult</defName><developmentalStageFilter>Adult</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_RiverWater_StageBase"><defName>RimAudio_RiverWater_Child</defName><developmentalStageFilter>Child</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_RiverWater_StageBase"><defName>RimAudio_RiverWater_Baby</defName><developmentalStageFilter>Baby</developmentalStageFilter></ThoughtDef>
+
+  <ThoughtDef Name="RimAudio_OceanWaves_StageBase" ParentName="RimAudio_BaseMemoryThought" Abstract="True">
+    <label>ocean surf</label>
+    <durationDays>0.05</durationDays>
+    <stackLimit>3</stackLimit>
+    <stages>
+      <li>
+        <label>ocean surf</label>
+        <description>Rolling surf can be heard nearby.</description>
+        <baseMoodEffect>2</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_OceanWaves_StageBase"><defName>RimAudio_OceanWaves_Adult</defName><developmentalStageFilter>Adult</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_OceanWaves_StageBase"><defName>RimAudio_OceanWaves_Child</defName><developmentalStageFilter>Child</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_OceanWaves_StageBase"><defName>RimAudio_OceanWaves_Baby</defName><developmentalStageFilter>Baby</developmentalStageFilter></ThoughtDef>
+
+  <ThoughtDef Name="RimAudio_TelevisionNoise_StageBase" ParentName="RimAudio_BaseMemoryThought" Abstract="True">
+    <label>television chatter</label>
+    <durationDays>0.05</durationDays>
+    <stackLimit>2</stackLimit>
+    <stages>
+      <li>
+        <label>television chatter</label>
+        <description>Broadcast voices and music spill through the room.</description>
+        <baseMoodEffect>1</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_TelevisionNoise_StageBase"><defName>RimAudio_TelevisionNoise_Adult</defName><developmentalStageFilter>Adult</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_TelevisionNoise_StageBase"><defName>RimAudio_TelevisionNoise_Child</defName><developmentalStageFilter>Child</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_TelevisionNoise_StageBase"><defName>RimAudio_TelevisionNoise_Baby</defName><developmentalStageFilter>Baby</developmentalStageFilter></ThoughtDef>
+
+  <ThoughtDef Name="RimAudio_LeisureNoise_StageBase" ParentName="RimAudio_BaseMemoryThought" Abstract="True">
+    <label>playroom noise</label>
+    <durationDays>0.05</durationDays>
+    <stackLimit>2</stackLimit>
+    <stages>
+      <li>
+        <label>playroom noise</label>
+        <description>Nearby recreation spaces make the room feel lived in.</description>
+        <baseMoodEffect>1</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_LeisureNoise_StageBase"><defName>RimAudio_LeisureNoise_Adult</defName><developmentalStageFilter>Adult</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_LeisureNoise_StageBase"><defName>RimAudio_LeisureNoise_Child</defName><developmentalStageFilter>Child</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_LeisureNoise_StageBase"><defName>RimAudio_LeisureNoise_Baby</defName><developmentalStageFilter>Baby</developmentalStageFilter></ThoughtDef>
+
+  <ThoughtDef Name="RimAudio_CoolerHum_StageBase" ParentName="RimAudio_BaseMemoryThought" Abstract="True">
+    <label>cooler hum</label>
+    <durationDays>0.05</durationDays>
+    <stackLimit>3</stackLimit>
+    <stages>
+      <li>
+        <label>cooler hum</label>
+        <description>A nearby cooler drones steadily.</description>
+        <baseMoodEffect>-1</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_CoolerHum_StageBase"><defName>RimAudio_CoolerHum_Adult</defName><developmentalStageFilter>Adult</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_CoolerHum_StageBase"><defName>RimAudio_CoolerHum_Child</defName><developmentalStageFilter>Child</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_CoolerHum_StageBase"><defName>RimAudio_CoolerHum_Baby</defName><developmentalStageFilter>Baby</developmentalStageFilter></ThoughtDef>
+
+  <ThoughtDef Name="RimAudio_AnimalNoise_StageBase" ParentName="RimAudio_BaseMemoryThought" Abstract="True">
+    <label>animal sounds</label>
+    <durationDays>0.05</durationDays>
+    <stackLimit>3</stackLimit>
+    <stages>
+      <li>
+        <label>animal sounds</label>
+        <description>Nearby animals rustle, breathe, and vocalize.</description>
+        <baseMoodEffect>1</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_AnimalNoise_StageBase"><defName>RimAudio_AnimalNoise_Adult</defName><developmentalStageFilter>Adult</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_AnimalNoise_StageBase"><defName>RimAudio_AnimalNoise_Child</defName><developmentalStageFilter>Child</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_AnimalNoise_StageBase"><defName>RimAudio_AnimalNoise_Baby</defName><developmentalStageFilter>Baby</developmentalStageFilter></ThoughtDef>
+
+  <ThoughtDef Name="RimAudio_Birdsong_StageBase" ParentName="RimAudio_BaseMemoryThought" Abstract="True">
+    <label>birdsong</label>
+    <durationDays>0.05</durationDays>
+    <stackLimit>3</stackLimit>
+    <stages>
+      <li>
+        <label>birdsong</label>
+        <description>Short calls and chirps drift in from nearby birds.</description>
+        <baseMoodEffect>2</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_Birdsong_StageBase"><defName>RimAudio_Birdsong_Adult</defName><developmentalStageFilter>Adult</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_Birdsong_StageBase"><defName>RimAudio_Birdsong_Child</defName><developmentalStageFilter>Child</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_Birdsong_StageBase"><defName>RimAudio_Birdsong_Baby</defName><developmentalStageFilter>Baby</developmentalStageFilter></ThoughtDef>
+
+  <ThoughtDef Name="RimAudio_WildlifeNoise_StageBase" ParentName="RimAudio_BaseMemoryThought" Abstract="True">
+    <label>wildlife nearby</label>
+    <durationDays>0.05</durationDays>
+    <stackLimit>3</stackLimit>
+    <stages>
+      <li>
+        <label>wildlife nearby</label>
+        <description>Unfamiliar animal sounds carry in from the wild.</description>
+        <baseMoodEffect>1</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_WildlifeNoise_StageBase"><defName>RimAudio_WildlifeNoise_Adult</defName><developmentalStageFilter>Adult</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_WildlifeNoise_StageBase"><defName>RimAudio_WildlifeNoise_Child</defName><developmentalStageFilter>Child</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_WildlifeNoise_StageBase"><defName>RimAudio_WildlifeNoise_Baby</defName><developmentalStageFilter>Baby</developmentalStageFilter></ThoughtDef>
+
+  <ThoughtDef Name="RimAudio_PredatorNoise_StageBase" ParentName="RimAudio_BaseMemoryThought" Abstract="True">
+    <label>predator sounds</label>
+    <durationDays>0.05</durationDays>
+    <stackLimit>2</stackLimit>
+    <stages>
+      <li>
+        <label>predator sounds</label>
+        <description>Heavy movement and threatening calls suggest a predator nearby.</description>
+        <baseMoodEffect>-2</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_PredatorNoise_StageBase"><defName>RimAudio_PredatorNoise_Adult</defName><developmentalStageFilter>Adult</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_PredatorNoise_StageBase"><defName>RimAudio_PredatorNoise_Child</defName><developmentalStageFilter>Child</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_PredatorNoise_StageBase"><defName>RimAudio_PredatorNoise_Baby</defName><developmentalStageFilter>Baby</developmentalStageFilter></ThoughtDef>
+
+  <ThoughtDef Name="RimAudio_PetNoise_StageBase" ParentName="RimAudio_BaseMemoryThought" Abstract="True">
+    <label>pet sounds</label>
+    <durationDays>0.05</durationDays>
+    <stackLimit>2</stackLimit>
+    <stages>
+      <li>
+        <label>pet sounds</label>
+        <description>Familiar animal noises make the area feel domestic.</description>
+        <baseMoodEffect>2</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_PetNoise_StageBase"><defName>RimAudio_PetNoise_Adult</defName><developmentalStageFilter>Adult</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_PetNoise_StageBase"><defName>RimAudio_PetNoise_Child</defName><developmentalStageFilter>Child</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_PetNoise_StageBase"><defName>RimAudio_PetNoise_Baby</defName><developmentalStageFilter>Baby</developmentalStageFilter></ThoughtDef>
+
+  <ThoughtDef Name="RimAudio_MechNoise_StageBase" ParentName="RimAudio_BaseMemoryThought" Abstract="True">
+    <label>mechanical servos</label>
+    <durationDays>0.05</durationDays>
+    <stackLimit>3</stackLimit>
+    <stages>
+      <li>
+        <label>mechanical servos</label>
+        <description>Metallic whirs and actuator clicks echo nearby.</description>
+        <baseMoodEffect>-1</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_MechNoise_StageBase"><defName>RimAudio_MechNoise_Adult</defName><developmentalStageFilter>Adult</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_MechNoise_StageBase"><defName>RimAudio_MechNoise_Child</defName><developmentalStageFilter>Child</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_MechNoise_StageBase"><defName>RimAudio_MechNoise_Baby</defName><developmentalStageFilter>Baby</developmentalStageFilter></ThoughtDef>
+
+  <ThoughtDef Name="RimAudio_TreeRustle_StageBase" ParentName="RimAudio_BaseMemoryThought" Abstract="True">
+    <label>trees rustling</label>
+    <durationDays>0.05</durationDays>
+    <stackLimit>3</stackLimit>
+    <stages>
+      <li>
+        <label>trees rustling</label>
+        <description>Leaves and branches shift softly in the wind.</description>
+        <baseMoodEffect>1</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_TreeRustle_StageBase"><defName>RimAudio_TreeRustle_Adult</defName><developmentalStageFilter>Adult</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_TreeRustle_StageBase"><defName>RimAudio_TreeRustle_Child</defName><developmentalStageFilter>Child</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_TreeRustle_StageBase"><defName>RimAudio_TreeRustle_Baby</defName><developmentalStageFilter>Baby</developmentalStageFilter></ThoughtDef>
+
+  <ThoughtDef Name="RimAudio_CrowdNoise_StageBase" ParentName="RimAudio_BaseMemoryThought" Abstract="True">
+    <label>crowd murmur</label>
+    <durationDays>0.05</durationDays>
+    <stackLimit>4</stackLimit>
+    <stages>
+      <li>
+        <label>crowd murmur</label>
+        <description>Many nearby voices and footsteps blend into a constant background murmur.</description>
+        <baseMoodEffect>1</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_CrowdNoise_StageBase"><defName>RimAudio_CrowdNoise_Adult</defName><developmentalStageFilter>Adult</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_CrowdNoise_StageBase"><defName>RimAudio_CrowdNoise_Child</defName><developmentalStageFilter>Child</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_CrowdNoise_StageBase"><defName>RimAudio_CrowdNoise_Baby</defName><developmentalStageFilter>Baby</developmentalStageFilter></ThoughtDef>
+
+  <ThoughtDef Name="RimAudio_BabyRoomNoise_StageBase" ParentName="RimAudio_BaseMemoryThought" Abstract="True">
+    <label>nursery ambience</label>
+    <durationDays>0.05</durationDays>
+    <stackLimit>2</stackLimit>
+    <stages>
+      <li>
+        <label>nursery ambience</label>
+        <description>Soft domestic sounds from baby furniture make the area feel comforting.</description>
+        <baseMoodEffect>2</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_BabyRoomNoise_StageBase"><defName>RimAudio_BabyRoomNoise_Adult</defName><developmentalStageFilter>Adult</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_BabyRoomNoise_StageBase"><defName>RimAudio_BabyRoomNoise_Child</defName><developmentalStageFilter>Child</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_BabyRoomNoise_StageBase"><defName>RimAudio_BabyRoomNoise_Baby</defName><developmentalStageFilter>Baby</developmentalStageFilter></ThoughtDef>
+
+  <ThoughtDef Name="RimAudio_ParentVoice_StageBase" ParentName="RimAudio_BaseMemoryThought" Abstract="True">
+    <label>familiar parent voice</label>
+    <durationDays>0.05</durationDays>
+    <stackLimit>1</stackLimit>
+    <stages>
+      <li>
+        <label>familiar parent voice</label>
+        <description>A familiar parent is close enough to hear.</description>
+        <baseMoodEffect>3</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_ParentVoice_StageBase"><defName>RimAudio_ParentVoice_Adult</defName><developmentalStageFilter>Adult</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_ParentVoice_StageBase"><defName>RimAudio_ParentVoice_Child</defName><developmentalStageFilter>Child</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_ParentVoice_StageBase"><defName>RimAudio_ParentVoice_Baby</defName><developmentalStageFilter>Baby</developmentalStageFilter></ThoughtDef>
+
+  <ThoughtDef Name="RimAudio_WoundedEnemy_StageBase" ParentName="RimAudio_BaseMemoryThought" Abstract="True">
+    <label>enemy pain nearby</label>
+    <durationDays>0.03</durationDays>
+    <stackLimit>2</stackLimit>
+    <stages>
+      <li>
+        <label>enemy pain nearby</label>
+        <description>Hostile cries and labored movement carry across the area.</description>
+        <baseMoodEffect>-3</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_WoundedEnemy_StageBase"><defName>RimAudio_WoundedEnemy_Adult</defName><developmentalStageFilter>Adult</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_WoundedEnemy_StageBase"><defName>RimAudio_WoundedEnemy_Child</defName><developmentalStageFilter>Child</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_WoundedEnemy_StageBase"><defName>RimAudio_WoundedEnemy_Baby</defName><developmentalStageFilter>Baby</developmentalStageFilter></ThoughtDef>
+
+  <ThoughtDef Name="RimAudio_CombatNoise_StageBase" ParentName="RimAudio_BaseMemoryThought" Abstract="True">
+    <label>combat noise</label>
+    <durationDays>0.03</durationDays>
+    <stackLimit>2</stackLimit>
+    <stages>
+      <li>
+        <label>combat noise</label>
+        <description>Violence nearby keeps the nerves on edge.</description>
+        <baseMoodEffect>-2</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_CombatNoise_StageBase"><defName>RimAudio_CombatNoise_Adult</defName><developmentalStageFilter>Adult</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_CombatNoise_StageBase"><defName>RimAudio_CombatNoise_Child</defName><developmentalStageFilter>Child</developmentalStageFilter></ThoughtDef>
+  <ThoughtDef ParentName="RimAudio_CombatNoise_StageBase"><defName>RimAudio_CombatNoise_Baby</defName><developmentalStageFilter>Baby</developmentalStageFilter></ThoughtDef>
+
+</Defs>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ModMetaData>
+  <name>RimAudio</name>
+  <author>RimTalk Team</author>
+  <supportedVersions>
+    <li>1.6</li>
+  </supportedVersions>
+  <packageId>rimtalk.rimaudio</packageId>
+  <description>First-pass hearing framework for RimTalk, inspired by RimScent. Adds a data-driven audio scanner for babies, toddlers, and other human pawns.</description>
+</ModMetaData>

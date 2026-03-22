@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <GameVersion Condition=" '$(GameVersion)' == '' ">1.6</GameVersion>
+    <TargetFramework>net48</TargetFramework>
+    <RootNamespace>RimAudio</RootNamespace>
+    <AssemblyName>RimAudio</AssemblyName>
+    <OutputPath>..\..\Assemblies\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <DebugType>portable</DebugType>
+    <Deterministic>true</Deterministic>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Krafs.Rimworld.Ref" Version="$(GameVersion).*-*" PrivateAssets="All" />
+  </ItemGroup>
+</Project>
