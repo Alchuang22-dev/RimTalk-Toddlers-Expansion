@@ -25,6 +25,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			Patch_ToddlersPlayInCribReservation.Init(harmony);
 			Patch_BiotechSharedBedroomThoughts.Init(harmony);
 			Patch_PawnGroupMakerUtility.Init(harmony);
+			Patch_PawnBioAndNameGenerator_ChildhoodFallback.Init(harmony);
 			Patch_FloatMenu_ToddlerToyPlay.Init(harmony);
 			Patch_DBHFixtureFloatMenu.Init(harmony);
 			Patch_TravelingLord.Init(harmony);

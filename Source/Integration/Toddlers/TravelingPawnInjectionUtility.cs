@@ -27,6 +27,9 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private static bool _walkHediffChecked;
 		private static HediffDef _learningToWalkDef;
 		private static HediffDef _learningManipulationDef;
+		private static int _childhoodFallbackScopeDepth;
+
+		internal static bool UseInjectedChildhoodFallback => _childhoodFallbackScopeDepth > 0;
 
 		public static void TryInjectToddlerOrChildPawns(PawnGroupMakerParms parms, ref IEnumerable<Pawn> pawns)
 		{
@@ -475,7 +478,16 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					fixedBiologicalAge: ageYears,
 					fixedChronologicalAge: ageYears);
 
-				Pawn pawn = PawnGenerator.GeneratePawn(request);
+				Pawn pawn;
+				_childhoodFallbackScopeDepth++;
+				try
+				{
+					pawn = PawnGenerator.GeneratePawn(request);
+				}
+				finally
+				{
+					_childhoodFallbackScopeDepth--;
+				}
 
 				// 为幼儿注入婴儿食品和服装
 				if (pawn != null && ToddlersCompatUtility.IsToddler(pawn))
