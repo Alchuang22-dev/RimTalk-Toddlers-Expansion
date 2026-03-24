@@ -35,7 +35,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			harmony.Patch(target, prefix: new HarmonyMethod(prefix));
 		}
 
-		private static bool FillBackstorySlotShuffled_Prefix(Pawn pawn, BackstorySlot slot, List<BackstoryCategoryFilter> filters, FactionDef faction)
+		private static bool FillBackstorySlotShuffled_Prefix(Pawn pawn, BackstorySlot slot, List<BackstoryCategoryFilter> backstoryCategories)
 		{
 			if (!TravelingPawnInjectionUtility.UseInjectedChildhoodFallback || slot != BackstorySlot.Childhood || pawn?.story == null || ChildhoodProperty == null)
 			{
@@ -46,7 +46,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			bool assignedFallback = false;
 			if (childhood == null)
 			{
-				childhood = FindFallbackChildhood(filters);
+				childhood = FindFallbackChildhood(backstoryCategories);
 				if (childhood == null)
 				{
 					return true;
