@@ -265,6 +265,7 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			return ToddlersCompatUtility.IsToddlerOrBaby(pawn)
 				&& ToddlerPlayAnimationUtility.ArePlayAnimationsAllowedForPawn(pawn)
 				&& IsSmallPawnPlayJob(pawn)
+				&& !ToddlerPlayAnimationUtility.ShouldDelayPlayAnimationForMovement(pawn)
 				&& !IsSuppressed(pawn)
 				&& !ToddlerCarryingUtility.IsBeingCarried(pawn);
 		}
@@ -439,6 +440,16 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 				return IsToddlerSelfPlayToil(pawn);
 			}
 
+			if (name == "ToddlerPlayToys" || name == "ToddlerPlayDecor")
+			{
+				return pawn.jobs?.curDriver?.CurToilString == "ToddlerPlayToil";
+			}
+
+			if (name == "ToddlerFloordrawing")
+			{
+				return pawn.jobs?.curDriver?.CurToilString == "MakeNewToils";
+			}
+
 			if (isBaby)
 			{
 				return name == "BePlayedWith";
@@ -492,6 +503,17 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 
 			string jobDefName = pawn.CurJobDef.defName;
 			if (IsToddlerSelfPlayJobDef(jobDefName) && pawn.jobs?.curDriver?.CurToilString == "GotoCell")
+			{
+				return false;
+			}
+
+			if ((jobDefName == "ToddlerPlayToys" || jobDefName == "ToddlerPlayDecor")
+				&& pawn.jobs?.curDriver?.CurToilString != "ToddlerPlayToil")
+			{
+				return false;
+			}
+
+			if (jobDefName == "ToddlerFloordrawing" && pawn.jobs?.curDriver?.CurToilString != "MakeNewToils")
 			{
 				return false;
 			}

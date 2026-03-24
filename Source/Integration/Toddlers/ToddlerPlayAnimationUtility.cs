@@ -69,6 +69,12 @@ using Verse;
 				return;
 			}
 
+			if (ShouldDelayPlayAnimationForMovement(pawn))
+			{
+				ClearManagedNativePlayAnimation(pawn);
+				return;
+			}
+
 			if (pawn.Drawer.renderer.CurAnimation != animation)
 			{
 				pawn.Drawer.renderer.SetAnimation(animation);
@@ -133,6 +139,11 @@ using Verse;
 			}
 
 			return true;
+		}
+
+		public static bool ShouldDelayPlayAnimationForMovement(Pawn pawn)
+		{
+			return pawn?.pather?.MovingNow == true;
 		}
 
 		private static bool CanUseManagedPlayAnimations(Pawn pawn)
