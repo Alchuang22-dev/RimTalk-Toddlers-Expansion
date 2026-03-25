@@ -25,7 +25,7 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 
 		public static void EnsureReportRequested(Job job, Pawn toddler, Pawn partner, ToddlerPlayReportKind kind)
 		{
-			if (job == null || toddler == null || !RimTalkCompatUtility.IsRimTalkActive)
+			if (job == null || toddler == null || !RimTalkCompatUtility.CanRequestShortText)
 			{
 				return;
 			}

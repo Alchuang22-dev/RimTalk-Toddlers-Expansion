@@ -62,6 +62,21 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 			}
 		}
 
+		public static bool CanRequestShortText
+		{
+			get
+			{
+				ToddlersExpansionSettings settings = ToddlersExpansionMod.Settings;
+				if (settings != null && settings.UseStandaloneLlmApi)
+				{
+					return StandaloneLlmRequestUtility.HasValidConfiguration;
+				}
+
+				EnsureInitialized();
+				return _isActive && _getAiClientAsync != null && _getChatCompletionAsync != null && _messageListType != null;
+			}
+		}
+
 		public static void TryRegisterToddlerVariables()
 		{
 			EnsureInitialized();
@@ -226,6 +241,12 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 			if (string.IsNullOrWhiteSpace(userPrompt) || onCompleted == null)
 			{
 				return false;
+			}
+
+			ToddlersExpansionSettings settings = ToddlersExpansionMod.Settings;
+			if (settings != null && settings.UseStandaloneLlmApi)
+			{
+				return StandaloneLlmRequestUtility.TryRequestShortText(systemPrompt, userPrompt, onCompleted);
 			}
 
 			EnsureInitialized();

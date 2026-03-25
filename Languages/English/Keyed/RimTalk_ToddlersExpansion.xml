@@ -18,6 +18,18 @@
   <RimTalk_ToddlersExpansion_Settings_Page2>Outing Destinations</RimTalk_ToddlersExpansion_Settings_Page2>
   <RimTalk_ToddlersExpansion_Settings_Page3>Play Animations</RimTalk_ToddlersExpansion_Settings_Page3>
   <RimTalk_ToddlersExpansion_Settings_Page4>Talk</RimTalk_ToddlersExpansion_Settings_Page4>
+  <RimTalk_ToddlersExpansion_Llm_Settings_Header>LLM API</RimTalk_ToddlersExpansion_Llm_Settings_Header>
+  <RimTalk_ToddlersExpansion_Llm_Settings_Desc>Choose whether Toddler Expansion's own short-text requests use RimTalk's active API or a standalone API configured here.</RimTalk_ToddlersExpansion_Llm_Settings_Desc>
+  <RimTalk_ToddlersExpansion_Llm_UseRimTalk>Use RimTalk API</RimTalk_ToddlersExpansion_Llm_UseRimTalk>
+  <RimTalk_ToddlersExpansion_Llm_UseStandalone>Use standalone LLM API</RimTalk_ToddlersExpansion_Llm_UseStandalone>
+  <RimTalk_ToddlersExpansion_Llm_ScopeNote>This currently affects Toddler Expansion's own short activity-text generation. RimTalk Event TalkRequests still require RimTalk itself.</RimTalk_ToddlersExpansion_Llm_ScopeNote>
+  <RimTalk_ToddlersExpansion_Llm_RimTalkUnavailable>RimTalk is not currently active, so the RimTalk API option cannot serve short-text requests.</RimTalk_ToddlersExpansion_Llm_RimTalkUnavailable>
+  <RimTalk_ToddlersExpansion_Llm_Provider>Provider</RimTalk_ToddlersExpansion_Llm_Provider>
+  <RimTalk_ToddlersExpansion_Llm_BaseUrl>Base URL</RimTalk_ToddlersExpansion_Llm_BaseUrl>
+  <RimTalk_ToddlersExpansion_Llm_Endpoint>Endpoint: {0}</RimTalk_ToddlersExpansion_Llm_Endpoint>
+  <RimTalk_ToddlersExpansion_Llm_ApiKey>API key</RimTalk_ToddlersExpansion_Llm_ApiKey>
+  <RimTalk_ToddlersExpansion_Llm_Model>Model</RimTalk_ToddlersExpansion_Llm_Model>
+  <RimTalk_ToddlersExpansion_Llm_ConfigWarning>Standalone API is incomplete. Fill in the required endpoint, model, and API key fields before it can be used.</RimTalk_ToddlersExpansion_Llm_ConfigWarning>
   <RimTalk_ToddlersExpansion_Talk_Settings_Header>RimTalk Talk Settings</RimTalk_ToddlersExpansion_Talk_Settings_Header>
   <RimTalk_ToddlersExpansion_Talk_Settings_Desc>Configure Event-type TalkRequest sources independently.</RimTalk_ToddlersExpansion_Talk_Settings_Desc>
   <RimTalk_ToddlersExpansion_Talk_EnableSelfPlay>Enable self-play Event talks</RimTalk_ToddlersExpansion_Talk_EnableSelfPlay>

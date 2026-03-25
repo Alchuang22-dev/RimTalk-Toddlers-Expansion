@@ -7,7 +7,7 @@ using Verse;
 
 namespace RimTalk_ToddlersExpansion.Core
 {
-	public sealed class ToddlersExpansionMod : Mod
+	public sealed partial class ToddlersExpansionMod : Mod
 	{
 		public static ToddlersExpansionSettings Settings;
 		private static Vector2 generalScrollPosition = Vector2.zero;
@@ -75,12 +75,15 @@ namespace RimTalk_ToddlersExpansion.Core
 
 		private void DrawGeneralSettingsPage(Rect inRect, ToddlersExpansionSettings settings)
 		{
-			float contentHeight = 1200f;
+			float contentHeight = 1500f;
 			Rect viewRect = new Rect(0f, 0f, inRect.width - 20f, contentHeight);
 
 			Widgets.BeginScrollView(inRect, ref generalScrollPosition, viewRect);
 			Listing_Standard listingStandard = new Listing_Standard();
 			listingStandard.Begin(viewRect);
+
+			DrawLlmSettingsSection(listingStandard, settings);
+			listingStandard.GapLine();
 
 			listingStandard.Label("RimTalk_Boredom_Settings_Header".Translate());
 			listingStandard.GapLine();

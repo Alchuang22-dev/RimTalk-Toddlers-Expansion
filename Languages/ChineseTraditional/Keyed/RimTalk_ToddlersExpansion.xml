@@ -149,4 +149,16 @@
   <RimTalk_ToddlersExpansion_ToddlerSelfBathTooSmall>太小了，不會自己洗澡。</RimTalk_ToddlersExpansion_ToddlerSelfBathTooSmall>
   <RimTalk_ToddlersExpansion_BabyCryMoodOnly>嬰兒哭泣只影響心情（不降低社交關系）</RimTalk_ToddlersExpansion_BabyCryMoodOnly>
   <RimTalk_ToddlersExpansion_BabyCryMoodOnly_Tooltip>啟用后，嬰兒哭泣不會添加原版 BabyCriedSocial 關系記憶；仍會保留對父母和周圍殖民者的心情影響。</RimTalk_ToddlersExpansion_BabyCryMoodOnly_Tooltip>
+  <RimTalk_ToddlersExpansion_Llm_Settings_Header>LLM API</RimTalk_ToddlersExpansion_Llm_Settings_Header>
+  <RimTalk_ToddlersExpansion_Llm_Settings_Desc>選擇本模組自己的短文本請求要使用 RimTalk 目前啟用的 API，還是使用這裡單獨配置的獨立 LLM API。</RimTalk_ToddlersExpansion_Llm_Settings_Desc>
+  <RimTalk_ToddlersExpansion_Llm_UseRimTalk>使用 RimTalk API</RimTalk_ToddlersExpansion_Llm_UseRimTalk>
+  <RimTalk_ToddlersExpansion_Llm_UseStandalone>使用模組獨立 LLM API</RimTalk_ToddlersExpansion_Llm_UseStandalone>
+  <RimTalk_ToddlersExpansion_Llm_ScopeNote>目前這個設定影響的是 Toddler Expansion 自己的短活動文本生成；RimTalk 的 Event TalkRequest 主流程仍然依賴 RimTalk 本體。</RimTalk_ToddlersExpansion_Llm_ScopeNote>
+  <RimTalk_ToddlersExpansion_Llm_RimTalkUnavailable>目前未檢測到可用的 RimTalk，因此選擇 RimTalk API 時無法處理短文本請求。</RimTalk_ToddlersExpansion_Llm_RimTalkUnavailable>
+  <RimTalk_ToddlersExpansion_Llm_Provider>提供方</RimTalk_ToddlersExpansion_Llm_Provider>
+  <RimTalk_ToddlersExpansion_Llm_BaseUrl>Base URL</RimTalk_ToddlersExpansion_Llm_BaseUrl>
+  <RimTalk_ToddlersExpansion_Llm_Endpoint>介面位址：{0}</RimTalk_ToddlersExpansion_Llm_Endpoint>
+  <RimTalk_ToddlersExpansion_Llm_ApiKey>API Key</RimTalk_ToddlersExpansion_Llm_ApiKey>
+  <RimTalk_ToddlersExpansion_Llm_Model>模型</RimTalk_ToddlersExpansion_Llm_Model>
+  <RimTalk_ToddlersExpansion_Llm_ConfigWarning>獨立 API 配置還不完整。請先填寫所需的介面位址、模型和 API Key，再切換使用。</RimTalk_ToddlersExpansion_Llm_ConfigWarning>
 </LanguageData>

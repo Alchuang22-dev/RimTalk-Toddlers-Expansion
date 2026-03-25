@@ -5,6 +5,8 @@ namespace RimTalk_ToddlersExpansion.Core
 	public sealed class ToddlersExpansionSettings : ModSettings
 	{
 		public int SettingsPageIndex = 0;
+		public bool UseStandaloneLlmApi = false;
+		public ToddlersExpansionStandaloneApiConfig StandaloneApi = new ToddlersExpansionStandaloneApiConfig();
 
 		// Caravan / visitor generation settings
 		public bool EnableCaravanToddlerGeneration = true;
@@ -84,6 +86,8 @@ namespace RimTalk_ToddlersExpansion.Core
 			base.ExposeData();
 
 			Scribe_Values.Look(ref SettingsPageIndex, "SettingsPageIndex", 0);
+			Scribe_Values.Look(ref UseStandaloneLlmApi, "UseStandaloneLlmApi", false);
+			Scribe_Deep.Look(ref StandaloneApi, "StandaloneApi");
 
 			Scribe_Values.Look(ref EnableCaravanToddlerGeneration, "EnableCaravanToddlerGeneration", true);
 			Scribe_Values.Look(ref MaxToddlersPerGroup, "MaxToddlersPerGroup", 3);
@@ -147,6 +151,11 @@ namespace RimTalk_ToddlersExpansion.Core
 			Scribe_Values.Look(ref EnableYayoCustomSpin, "EnableYayoCustomSpin", true);
 			Scribe_Values.Look(ref EnableYayoCustomHop, "EnableYayoCustomHop", true);
 			Scribe_Values.Look(ref EnableYayoCustomRunLoop, "EnableYayoCustomRunLoop", true);
+
+			if (StandaloneApi == null)
+			{
+				StandaloneApi = new ToddlersExpansionStandaloneApiConfig();
+			}
 		}
 	}
 }
