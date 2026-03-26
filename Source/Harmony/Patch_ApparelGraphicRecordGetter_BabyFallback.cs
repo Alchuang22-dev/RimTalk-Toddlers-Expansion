@@ -8,7 +8,11 @@ namespace RimTalk_ToddlersExpansion.Harmony
 {
 	public static class Patch_ApparelGraphicRecordGetter_BabyFallback
 	{
+		private const string NoFallbackPath = "__NO_FALLBACK__";
+
 		private static readonly HashSet<string> _loggedKeys = new HashSet<string>();
+		private static readonly Dictionary<string, bool> _directionalTextureCache = new Dictionary<string, bool>();
+		private static readonly Dictionary<string, string> _fallbackPathCache = new Dictionary<string, string>();
 
 		public static void Init(HarmonyLib.Harmony harmony)
 		{
@@ -48,33 +52,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				return;
 			}
 
-			string fallbackPath = null;
-			string childPath = $"{apparel.WornGraphicPath}_{BodyTypeDefOf.Child.defName}";
-			if (HasDirectionalTexture(childPath))
-			{
-				fallbackPath = childPath;
-			}
-			else if (HasDirectionalTexture(apparel.WornGraphicPath))
-			{
-				fallbackPath = apparel.WornGraphicPath;
-			}
-			else
-			{
-				string malePath = $"{apparel.WornGraphicPath}_{BodyTypeDefOf.Male.defName}";
-				if (HasDirectionalTexture(malePath))
-				{
-					fallbackPath = malePath;
-				}
-				else
-				{
-					string femalePath = $"{apparel.WornGraphicPath}_{BodyTypeDefOf.Female.defName}";
-					if (HasDirectionalTexture(femalePath))
-					{
-						fallbackPath = femalePath;
-					}
-				}
-			}
-
+			string fallbackPath = ResolveFallbackPath(apparel.WornGraphicPath);
 			if (fallbackPath == null)
 			{
 				LogMissingOnce(apparel, babyPath);
@@ -114,10 +92,60 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				return false;
 			}
 
-			return ContentFinder<Texture2D>.Get(path + "_south", false) != null
+			if (_directionalTextureCache.TryGetValue(path, out bool cached))
+			{
+				return cached;
+			}
+
+			bool found = ContentFinder<Texture2D>.Get(path + "_south", false) != null
 				|| ContentFinder<Texture2D>.Get(path + "_north", false) != null
 				|| ContentFinder<Texture2D>.Get(path + "_east", false) != null
 				|| ContentFinder<Texture2D>.Get(path + "_west", false) != null;
+			_directionalTextureCache[path] = found;
+			return found;
+		}
+
+		private static string ResolveFallbackPath(string wornGraphicPath)
+		{
+			if (wornGraphicPath.NullOrEmpty())
+			{
+				return null;
+			}
+
+			if (_fallbackPathCache.TryGetValue(wornGraphicPath, out string cachedPath))
+			{
+				return cachedPath == NoFallbackPath ? null : cachedPath;
+			}
+
+			string resolvedPath = null;
+			string childPath = $"{wornGraphicPath}_{BodyTypeDefOf.Child.defName}";
+			if (HasDirectionalTexture(childPath))
+			{
+				resolvedPath = childPath;
+			}
+			else if (HasDirectionalTexture(wornGraphicPath))
+			{
+				resolvedPath = wornGraphicPath;
+			}
+			else
+			{
+				string malePath = $"{wornGraphicPath}_{BodyTypeDefOf.Male.defName}";
+				if (HasDirectionalTexture(malePath))
+				{
+					resolvedPath = malePath;
+				}
+				else
+				{
+					string femalePath = $"{wornGraphicPath}_{BodyTypeDefOf.Female.defName}";
+					if (HasDirectionalTexture(femalePath))
+					{
+						resolvedPath = femalePath;
+					}
+				}
+			}
+
+			_fallbackPathCache[wornGraphicPath] = resolvedPath ?? NoFallbackPath;
+			return resolvedPath;
 		}
 
 		private static void LogFallbackOnce(Apparel apparel, string fromPath, string toPath)

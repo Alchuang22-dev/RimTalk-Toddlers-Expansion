@@ -24,7 +24,10 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				}
 			}
 
-			MethodInfo tickInterval = AccessTools.Method(typeof(Hediff), nameof(Hediff.TickInterval), new[] { typeof(int) });
+			Type toddlerLearningType = AccessTools.TypeByName("Toddlers.Hediff_ToddlerLearning");
+			MethodInfo tickInterval = toddlerLearningType != null
+				? AccessTools.Method(toddlerLearningType, nameof(Hediff.TickInterval), new[] { typeof(int) })
+				: null;
 			if (tickInterval != null)
 			{
 				harmony.Patch(tickInterval, postfix: new HarmonyMethod(typeof(Patch_ToddlersRemoveClothes), nameof(Hediff_TickInterval_Postfix)));
@@ -46,6 +49,11 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 		private static void Hediff_TickInterval_Postfix(Hediff __instance, int delta)
 		{
+			if (!IsLearningManipulationHediff(__instance))
+			{
+				return;
+			}
+
 			Pawn pawn = __instance?.pawn;
 			if (pawn == null || delta <= 0 || !pawn.Spawned || pawn.InMentalState || !pawn.Awake())
 			{
@@ -94,6 +102,21 @@ namespace RimTalk_ToddlersExpansion.Harmony
 					return;
 				}
 			}
+		}
+
+		private static bool IsLearningManipulationHediff(Hediff hediff)
+		{
+			if (hediff == null)
+			{
+				return false;
+			}
+
+			if (hediff.def?.defName == "LearningManipulation")
+			{
+				return true;
+			}
+
+			return hediff.GetType().Name == "Hediff_LearningManipulation";
 		}
 
 		private static MentalStateDef GetRemoveClothesDef()

@@ -62,6 +62,7 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 		private static readonly Dictionary<int, string> _lastLoggedPlayDecisionByPawn = new Dictionary<int, string>(32);
 
 		private static readonly HashSet<Pawn> _suppressedPawns = new HashSet<Pawn>();
+		private static readonly HashSet<Pawn> _safeFallbackTrackedPawns = new HashSet<Pawn>();
 
 		private static Type _animationCoreType;
 		private static MethodInfo _checkAniMethod;
@@ -312,6 +313,7 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 		{
 			if (pawn?.Drawer?.renderer == null)
 			{
+				UntrackSafeFallbackPawn(pawn);
 				return;
 			}
 
@@ -320,9 +322,14 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			bool hasNativeOverride = shouldEnableManaged && TryGetNativePlayAnimationOverride(pawn, out animation);
 			if (!shouldEnableManaged || !hasNativeOverride)
 			{
+				if (!ShouldKeepSafeFallbackPawnTracked(pawn))
+				{
+					UntrackSafeFallbackPawn(pawn);
+				}
 				return;
 			}
 
+			TrackSafeFallbackPawn(pawn);
 			if (pawn.Drawer.renderer.CurAnimation != animation)
 			{
 				ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, animation);
@@ -335,6 +342,10 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			if (pawn != null)
 			{
 				_suppressedPawns.Add(pawn);
+				if (!ShouldKeepSafeFallbackPawnTracked(pawn))
+				{
+					UntrackSafeFallbackPawn(pawn);
+				}
 			}
 		}
 
@@ -343,6 +354,10 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			if (pawn != null)
 			{
 				_suppressedPawns.Remove(pawn);
+				if (ShouldKeepSafeFallbackPawnTracked(pawn))
+				{
+					TrackSafeFallbackPawn(pawn);
+				}
 			}
 		}
 
@@ -354,6 +369,69 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 		public static void ClearAllSuppressions()
 		{
 			_suppressedPawns.Clear();
+		}
+
+		public static bool IsRelevantSmallPawnCandidate(Pawn pawn)
+		{
+			return pawn != null
+				&& !pawn.Dead
+				&& !pawn.Destroyed
+				&& pawn.Spawned
+				&& ToddlersCompatUtility.IsToddlerOrBaby(pawn);
+		}
+
+		public static bool ShouldKeepSafeFallbackPawnTracked(Pawn pawn)
+		{
+			if (!IsRelevantSmallPawnCandidate(pawn))
+			{
+				return false;
+			}
+
+			if (ShouldEnableManagedPlayAnimation(pawn))
+			{
+				return true;
+			}
+
+			return ToddlerPlayAnimationUtility.HasManagedPlayAnimation(pawn);
+		}
+
+		public static void TrackSafeFallbackPawn(Pawn pawn)
+		{
+			if (!IsRelevantSmallPawnCandidate(pawn))
+			{
+				return;
+			}
+
+			_safeFallbackTrackedPawns.Add(pawn);
+		}
+
+		public static void UntrackSafeFallbackPawn(Pawn pawn)
+		{
+			if (pawn == null)
+			{
+				return;
+			}
+
+			_safeFallbackTrackedPawns.Remove(pawn);
+		}
+
+		public static void CopyTrackedSafeFallbackPawnsTo(List<Pawn> buffer)
+		{
+			if (buffer == null)
+			{
+				return;
+			}
+
+			buffer.Clear();
+			foreach (Pawn pawn in _safeFallbackTrackedPawns)
+			{
+				buffer.Add(pawn);
+			}
+		}
+
+		public static void ClearTrackedSafeFallbackPawns()
+		{
+			_safeFallbackTrackedPawns.Clear();
 		}
 
 		private static void LogPlayAnimationDecision(Pawn pawn, string decision)

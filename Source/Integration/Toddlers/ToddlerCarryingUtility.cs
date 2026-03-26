@@ -31,6 +31,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		/// 幼儿被抱着时的缩放比例
 		/// </summary>
 		private const float CarriedToddlerScale = 0.7f;
+		private static readonly List<Pawn> _clearRelationsBuffer = new List<Pawn>(8);
 
 		/// <summary>
 		/// 尝试让载体背起幼�?
@@ -188,6 +189,16 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			return ToddlerCarryingTracker.GetCarriedToddlers(carrier);
+		}
+
+		public static bool TryGetCarriedToddlersNoAlloc(Pawn carrier, out List<Pawn> toddlers)
+		{
+			return ToddlerCarryingTracker.TryGetCarriedToddlersNoAlloc(carrier, out toddlers);
+		}
+
+		public static void CopyCarriedToddlersTo(Pawn carrier, List<Pawn> buffer)
+		{
+			ToddlerCarryingTracker.CopyCarriedToddlersTo(carrier, buffer);
 		}
 
 		/// <summary>
@@ -472,11 +483,12 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			// 如果是载体，放下所有幼�?
-			List<Pawn> carried = GetCarriedToddlers(pawn);
-			for (int i = carried.Count - 1; i >= 0; i--)
+			CopyCarriedToddlersTo(pawn, _clearRelationsBuffer);
+			for (int i = _clearRelationsBuffer.Count - 1; i >= 0; i--)
 			{
-				DismountToddler(carried[i]);
+				DismountToddler(_clearRelationsBuffer[i]);
 			}
+			_clearRelationsBuffer.Clear();
 
 			// 如果是幼儿，从载体身上下�?
 			if (IsBeingCarried(pawn))

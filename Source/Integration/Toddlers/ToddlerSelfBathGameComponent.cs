@@ -16,9 +16,9 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 	public sealed class ToddlerSelfBathGameComponent : GameComponent
 	{
 		private const int CheckIntervalTicks = 1200;
-		private int _nextCheckTick;
-
 		private static ToddlerSelfBathGameComponent _instance;
+		private readonly HashSet<Pawn> _trackedSelfBathCandidates = new HashSet<Pawn>();
+		private readonly List<Pawn> _trackedCandidatesBuffer = new List<Pawn>(32);
 
 		public static ToddlerSelfBathGameComponent Instance
 		{
@@ -35,70 +35,168 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		public ToddlerSelfBathGameComponent(Game game)
 		{
+			_instance = this;
 		}
 
 		public override void GameComponentTick()
 		{
 			base.GameComponentTick();
-			if (Find.TickManager == null || Find.Maps == null || Find.Maps.Count == 0)
+			if (Find.TickManager == null || _trackedSelfBathCandidates.Count == 0)
 			{
 				return;
 			}
 
-			int tick = Find.TickManager.TicksGame;
-			if (tick < _nextCheckTick)
+			_trackedCandidatesBuffer.Clear();
+			foreach (Pawn pawn in _trackedSelfBathCandidates)
 			{
-				return;
+				_trackedCandidatesBuffer.Add(pawn);
 			}
 
-			_nextCheckTick = tick + CheckIntervalTicks;
-			for (int i = 0; i < Find.Maps.Count; i++)
+			for (int i = 0; i < _trackedCandidatesBuffer.Count; i++)
 			{
-				Map map = Find.Maps[i];
-				if (map == null || !map.IsPlayerHome)
+				Pawn pawn = _trackedCandidatesBuffer[i];
+				if (!ShouldTrackSelfBathPawn(pawn))
+				{
+					_trackedSelfBathCandidates.Remove(pawn);
+					continue;
+				}
+
+				if (!pawn.IsHashIntervalTick(CheckIntervalTicks))
 				{
 					continue;
 				}
 
-				TryAssignSelfBathJobs(map);
+				TryAssignSelfBathJob(pawn);
 			}
 		}
 
-		private void TryAssignSelfBathJobs(Map map)
+		public override void StartedNewGame()
 		{
-			// Include colony prisoners as well, otherwise prisoner toddlers never get auto self-bath jobs.
-			List<Pawn> pawns = map.mapPawns?.FreeColonistsAndPrisonersSpawned;
-			if (pawns == null || pawns.Count == 0)
+			base.StartedNewGame();
+			ResetTracking();
+			RebuildTrackingFromMaps();
+		}
+
+		public override void LoadedGame()
+		{
+			base.LoadedGame();
+			ResetTracking();
+			RebuildTrackingFromMaps();
+		}
+
+		private static void TryAssignSelfBathJob(Pawn pawn)
+		{
+			if (!ToddlerSelfBathUtility.IsEligibleSelfBathPawn(pawn))
 			{
 				return;
 			}
 
-			for (int i = 0; i < pawns.Count; i++)
+			if (pawn.jobs?.jobQueue == null)
 			{
-				Pawn pawn = pawns[i];
-				if (!ToddlerSelfBathUtility.IsEligibleSelfBathPawn(pawn))
-				{
-					continue;
-				}
-
-				if (pawn.jobs?.jobQueue == null)
-				{
-					continue;
-				}
-
-				if (!ToddlerSelfBathUtility.TryCreateSelfBathJob(pawn, out Job job))
-				{
-					continue;
-				}
-
-				pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
+				return;
 			}
+
+			if (!ToddlerSelfBathUtility.TryCreateSelfBathJob(pawn, out Job job))
+			{
+				return;
+			}
+
+			pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
 		}
 
 		public override void ExposeData()
 		{
 			base.ExposeData();
-			Scribe_Values.Look(ref _nextCheckTick, "nextCheckTick");
+		}
+
+		public static void NotifyPawnSpawned(Pawn pawn)
+		{
+			Instance?.TrackPawnIfRelevant(pawn);
+		}
+
+		public static void NotifyPawnDespawned(Pawn pawn)
+		{
+			Instance?.UntrackPawn(pawn);
+		}
+
+		public static void NotifyPawnFactionChanged(Pawn pawn)
+		{
+			Instance?.TrackPawnIfRelevant(pawn);
+		}
+
+		public static void NotifyPawnKilled(Pawn pawn)
+		{
+			Instance?.UntrackPawn(pawn);
+		}
+
+		private void ResetTracking()
+		{
+			_trackedSelfBathCandidates.Clear();
+			_trackedCandidatesBuffer.Clear();
+		}
+
+		private void RebuildTrackingFromMaps()
+		{
+			if (Find.Maps == null)
+			{
+				return;
+			}
+
+			for (int i = 0; i < Find.Maps.Count; i++)
+			{
+				Map map = Find.Maps[i];
+				List<Pawn> pawns = map?.mapPawns?.FreeColonistsAndPrisonersSpawned;
+				if (pawns == null)
+				{
+					continue;
+				}
+
+				for (int j = 0; j < pawns.Count; j++)
+				{
+					TrackPawnIfRelevant(pawns[j]);
+				}
+			}
+		}
+
+		private void TrackPawnIfRelevant(Pawn pawn)
+		{
+			if (!ShouldTrackSelfBathPawn(pawn))
+			{
+				UntrackPawn(pawn);
+				return;
+			}
+
+			_trackedSelfBathCandidates.Add(pawn);
+		}
+
+		private void UntrackPawn(Pawn pawn)
+		{
+			if (pawn == null)
+			{
+				return;
+			}
+
+			_trackedSelfBathCandidates.Remove(pawn);
+		}
+
+		private static bool ShouldTrackSelfBathPawn(Pawn pawn)
+		{
+			if (pawn == null || pawn.Dead || pawn.Destroyed || !pawn.Spawned || pawn.Map == null)
+			{
+				return false;
+			}
+
+			if (!pawn.Map.IsPlayerHome)
+			{
+				return false;
+			}
+
+			if (!ToddlersCompatUtility.IsToddler(pawn))
+			{
+				return false;
+			}
+
+			return pawn.Faction == Faction.OfPlayer || pawn.IsPrisonerOfColony;
 		}
 
 		/// <summary>

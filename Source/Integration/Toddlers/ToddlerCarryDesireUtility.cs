@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using RimTalk_ToddlersExpansion.Core;
 using RimWorld;
@@ -14,28 +15,57 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private const float DesireChancePerCheck = 0.01f;
 		private const float MinFoodPercent = 0.5f;
 		private const float SearchRadius = 2.5f;
+		private static readonly HashSet<Pawn> _trackedDesireCandidates = new HashSet<Pawn>();
+		private static readonly HashSet<Pawn> _activeWantToBeHeldPawns = new HashSet<Pawn>();
+		private static readonly List<Pawn> _trackedCandidatesBuffer = new List<Pawn>(32);
+		private static readonly List<Pawn> _activePawnsBuffer = new List<Pawn>(16);
 
 		public static void Tick()
 		{
-			int currentTick = Find.TickManager?.TicksGame ?? 0;
-			if (currentTick <= 0)
+			if (Find.TickManager == null)
 			{
 				return;
 			}
 
-			if (currentTick % DesireCheckInterval == 0)
+			ProcessTrackedCandidates();
+			ProcessActiveWantToBeHeldPawns();
+		}
+
+		public static void ResetTracking()
+		{
+			_trackedDesireCandidates.Clear();
+			_activeWantToBeHeldPawns.Clear();
+			_trackedCandidatesBuffer.Clear();
+			_activePawnsBuffer.Clear();
+		}
+
+		public static void RebuildTrackingFromMaps()
+		{
+			ResetTracking();
+			if (Find.Maps == null)
 			{
-				TryTriggerDesires();
+				return;
 			}
 
-			if (currentTick % PickupScanInterval == 0)
+			for (int i = 0; i < Find.Maps.Count; i++)
 			{
-				TryAssignNearbyCaregivers();
+				Map map = Find.Maps[i];
+				var pawns = map?.mapPawns?.AllPawnsSpawned;
+				if (pawns == null)
+				{
+					continue;
+				}
+
+				for (int j = 0; j < pawns.Count; j++)
+				{
+					TrackPawnIfRelevant(pawns[j]);
+				}
 			}
 		}
 
 		public static bool TryEndWantToBeHeld(Pawn toddler, bool logSuccess)
 		{
+			_activeWantToBeHeldPawns.Remove(toddler);
 			if (!IsWantingToBeHeld(toddler))
 			{
 				return false;
@@ -60,65 +90,99 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 		}
 
-		private static void TryTriggerDesires()
+		public static void NotifyPawnSpawned(Pawn pawn)
 		{
-			foreach (Map map in Find.Maps)
+			TrackPawnIfRelevant(pawn);
+		}
+
+		public static void NotifyPawnDespawned(Pawn pawn)
+		{
+			UntrackPawn(pawn);
+		}
+
+		public static void NotifyPawnFactionChanged(Pawn pawn)
+		{
+			TrackPawnIfRelevant(pawn);
+		}
+
+		public static void NotifyPawnKilled(Pawn pawn)
+		{
+			UntrackPawn(pawn);
+		}
+
+		private static void ProcessTrackedCandidates()
+		{
+			if (_trackedDesireCandidates.Count == 0)
 			{
-				if (map == null)
+				return;
+			}
+
+			_trackedCandidatesBuffer.Clear();
+			foreach (Pawn pawn in _trackedDesireCandidates)
+			{
+				_trackedCandidatesBuffer.Add(pawn);
+			}
+
+			for (int i = 0; i < _trackedCandidatesBuffer.Count; i++)
+			{
+				Pawn pawn = _trackedCandidatesBuffer[i];
+				if (!IsTrackedDesireCandidate(pawn))
+				{
+					UntrackPawn(pawn);
+					continue;
+				}
+
+				if (IsWantingToBeHeld(pawn))
+				{
+					_activeWantToBeHeldPawns.Add(pawn);
+					continue;
+				}
+
+				if (!pawn.IsHashIntervalTick(DesireCheckInterval))
 				{
 					continue;
 				}
 
-				var pawns = map.mapPawns?.AllPawnsSpawned;
-				if (pawns == null)
+				if (!CanStartWantToBeHeld(pawn) || !Rand.Chance(DesireChancePerCheck))
 				{
 					continue;
 				}
 
-				for (int i = 0; i < pawns.Count; i++)
+				if (TryStartWantToBeHeld(pawn))
 				{
-					Pawn pawn = pawns[i];
-					if (!CanStartWantToBeHeld(pawn))
-					{
-						continue;
-					}
-
-					if (!Rand.Chance(DesireChancePerCheck))
-					{
-						continue;
-					}
-
-					if (TryStartWantToBeHeld(pawn))
-					{
-						TryAssignCaregiverForPawn(pawn);
-					}
+					TryAssignCaregiverForPawn(pawn);
 				}
 			}
 		}
 
-		private static void TryAssignNearbyCaregivers()
+		private static void ProcessActiveWantToBeHeldPawns()
 		{
-			foreach (Map map in Find.Maps)
+			if (_activeWantToBeHeldPawns.Count == 0)
 			{
-				if (map == null)
-				{
-					continue;
-				}
+				return;
+			}
 
-				var pawns = map.mapPawns?.AllPawnsSpawned;
-				if (pawns == null)
-				{
-					continue;
-				}
+			_activePawnsBuffer.Clear();
+			foreach (Pawn pawn in _activeWantToBeHeldPawns)
+			{
+				_activePawnsBuffer.Add(pawn);
+			}
 
-				for (int i = 0; i < pawns.Count; i++)
+			for (int i = 0; i < _activePawnsBuffer.Count; i++)
+			{
+				Pawn pawn = _activePawnsBuffer[i];
+				if (!IsTrackedDesireCandidate(pawn) || !IsWantingToBeHeld(pawn))
 				{
-					Pawn pawn = pawns[i];
-					if (!IsWantingToBeHeld(pawn))
+					_activeWantToBeHeldPawns.Remove(pawn);
+					if (!IsTrackedDesireCandidate(pawn))
 					{
-						continue;
+						UntrackPawn(pawn);
 					}
+					continue;
+				}
 
+				if (pawn.IsHashIntervalTick(PickupScanInterval))
+				{
 					TryAssignCaregiverForPawn(pawn);
 				}
 			}
@@ -132,7 +196,13 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
-			return pawn.mindState.mentalStateHandler.TryStartMentalState(desireDef, null, false, false, false, null, false, false);
+			bool started = pawn.mindState.mentalStateHandler.TryStartMentalState(desireDef, null, false, false, false, null, false, false);
+			if (started)
+			{
+				_activeWantToBeHeldPawns.Add(pawn);
+			}
+
+			return started;
 		}
 
 		private static bool IsWantingToBeHeld(Pawn pawn)
@@ -238,17 +308,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		private static bool CanStartWantToBeHeld(Pawn pawn)
 		{
-			if (pawn == null || pawn.Dead || pawn.Destroyed)
-			{
-				return false;
-			}
-
-			if (pawn.Faction != Faction.OfPlayer)
-			{
-				return false;
-			}
-
-			if (!IsBabyOrToddler(pawn))
+			if (!IsTrackedDesireCandidate(pawn))
 			{
 				return false;
 			}
@@ -270,6 +330,47 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			return pawn.mindState?.mentalStateHandler != null;
+		}
+
+		private static bool IsTrackedDesireCandidate(Pawn pawn)
+		{
+			if (pawn == null || pawn.Dead || pawn.Destroyed || !pawn.Spawned)
+			{
+				return false;
+			}
+
+			if (pawn.Faction != Faction.OfPlayer)
+			{
+				return false;
+			}
+
+			return IsBabyOrToddler(pawn);
+		}
+
+		private static void TrackPawnIfRelevant(Pawn pawn)
+		{
+			if (!IsTrackedDesireCandidate(pawn))
+			{
+				UntrackPawn(pawn);
+				return;
+			}
+
+			_trackedDesireCandidates.Add(pawn);
+			if (IsWantingToBeHeld(pawn))
+			{
+				_activeWantToBeHeldPawns.Add(pawn);
+			}
+		}
+
+		private static void UntrackPawn(Pawn pawn)
+		{
+			if (pawn == null)
+			{
+				return;
+			}
+
+			_trackedDesireCandidates.Remove(pawn);
+			_activeWantToBeHeldPawns.Remove(pawn);
 		}
 
 		private static bool IsBabyOrToddler(Pawn pawn)

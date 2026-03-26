@@ -24,6 +24,7 @@ namespace RimTalk_ToddlersExpansion.Core
 			{
 				ToddlersExpansionDiagnostics.Run();
 				RimTalkCompatUtility.TryRegisterToddlerVariables();
+				Integration.Toddlers.ToddlerCarryingGameComponent.RegisterGameComponent();
 				Integration.Toddlers.MidnightSnackUtility.RegisterGameComponent();
 				Integration.Toddlers.LanguageLearningUtility.RegisterGameComponent();
 				Integration.Toddlers.ToddlerSelfBathUtility.RegisterGameComponent();

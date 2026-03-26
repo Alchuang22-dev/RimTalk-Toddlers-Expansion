@@ -155,6 +155,53 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			return false;
 		}
 
+		public static void CopyCarriedToddlersTo(Pawn carrier, List<Pawn> buffer)
+		{
+			if (buffer == null)
+			{
+				return;
+			}
+
+			buffer.Clear();
+			if (carrier == null || !CarrierToToddlers.TryGetValue(carrier, out List<Pawn> toddlers) || toddlers.Count == 0)
+			{
+				return;
+			}
+
+			for (int i = 0; i < toddlers.Count; i++)
+			{
+				buffer.Add(toddlers[i]);
+			}
+		}
+
+		public static void CopyAllCarriersTo(List<Pawn> buffer)
+		{
+			if (buffer == null)
+			{
+				return;
+			}
+
+			buffer.Clear();
+			foreach (Pawn carrier in CarrierToToddlers.Keys)
+			{
+				buffer.Add(carrier);
+			}
+		}
+
+		public static void CopyAllCarriedToddlersTo(List<Pawn> buffer)
+		{
+			if (buffer == null)
+			{
+				return;
+			}
+
+			buffer.Clear();
+			foreach (Pawn toddler in ToddlerToCarrier.Keys)
+			{
+				buffer.Add(toddler);
+			}
+		}
+
 		/// <summary>
 		/// 清除所有与指定pawn相关的背负数据
 		/// </summary>

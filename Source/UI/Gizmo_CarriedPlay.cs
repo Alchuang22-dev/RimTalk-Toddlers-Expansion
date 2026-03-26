@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using RimTalk_ToddlersExpansion.Core;
 using RimTalk_ToddlersExpansion.Integration.Toddlers;
 using RimWorld;
@@ -38,13 +37,13 @@ namespace RimTalk_ToddlersExpansion.UI
 				yield break;
 			}
 
-			List<Pawn> carriedToddlers = ToddlerCarryingUtility.GetCarriedToddlers(carrier);
-			if (carriedToddlers == null || carriedToddlers.Count == 0)
+			if (!ToddlerCarryingUtility.TryGetCarriedToddlersNoAlloc(carrier, out List<Pawn> carriedToddlers)
+				|| carriedToddlers.Count == 0)
 			{
 				yield break;
 			}
 
-			Pawn toddler = carriedToddlers.FirstOrDefault();
+			Pawn toddler = carriedToddlers[0];
 			if (toddler == null)
 			{
 				yield break;

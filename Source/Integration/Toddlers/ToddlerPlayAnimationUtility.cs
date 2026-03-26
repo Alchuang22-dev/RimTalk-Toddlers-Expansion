@@ -79,6 +79,8 @@ using Verse;
 			{
 				pawn.Drawer.renderer.SetAnimation(animation);
 			}
+
+			YayoAnimation.YayoAnimationCompatUtility.TrackSafeFallbackPawn(pawn);
 		}
 
 		public static void ClearAnimation(Pawn pawn, AnimationDef animation)
@@ -92,6 +94,8 @@ using Verse;
 			{
 				pawn.Drawer.renderer.SetAnimation(null);
 			}
+
+			YayoAnimation.YayoAnimationCompatUtility.UntrackSafeFallbackPawn(pawn);
 		}
 
 		public static void ClearCurrentAnimation(Pawn pawn)
@@ -105,6 +109,8 @@ using Verse;
 			{
 				pawn.Drawer.renderer.SetAnimation(null);
 			}
+
+			YayoAnimation.YayoAnimationCompatUtility.UntrackSafeFallbackPawn(pawn);
 		}
 
 		public static bool ClearManagedNativePlayAnimation(Pawn pawn)
@@ -112,16 +118,24 @@ using Verse;
 			AnimationDef current = pawn?.Drawer?.renderer?.CurAnimation;
 			if (current == null)
 			{
+				YayoAnimation.YayoAnimationCompatUtility.UntrackSafeFallbackPawn(pawn);
 				return false;
 			}
 
 			if (IsManagedPlayAnimation(current))
 			{
 				pawn.Drawer.renderer.SetAnimation(null);
+				YayoAnimation.YayoAnimationCompatUtility.UntrackSafeFallbackPawn(pawn);
 				return true;
 			}
 
+			YayoAnimation.YayoAnimationCompatUtility.UntrackSafeFallbackPawn(pawn);
 			return false;
+		}
+
+		public static bool HasManagedPlayAnimation(Pawn pawn)
+		{
+			return IsManagedPlayAnimation(pawn?.Drawer?.renderer?.CurAnimation);
 		}
 
 		public static bool ArePlayAnimationsAllowedForPawn(Pawn pawn)
