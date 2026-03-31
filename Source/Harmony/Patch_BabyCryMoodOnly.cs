@@ -20,7 +20,9 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 		private static bool AuraEffect_Prefix(Thing source, Pawn hearer)
 		{
-			if (!ToddlersExpansionSettings.babyCryAffectsMoodOnly)
+			bool affectSocial = !ToddlersExpansionSettings.babyCryAffectsMoodOnly;
+			bool affectMood = ToddlersExpansionSettings.babyCryAffectsMood;
+			if (affectSocial && affectMood)
 			{
 				return true;
 			}
@@ -36,13 +38,21 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				return false;
 			}
 
-			if (hearer == pawn.GetMother() || hearer == pawn.GetFather())
+			if (affectMood)
 			{
-				hearer.needs.mood.thoughts.memories.TryGainMemory(ThoughtDefOf.MyCryingBaby, pawn);
+				if (hearer == pawn.GetMother() || hearer == pawn.GetFather())
+				{
+					hearer.needs.mood.thoughts.memories.TryGainMemory(ThoughtDefOf.MyCryingBaby, pawn);
+				}
+				else
+				{
+					hearer.needs.mood.thoughts.memories.TryGainMemory(ThoughtDefOf.CryingBaby, pawn);
+				}
 			}
-			else
+
+			if (affectSocial)
 			{
-				hearer.needs.mood.thoughts.memories.TryGainMemory(ThoughtDefOf.CryingBaby, pawn);
+				hearer.needs.mood.thoughts.memories.TryGainMemory(ThoughtDefOf.BabyCriedSocial, pawn);
 			}
 
 			return false;

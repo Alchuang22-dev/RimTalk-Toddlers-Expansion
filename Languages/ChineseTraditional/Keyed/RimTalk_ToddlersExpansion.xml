@@ -161,4 +161,11 @@
   <RimTalk_ToddlersExpansion_Llm_ApiKey>API Key</RimTalk_ToddlersExpansion_Llm_ApiKey>
   <RimTalk_ToddlersExpansion_Llm_Model>模型</RimTalk_ToddlersExpansion_Llm_Model>
   <RimTalk_ToddlersExpansion_Llm_ConfigWarning>獨立 API 配置還不完整。請先填寫所需的介面位址、模型和 API Key，再切換使用。</RimTalk_ToddlersExpansion_Llm_ConfigWarning>
+  <RimTalk_ToddlersExpansion_Performance_Settings_Header>效能與除錯</RimTalk_ToddlersExpansion_Performance_Settings_Header>
+  <RimTalk_ToddlersExpansion_Performance_Settings_Desc>用於調整高頻檢查間隔，並靜音高頻除錯日誌。</RimTalk_ToddlersExpansion_Performance_Settings_Desc>
+  <RimTalk_ToddlersExpansion_Performance_EnableVerboseDebugLogs>啟用詳細除錯日誌</RimTalk_ToddlersExpansion_Performance_EnableVerboseDebugLogs>
+  <RimTalk_ToddlersExpansion_Performance_EnableVerboseDebugLogs_Tooltip>僅在 RimWorld DevMode 開啟時生效。關閉後可抑制高頻刷屏除錯日誌。</RimTalk_ToddlersExpansion_Performance_EnableVerboseDebugLogs_Tooltip>
+  <RimTalk_ToddlersExpansion_Performance_MutualPlayCheckInterval>mutual play 檢查間隔：{0} tick</RimTalk_ToddlersExpansion_Performance_MutualPlayCheckInterval>
+  <RimTalk_ToddlersExpansion_Performance_MainLoopCheckInterval>主循環檢查間隔：{0} tick</RimTalk_ToddlersExpansion_Performance_MainLoopCheckInterval>
+  <RimTalk_ToddlersExpansion_Performance_BabyCarryCheckInterval>baby carry 檢查間隔：{0} tick</RimTalk_ToddlersExpansion_Performance_BabyCarryCheckInterval>
 </LanguageData>

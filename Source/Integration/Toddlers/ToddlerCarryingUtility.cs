@@ -266,9 +266,19 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
-			if (pawn.DevelopmentalStage.Newborn()
-				|| pawn.DevelopmentalStage.Baby()
-				|| pawn.DevelopmentalStage == DevelopmentalStage.Child)
+			if (pawn.DevelopmentalStage.Newborn() || pawn.DevelopmentalStage.Baby())
+			{
+				return false;
+			}
+
+			if (pawn.DevelopmentalStage == DevelopmentalStage.Child
+				&& !ToddlersExpansionSettings.EnableChildBabyCarryInteractions)
+			{
+				return false;
+			}
+
+			if ((pawn.IsPrisoner || pawn.IsPrisonerOfColony)
+				&& !ToddlersExpansionSettings.EnablePrisonerBabyCarryInteractions)
 			{
 				return false;
 			}

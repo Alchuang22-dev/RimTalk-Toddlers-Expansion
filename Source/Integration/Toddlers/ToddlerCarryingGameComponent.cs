@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using RimTalk_ToddlersExpansion.Core;
 using RimTalk_ToddlersExpansion.Harmony;
 using RimWorld;
 using Verse;
@@ -12,7 +13,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private const int CarriedJobInterval = 120;
 		private const int OrphanExitInterval = 600;
 
-		private int _tickCounter;
 		private bool _needsCarryProtectionResync;
 		private readonly List<Pawn> _activeCarriedToddlers = new List<Pawn>(32);
 		private readonly List<Pawn> _activeCarriers = new List<Pawn>(32);
@@ -24,26 +24,33 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		public override void GameComponentTick()
 		{
 			base.GameComponentTick();
-
-			// Process deferred carry assignments outside GenSpawn stack.
-			Patch_VisitorToddlerBabyFood.ProcessPendingCarryingAssignments();
-			MaintainActiveCarryingRelations();
-
-			_tickCounter++;
-			if (_tickCounter >= CleanupInterval)
+			if (Find.TickManager == null)
 			{
-				_tickCounter = 0;
+				return;
+			}
+
+			int currentTick = Find.TickManager.TicksGame;
+			int mainLoopInterval = ToddlersExpansionSettings.GetToddlerMainLoopCheckIntervalTicks();
+
+			if (currentTick % mainLoopInterval == 0)
+			{
+				// Process deferred carry assignments outside GenSpawn stack.
+				Patch_VisitorToddlerBabyFood.ProcessPendingCarryingAssignments();
+				MaintainActiveCarryingRelations();
+				ToddlerCarryDesireUtility.Tick();
+			}
+
+			if (currentTick % CleanupInterval == 0)
+			{
 				ToddlerCarryingTracker.CleanupInvalidEntries();
 			}
 
-			ToddlerCarryDesireUtility.Tick();
-
-			if (_tickCounter % CarriedJobInterval == 0)
+			if (currentTick % CarriedJobInterval == 0)
 			{
 				CarriedToddlerStateUtility.UpdateCarriedJobs();
 			}
 
-			if (_tickCounter % OrphanExitInterval == 0)
+			if (currentTick % OrphanExitInterval == 0)
 			{
 				EnsureVisitorToddlersExitIfNoAdults();
 			}

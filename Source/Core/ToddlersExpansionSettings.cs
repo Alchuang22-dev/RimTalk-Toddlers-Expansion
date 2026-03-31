@@ -1,3 +1,4 @@
+using System;
 using Verse;
 
 namespace RimTalk_ToddlersExpansion.Core
@@ -35,6 +36,14 @@ namespace RimTalk_ToddlersExpansion.Core
 		public static bool enableHostileToddlerColonistBehavior = true;
 		public static bool enableUnder3HairRendering = false;
 		public static bool babyCryAffectsMoodOnly = true;
+		public static bool babyCryAffectsMood = true;
+		public static bool MuteSpamDebugLogs = true;
+		public static bool MuteAllLogs = false;
+		public static bool EnablePrisonerBabyCarryInteractions = false;
+		public static bool EnableChildBabyCarryInteractions = false;
+		public static int MutualPlayPartnerCheckIntervalTicks = 1;
+		public static int ToddlerMainLoopCheckIntervalTicks = 1;
+		public static int BabyCarryCheckIntervalTicks = 120;
 
 		// Nature running / children outing destination pools
 		public bool EnableOutingPoolVanillaEdgeRandom = true;
@@ -81,6 +90,46 @@ namespace RimTalk_ToddlersExpansion.Core
 		public static bool EnableYayoCustomHop = true;
 		public static bool EnableYayoCustomRunLoop = true;
 
+		public static bool ShouldEmitVerboseDebugLogs => Prefs.DevMode && !MuteAllLogs && !MuteSpamDebugLogs;
+
+		public static bool ShouldSuppressModLogMessage(string text)
+		{
+			if (!MuteAllLogs || string.IsNullOrEmpty(text))
+			{
+				return false;
+			}
+
+			return text.Contains("[RimTalk_ToddlersExpansion]")
+				|| text.Contains("[RimTalk Toddlers Expansion]")
+				|| text.Contains("[RimTalk Toddlers]")
+				|| text.Contains("[RimTalk Boredom]");
+		}
+
+		public static int GetMutualPlayPartnerCheckIntervalTicks()
+		{
+			return ClampInterval(MutualPlayPartnerCheckIntervalTicks, 1, 600);
+		}
+
+		public static int GetToddlerMainLoopCheckIntervalTicks()
+		{
+			return ClampInterval(ToddlerMainLoopCheckIntervalTicks, 1, 120);
+		}
+
+		public static int GetBabyCarryPickupCheckIntervalTicks()
+		{
+			return ClampInterval(BabyCarryCheckIntervalTicks, 30, 600);
+		}
+
+		public static int GetBabyCarryDesireCheckIntervalTicks()
+		{
+			return GetBabyCarryPickupCheckIntervalTicks() * 5;
+		}
+
+		private static int ClampInterval(int value, int min, int max)
+		{
+			return Math.Max(min, Math.Min(max, value));
+		}
+
 		public override void ExposeData()
 		{
 			base.ExposeData();
@@ -110,6 +159,14 @@ namespace RimTalk_ToddlersExpansion.Core
 			Scribe_Values.Look(ref enableHostileToddlerColonistBehavior, "enableHostileToddlerColonistBehavior", true);
 			Scribe_Values.Look(ref enableUnder3HairRendering, "enableUnder3HairRendering", false);
 			Scribe_Values.Look(ref babyCryAffectsMoodOnly, "babyCryAffectsMoodOnly", true);
+			Scribe_Values.Look(ref babyCryAffectsMood, "babyCryAffectsMood", true);
+			Scribe_Values.Look(ref MuteSpamDebugLogs, "MuteSpamDebugLogs", true);
+			Scribe_Values.Look(ref MuteAllLogs, "MuteAllLogs", false);
+			Scribe_Values.Look(ref EnablePrisonerBabyCarryInteractions, "EnablePrisonerBabyCarryInteractions", false);
+			Scribe_Values.Look(ref EnableChildBabyCarryInteractions, "EnableChildBabyCarryInteractions", false);
+			Scribe_Values.Look(ref MutualPlayPartnerCheckIntervalTicks, "MutualPlayPartnerCheckIntervalTicks", 1);
+			Scribe_Values.Look(ref ToddlerMainLoopCheckIntervalTicks, "ToddlerMainLoopCheckIntervalTicks", 1);
+			Scribe_Values.Look(ref BabyCarryCheckIntervalTicks, "BabyCarryCheckIntervalTicks", 120);
 
 			Scribe_Values.Look(ref EnableOutingPoolVanillaEdgeRandom, "EnableOutingPoolVanillaEdgeRandom", true);
 			Scribe_Values.Look(ref EnableOutingPoolGrowingZone, "EnableOutingPoolGrowingZone", true);

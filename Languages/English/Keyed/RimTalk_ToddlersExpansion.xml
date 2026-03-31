@@ -14,11 +14,11 @@
 
   <!-- Settings -->
   <RimTalk_ToddlersExpansion_Settings_Title>RimTalk Toddlers Expansion - Settings</RimTalk_ToddlersExpansion_Settings_Title>
-  <RimTalk_ToddlersExpansion_Settings_Page1>General</RimTalk_ToddlersExpansion_Settings_Page1>
+  <RimTalk_ToddlersExpansion_Settings_Page1>Features &amp; Performance</RimTalk_ToddlersExpansion_Settings_Page1>
   <RimTalk_ToddlersExpansion_Settings_Page2>Outing Destinations</RimTalk_ToddlersExpansion_Settings_Page2>
-  <RimTalk_ToddlersExpansion_Settings_Page3>Play Animations</RimTalk_ToddlersExpansion_Settings_Page3>
-  <RimTalk_ToddlersExpansion_Settings_Page4>Talk</RimTalk_ToddlersExpansion_Settings_Page4>
-  <RimTalk_ToddlersExpansion_Llm_Settings_Header>LLM API</RimTalk_ToddlersExpansion_Llm_Settings_Header>
+  <RimTalk_ToddlersExpansion_Settings_Page3>Animations</RimTalk_ToddlersExpansion_Settings_Page3>
+  <RimTalk_ToddlersExpansion_Settings_Page4>Chat &amp; API</RimTalk_ToddlersExpansion_Settings_Page4>
+  <RimTalk_ToddlersExpansion_Llm_Settings_Header>RimTalk API Settings</RimTalk_ToddlersExpansion_Llm_Settings_Header>
   <RimTalk_ToddlersExpansion_Llm_Settings_Desc>Choose whether Toddler Expansion's own short-text requests use RimTalk's active API or a standalone API configured here.</RimTalk_ToddlersExpansion_Llm_Settings_Desc>
   <RimTalk_ToddlersExpansion_Llm_UseRimTalk>Use RimTalk API</RimTalk_ToddlersExpansion_Llm_UseRimTalk>
   <RimTalk_ToddlersExpansion_Llm_UseStandalone>Use standalone LLM API</RimTalk_ToddlersExpansion_Llm_UseStandalone>
@@ -30,8 +30,8 @@
   <RimTalk_ToddlersExpansion_Llm_ApiKey>API key</RimTalk_ToddlersExpansion_Llm_ApiKey>
   <RimTalk_ToddlersExpansion_Llm_Model>Model</RimTalk_ToddlersExpansion_Llm_Model>
   <RimTalk_ToddlersExpansion_Llm_ConfigWarning>Standalone API is incomplete. Fill in the required endpoint, model, and API key fields before it can be used.</RimTalk_ToddlersExpansion_Llm_ConfigWarning>
-  <RimTalk_ToddlersExpansion_Talk_Settings_Header>RimTalk Talk Settings</RimTalk_ToddlersExpansion_Talk_Settings_Header>
-  <RimTalk_ToddlersExpansion_Talk_Settings_Desc>Configure Event-type TalkRequest sources independently.</RimTalk_ToddlersExpansion_Talk_Settings_Desc>
+  <RimTalk_ToddlersExpansion_Talk_Settings_Header>RimTalk TalkRequest Sending</RimTalk_ToddlersExpansion_Talk_Settings_Header>
+  <RimTalk_ToddlersExpansion_Talk_Settings_Desc>Configure Event-type TalkRequest sending sources independently.</RimTalk_ToddlersExpansion_Talk_Settings_Desc>
   <RimTalk_ToddlersExpansion_Talk_EnableSelfPlay>Enable self-play Event talks</RimTalk_ToddlersExpansion_Talk_EnableSelfPlay>
   <RimTalk_ToddlersExpansion_Talk_EnableSelfPlay_Tooltip>Controls Event TalkRequest sending for toddler self-play and toy-play completion.</RimTalk_ToddlersExpansion_Talk_EnableSelfPlay_Tooltip>
   <RimTalk_ToddlersExpansion_Talk_EnableMutualPlay>Enable mutual-play Event talks</RimTalk_ToddlersExpansion_Talk_EnableMutualPlay>
@@ -44,6 +44,15 @@
   <RimTalk_ToddlersExpansion_Talk_EnableStruggle_Tooltip>Controls Event TalkRequest sending when a carried toddler struggles and is put down.</RimTalk_ToddlersExpansion_Talk_EnableStruggle_Tooltip>
   <RimTalk_ToddlersExpansion_Animation_Settings_Header>Play Animation Pools</RimTalk_ToddlersExpansion_Animation_Settings_Header>
   <RimTalk_ToddlersExpansion_Animation_Settings_Desc>Use this page to gradually narrow the toddler play animation pool while debugging animation issues.</RimTalk_ToddlersExpansion_Animation_Settings_Desc>
+  <RimTalk_ToddlersExpansion_Performance_Settings_Header>Performance & Debug</RimTalk_ToddlersExpansion_Performance_Settings_Header>
+  <RimTalk_ToddlersExpansion_Performance_Settings_Desc>Tune high-frequency checks and mute verbose debug logging on hot paths.</RimTalk_ToddlersExpansion_Performance_Settings_Desc>
+  <RimTalk_ToddlersExpansion_Performance_MuteSpamLogs>Mute spammy debug logs</RimTalk_ToddlersExpansion_Performance_MuteSpamLogs>
+  <RimTalk_ToddlersExpansion_Performance_MuteSpamLogs_Tooltip>Suppresses the mod's high-frequency debug spam on hot paths. Still allows other non-debug logs unless the full mute option is enabled.</RimTalk_ToddlersExpansion_Performance_MuteSpamLogs_Tooltip>
+  <RimTalk_ToddlersExpansion_Performance_MuteAllLogs>Mute all mod logs</RimTalk_ToddlersExpansion_Performance_MuteAllLogs>
+  <RimTalk_ToddlersExpansion_Performance_MuteAllLogs_Tooltip>Suppresses this mod's Message, Warning, and Error log output. Useful for isolating performance impact from log spam.</RimTalk_ToddlersExpansion_Performance_MuteAllLogs_Tooltip>
+  <RimTalk_ToddlersExpansion_Performance_MutualPlayCheckInterval>Mutual play partner check interval: {0} ticks</RimTalk_ToddlersExpansion_Performance_MutualPlayCheckInterval>
+  <RimTalk_ToddlersExpansion_Performance_MainLoopCheckInterval>Main carry loop interval: {0} ticks</RimTalk_ToddlersExpansion_Performance_MainLoopCheckInterval>
+  <RimTalk_ToddlersExpansion_Performance_BabyCarryCheckInterval>Baby carry check interval: {0} ticks</RimTalk_ToddlersExpansion_Performance_BabyCarryCheckInterval>
   <RimTalk_ToddlersExpansion_Animation_YayoLoaded>Yayo animation detected: the Yayo-compatible pool is currently active.</RimTalk_ToddlersExpansion_Animation_YayoLoaded>
   <RimTalk_ToddlersExpansion_Animation_YayoNotLoaded>Yayo animation not detected: only the non-Yayo native pool is currently active.</RimTalk_ToddlersExpansion_Animation_YayoNotLoaded>
   <RimTalk_ToddlersExpansion_Animation_EnableNewborn>Enable play animations for non-mobile newborns</RimTalk_ToddlersExpansion_Animation_EnableNewborn>
@@ -117,10 +126,21 @@
   <RimTalk_ToddlersExpansion_Behavior_Settings_Header>Behavior Tweaks</RimTalk_ToddlersExpansion_Behavior_Settings_Header>
   <RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior>Treat hostile toddlers/babies as colonists on player maps</RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior>
   <RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior_Tooltip>Prevents hostile toddlers/babies from trying to exit or bash doors on player home maps. Disable if it conflicts with raids or other AI mods.</RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior_Tooltip>
+  <RimTalk_ToddlersExpansion_BabyAppearance_Settings_Header>Baby Appearance</RimTalk_ToddlersExpansion_BabyAppearance_Settings_Header>
   <RimTalk_ToddlersExpansion_EnableUnder3HairRendering>Enable hair for babies/toddlers under age 3</RimTalk_ToddlersExpansion_EnableUnder3HairRendering>
   <RimTalk_ToddlersExpansion_EnableUnder3HairRendering_Tooltip>When enabled, babies and toddlers younger than 3 will render hair. When disabled, the game keeps default behavior.</RimTalk_ToddlersExpansion_EnableUnder3HairRendering_Tooltip>
+  <RimTalk_ToddlersExpansion_BabyCry_Settings_Header>Baby Crying</RimTalk_ToddlersExpansion_BabyCry_Settings_Header>
+  <RimTalk_ToddlersExpansion_BabyCry_NoSocial>Baby crying does not affect social</RimTalk_ToddlersExpansion_BabyCry_NoSocial>
+  <RimTalk_ToddlersExpansion_BabyCry_NoSocial_Tooltip>Suppresses the vanilla BabyCriedSocial memory while keeping the crying clamor intact.</RimTalk_ToddlersExpansion_BabyCry_NoSocial_Tooltip>
+  <RimTalk_ToddlersExpansion_BabyCry_NoMood>Baby crying does not affect mood</RimTalk_ToddlersExpansion_BabyCry_NoMood>
+  <RimTalk_ToddlersExpansion_BabyCry_NoMood_Tooltip>Suppresses MyCryingBaby and CryingBaby mood memories from baby crying.</RimTalk_ToddlersExpansion_BabyCry_NoMood_Tooltip>
   <RimTalk_ToddlersExpansion_BabyCryMoodOnly>Baby crying affects mood only (no relationship loss)</RimTalk_ToddlersExpansion_BabyCryMoodOnly>
   <RimTalk_ToddlersExpansion_BabyCryMoodOnly_Tooltip>Prevents the vanilla BabyCriedSocial memory when babies cry. Parents and nearby pawns still get mood impact thoughts.</RimTalk_ToddlersExpansion_BabyCryMoodOnly_Tooltip>
+  <RimTalk_ToddlersExpansion_Interaction_Settings_Header>Interaction Tweaks</RimTalk_ToddlersExpansion_Interaction_Settings_Header>
+  <RimTalk_ToddlersExpansion_Interaction_EnablePrisonerCarry>Prisoners can trigger baby carry (Experimental)</RimTalk_ToddlersExpansion_Interaction_EnablePrisonerCarry>
+  <RimTalk_ToddlersExpansion_Interaction_EnablePrisonerCarry_Tooltip>Allows prisoners to count as valid carriers in baby/toddler carry interactions.</RimTalk_ToddlersExpansion_Interaction_EnablePrisonerCarry_Tooltip>
+  <RimTalk_ToddlersExpansion_Interaction_EnableChildCarry>Children can trigger baby carry (Experimental)</RimTalk_ToddlersExpansion_Interaction_EnableChildCarry>
+  <RimTalk_ToddlersExpansion_Interaction_EnableChildCarry_Tooltip>Allows child-stage pawns to count as valid carriers in baby/toddler carry interactions.</RimTalk_ToddlersExpansion_Interaction_EnableChildCarry_Tooltip>
 
   <!-- Boredom Tooltip Display -->
   <RimTalk_Boredom_Header>Play boredom:</RimTalk_Boredom_Header>

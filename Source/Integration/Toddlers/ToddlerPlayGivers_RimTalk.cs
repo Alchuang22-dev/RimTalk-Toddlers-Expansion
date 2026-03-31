@@ -97,6 +97,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
+			if (!ShouldRunPartnerSearch(pawn))
+			{
+				return false;
+			}
+
 			return TryFindPartnerAndSpot(pawn, out _, out _);
 		}
 
@@ -108,6 +113,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			if (!SocialNeedTuning_Toddlers.ShouldDoOptionalActivity(pawn, PlayNeedThreshold))
+			{
+				return null;
+			}
+
+			if (!ShouldRunPartnerSearch(pawn))
 			{
 				return null;
 			}
@@ -138,6 +148,12 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			return !ToddlersCompatUtility.IsBusyForMutualPlay(pawn);
+		}
+
+		private static bool ShouldRunPartnerSearch(Pawn pawn)
+		{
+			int interval = ToddlersExpansionSettings.GetMutualPlayPartnerCheckIntervalTicks();
+			return interval <= 1 || pawn.IsHashIntervalTick(interval);
 		}
 
 		private static bool TryFindPartnerAndSpot(Pawn pawn, out Pawn partner, out IntVec3 spot)

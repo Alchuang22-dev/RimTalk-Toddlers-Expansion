@@ -436,7 +436,7 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 
 		private static void LogPlayAnimationDecision(Pawn pawn, string decision)
 		{
-			if (!Prefs.DevMode || pawn == null)
+			if (!ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs || pawn == null)
 			{
 				return;
 			}

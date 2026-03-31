@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using HarmonyLib;
+using RimTalk_ToddlersExpansion.Core;
 using RimTalk_ToddlersExpansion.Integration.Toddlers;
 using RimWorld;
 using UnityEngine;
@@ -63,7 +64,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				MethodInfo postfix = AccessTools.Method(typeof(Patch_VisitorToddlerBabyFood), nameof(GenSpawn_Spawn_Postfix));
 				harmony.Patch(spawnMethod, postfix: new HarmonyMethod(postfix));
 				
-				if (Prefs.DevMode)
+				if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
 				{
 					Log.Message("[RimTalk_ToddlersExpansion] Patched GenSpawn.Spawn for visitor toddler baby food injection");
 				}
@@ -151,7 +152,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			int nowTick = Find.TickManager?.TicksGame ?? 0;
 			_pendingCarryAssignments.Add(new PendingCarryAssignment(toddler, nowTick + CarryAssignmentDelayTicks));
 
-			if (Prefs.DevMode)
+			if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
 			{
 				Log.Message($"[RimTalk_ToddlersExpansion][CarryDebug] Scheduled carry assignment for {toddler.LabelShort} ({toddler.thingIDNumber}).");
 			}
@@ -242,7 +243,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			Lord lord = toddler.GetLord();
 			if (lord == null)
 			{
-				if (Prefs.DevMode)
+				if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
 				{
 					Log.Warning($"[RimTalk_ToddlersExpansion][CarryDebug] Skip carry assignment for {toddler.LabelShort}: lord is null.");
 				}
@@ -251,7 +252,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 			if (lord.CurLordToil == null)
 			{
-				if (Prefs.DevMode)
+				if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
 				{
 					Log.Warning($"[RimTalk_ToddlersExpansion][CarryDebug] Skip carry assignment for {toddler.LabelShort}: lord {lord.loadID} CurLordToil is null.");
 				}
@@ -280,7 +281,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 				if (!potentialCarrier.Spawned || potentialCarrier.MapHeld != toddler.MapHeld)
 				{
-					if (Prefs.DevMode)
+					if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
 					{
 						Log.Message($"[RimTalk_ToddlersExpansion][CarryDebug] Ignore carrier {potentialCarrier.LabelShort} for {toddler.LabelShort}: not spawned or different map.");
 					}
@@ -296,20 +297,20 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				// 尝试分配背负关系
 				if (ToddlerCarryingUtility.TryMountToddler(potentialCarrier, toddler))
 				{
-					if (Prefs.DevMode)
+					if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
 					{
 						Log.Message($"[RimTalk_ToddlersExpansion] 延后分配背负: {potentialCarrier.Name} 背起访客幼儿 {toddler.Name}");
 					}
 					return;
 				}
 
-				if (Prefs.DevMode)
+				if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
 				{
 					Log.Message($"[RimTalk_ToddlersExpansion][CarryDebug] TryMountToddler failed: carrier={potentialCarrier.LabelShort}, toddler={toddler.LabelShort}");
 				}
 			}
 
-			if (Prefs.DevMode)
+			if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
 			{
 				Log.Message($"[RimTalk_ToddlersExpansion] 无法为访客幼儿 {toddler.Name} 找到可用的carrier");
 			}
@@ -368,7 +369,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			int existingFoodCount = GetExistingBabyFoodCount(toddler);
 			if (existingFoodCount >= MinBabyFoodUnits)
 			{
-				if (Prefs.DevMode)
+				if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
 				{
 					Log.Message($"[RimTalk_ToddlersExpansion] 访客幼儿 {toddler.Name} 已有 {existingFoodCount} 个婴儿食品，无需补充");
 				}
@@ -396,7 +397,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 					babyFood.stackCount = toAdd;
 					toddler.inventory.innerContainer.TryAdd(babyFood);
 
-					if (Prefs.DevMode)
+					if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
 					{
 						Log.Message($"[RimTalk_ToddlersExpansion] 为访客幼儿 {toddler.Name} 补充了 {toAdd} 个婴儿食品 (原有: {existingFoodCount}, 目标: {targetCount})");
 					}
@@ -444,7 +445,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				_processedPawnIds.Clear();
 				_processedCarryingIds.Clear();
 				
-				if (Prefs.DevMode)
+				if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
 				{
 					Log.Message("[RimTalk_ToddlersExpansion] 清理访客幼儿处理缓存");
 				}

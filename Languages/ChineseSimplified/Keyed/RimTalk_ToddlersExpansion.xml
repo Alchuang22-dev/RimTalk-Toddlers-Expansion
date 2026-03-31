@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
   <RimTalk_ToddlersExpansion_PlayReport_SelfMoving>找地方玩耍。</RimTalk_ToddlersExpansion_PlayReport_SelfMoving>
   <RimTalk_ToddlersExpansion_ToddlerTumbleLabel>摔跤</RimTalk_ToddlersExpansion_ToddlerTumbleLabel>
@@ -12,13 +12,13 @@
   <RimTalk_ToddlersExpansion_ToddlerPlayContext>幼儿玩耍上下文</RimTalk_ToddlersExpansion_ToddlerPlayContext>
   <RimTalk_ToddlersExpansion_ToddlerToyPlayOrder>玩{0}</RimTalk_ToddlersExpansion_ToddlerToyPlayOrder>
 
-  <!-- 设置 -->
   <RimTalk_ToddlersExpansion_Settings_Title>RimTalk 幼儿扩展 - 设置</RimTalk_ToddlersExpansion_Settings_Title>
-  <RimTalk_ToddlersExpansion_Settings_Page1>通用设置</RimTalk_ToddlersExpansion_Settings_Page1>
+  <RimTalk_ToddlersExpansion_Settings_Page1>功能与性能</RimTalk_ToddlersExpansion_Settings_Page1>
   <RimTalk_ToddlersExpansion_Settings_Page2>野游设置</RimTalk_ToddlersExpansion_Settings_Page2>
   <RimTalk_ToddlersExpansion_Settings_Page3>玩耍动画</RimTalk_ToddlersExpansion_Settings_Page3>
-  <RimTalk_ToddlersExpansion_Settings_Page4>对话设置</RimTalk_ToddlersExpansion_Settings_Page4>
-  <RimTalk_ToddlersExpansion_Talk_Settings_Header>RimTalk 对话设置</RimTalk_ToddlersExpansion_Talk_Settings_Header>
+  <RimTalk_ToddlersExpansion_Settings_Page4>聊天和API</RimTalk_ToddlersExpansion_Settings_Page4>
+
+  <RimTalk_ToddlersExpansion_Talk_Settings_Header>RimTalk TalkRequest 发送设置</RimTalk_ToddlersExpansion_Talk_Settings_Header>
   <RimTalk_ToddlersExpansion_Talk_Settings_Desc>分别控制各个 Event 类型 TalkRequest 入口是否发送。</RimTalk_ToddlersExpansion_Talk_Settings_Desc>
   <RimTalk_ToddlersExpansion_Talk_EnableSelfPlay>启用独自玩耍 Event 对话</RimTalk_ToddlersExpansion_Talk_EnableSelfPlay>
   <RimTalk_ToddlersExpansion_Talk_EnableSelfPlay_Tooltip>控制幼儿独自玩耍和玩具玩耍结束时是否发送 Event 类型 TalkRequest。</RimTalk_ToddlersExpansion_Talk_EnableSelfPlay_Tooltip>
@@ -30,6 +30,7 @@
   <RimTalk_ToddlersExpansion_Talk_EnableCarriedPlay_Tooltip>控制飞高高、挠痒痒、转圈圈等抱着玩互动时是否发送 Event 类型 TalkRequest。</RimTalk_ToddlersExpansion_Talk_EnableCarriedPlay_Tooltip>
   <RimTalk_ToddlersExpansion_Talk_EnableStruggle>启用挣扎 Event 对话</RimTalk_ToddlersExpansion_Talk_EnableStruggle>
   <RimTalk_ToddlersExpansion_Talk_EnableStruggle_Tooltip>控制被抱着的幼儿挣扎并被放下时是否发送 Event 类型 TalkRequest。</RimTalk_ToddlersExpansion_Talk_EnableStruggle_Tooltip>
+
   <RimTalk_ToddlersExpansion_Animation_Settings_Header>玩耍动画池</RimTalk_ToddlersExpansion_Animation_Settings_Header>
   <RimTalk_ToddlersExpansion_Animation_Settings_Desc>用于逐步缩小幼儿玩耍动画池，便于排查动画相关问题。</RimTalk_ToddlersExpansion_Animation_Settings_Desc>
   <RimTalk_ToddlersExpansion_Animation_YayoLoaded>已检测到 Yayo 动画：当前实际启用的是 Yayo 兼容动画池。</RimTalk_ToddlersExpansion_Animation_YayoLoaded>
@@ -53,6 +54,7 @@
   <RimTalk_ToddlersExpansion_Animation_Spin>旋转</RimTalk_ToddlersExpansion_Animation_Spin>
   <RimTalk_ToddlersExpansion_Animation_Hop>跳跃</RimTalk_ToddlersExpansion_Animation_Hop>
   <RimTalk_ToddlersExpansion_Animation_RunLoop>跑动</RimTalk_ToddlersExpansion_Animation_RunLoop>
+
   <RimTalk_ToddlersExpansion_Outing_Settings_Header>儿童幼儿野游目的地选择</RimTalk_ToddlersExpansion_Outing_Settings_Header>
   <RimTalk_ToddlersExpansion_Outing_Settings_Desc>野游将会从以下勾选的目的地中触发</RimTalk_ToddlersExpansion_Outing_Settings_Desc>
   <RimTalk_ToddlersExpansion_OutingPool_VanillaEdgeRandom>原版</RimTalk_ToddlersExpansion_OutingPool_VanillaEdgeRandom>
@@ -72,6 +74,7 @@
   <RimTalk_ToddlersExpansion_OutingPool_Sand>沙地</RimTalk_ToddlersExpansion_OutingPool_Sand>
   <RimTalk_ToddlersExpansion_OutingPool_AncientRoad>远古路面</RimTalk_ToddlersExpansion_OutingPool_AncientRoad>
   <RimTalk_ToddlersExpansion_OutingPool_AllDisabledWarning>全部关闭将触发原版地图边缘野游</RimTalk_ToddlersExpansion_OutingPool_AllDisabledWarning>
+
   <RimTalk_ToddlersExpansion_EnableCaravanToddlerGeneration>启用商队/过路者幼儿生成</RimTalk_ToddlersExpansion_EnableCaravanToddlerGeneration>
   <RimTalk_ToddlersExpansion_EnableCaravanToddlerGeneration_Tooltip>允许商队、访客和过路者群体中出现幼儿和儿童</RimTalk_ToddlersExpansion_EnableCaravanToddlerGeneration_Tooltip>
   <RimTalk_ToddlersExpansion_MaxToddlersPerGroup>每组最大幼儿数量：{0}</RimTalk_ToddlersExpansion_MaxToddlersPerGroup>
@@ -82,7 +85,6 @@
   <RimTalk_ToddlersExpansion_MaxBatchCount>最大生成批次数：{0}</RimTalk_ToddlersExpansion_MaxBatchCount>
   <RimTalk_ToddlersExpansion_ExtraBatchChance>额外批次概率：{0}</RimTalk_ToddlersExpansion_ExtraBatchChance>
 
-  <!-- 厌倦机制设置 -->
   <RimTalk_Boredom_Settings_Header>厌倦机制</RimTalk_Boredom_Settings_Header>
   <RimTalk_Boredom_Enable>启用厌倦机制</RimTalk_Boredom_Enable>
   <RimTalk_Boredom_Enable_Tooltip>启用后，幼儿会对重复的玩耍活动感到厌倦，从中获得的玩乐需求满足度会降低。</RimTalk_Boredom_Enable_Tooltip>
@@ -93,21 +95,28 @@
   <RimTalk_Boredom_AutoDetection_Tooltip>根据活动特征自动分类未注册的玩耍活动。</RimTalk_Boredom_AutoDetection_Tooltip>
   <RimTalk_Caravan_Settings_Header>商队/过路者设置</RimTalk_Caravan_Settings_Header>
 
-  <!-- 语言学习设置 -->
   <RimTalk_Language_Settings_Header>语言学习</RimTalk_Language_Settings_Header>
   <RimTalk_Language_LearningFactor>学习速度: {0}</RimTalk_Language_LearningFactor>
 
   <RimTalk_ToddlersExpansion_Feeding_Settings_Header>进食设置</RimTalk_ToddlersExpansion_Feeding_Settings_Header>
   <RimTalk_ToddlersExpansion_ToddlerEatingSpeed>幼儿进食速度倍率：x{0}（越大越快）</RimTalk_ToddlersExpansion_ToddlerEatingSpeed>
 
-  <!-- 行为设置 -->
   <RimTalk_ToddlersExpansion_Behavior_Settings_Header>行为修正</RimTalk_ToddlersExpansion_Behavior_Settings_Header>
   <RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior>在殖民地图中将敌对幼儿/婴儿按殖民者处理</RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior>
   <RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior_Tooltip>防止敌对幼儿/婴儿在玩家主地图上尝试离开或砸门，得到更和平的行为。若与袭击/其他AI模组冲突可关闭。</RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior_Tooltip>
+
+  <RimTalk_ToddlersExpansion_BabyAppearance_Settings_Header>婴儿外观设置</RimTalk_ToddlersExpansion_BabyAppearance_Settings_Header>
   <RimTalk_ToddlersExpansion_EnableUnder3HairRendering>启用3岁以下婴儿/幼儿显示头发</RimTalk_ToddlersExpansion_EnableUnder3HairRendering>
   <RimTalk_ToddlersExpansion_EnableUnder3HairRendering_Tooltip>开启后，3岁以下婴儿和幼儿会显示头发；关闭时保持游戏默认显示方案。</RimTalk_ToddlersExpansion_EnableUnder3HairRendering_Tooltip>
 
-  <!-- 厌倦度悬浮窗显示 -->
+  <RimTalk_ToddlersExpansion_BabyCry_Settings_Header>婴儿哭泣设置</RimTalk_ToddlersExpansion_BabyCry_Settings_Header>
+  <RimTalk_ToddlersExpansion_BabyCry_NoSocial>哭泣不影响社交</RimTalk_ToddlersExpansion_BabyCry_NoSocial>
+  <RimTalk_ToddlersExpansion_BabyCry_NoSocial_Tooltip>抑制原版 BabyCriedSocial 记忆，但仍保留哭声本身和其它影响。</RimTalk_ToddlersExpansion_BabyCry_NoSocial_Tooltip>
+  <RimTalk_ToddlersExpansion_BabyCry_NoMood>哭泣不影响心情</RimTalk_ToddlersExpansion_BabyCry_NoMood>
+  <RimTalk_ToddlersExpansion_BabyCry_NoMood_Tooltip>抑制 MyCryingBaby 和 CryingBaby 心情记忆。</RimTalk_ToddlersExpansion_BabyCry_NoMood_Tooltip>
+  <RimTalk_ToddlersExpansion_BabyCryMoodOnly>婴儿哭泣只影响心情（不降低社交关系）</RimTalk_ToddlersExpansion_BabyCryMoodOnly>
+  <RimTalk_ToddlersExpansion_BabyCryMoodOnly_Tooltip>启用后，婴儿哭泣不会添加原版 BabyCriedSocial 关系记忆；仍会保留对父母和周围殖民者的心情影响。</RimTalk_ToddlersExpansion_BabyCryMoodOnly_Tooltip>
+
   <RimTalk_Boredom_Header>娱乐类型厌倦:</RimTalk_Boredom_Header>
   <RimTalk_Boredom_Label_Boring>无聊</RimTalk_Boredom_Label_Boring>
   <RimTalk_Boredom_RecoveryInfo>按目前的预期(至高)，每项无趣程度每天下降{0}。</RimTalk_Boredom_RecoveryInfo>
@@ -121,8 +130,7 @@
   <RimTalk_Boredom_Category_Exploration>探索</RimTalk_Boredom_Category_Exploration>
   <RimTalk_Boredom_Category_Creative>创意活动</RimTalk_Boredom_Category_Creative>
   <RimTalk_Boredom_Category_Unknown>未知</RimTalk_Boredom_Category_Unknown>
-  
-  <!-- 幼儿背负系统 -->
+
   <RimTalk_BeingCarriedBy>被 {0} 抱着</RimTalk_BeingCarriedBy>
   <RimTalk_BeingCarriedObserveBy>在 {0} 怀里到处看</RimTalk_BeingCarriedObserveBy>
   <RimTalk_BeingCarriedSleepBy>在 {0} 怀里睡觉</RimTalk_BeingCarriedSleepBy>
@@ -134,8 +142,7 @@
   <RimTalk_PutDownToddler>放下 {0}</RimTalk_PutDownToddler>
   <RimTalk_PutDownToddlerDesc>将 {0} 放到地上。</RimTalk_PutDownToddlerDesc>
   <RimTalk_PickingUpToddler>抱起 {0}</RimTalk_PickingUpToddler>
-  
-  <!-- 抱着幼儿玩耍 -->
+
   <RimTalk_TossUp>飞高高</RimTalk_TossUp>
   <RimTalk_TossUpDesc>把 {0} 抛向空中再接住，让幼儿咯咯笑。</RimTalk_TossUpDesc>
   <RimTalk_TossingUpToddler>正在和 {0} 玩飞高高</RimTalk_TossingUpToddler>
@@ -147,9 +154,8 @@
   <RimTalk_SpinningWithToddler>正在抱着 {0} 转圈圈</RimTalk_SpinningWithToddler>
   <RimTalk_CarriedPlayOnCooldown>小宝宝的脑袋晕晕的，要休息一下。</RimTalk_CarriedPlayOnCooldown>
   <RimTalk_ToddlersExpansion_ToddlerSelfBathTooSmall>太小了，不会自己洗澡。</RimTalk_ToddlersExpansion_ToddlerSelfBathTooSmall>
-  <RimTalk_ToddlersExpansion_BabyCryMoodOnly>婴儿哭泣只影响心情（不降低社交关系）</RimTalk_ToddlersExpansion_BabyCryMoodOnly>
-  <RimTalk_ToddlersExpansion_BabyCryMoodOnly_Tooltip>启用后，婴儿哭泣不会添加原版 BabyCriedSocial 关系记忆；仍会保留对父母和周围殖民者的心情影响。</RimTalk_ToddlersExpansion_BabyCryMoodOnly_Tooltip>
-  <RimTalk_ToddlersExpansion_Llm_Settings_Header>LLM API</RimTalk_ToddlersExpansion_Llm_Settings_Header>
+
+  <RimTalk_ToddlersExpansion_Llm_Settings_Header>RimTalk API 设置</RimTalk_ToddlersExpansion_Llm_Settings_Header>
   <RimTalk_ToddlersExpansion_Llm_Settings_Desc>选择本模组自己的短文本请求是使用 RimTalk 当前启用的 API，还是使用这里单独配置的独立 LLM API。</RimTalk_ToddlersExpansion_Llm_Settings_Desc>
   <RimTalk_ToddlersExpansion_Llm_UseRimTalk>使用 RimTalk API</RimTalk_ToddlersExpansion_Llm_UseRimTalk>
   <RimTalk_ToddlersExpansion_Llm_UseStandalone>使用模组独立 LLM API</RimTalk_ToddlersExpansion_Llm_UseStandalone>
@@ -161,4 +167,20 @@
   <RimTalk_ToddlersExpansion_Llm_ApiKey>API Key</RimTalk_ToddlersExpansion_Llm_ApiKey>
   <RimTalk_ToddlersExpansion_Llm_Model>模型</RimTalk_ToddlersExpansion_Llm_Model>
   <RimTalk_ToddlersExpansion_Llm_ConfigWarning>独立 API 配置还不完整。请先填写所需的接口地址、模型和 API Key，再切换使用。</RimTalk_ToddlersExpansion_Llm_ConfigWarning>
+
+  <RimTalk_ToddlersExpansion_Performance_Settings_Header>性能相关设置</RimTalk_ToddlersExpansion_Performance_Settings_Header>
+  <RimTalk_ToddlersExpansion_Performance_Settings_Desc>用于调节高频检查间隔，并控制日志静音策略。</RimTalk_ToddlersExpansion_Performance_Settings_Desc>
+  <RimTalk_ToddlersExpansion_Performance_MuteSpamLogs>静音刷屏调试日志</RimTalk_ToddlersExpansion_Performance_MuteSpamLogs>
+  <RimTalk_ToddlersExpansion_Performance_MuteSpamLogs_Tooltip>抑制高频热点路径上的调试刷屏日志。未开启“静音全部日志”时，其它普通日志仍会保留。</RimTalk_ToddlersExpansion_Performance_MuteSpamLogs_Tooltip>
+  <RimTalk_ToddlersExpansion_Performance_MuteAllLogs>静音全部模组日志</RimTalk_ToddlersExpansion_Performance_MuteAllLogs>
+  <RimTalk_ToddlersExpansion_Performance_MuteAllLogs_Tooltip>抑制本模组输出的 Message、Warning 和 Error 日志。适合排查日志刷屏带来的性能影响。</RimTalk_ToddlersExpansion_Performance_MuteAllLogs_Tooltip>
+  <RimTalk_ToddlersExpansion_Performance_MutualPlayCheckInterval>mutual play 检查间隔：{0} tick</RimTalk_ToddlersExpansion_Performance_MutualPlayCheckInterval>
+  <RimTalk_ToddlersExpansion_Performance_MainLoopCheckInterval>主循环检查间隔：{0} tick</RimTalk_ToddlersExpansion_Performance_MainLoopCheckInterval>
+  <RimTalk_ToddlersExpansion_Performance_BabyCarryCheckInterval>baby carry 检查间隔：{0} tick</RimTalk_ToddlersExpansion_Performance_BabyCarryCheckInterval>
+
+  <RimTalk_ToddlersExpansion_Interaction_Settings_Header>互动修正</RimTalk_ToddlersExpansion_Interaction_Settings_Header>
+  <RimTalk_ToddlersExpansion_Interaction_EnablePrisonerCarry>囚犯可以触发抱幼儿（实验）</RimTalk_ToddlersExpansion_Interaction_EnablePrisonerCarry>
+  <RimTalk_ToddlersExpansion_Interaction_EnablePrisonerCarry_Tooltip>允许囚犯在抱婴儿/幼儿互动中被视为合法抱持者。</RimTalk_ToddlersExpansion_Interaction_EnablePrisonerCarry_Tooltip>
+  <RimTalk_ToddlersExpansion_Interaction_EnableChildCarry>儿童可以触发抱幼儿（实验）</RimTalk_ToddlersExpansion_Interaction_EnableChildCarry>
+  <RimTalk_ToddlersExpansion_Interaction_EnableChildCarry_Tooltip>允许儿童阶段 pawn 在抱婴儿/幼儿互动中被视为合法抱持者。</RimTalk_ToddlersExpansion_Interaction_EnableChildCarry_Tooltip>
 </LanguageData>

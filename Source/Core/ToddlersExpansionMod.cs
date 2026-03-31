@@ -76,120 +76,31 @@ namespace RimTalk_ToddlersExpansion.Core
 
 		private void DrawGeneralSettingsPage(Rect inRect, ToddlersExpansionSettings settings)
 		{
-			float contentHeight = 1500f;
+			const float columnGap = 24f;
+			float contentHeight = 1700f;
 			Rect viewRect = new Rect(0f, 0f, inRect.width - 20f, contentHeight);
+			float columnWidth = (viewRect.width - columnGap) / 2f;
+			Rect leftColumnRect = new Rect(0f, 0f, columnWidth, contentHeight);
+			Rect rightColumnRect = new Rect(columnWidth + columnGap, 0f, columnWidth, contentHeight);
 
 			Widgets.BeginScrollView(inRect, ref generalScrollPosition, viewRect);
-			Listing_Standard listingStandard = new Listing_Standard();
-			listingStandard.Begin(viewRect);
+			Listing_Standard leftColumn = new Listing_Standard();
+			leftColumn.Begin(leftColumnRect);
+			DrawCaravanGenerationSettingsSection(leftColumn, settings);
+			DrawBoredomSettingsSection(leftColumn);
+			DrawLanguageSettingsSection(leftColumn);
+			DrawFeedingSettingsSection(leftColumn);
+			DrawBabyAppearanceSettingsSection(leftColumn);
+			DrawBabyCrySettingsSection(leftColumn);
+			leftColumn.End();
 
-			DrawLlmSettingsSection(listingStandard, settings);
-			listingStandard.GapLine();
+			Listing_Standard rightColumn = new Listing_Standard();
+			rightColumn.Begin(rightColumnRect);
+			DrawPerformanceSettingsSection(rightColumn);
+			DrawBehaviorSettingsSection(rightColumn);
+			DrawInteractionSettingsSection(rightColumn);
+			rightColumn.End();
 
-			listingStandard.Label("RimTalk_Boredom_Settings_Header".Translate());
-			listingStandard.GapLine();
-
-			listingStandard.CheckboxLabeled("RimTalk_Boredom_Enable".Translate(), ref ToddlersExpansionSettings.enableBoredomSystem, "RimTalk_Boredom_Enable_Tooltip".Translate());
-			listingStandard.Gap();
-
-			if (ToddlersExpansionSettings.enableBoredomSystem)
-			{
-				listingStandard.Label("RimTalk_Boredom_IncreasePerActivity".Translate(ToddlersExpansionSettings.boredomIncreasePerActivity.ToStringPercent()));
-				ToddlersExpansionSettings.boredomIncreasePerActivity = listingStandard.Slider(ToddlersExpansionSettings.boredomIncreasePerActivity, 0.01f, 0.2f);
-				listingStandard.Gap();
-
-				listingStandard.Label("RimTalk_Boredom_MaxCap".Translate(ToddlersExpansionSettings.boredomMaxCap.ToStringPercent()));
-				ToddlersExpansionSettings.boredomMaxCap = listingStandard.Slider(ToddlersExpansionSettings.boredomMaxCap, 0.5f, 1.0f);
-				listingStandard.Gap();
-
-				listingStandard.Label("RimTalk_Boredom_DailyRecoveryRate".Translate(ToddlersExpansionSettings.boredomDailyRecoveryRate.ToStringPercent()));
-				ToddlersExpansionSettings.boredomDailyRecoveryRate = listingStandard.Slider(ToddlersExpansionSettings.boredomDailyRecoveryRate, 0.05f, 0.5f);
-				listingStandard.Gap();
-
-				listingStandard.CheckboxLabeled("RimTalk_Boredom_AutoDetection".Translate(), ref ToddlersExpansionSettings.enableAutoDetection, "RimTalk_Boredom_AutoDetection_Tooltip".Translate());
-				listingStandard.Gap();
-			}
-
-			listingStandard.GapLine();
-
-			listingStandard.Label("RimTalk_ToddlersExpansion_Feeding_Settings_Header".Translate());
-			listingStandard.GapLine();
-
-			listingStandard.Label("RimTalk_ToddlersExpansion_ToddlerEatingSpeed".Translate(ToddlersExpansionSettings.toddlerEatingSpeedFactor.ToString("0.##")));
-			ToddlersExpansionSettings.toddlerEatingSpeedFactor = listingStandard.Slider(ToddlersExpansionSettings.toddlerEatingSpeedFactor, 0.1f, 10f);
-			listingStandard.Gap();
-
-			listingStandard.GapLine();
-
-			listingStandard.Label("RimTalk_ToddlersExpansion_Behavior_Settings_Header".Translate());
-			listingStandard.GapLine();
-
-			listingStandard.CheckboxLabeled(
-				"RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior".Translate(),
-				ref ToddlersExpansionSettings.enableHostileToddlerColonistBehavior,
-				"RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior_Tooltip".Translate());
-			listingStandard.Gap();
-
-			listingStandard.CheckboxLabeled(
-				"RimTalk_ToddlersExpansion_EnableUnder3HairRendering".Translate(),
-				ref ToddlersExpansionSettings.enableUnder3HairRendering,
-				"RimTalk_ToddlersExpansion_EnableUnder3HairRendering_Tooltip".Translate());
-			listingStandard.Gap();
-
-			listingStandard.CheckboxLabeled(
-				"RimTalk_ToddlersExpansion_BabyCryMoodOnly".Translate(),
-				ref ToddlersExpansionSettings.babyCryAffectsMoodOnly,
-				"RimTalk_ToddlersExpansion_BabyCryMoodOnly_Tooltip".Translate());
-			listingStandard.Gap();
-
-			listingStandard.GapLine();
-
-			listingStandard.Label("RimTalk_Caravan_Settings_Header".Translate());
-			listingStandard.GapLine();
-
-			listingStandard.CheckboxLabeled(
-				"RimTalk_ToddlersExpansion_EnableCaravanToddlerGeneration".Translate(),
-				ref settings.EnableCaravanToddlerGeneration,
-				"RimTalk_ToddlersExpansion_EnableCaravanToddlerGeneration_Tooltip".Translate());
-			listingStandard.Gap();
-
-			if (settings.EnableCaravanToddlerGeneration)
-			{
-				listingStandard.Label("RimTalk_ToddlersExpansion_MaxToddlersPerGroup".Translate(settings.MaxToddlersPerGroup));
-				settings.MaxToddlersPerGroup = (int)listingStandard.Slider(settings.MaxToddlersPerGroup, 0, 5);
-				listingStandard.Gap();
-
-				listingStandard.Label("RimTalk_ToddlersExpansion_MaxChildrenPerGroup".Translate(settings.MaxChildrenPerGroup));
-				settings.MaxChildrenPerGroup = (int)listingStandard.Slider(settings.MaxChildrenPerGroup, 0, 5);
-				listingStandard.Gap();
-
-				listingStandard.Label("RimTalk_ToddlersExpansion_ToddlerGenerationChance".Translate(settings.ToddlerGenerationChance.ToStringPercent()));
-				settings.ToddlerGenerationChance = listingStandard.Slider(settings.ToddlerGenerationChance, 0f, 1f);
-				listingStandard.Gap();
-
-				listingStandard.Label("RimTalk_ToddlersExpansion_ChildGenerationChance".Translate(settings.ChildGenerationChance.ToStringPercent()));
-				settings.ChildGenerationChance = listingStandard.Slider(settings.ChildGenerationChance, 0f, 1f);
-				listingStandard.Gap();
-
-				listingStandard.Label("RimTalk_ToddlersExpansion_MinBatchCount".Translate(settings.MinBatchCount));
-				settings.MinBatchCount = (int)listingStandard.Slider(settings.MinBatchCount, 1, 5);
-				listingStandard.Gap();
-
-				listingStandard.Label("RimTalk_ToddlersExpansion_MaxBatchCount".Translate(settings.MaxBatchCount));
-				settings.MaxBatchCount = (int)listingStandard.Slider(settings.MaxBatchCount, 1, 5);
-				listingStandard.Gap();
-
-				if (settings.MinBatchCount > settings.MaxBatchCount)
-				{
-					settings.MinBatchCount = settings.MaxBatchCount;
-				}
-
-				listingStandard.Label("RimTalk_ToddlersExpansion_ExtraBatchChance".Translate(settings.ExtraBatchChance.ToStringPercent()));
-				settings.ExtraBatchChance = listingStandard.Slider(settings.ExtraBatchChance, 0f, 1f);
-				listingStandard.Gap();
-			}
-
-			listingStandard.End();
 			Widgets.EndScrollView();
 		}
 
@@ -238,7 +149,7 @@ namespace RimTalk_ToddlersExpansion.Core
 
 		private void DrawAnimationSettingsPage(Rect inRect)
 		{
-			float contentHeight = 980f;
+			float contentHeight = 1100f;
 			Rect viewRect = new Rect(0f, 0f, inRect.width - 20f, contentHeight);
 
 			Widgets.BeginScrollView(inRect, ref animationScrollPosition, viewRect);
@@ -292,15 +203,229 @@ namespace RimTalk_ToddlersExpansion.Core
 			Widgets.EndScrollView();
 		}
 
+		private static void DrawPerformanceSettingsSection(Listing_Standard listingStandard)
+		{
+			listingStandard.Label("RimTalk_ToddlersExpansion_Performance_Settings_Header".Translate());
+			listingStandard.GapLine();
+			listingStandard.Label("RimTalk_ToddlersExpansion_Performance_Settings_Desc".Translate());
+			listingStandard.Gap();
+
+			listingStandard.CheckboxLabeled(
+				"RimTalk_ToddlersExpansion_Performance_MuteSpamLogs".Translate(),
+				ref ToddlersExpansionSettings.MuteSpamDebugLogs,
+				"RimTalk_ToddlersExpansion_Performance_MuteSpamLogs_Tooltip".Translate());
+			listingStandard.Gap();
+
+			listingStandard.CheckboxLabeled(
+				"RimTalk_ToddlersExpansion_Performance_MuteAllLogs".Translate(),
+				ref ToddlersExpansionSettings.MuteAllLogs,
+				"RimTalk_ToddlersExpansion_Performance_MuteAllLogs_Tooltip".Translate());
+			listingStandard.Gap();
+
+			listingStandard.Label(
+				"RimTalk_ToddlersExpansion_Performance_MutualPlayCheckInterval".Translate(
+					ToddlersExpansionSettings.GetMutualPlayPartnerCheckIntervalTicks()));
+			ToddlersExpansionSettings.MutualPlayPartnerCheckIntervalTicks =
+				(int)listingStandard.Slider(ToddlersExpansionSettings.MutualPlayPartnerCheckIntervalTicks, 1, 600);
+			listingStandard.Gap();
+
+			listingStandard.Label(
+				"RimTalk_ToddlersExpansion_Performance_MainLoopCheckInterval".Translate(
+					ToddlersExpansionSettings.GetToddlerMainLoopCheckIntervalTicks()));
+			ToddlersExpansionSettings.ToddlerMainLoopCheckIntervalTicks =
+				(int)listingStandard.Slider(ToddlersExpansionSettings.ToddlerMainLoopCheckIntervalTicks, 1, 120);
+			listingStandard.Gap();
+
+			listingStandard.Label(
+				"RimTalk_ToddlersExpansion_Performance_BabyCarryCheckInterval".Translate(
+					ToddlersExpansionSettings.GetBabyCarryPickupCheckIntervalTicks()));
+			ToddlersExpansionSettings.BabyCarryCheckIntervalTicks =
+				(int)listingStandard.Slider(ToddlersExpansionSettings.BabyCarryCheckIntervalTicks, 30, 600);
+			listingStandard.Gap();
+		}
+
 		private void DrawTalkSettingsPage(Rect inRect)
 		{
-			float contentHeight = 320f;
+			float contentHeight = 900f;
 			Rect viewRect = new Rect(0f, 0f, inRect.width - 20f, contentHeight);
 
 			Widgets.BeginScrollView(inRect, ref talkScrollPosition, viewRect);
 			Listing_Standard listingStandard = new Listing_Standard();
 			listingStandard.Begin(viewRect);
 
+			DrawLlmSettingsSection(listingStandard, Settings);
+			listingStandard.GapLine();
+
+			DrawTalkRequestSettingsSection(listingStandard);
+
+			listingStandard.End();
+			Widgets.EndScrollView();
+		}
+
+		private static void DrawCaravanGenerationSettingsSection(Listing_Standard listingStandard, ToddlersExpansionSettings settings)
+		{
+			listingStandard.Label("RimTalk_Caravan_Settings_Header".Translate());
+			listingStandard.GapLine();
+
+			listingStandard.CheckboxLabeled(
+				"RimTalk_ToddlersExpansion_EnableCaravanToddlerGeneration".Translate(),
+				ref settings.EnableCaravanToddlerGeneration,
+				"RimTalk_ToddlersExpansion_EnableCaravanToddlerGeneration_Tooltip".Translate());
+			listingStandard.Gap();
+
+			if (!settings.EnableCaravanToddlerGeneration)
+			{
+				listingStandard.GapLine();
+				return;
+			}
+
+			listingStandard.Label("RimTalk_ToddlersExpansion_MaxToddlersPerGroup".Translate(settings.MaxToddlersPerGroup));
+			settings.MaxToddlersPerGroup = (int)listingStandard.Slider(settings.MaxToddlersPerGroup, 0, 5);
+			listingStandard.Gap();
+
+			listingStandard.Label("RimTalk_ToddlersExpansion_MaxChildrenPerGroup".Translate(settings.MaxChildrenPerGroup));
+			settings.MaxChildrenPerGroup = (int)listingStandard.Slider(settings.MaxChildrenPerGroup, 0, 5);
+			listingStandard.Gap();
+
+			listingStandard.Label("RimTalk_ToddlersExpansion_ToddlerGenerationChance".Translate(settings.ToddlerGenerationChance.ToStringPercent()));
+			settings.ToddlerGenerationChance = listingStandard.Slider(settings.ToddlerGenerationChance, 0f, 1f);
+			listingStandard.Gap();
+
+			listingStandard.Label("RimTalk_ToddlersExpansion_ChildGenerationChance".Translate(settings.ChildGenerationChance.ToStringPercent()));
+			settings.ChildGenerationChance = listingStandard.Slider(settings.ChildGenerationChance, 0f, 1f);
+			listingStandard.Gap();
+
+			listingStandard.Label("RimTalk_ToddlersExpansion_MinBatchCount".Translate(settings.MinBatchCount));
+			settings.MinBatchCount = (int)listingStandard.Slider(settings.MinBatchCount, 1, 5);
+			listingStandard.Gap();
+
+			listingStandard.Label("RimTalk_ToddlersExpansion_MaxBatchCount".Translate(settings.MaxBatchCount));
+			settings.MaxBatchCount = (int)listingStandard.Slider(settings.MaxBatchCount, 1, 5);
+			listingStandard.Gap();
+
+			if (settings.MinBatchCount > settings.MaxBatchCount)
+			{
+				settings.MinBatchCount = settings.MaxBatchCount;
+			}
+
+			listingStandard.Label("RimTalk_ToddlersExpansion_ExtraBatchChance".Translate(settings.ExtraBatchChance.ToStringPercent()));
+			settings.ExtraBatchChance = listingStandard.Slider(settings.ExtraBatchChance, 0f, 1f);
+			listingStandard.Gap();
+			listingStandard.GapLine();
+		}
+
+		private static void DrawBoredomSettingsSection(Listing_Standard listingStandard)
+		{
+			listingStandard.Label("RimTalk_Boredom_Settings_Header".Translate());
+			listingStandard.GapLine();
+			listingStandard.CheckboxLabeled("RimTalk_Boredom_Enable".Translate(), ref ToddlersExpansionSettings.enableBoredomSystem, "RimTalk_Boredom_Enable_Tooltip".Translate());
+			listingStandard.Gap();
+
+			if (ToddlersExpansionSettings.enableBoredomSystem)
+			{
+				listingStandard.Label("RimTalk_Boredom_IncreasePerActivity".Translate(ToddlersExpansionSettings.boredomIncreasePerActivity.ToStringPercent()));
+				ToddlersExpansionSettings.boredomIncreasePerActivity = listingStandard.Slider(ToddlersExpansionSettings.boredomIncreasePerActivity, 0.01f, 0.2f);
+				listingStandard.Gap();
+
+				listingStandard.Label("RimTalk_Boredom_MaxCap".Translate(ToddlersExpansionSettings.boredomMaxCap.ToStringPercent()));
+				ToddlersExpansionSettings.boredomMaxCap = listingStandard.Slider(ToddlersExpansionSettings.boredomMaxCap, 0.5f, 1f);
+				listingStandard.Gap();
+
+				listingStandard.Label("RimTalk_Boredom_DailyRecoveryRate".Translate(ToddlersExpansionSettings.boredomDailyRecoveryRate.ToStringPercent()));
+				ToddlersExpansionSettings.boredomDailyRecoveryRate = listingStandard.Slider(ToddlersExpansionSettings.boredomDailyRecoveryRate, 0.05f, 0.5f);
+				listingStandard.Gap();
+
+				listingStandard.CheckboxLabeled("RimTalk_Boredom_AutoDetection".Translate(), ref ToddlersExpansionSettings.enableAutoDetection, "RimTalk_Boredom_AutoDetection_Tooltip".Translate());
+				listingStandard.Gap();
+			}
+
+			listingStandard.GapLine();
+		}
+
+		private static void DrawLanguageSettingsSection(Listing_Standard listingStandard)
+		{
+			listingStandard.Label("RimTalk_Language_Settings_Header".Translate());
+			listingStandard.GapLine();
+			listingStandard.Label("RimTalk_Language_LearningFactor".Translate(ToddlersExpansionSettings.learningFactor_Talking.ToString("0.##")));
+			ToddlersExpansionSettings.learningFactor_Talking = listingStandard.Slider(ToddlersExpansionSettings.learningFactor_Talking, 0.1f, 3f);
+			listingStandard.Gap();
+			listingStandard.GapLine();
+		}
+
+		private static void DrawFeedingSettingsSection(Listing_Standard listingStandard)
+		{
+			listingStandard.Label("RimTalk_ToddlersExpansion_Feeding_Settings_Header".Translate());
+			listingStandard.GapLine();
+			listingStandard.Label("RimTalk_ToddlersExpansion_ToddlerEatingSpeed".Translate(ToddlersExpansionSettings.toddlerEatingSpeedFactor.ToString("0.##")));
+			ToddlersExpansionSettings.toddlerEatingSpeedFactor = listingStandard.Slider(ToddlersExpansionSettings.toddlerEatingSpeedFactor, 0.1f, 10f);
+			listingStandard.Gap();
+			listingStandard.GapLine();
+		}
+
+		private static void DrawBabyAppearanceSettingsSection(Listing_Standard listingStandard)
+		{
+			listingStandard.Label("RimTalk_ToddlersExpansion_BabyAppearance_Settings_Header".Translate());
+			listingStandard.GapLine();
+			listingStandard.CheckboxLabeled(
+				"RimTalk_ToddlersExpansion_EnableUnder3HairRendering".Translate(),
+				ref ToddlersExpansionSettings.enableUnder3HairRendering,
+				"RimTalk_ToddlersExpansion_EnableUnder3HairRendering_Tooltip".Translate());
+			listingStandard.Gap();
+			listingStandard.GapLine();
+		}
+
+		private static void DrawBabyCrySettingsSection(Listing_Standard listingStandard)
+		{
+			listingStandard.Label("RimTalk_ToddlersExpansion_BabyCry_Settings_Header".Translate());
+			listingStandard.GapLine();
+
+			bool muteSocialImpact = ToddlersExpansionSettings.babyCryAffectsMoodOnly;
+			listingStandard.CheckboxLabeled(
+				"RimTalk_ToddlersExpansion_BabyCry_NoSocial".Translate(),
+				ref muteSocialImpact,
+				"RimTalk_ToddlersExpansion_BabyCry_NoSocial_Tooltip".Translate());
+			ToddlersExpansionSettings.babyCryAffectsMoodOnly = muteSocialImpact;
+			listingStandard.Gap();
+
+			bool muteMoodImpact = !ToddlersExpansionSettings.babyCryAffectsMood;
+			listingStandard.CheckboxLabeled(
+				"RimTalk_ToddlersExpansion_BabyCry_NoMood".Translate(),
+				ref muteMoodImpact,
+				"RimTalk_ToddlersExpansion_BabyCry_NoMood_Tooltip".Translate());
+			ToddlersExpansionSettings.babyCryAffectsMood = !muteMoodImpact;
+			listingStandard.Gap();
+		}
+
+		private static void DrawBehaviorSettingsSection(Listing_Standard listingStandard)
+		{
+			listingStandard.Label("RimTalk_ToddlersExpansion_Behavior_Settings_Header".Translate());
+			listingStandard.GapLine();
+			listingStandard.CheckboxLabeled(
+				"RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior".Translate(),
+				ref ToddlersExpansionSettings.enableHostileToddlerColonistBehavior,
+				"RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior_Tooltip".Translate());
+			listingStandard.Gap();
+			listingStandard.GapLine();
+		}
+
+		private static void DrawInteractionSettingsSection(Listing_Standard listingStandard)
+		{
+			listingStandard.Label("RimTalk_ToddlersExpansion_Interaction_Settings_Header".Translate());
+			listingStandard.GapLine();
+			listingStandard.CheckboxLabeled(
+				"RimTalk_ToddlersExpansion_Interaction_EnablePrisonerCarry".Translate(),
+				ref ToddlersExpansionSettings.EnablePrisonerBabyCarryInteractions,
+				"RimTalk_ToddlersExpansion_Interaction_EnablePrisonerCarry_Tooltip".Translate());
+			listingStandard.Gap();
+			listingStandard.CheckboxLabeled(
+				"RimTalk_ToddlersExpansion_Interaction_EnableChildCarry".Translate(),
+				ref ToddlersExpansionSettings.EnableChildBabyCarryInteractions,
+				"RimTalk_ToddlersExpansion_Interaction_EnableChildCarry_Tooltip".Translate());
+			listingStandard.Gap();
+		}
+
+		private static void DrawTalkRequestSettingsSection(Listing_Standard listingStandard)
+		{
 			listingStandard.Label("RimTalk_ToddlersExpansion_Talk_Settings_Header".Translate());
 			listingStandard.GapLine();
 			listingStandard.Label("RimTalk_ToddlersExpansion_Talk_Settings_Desc".Translate());
@@ -325,9 +450,6 @@ namespace RimTalk_ToddlersExpansion.Core
 				"RimTalk_ToddlersExpansion_Talk_EnableStruggle".Translate(),
 				ref ToddlersExpansionSettings.EnableRimTalkStruggleEventTalkRequests,
 				"RimTalk_ToddlersExpansion_Talk_EnableStruggle_Tooltip".Translate());
-
-			listingStandard.End();
-			Widgets.EndScrollView();
 		}
 
 		private static bool HasAnyOutingPoolEnabled(ToddlersExpansionSettings settings)

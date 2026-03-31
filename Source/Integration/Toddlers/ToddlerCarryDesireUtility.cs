@@ -10,8 +10,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 {
 	public static class ToddlerCarryDesireUtility
 	{
-		private const int DesireCheckInterval = 600;
-		private const int PickupScanInterval = 120;
 		private const float DesireChancePerCheck = 0.01f;
 		private const float MinFoodPercent = 0.5f;
 		private const float SearchRadius = 2.5f;
@@ -138,7 +136,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					continue;
 				}
 
-				if (!pawn.IsHashIntervalTick(DesireCheckInterval))
+				int desireCheckInterval = ToddlersExpansionSettings.GetBabyCarryDesireCheckIntervalTicks();
+				if (!pawn.IsHashIntervalTick(desireCheckInterval))
 				{
 					continue;
 				}
@@ -181,7 +180,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					continue;
 				}
 
-				if (pawn.IsHashIntervalTick(PickupScanInterval))
+				int pickupScanInterval = ToddlersExpansionSettings.GetBabyCarryPickupCheckIntervalTicks();
+				if (pawn.IsHashIntervalTick(pickupScanInterval))
 				{
 					TryAssignCaregiverForPawn(pawn);
 				}
@@ -417,7 +417,9 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			Pawn best = null;
 			float bestDist = float.MaxValue;
 
-			var pawns = toddler.Map.mapPawns?.FreeColonistsSpawned;
+			var pawns = ToddlersExpansionSettings.EnablePrisonerBabyCarryInteractions
+				? toddler.Map.mapPawns?.FreeColonistsAndPrisonersSpawned
+				: toddler.Map.mapPawns?.FreeColonistsSpawned;
 			if (pawns == null)
 			{
 				return null;

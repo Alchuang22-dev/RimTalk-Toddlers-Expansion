@@ -316,7 +316,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 		internal static void DebugLog(string message)
 		{
-			if (!Prefs.DevMode)
+			if (!ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
 			{
 				return;
 			}
