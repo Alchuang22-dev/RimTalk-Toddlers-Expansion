@@ -117,11 +117,13 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			}
 
 			// 标记为已处理
+			TryNormalizeVisitorTradeSilver(pawn);
 			_processedPawnIds.Add(pawn.thingIDNumber);
 
 			// 检查并补充婴儿食品
 			TryEnsureBabyFood(pawn);
 			ToddlerPawnGenerationUtility.EnsureToddlerFallbackApparel(pawn, pawn.MapHeld?.Tile ?? -1);
+			TryApplyNewEnvironmentMood(pawn);
 
 			// 延后处理背负关系（需要等其他成员也spawn完成）
 			// 使用延迟调用，在下一帧处理背负关系
@@ -132,6 +134,17 @@ namespace RimTalk_ToddlersExpansion.Harmony
 		/// 尝试安排背负关系分配
 		/// 使用延迟机制，确保同一Lord的所有成员都已spawn
 		/// </summary>
+		private static void TryNormalizeVisitorTradeSilver(Pawn pawn)
+		{
+			Lord lord = pawn?.GetLord();
+			if (lord?.ownedPawns == null || lord.ownedPawns.Count == 0)
+			{
+				return;
+			}
+
+			TravelingPawnInjectionUtility.NormalizeSilverToAdultInventories(lord.ownedPawns);
+		}
+
 		private static void TryScheduleCarryingAssignment(Pawn toddler)
 		{
 			if (toddler == null || _processedCarryingIds.Contains(toddler.thingIDNumber))
@@ -426,6 +439,46 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			}
 
 			return count;
+		}
+
+		private static void TryApplyNewEnvironmentMood(Pawn pawn)
+		{
+			if (!ShouldReceiveNewEnvironmentMood(pawn))
+			{
+				return;
+			}
+
+			MemoryThoughtHandler memories = pawn.needs?.mood?.thoughts?.memories;
+			ThoughtDef thought = ToddlersExpansionThoughtDefOf.RimTalk_VisitorBabyNewEnvironment;
+			if (memories == null || thought == null)
+			{
+				return;
+			}
+
+			memories.RemoveMemoriesOfDef(thought);
+			memories.TryGainMemory(thought);
+		}
+
+		private static bool ShouldReceiveNewEnvironmentMood(Pawn pawn)
+		{
+			if (!IsVisitorToddler(pawn))
+			{
+				return false;
+			}
+
+			DevelopmentalStage stage = pawn.DevelopmentalStage;
+			return stage == DevelopmentalStage.Newborn || ToddlersCompatUtility.IsToddler(pawn);
+		}
+
+		private static bool IsVisitorBaby(Pawn pawn)
+		{
+			if (!IsVisitorToddler(pawn))
+			{
+				return false;
+			}
+
+			DevelopmentalStage stage = pawn.DevelopmentalStage;
+			return stage == DevelopmentalStage.Newborn || stage == DevelopmentalStage.Baby;
 		}
 
 		private static void CleanupCacheIfNeeded()

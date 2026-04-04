@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+	<!--
+		BabySleepingSpot 默认不显示睡眠者身体时，婴儿躺下会只剩下床位贴图，
+		看起来像身体纹理消失。这里强制开启显示，与婴儿床表现保持一致。
+	-->
+	<Operation Class="PatchOperationConditional">
+		<xpath>/Defs/ThingDef[defName="BabySleepingSpot"]/building/bed_showSleeperBody</xpath>
+		<match Class="PatchOperationReplace">
+			<xpath>/Defs/ThingDef[defName="BabySleepingSpot"]/building/bed_showSleeperBody</xpath>
+			<value>
+				<bed_showSleeperBody>true</bed_showSleeperBody>
+			</value>
+		</match>
+		<nomatch Class="PatchOperationAdd">
+			<xpath>/Defs/ThingDef[defName="BabySleepingSpot"]/building</xpath>
+			<value>
+				<bed_showSleeperBody>true</bed_showSleeperBody>
+			</value>
+		</nomatch>
+	</Operation>
+</Patch>

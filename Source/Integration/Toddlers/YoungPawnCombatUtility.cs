@@ -8,17 +8,12 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 	{
 		public static bool IsNonViolentYoungPawn(Pawn pawn)
 		{
-			if (!ToddlersExpansionSettings.enableHostileToddlerColonistBehavior)
-			{
-				return false;
-			}
-
 			if (pawn == null || !ToddlersCompatUtility.IsToddlerOrBaby(pawn))
 			{
 				return false;
 			}
 
-			return IsViolenceDisabled(pawn);
+			return ShouldTreatHostileYoungAsColonist(pawn) || IsViolenceDisabled(pawn);
 		}
 
 		public static bool IsViolenceDisabled(Pawn pawn)
@@ -34,6 +29,31 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			return pawn.WorkTagIsDisabled(WorkTags.Violent);
+		}
+
+		public static bool ShouldTreatHostileYoungAsColonist(Pawn pawn)
+		{
+			if (!ToddlersExpansionSettings.enableHostileToddlerColonistBehavior)
+			{
+				return false;
+			}
+
+			if (pawn == null || !ToddlersCompatUtility.IsToddlerOrBaby(pawn))
+			{
+				return false;
+			}
+
+			if (pawn.IsPrisoner)
+			{
+				return false;
+			}
+
+			if (pawn.Map == null || !pawn.Map.IsPlayerHome)
+			{
+				return false;
+			}
+
+			return pawn.Faction != null && pawn.Faction.HostileTo(Faction.OfPlayer);
 		}
 	}
 }

@@ -15,8 +15,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private const float NeglectStartSeverity = 0.0f;
 		private const float NeglectFullSeverity = 0.8f;
 
-		private const float SelfPlayBaseChancePerTick = 1.2e-6f;
-		private const float MutualPlayBaseChancePerTick = 2.0e-6f;
+		private const float SelfPlayBaseChancePerTick = 8.0e-6f;
+		private const float MutualPlayBaseChancePerTick = 1.2e-5f;
 
 		private const float SelfPlayCrawlingFactor = 0.6f;
 		private const float SelfPlayWalkingFactor = 1.0f;
@@ -28,6 +28,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		private const int SelfPlayDamageMin = 2;
 		private const int SelfPlayDamageMax = 5;
+		private const int ScuffleFallbackDamageMin = 1;
+		private const int ScuffleFallbackDamageMax = 3;
 
 		private static readonly System.Collections.Generic.Dictionary<int, int> LastEventTickByPawn =
 			new System.Collections.Generic.Dictionary<int, int>(64);
@@ -85,8 +87,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
-			TriggerFight(toddler, partner);
-			return true;
+			return TriggerFight(toddler, partner);
 		}
 
 		private static bool ShouldCheck(Pawn toddler, int delta)
@@ -279,24 +280,53 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			Find.LetterStack.ReceiveLetter(label, text, LetterDefOf.NegativeEvent, toddler);
 		}
 
-		private static void TriggerFight(Pawn toddler, Pawn partner)
+		private static bool TriggerFight(Pawn toddler, Pawn partner)
 		{
+			if (toddler == null || partner == null)
+			{
+				return false;
+			}
+
 			if (toddler.WorkTagIsDisabled(WorkTags.Violent))
 			{
-				return;
+				InterruptMutualPlay(toddler, partner);
+				ApplyScuffleFallbackInjury(toddler);
+				SendScuffleLetter(toddler, partner);
+				return true;
 			}
 
 			int now = Find.TickManager.TicksGame;
 			LastEventTickByPawn[toddler.thingIDNumber] = now;
 
-			toddler.jobs?.EndCurrentJob(JobCondition.InterruptForced);
-			partner.jobs?.EndCurrentJob(JobCondition.InterruptForced);
+			InterruptMutualPlay(toddler, partner);
 
 			Job job = JobMaker.MakeJob(JobDefOf.AttackMelee, partner);
 			job.expiryInterval = FightDurationTicks;
 			job.checkOverrideOnExpire = true;
 			toddler.jobs?.StartJob(job, JobCondition.InterruptForced);
 
+			SendScuffleLetter(toddler, partner);
+			return true;
+		}
+
+		private static void InterruptMutualPlay(Pawn toddler, Pawn partner)
+		{
+			int now = Find.TickManager.TicksGame;
+			LastEventTickByPawn[toddler.thingIDNumber] = now;
+
+			toddler.jobs?.EndCurrentJob(JobCondition.InterruptForced);
+			partner.jobs?.EndCurrentJob(JobCondition.InterruptForced);
+		}
+
+		private static void ApplyScuffleFallbackInjury(Pawn toddler)
+		{
+			float amount = Rand.RangeInclusive(ScuffleFallbackDamageMin, ScuffleFallbackDamageMax);
+			DamageInfo damage = new DamageInfo(DamageDefOf.Blunt, amount, instigator: null);
+			toddler.TakeDamage(damage);
+		}
+
+		private static void SendScuffleLetter(Pawn toddler, Pawn partner)
+		{
 			string label = "RimTalk_ToddlersExpansion_ToddlerScuffleLabel".Translate();
 			string text = "RimTalk_ToddlersExpansion_ToddlerScuffleText".Translate(toddler.Named("TODDLER"), partner.Named("PARTNER"));
 			Find.LetterStack.ReceiveLetter(label, text, LetterDefOf.NegativeEvent, toddler);

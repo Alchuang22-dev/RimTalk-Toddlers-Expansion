@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThoughtDef>
+    <defName>RimTalk_VisitorBabyNewEnvironment</defName>
+    <thoughtClass>Thought_Memory</thoughtClass>
+    <durationDays>2</durationDays>
+    <stackLimit>1</stackLimit>
+    <validWhileDespawned>true</validWhileDespawned>
+    <developmentalStageFilter>
+      <li>Baby</li>
+      <li>Child</li>
+    </developmentalStageFilter>
+    <stages>
+      <li>
+        <label>new surroundings</label>
+        <description>Everything here is new and interesting. The fresh surroundings make me feel safe and content.</description>
+        <baseMoodEffect>30</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+</Defs>

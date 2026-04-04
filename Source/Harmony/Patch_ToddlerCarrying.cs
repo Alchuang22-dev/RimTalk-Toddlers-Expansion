@@ -152,13 +152,27 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			Rot4 carrierRotation = carrier.Rotation;
 
 			// 计算基础偏移
-			Vector3 offset = ToddlerCarryingUtility.GetCarryOffset(carrierRotation);
+			Vector3 offset = GetScaledCarryOffset(carrier, carrierRotation);
 
 			// 添加动画偏移（飞高高、逗弄、转圈时的额外位移）
 			Vector3 animOffset = CarriedPlayAnimationTracker.GetAnimationOffset(carrier, __instance);
 
 			// 设置幼儿的渲染位置（基础偏移 + 动画偏移）
 			__result = carrierPos + offset + animOffset;
+		}
+
+		private static Vector3 GetScaledCarryOffset(Pawn carrier, Rot4 carrierRotation)
+		{
+			Vector3 baseOffset = ToddlerCarryingUtility.GetCarryOffset(carrierRotation);
+			if (carrier == null)
+			{
+				return baseOffset;
+			}
+
+			// RimWorld does not expose a stable rendered-height value, so body size is the closest proxy.
+			// Only scale the vertical/front-back components to keep hand placement centered while lowering shorter carriers.
+			float heightScale = Mathf.Clamp(Mathf.Max(0.1f, carrier.BodySize), 0.55f, 1.35f);
+			return new Vector3(baseOffset.x, baseOffset.y * heightScale, baseOffset.z * heightScale);
 		}
 
 		/// <summary>

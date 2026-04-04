@@ -90,6 +90,7 @@ namespace RimTalk_ToddlersExpansion.Core
 		public static ThoughtDef RimTalk_ToddlerPlayedInWater;
 		public static ThoughtDef RimTalk_AttendedChildrenOuting;
 		public static ThoughtDef RimTalk_OrganizedChildrenOuting;
+		public static ThoughtDef RimTalk_VisitorBabyNewEnvironment;
 
 		static ToddlersExpansionThoughtDefOf()
 		{

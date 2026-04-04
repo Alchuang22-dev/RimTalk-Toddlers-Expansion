@@ -174,6 +174,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 				}
 
+				NormalizeSilverToAdultInventories(pawnList);
 				pawns = pawnList;
 				if (Prefs.DevMode)
 				{
@@ -181,6 +182,46 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					string faction = parms?.faction?.Name ?? "NoFaction";
 					Log.Message($"[RimTalk_ToddlersExpansion] Added {added} toddler/child pawns to {kind} group ({faction}) based on settings. Adults: {adultCount}, MaxToddlersByAdults: {maxToddlersByAdults}");
 				}
+			}
+		}
+
+		public static void NormalizeSilverToAdultInventories(IEnumerable<Pawn> pawns)
+		{
+			if (pawns == null)
+			{
+				return;
+			}
+
+			List<Pawn> pawnList = pawns as List<Pawn> ?? pawns.ToList();
+			if (pawnList.Count == 0)
+			{
+				return;
+			}
+
+			List<Pawn> adultCarriers = new List<Pawn>();
+			for (int i = 0; i < pawnList.Count; i++)
+			{
+				Pawn pawn = pawnList[i];
+				if (IsAdultInventoryCarrier(pawn))
+				{
+					adultCarriers.Add(pawn);
+				}
+			}
+
+			if (adultCarriers.Count == 0)
+			{
+				return;
+			}
+
+			for (int i = 0; i < pawnList.Count; i++)
+			{
+				Pawn pawn = pawnList[i];
+				if (!ShouldMoveSilverOffPawn(pawn))
+				{
+					continue;
+				}
+
+				MoveSilverToAdults(pawn, adultCarriers);
 			}
 		}
 
@@ -331,6 +372,122 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private static bool IsChildPawn(Pawn pawn)
 		{
 			return pawn != null && pawn.DevelopmentalStage == DevelopmentalStage.Child;
+		}
+
+		private static bool IsAdultInventoryCarrier(Pawn pawn)
+		{
+			if (pawn?.RaceProps?.Humanlike != true || pawn.inventory?.innerContainer == null)
+			{
+				return false;
+			}
+
+			if (pawn.DevelopmentalStage.Newborn() || pawn.DevelopmentalStage.Baby())
+			{
+				return false;
+			}
+
+			if (ToddlersCompatUtility.IsToddler(pawn) || pawn.DevelopmentalStage == DevelopmentalStage.Child)
+			{
+				return false;
+			}
+
+			return true;
+		}
+
+		private static bool ShouldMoveSilverOffPawn(Pawn pawn)
+		{
+			if (pawn?.RaceProps?.Humanlike != true || pawn.inventory?.innerContainer == null)
+			{
+				return false;
+			}
+
+			return pawn.DevelopmentalStage.Newborn()
+				|| pawn.DevelopmentalStage.Baby()
+				|| ToddlersCompatUtility.IsToddler(pawn)
+				|| pawn.DevelopmentalStage == DevelopmentalStage.Child;
+		}
+
+		private static void MoveSilverToAdults(Pawn sourcePawn, List<Pawn> adultCarriers)
+		{
+			if (sourcePawn?.inventory?.innerContainer == null || adultCarriers == null || adultCarriers.Count == 0)
+			{
+				return;
+			}
+
+			for (int i = sourcePawn.inventory.innerContainer.Count - 1; i >= 0; i--)
+			{
+				Thing thing = sourcePawn.inventory.innerContainer[i];
+				if (thing?.def != ThingDefOf.Silver)
+				{
+					continue;
+				}
+
+				Pawn targetPawn = SelectBestSilverCarrier(adultCarriers);
+				if (targetPawn?.inventory?.innerContainer == null)
+				{
+					return;
+				}
+
+				if (!sourcePawn.inventory.innerContainer.Remove(thing))
+				{
+					continue;
+				}
+
+				if (!targetPawn.inventory.innerContainer.TryAdd(thing))
+				{
+					sourcePawn.inventory.innerContainer.TryAdd(thing);
+					continue;
+				}
+
+				if (Prefs.DevMode)
+				{
+					Log.Message($"[RimTalk_ToddlersExpansion] Moved {thing.stackCount} silver from {sourcePawn.LabelShort} to {targetPawn.LabelShort}.");
+				}
+			}
+		}
+
+		private static Pawn SelectBestSilverCarrier(List<Pawn> adultCarriers)
+		{
+			Pawn bestPawn = null;
+			int bestSilverCount = int.MaxValue;
+
+			for (int i = 0; i < adultCarriers.Count; i++)
+			{
+				Pawn candidate = adultCarriers[i];
+				if (candidate?.inventory?.innerContainer == null)
+				{
+					continue;
+				}
+
+				int silverCount = CountSilver(candidate);
+				if (silverCount < bestSilverCount)
+				{
+					bestSilverCount = silverCount;
+					bestPawn = candidate;
+				}
+			}
+
+			return bestPawn;
+		}
+
+		private static int CountSilver(Pawn pawn)
+		{
+			if (pawn?.inventory?.innerContainer == null)
+			{
+				return 0;
+			}
+
+			int count = 0;
+			for (int i = 0; i < pawn.inventory.innerContainer.Count; i++)
+			{
+				Thing thing = pawn.inventory.innerContainer[i];
+				if (thing?.def == ThingDefOf.Silver)
+				{
+					count += thing.stackCount;
+				}
+			}
+
+			return count;
 		}
 
 		#endregion

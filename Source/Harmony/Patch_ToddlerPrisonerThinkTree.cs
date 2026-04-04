@@ -60,38 +60,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 		private static bool ShouldTreatHostileYoungAsColonist(Pawn pawn)
 		{
-			if (pawn == null || !ToddlersCompatUtility.IsToddlerOrBaby(pawn))
-			{
-				return false;
-			}
-
-			if (!ToddlersExpansionSettings.enableHostileToddlerColonistBehavior)
-			{
-				return false;
-			}
-
-			if (pawn.IsPrisoner)
-			{
-				return false;
-			}
-
-			if (pawn.Map == null || !pawn.Map.IsPlayerHome)
-			{
-				return false;
-			}
-
-			if (pawn.Faction == null || !pawn.Faction.HostileTo(Faction.OfPlayer))
-			{
-				return false;
-			}
-
-			// Avoid overriding raid/escort/other lord-driven behavior.
-			if (pawn.GetLord() != null)
-			{
-				return false;
-			}
-
-			return true;
+			return YoungPawnCombatUtility.ShouldTreatHostileYoungAsColonist(pawn);
 		}
 	}
 }

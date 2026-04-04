@@ -57,6 +57,7 @@ namespace RimTalk_ToddlersExpansion.Core
 			missingDefs += CheckDef<ThoughtDef>("RimTalk_ToddlerSleepWithOthers");
 			missingDefs += CheckDef<ThoughtDef>("RimTalk_ToddlerSleepInNursery");
 			missingDefs += CheckDef<ThoughtDef>("RimTalk_ToddlerSleepWithParents");
+			missingDefs += CheckDef<ThoughtDef>("RimTalk_VisitorBabyNewEnvironment");
 			missingDefs += CheckDef<ThoughtDef>("RimTalk_ManyRatkinBabies");
 			missingDefs += CheckDef<ThoughtDef>("RimTalk_LiveInRatkinNursery");
 			missingDefs += CheckDef<ThoughtDef>("RimTalk_ManyKiiroBabies");

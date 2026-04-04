@@ -67,6 +67,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 	
 				// 自动分配背负关系：让成年人背着幼儿
 				List<Pawn> pawnList = __instance.ownedPawns.ToList();
+				TravelingPawnInjectionUtility.NormalizeSilverToAdultInventories(pawnList);
 				ToddlerCarryingUtility.AutoAssignCarryingForGroup(pawnList);
 	
 				// 为所有的 toddlers 设置监护人（非幼儿或未被背的）

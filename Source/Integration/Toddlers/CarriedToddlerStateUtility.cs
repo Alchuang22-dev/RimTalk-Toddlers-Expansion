@@ -11,7 +11,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 {
 	public static class CarriedToddlerStateUtility
 	{
-		private const float HungryThreshold = 0.10f;
+		private const float HungryThreshold = 0.20f;
 		private const float RestThreshold = 0.10f;
 		private const float HygieneThreshold = 0.10f;
 		private const float ObserveChance = 0.65f;
