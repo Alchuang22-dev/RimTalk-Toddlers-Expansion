@@ -131,6 +131,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return;
 			}
 
+			if (toddler.IsBurning())
+			{
+				Patch_ToddlerCarriedDamageFactor.TryExtinguishCarriedPawn(toddler);
+			}
+
 			if (toddler.Position != carrier.Position)
 			{
 				try

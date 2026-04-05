@@ -11,8 +11,12 @@
     <maxSeverity>1.0</maxSeverity>
     <stages>
       <li>
+        <statFactors>
+          <Flammability>0</Flammability>
+        </statFactors>
         <becomeVisible>true</becomeVisible>
         <statOffsets>
+          <ArmorRating_Heat>2.0</ArmorRating_Heat>
           <ComfyTemperatureMin>-80</ComfyTemperatureMin>
           <ComfyTemperatureMax>80</ComfyTemperatureMax>
           <VacuumResistance MayRequire="Ludeon.RimWorld.Odyssey">1.0</VacuumResistance>

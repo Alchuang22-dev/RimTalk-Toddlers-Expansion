@@ -1,6 +1,7 @@
 using System.Reflection;
 using HarmonyLib;
 using RimTalk_ToddlersExpansion.Integration.Toddlers;
+using RimWorld;
 using Verse;
 
 namespace RimTalk_ToddlersExpansion.Harmony
@@ -46,6 +47,13 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				return true;
 			}
 
+			if (IsFireRelatedDamage(dinfo))
+			{
+				TryExtinguishCarriedPawn(__instance);
+				absorbed = true;
+				return false;
+			}
+
 			if (dinfo.Amount <= 0f)
 			{
 				absorbed = true;
@@ -63,6 +71,39 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			{
 				// Fall back to vanilla damage flow if redirect fails unexpectedly.
 				return true;
+			}
+		}
+
+		private static bool IsFireRelatedDamage(DamageInfo dinfo)
+		{
+			DamageDef def = dinfo.Def;
+			if (def == null)
+			{
+				return false;
+			}
+
+			if (def == DamageDefOf.Flame || def == DamageDefOf.Extinguish)
+			{
+				return true;
+			}
+
+			string defName = def.defName;
+			if (string.IsNullOrEmpty(defName))
+			{
+				return false;
+			}
+
+			return defName.IndexOf("flame", System.StringComparison.OrdinalIgnoreCase) >= 0
+				|| defName.IndexOf("burn", System.StringComparison.OrdinalIgnoreCase) >= 0
+				|| defName.Equals("Fire", System.StringComparison.OrdinalIgnoreCase);
+		}
+
+		internal static void TryExtinguishCarriedPawn(Pawn pawn)
+		{
+			Thing fireAttachment = pawn?.GetAttachment(ThingDefOf.Fire);
+			if (fireAttachment != null && !fireAttachment.Destroyed)
+			{
+				fireAttachment.Destroy(DestroyMode.Vanish);
 			}
 		}
 	}

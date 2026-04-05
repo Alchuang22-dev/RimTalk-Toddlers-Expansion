@@ -19,10 +19,16 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private const float DefaultExtraBatchChance = 0.3f;
 		private const int HardMaxGeneratedPerGroup = 12;
 		private const int HardMaxExtraRolls = 12;
+		private const int GenerationAttemptsPerRequestedPawn = 4;
 		private const float WalkingToddlerSeverity = 0.6f;
 		private const float MinPositiveAgeYears = 0.01f;
 		private const float FallbackToddlerMinAgeYears = 1f;
 		private const float FallbackToddlerMaxAgeYears = 3f;
+		private const float MinParentAssignmentScore = 0.1f;
+		private const float MinMaleParentAgeAtBirth = 14f;
+		private const float MinFemaleParentAgeAtBirth = 16f;
+		private const float PreferredMaleParentAgeAtBirth = 30f;
+		private const float PreferredFemaleParentAgeAtBirth = 27f;
 
 		private static bool _walkHediffChecked;
 		private static HediffDef _learningToWalkDef;
@@ -98,8 +104,17 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			float toddlerChance = existingToddlerCount > 0 ? 0.7f : ToddlersExpansionMod.Settings.ToddlerGenerationChance;
 
 			Pawn samplePawn = GetSamplePawn(pawnList);
-			int addCount = RollStackedCount();
-			if (addCount <= 0)
+			int requestedAddCount = RollStackedCount();
+			if (requestedAddCount <= 0)
+			{
+				return;
+			}
+
+			int remainingToddlerCapacity = Mathf.Max(0, ToddlersExpansionMod.Settings.MaxToddlersPerGroup - existingToddlerCount);
+			int remainingChildCapacity = Mathf.Max(0, ToddlersExpansionMod.Settings.MaxChildrenPerGroup - existingChildCount);
+			int maxPossibleAdditions = remainingToddlerCapacity + remainingChildCapacity;
+			int targetAddCount = Mathf.Min(requestedAddCount, maxPossibleAdditions);
+			if (targetAddCount <= 0)
 			{
 				return;
 			}
@@ -108,11 +123,17 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			bool addedToddler = false;
 			int toddlerToAdd = 0;
 			int childToAdd = 0;
+			List<Pawn> generatedToddlers = new List<Pawn>();
+			int generationAttempts = 0;
+			int maxGenerationAttempts = Math.Max(targetAddCount, targetAddCount * GenerationAttemptsPerRequestedPawn);
 
 			// 根据概率决定生成幼儿还是儿童
-			for (int i = 0; i < addCount && (existingToddlerCount + toddlerToAdd < ToddlersExpansionMod.Settings.MaxToddlersPerGroup ||
-											existingChildCount + childToAdd < ToddlersExpansionMod.Settings.MaxChildrenPerGroup); i++)
+			while (added < targetAddCount
+				&& generationAttempts < maxGenerationAttempts
+				&& (existingToddlerCount + toddlerToAdd < ToddlersExpansionMod.Settings.MaxToddlersPerGroup
+					|| existingChildCount + childToAdd < ToddlersExpansionMod.Settings.MaxChildrenPerGroup))
 			{
+				generationAttempts++;
 				bool wantChild;
 				
 				// 检查是否还能生成幼儿（受成人数量限制）
@@ -153,6 +174,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					{
 						addedToddler = true;
 						toddlerToAdd++;
+						generatedToddlers.Add(pawn);
 					}
 					else if (wantChild)
 					{
@@ -167,6 +189,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				{
 					EnsureWalkDef();
 					EnsureWalkingToddlers(pawnList);
+					AssignTraderToddlerParents(parms, pawnList, generatedToddlers);
 					
 					// 注意：不再在这里分配背负关系
 					// 因为Hospitality等mod可能会在之后重新处理pawns
@@ -180,7 +203,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				{
 					string kind = parms?.groupKind?.defName ?? "UnknownGroup";
 					string faction = parms?.faction?.Name ?? "NoFaction";
-					Log.Message($"[RimTalk_ToddlersExpansion] Added {added} toddler/child pawns to {kind} group ({faction}) based on settings. Adults: {adultCount}, MaxToddlersByAdults: {maxToddlersByAdults}");
+					Log.Message($"[RimTalk_ToddlersExpansion] Added {added} toddler/child pawns to {kind} group ({faction}) based on settings. Requested={requestedAddCount}, Target={targetAddCount}, Attempts={generationAttempts}, Adults={adultCount}, MaxToddlersByAdults={maxToddlersByAdults}");
 				}
 			}
 		}
@@ -738,6 +761,222 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					languageHediff.Severity = WalkingToddlerSeverity;
 				}
 			}
+		}
+
+		private static void AssignTraderToddlerParents(PawnGroupMakerParms parms, List<Pawn> allPawns, List<Pawn> generatedToddlers)
+		{
+			if (!ShouldAssignTraderParents(parms))
+			{
+				if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
+				{
+					string kind = parms?.groupKind?.defName ?? "null";
+					Log.Message($"[RimTalk_ToddlersExpansion][TraderParentDebug] Skip parent assignment: groupKind={kind}.");
+				}
+
+				return;
+			}
+
+			if (allPawns == null || generatedToddlers == null || generatedToddlers.Count == 0)
+			{
+				if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
+				{
+					int allCount = allPawns?.Count ?? 0;
+					int toddlerCount = generatedToddlers?.Count ?? 0;
+					Log.Message($"[RimTalk_ToddlersExpansion][TraderParentDebug] Skip parent assignment: allPawns={allCount}, generatedToddlers={toddlerCount}.");
+				}
+
+				return;
+			}
+
+			List<Pawn> adultCandidates = new List<Pawn>();
+			for (int i = 0; i < allPawns.Count; i++)
+			{
+				Pawn pawn = allPawns[i];
+				if (IsEligibleGeneratedToddlerParent(pawn, parms?.faction))
+				{
+					adultCandidates.Add(pawn);
+				}
+			}
+
+			if (adultCandidates.Count == 0)
+			{
+				if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
+				{
+					Log.Message($"[RimTalk_ToddlersExpansion][TraderParentDebug] No adult candidates for {generatedToddlers.Count} generated trader toddlers in faction {parms?.faction?.Name ?? "null"}.");
+				}
+
+				return;
+			}
+
+			if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
+			{
+				Log.Message($"[RimTalk_ToddlersExpansion][TraderParentDebug] Trying to assign parents for {generatedToddlers.Count} trader toddlers with {adultCandidates.Count} adult candidates.");
+			}
+
+			for (int i = 0; i < generatedToddlers.Count; i++)
+			{
+				AssignSingleTraderParent(generatedToddlers[i], adultCandidates);
+			}
+		}
+
+		private static bool ShouldAssignTraderParents(PawnGroupMakerParms parms)
+		{
+			return parms?.groupKind == PawnGroupKindDefOf.Trader;
+		}
+
+		private static bool IsEligibleGeneratedToddlerParent(Pawn pawn, Faction faction)
+		{
+			if (pawn?.RaceProps?.Humanlike != true || pawn.relations == null || pawn.ageTracker == null)
+			{
+				return false;
+			}
+
+			if (pawn.Faction != faction)
+			{
+				return false;
+			}
+
+			if (pawn.DevelopmentalStage.Newborn() || pawn.DevelopmentalStage.Baby())
+			{
+				return false;
+			}
+
+			if (ToddlersCompatUtility.IsToddler(pawn) || pawn.DevelopmentalStage == DevelopmentalStage.Child)
+			{
+				return false;
+			}
+
+			return true;
+		}
+
+		private static void AssignSingleTraderParent(Pawn toddler, List<Pawn> adultCandidates)
+		{
+			if (toddler?.relations == null || adultCandidates == null || adultCandidates.Count == 0)
+			{
+				if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
+				{
+					Log.Message($"[RimTalk_ToddlersExpansion][TraderParentDebug] Cannot assign parent: toddler={toddler?.LabelShort ?? "null"}, adultCandidates={adultCandidates?.Count ?? 0}.");
+				}
+
+				return;
+			}
+
+			Pawn bestParent = null;
+			float bestScore = 0f;
+
+			for (int i = 0; i < adultCandidates.Count; i++)
+			{
+				Pawn candidate = adultCandidates[i];
+				if (candidate == null || candidate == toddler)
+				{
+					continue;
+				}
+
+				float score = GetParentAssignmentScore(toddler, candidate);
+				if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
+				{
+					Log.Message($"[RimTalk_ToddlersExpansion][TraderParentDebug] Candidate {candidate.LabelShort} ({candidate.gender}) for toddler {toddler.LabelShort}: score={score:F3}, age={candidate.ageTracker?.AgeBiologicalYearsFloat ?? -1f:F1}.");
+				}
+
+				if (score > bestScore)
+				{
+					bestScore = score;
+					bestParent = candidate;
+				}
+			}
+
+			if (bestParent == null || bestScore < MinParentAssignmentScore)
+			{
+				if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
+				{
+					Log.Message($"[RimTalk_ToddlersExpansion][TraderParentDebug] No valid parent assigned for toddler {toddler.LabelShort}. bestParent={bestParent?.LabelShort ?? "null"}, bestScore={bestScore:F3}, threshold={MinParentAssignmentScore:F3}.");
+				}
+
+				return;
+			}
+
+			toddler.relations.AddDirectRelation(PawnRelationDefOf.Parent, bestParent);
+
+			if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs || Prefs.DevMode)
+			{
+				Log.Message($"[RimTalk_ToddlersExpansion][TraderParentDebug] Assigned generated trader toddler {toddler.LabelShort} parent {bestParent.LabelShort} ({bestParent.gender}, score={bestScore:F3}).");
+			}
+		}
+
+		private static float GetParentAssignmentScore(Pawn toddler, Pawn candidate)
+		{
+			if (toddler == null || candidate == null)
+			{
+				return 0f;
+			}
+
+			if (candidate.relations == null || candidate.ageTracker == null || toddler.ageTracker == null)
+			{
+				return 0f;
+			}
+
+			if (candidate.gender != Gender.Female && candidate.gender != Gender.Male)
+			{
+				return 0f;
+			}
+
+			if (!IsParentRaceCompatible(toddler, candidate))
+			{
+				return 0f;
+			}
+
+			if (HasConflictingParentRelation(toddler, candidate))
+			{
+				return 0f;
+			}
+
+			float toddlerAge = toddler.ageTracker.AgeBiologicalYearsFloat;
+			float candidateAge = candidate.ageTracker.AgeBiologicalYearsFloat;
+			float ageAtBirth = candidateAge - toddlerAge;
+
+			float minParentAge = candidate.gender == Gender.Female ? MinFemaleParentAgeAtBirth : MinMaleParentAgeAtBirth;
+			float preferredParentAge = candidate.gender == Gender.Female ? PreferredFemaleParentAgeAtBirth : PreferredMaleParentAgeAtBirth;
+			if (ageAtBirth < minParentAge)
+			{
+				return 0f;
+			}
+
+			float ageScore = Mathf.Clamp01(1f - Mathf.Abs(ageAtBirth - preferredParentAge) / 18f);
+			float childCountPenalty = 1f / (1f + candidate.relations.ChildrenCount * 0.35f);
+			float genderScore = candidate.gender == Gender.Female ? 1f : 0.92f;
+			return Mathf.Max(0.05f, ageScore * childCountPenalty * genderScore);
+		}
+
+		private static bool IsParentRaceCompatible(Pawn toddler, Pawn candidate)
+		{
+			if (toddler?.def == null || candidate?.def == null)
+			{
+				return false;
+			}
+
+			return toddler.def == candidate.def;
+		}
+
+		private static bool HasConflictingParentRelation(Pawn toddler, Pawn candidate)
+		{
+			if (toddler == null || candidate == null)
+			{
+				return true;
+			}
+
+			if (candidate.gender == Gender.Female)
+			{
+				Pawn existingMother = toddler.GetMother();
+				return existingMother != null && existingMother != candidate;
+			}
+
+			if (candidate.gender == Gender.Male)
+			{
+				Pawn existingFather = toddler.GetFather();
+				return existingFather != null && existingFather != candidate;
+			}
+
+			return true;
 		}
 
 		#endregion
