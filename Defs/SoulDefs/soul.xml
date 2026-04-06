@@ -31,6 +31,10 @@
       <li><ageGroup>Toddler</ageGroup><textKey>RimTalk_ToddlersExpansion_Soul_Toddler_06</textKey><chattiness>0.63</chattiness><weight>0.85</weight></li>
       <li><ageGroup>Toddler</ageGroup><textKey>RimTalk_ToddlersExpansion_Soul_Toddler_07</textKey><chattiness>0.68</chattiness><weight>1.0</weight></li>
       <li><ageGroup>Toddler</ageGroup><textKey>RimTalk_ToddlersExpansion_Soul_Toddler_08</textKey><chattiness>0.50</chattiness><weight>0.8</weight></li>
+      <li><ageGroup>Toddler</ageGroup><textKey>RimTalk_ToddlersExpansion_Soul_Toddler_09</textKey><chattiness>0.58</chattiness><weight>0.9</weight></li>
+      <li><ageGroup>Toddler</ageGroup><textKey>RimTalk_ToddlersExpansion_Soul_Toddler_10</textKey><chattiness>0.35</chattiness><weight>0.85</weight></li>
+      <li><ageGroup>Toddler</ageGroup><textKey>RimTalk_ToddlersExpansion_Soul_Toddler_11</textKey><chattiness>0.54</chattiness><weight>0.8</weight></li>
+      <li><ageGroup>Toddler</ageGroup><textKey>RimTalk_ToddlersExpansion_Soul_Toddler_12</textKey><chattiness>0.40</chattiness><weight>0.85</weight></li>
 
       <li><ageGroup>Child</ageGroup><textKey>RimTalk_ToddlersExpansion_Soul_Child_01</textKey><chattiness>0.74</chattiness><weight>1.0</weight></li>
       <li><ageGroup>Child</ageGroup><textKey>RimTalk_ToddlersExpansion_Soul_Child_02</textKey><chattiness>0.62</chattiness><weight>1.0</weight></li>
