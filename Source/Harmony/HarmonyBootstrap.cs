@@ -20,6 +20,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			Patch_ModLogFiltering.Init(harmony);
 			Patch_RimTalkContextBuilder.Init(harmony);
 			Patch_RimTalkTalkService.Init(harmony);
+			Patch_RimTalkPersona.Init(harmony);
 			Patch_ToddlersWashBaby.Init(harmony);
 			Patch_ToddlersWashBabyBathRules.Init(harmony);
 			Patch_ToddlersLearningSync.Init(harmony);
