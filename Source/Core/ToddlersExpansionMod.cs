@@ -22,6 +22,7 @@ namespace RimTalk_ToddlersExpansion.Core
 			HarmonyBootstrap.Init();
 			LongEventHandler.ExecuteWhenFinished(() =>
 			{
+				Integration.Toddlers.ToddlerAgeSettingsUtility.ApplyConfiguredToddlerAge(refreshExistingPawns: false);
 				ToddlersExpansionDiagnostics.Run();
 				RimTalkCompatUtility.TryRegisterToddlerVariables();
 				Integration.Toddlers.ToddlerCarryingGameComponent.RegisterGameComponent();
@@ -77,7 +78,7 @@ namespace RimTalk_ToddlersExpansion.Core
 		private void DrawGeneralSettingsPage(Rect inRect, ToddlersExpansionSettings settings)
 		{
 			const float columnGap = 24f;
-			float contentHeight = 1700f;
+			float contentHeight = 1780f;
 			Rect viewRect = new Rect(0f, 0f, inRect.width - 20f, contentHeight);
 			float columnWidth = (viewRect.width - columnGap) / 2f;
 			Rect leftColumnRect = new Rect(0f, 0f, columnWidth, contentHeight);
@@ -346,6 +347,20 @@ namespace RimTalk_ToddlersExpansion.Core
 		{
 			listingStandard.Label("RimTalk_Language_Settings_Header".Translate());
 			listingStandard.GapLine();
+			listingStandard.Label("RimTalk_ToddlersExpansion_NewbornToToddlerDays_Desc".Translate());
+			listingStandard.Gap();
+			int oldThresholdDays = ToddlersExpansionSettings.GetNewbornToToddlerDays();
+			listingStandard.Label(
+				"RimTalk_ToddlersExpansion_NewbornToToddlerDays".Translate(
+					oldThresholdDays,
+					ToddlersExpansionSettings.GetNewbornToToddlerYears().ToString("0.##")));
+			ToddlersExpansionSettings.newbornToToddlerDays =
+				(int)listingStandard.Slider(ToddlersExpansionSettings.GetNewbornToToddlerDays(), 1, 179);
+			if (ToddlersExpansionSettings.GetNewbornToToddlerDays() != oldThresholdDays)
+			{
+				Integration.Toddlers.ToddlerAgeSettingsUtility.ApplyConfiguredToddlerAge(refreshExistingPawns: true);
+			}
+			listingStandard.Gap();
 			listingStandard.Label("RimTalk_Language_LearningFactor".Translate(ToddlersExpansionSettings.learningFactor_Talking.ToString("0.##")));
 			ToddlersExpansionSettings.learningFactor_Talking = listingStandard.Slider(ToddlersExpansionSettings.learningFactor_Talking, 0.1f, 3f);
 			listingStandard.Gap();

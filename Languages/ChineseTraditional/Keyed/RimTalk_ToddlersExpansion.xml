@@ -95,6 +95,8 @@
 
   <!-- 語言學習設置 -->
   <RimTalk_Language_Settings_Header>語言學習</RimTalk_Language_Settings_Header>
+  <RimTalk_ToddlersExpansion_NewbornToToddlerDays_Desc>控制嬰兒在出生後多少天進入幼兒階段。學習自理等系統使用的是幼兒生命週期進度百分比，所以相關占比會自動保持對齊。</RimTalk_ToddlersExpansion_NewbornToToddlerDays_Desc>
+  <RimTalk_ToddlersExpansion_NewbornToToddlerDays>嬰兒變為幼兒年齡：{0} 天（{1} 歲）</RimTalk_ToddlersExpansion_NewbornToToddlerDays>
   <RimTalk_Language_LearningFactor>學習速度: {0}</RimTalk_Language_LearningFactor>
 
   <RimTalk_ToddlersExpansion_Feeding_Settings_Header>進食設置</RimTalk_ToddlersExpansion_Feeding_Settings_Header>

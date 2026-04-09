@@ -116,6 +116,8 @@
 
   <!-- Language Learning Settings -->
   <RimTalk_Language_Settings_Header>Language Learning</RimTalk_Language_Settings_Header>
+  <RimTalk_ToddlersExpansion_NewbornToToddlerDays_Desc>Controls when a newborn/baby switches into the toddler life stage. Because toddler self-care and similar systems use toddler growth percentage, their progress thresholds stay aligned automatically.</RimTalk_ToddlersExpansion_NewbornToToddlerDays_Desc>
+  <RimTalk_ToddlersExpansion_NewbornToToddlerDays>Newborn to toddler age: {0} days ({1} years)</RimTalk_ToddlersExpansion_NewbornToToddlerDays>
   <RimTalk_Language_LearningFactor>Learning speed: {0}</RimTalk_Language_LearningFactor>
 
   <!-- Feeding Settings -->

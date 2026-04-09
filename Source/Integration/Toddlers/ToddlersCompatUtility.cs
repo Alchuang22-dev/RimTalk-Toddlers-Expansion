@@ -77,13 +77,13 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		{
 			if (pawn == null)
 			{
-				return DefaultMinToddlerAge;
+				return ToddlerAgeSettingsUtility.GetConfiguredToddlerMinAgeYears();
 			}
 
 			EnsureInitialized();
 			if (!_isActive || _toddlerMinAge == null)
 			{
-				return DefaultMinToddlerAge;
+				return ToddlerAgeSettingsUtility.GetConfiguredToddlerMinAgeYears();
 			}
 
 			try
@@ -93,7 +93,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			catch (Exception ex)
 			{
 				WarnOnce("ToddlerMinAge", ex);
-				return DefaultMinToddlerAge;
+				return ToddlerAgeSettingsUtility.GetConfiguredToddlerMinAgeYears();
 			}
 		}
 

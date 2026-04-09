@@ -22,7 +22,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private const int GenerationAttemptsPerRequestedPawn = 4;
 		private const float WalkingToddlerSeverity = 0.6f;
 		private const float MinPositiveAgeYears = 0.01f;
-		private const float FallbackToddlerMinAgeYears = 1f;
 		private const float FallbackToddlerMaxAgeYears = 3f;
 		private const float MinParentAssignmentScore = 0.1f;
 		private const float MinMaleParentAgeAtBirth = 14f;
@@ -553,10 +552,10 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				if (Prefs.DevMode)
 				{
 					string raceName = raceDef?.defName ?? samplePawn?.def?.defName ?? "UnknownRace";
-					Log.Warning($"[RimTalk_ToddlersExpansion] Invalid toddler age range ({minToddler:F2}-{maxToddler:F2}) for {raceName}. Falling back to {FallbackToddlerMinAgeYears:F2}-{FallbackToddlerMaxAgeYears:F2}.");
+					Log.Warning($"[RimTalk_ToddlersExpansion] Invalid toddler age range ({minToddler:F2}-{maxToddler:F2}) for {raceName}. Falling back to {ToddlerAgeSettingsUtility.GetConfiguredToddlerMinAgeYears():F2}-{FallbackToddlerMaxAgeYears:F2}.");
 				}
 
-				minToddler = FallbackToddlerMinAgeYears;
+				minToddler = ToddlerAgeSettingsUtility.GetConfiguredToddlerMinAgeYears();
 				maxToddler = FallbackToddlerMaxAgeYears;
 			}
 

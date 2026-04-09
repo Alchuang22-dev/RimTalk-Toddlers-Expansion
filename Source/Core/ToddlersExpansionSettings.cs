@@ -28,6 +28,7 @@ namespace RimTalk_ToddlersExpansion.Core
 
 		// Language learning settings
 		public static float learningFactor_Talking = 0.8f;
+		public static int newbornToToddlerDays = 60;
 
 		// Toddler eating speed settings
 		public static float toddlerEatingSpeedFactor = 1f;
@@ -125,6 +126,16 @@ namespace RimTalk_ToddlersExpansion.Core
 			return GetBabyCarryPickupCheckIntervalTicks() * 5;
 		}
 
+		public static int GetNewbornToToddlerDays()
+		{
+			return Math.Max(1, Math.Min(newbornToToddlerDays, 179));
+		}
+
+		public static float GetNewbornToToddlerYears()
+		{
+			return GetNewbornToToddlerDays() / 60f;
+		}
+
 		private static int ClampInterval(int value, int min, int max)
 		{
 			return Math.Max(min, Math.Min(max, value));
@@ -154,6 +165,7 @@ namespace RimTalk_ToddlersExpansion.Core
 			Scribe_Values.Look(ref enableAutoDetection, "enableAutoDetection", true);
 
 			Scribe_Values.Look(ref learningFactor_Talking, "learningFactor_Talking", 0.8f);
+			Scribe_Values.Look(ref newbornToToddlerDays, "newbornToToddlerDays", 60);
 			Scribe_Values.Look(ref toddlerEatingSpeedFactor, "toddlerEatingSpeedFactor", 1f);
 
 			Scribe_Values.Look(ref enableHostileToddlerColonistBehavior, "enableHostileToddlerColonistBehavior", true);

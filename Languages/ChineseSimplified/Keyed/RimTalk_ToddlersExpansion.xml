@@ -96,6 +96,8 @@
   <RimTalk_Caravan_Settings_Header>商队/过路者设置</RimTalk_Caravan_Settings_Header>
 
   <RimTalk_Language_Settings_Header>语言学习</RimTalk_Language_Settings_Header>
+  <RimTalk_ToddlersExpansion_NewbornToToddlerDays_Desc>控制婴儿在出生后多少天进入幼儿阶段。学习自理等系统使用的是幼儿生命周期进度百分比，所以相关占比会自动保持对齐。</RimTalk_ToddlersExpansion_NewbornToToddlerDays_Desc>
+  <RimTalk_ToddlersExpansion_NewbornToToddlerDays>婴儿变为幼儿年龄：{0} 天（{1} 岁）</RimTalk_ToddlersExpansion_NewbornToToddlerDays>
   <RimTalk_Language_LearningFactor>学习速度: {0}</RimTalk_Language_LearningFactor>
 
   <RimTalk_ToddlersExpansion_Feeding_Settings_Header>进食设置</RimTalk_ToddlersExpansion_Feeding_Settings_Header>
