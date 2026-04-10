@@ -459,6 +459,50 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			memories.TryGainMemory(thought);
 		}
 
+		public static void NotifyPawnFactionChanged(Pawn pawn)
+		{
+			if (pawn?.needs?.mood?.thoughts?.memories == null)
+			{
+				return;
+			}
+
+			ThoughtDef thought = ToddlersExpansionThoughtDefOf.RimTalk_VisitorBabyNewEnvironment;
+			if (thought == null)
+			{
+				return;
+			}
+
+			if (ShouldReceiveNewEnvironmentMood(pawn))
+			{
+				return;
+			}
+
+			pawn.needs.mood.thoughts.memories.RemoveMemoriesOfDef(thought);
+		}
+
+		public static void CleanupInvalidNewEnvironmentMoodOnMaps()
+		{
+			if (Find.Maps == null || Find.Maps.Count == 0)
+			{
+				return;
+			}
+
+			for (int i = 0; i < Find.Maps.Count; i++)
+			{
+				Map map = Find.Maps[i];
+				IReadOnlyList<Pawn> pawns = map?.mapPawns?.AllPawnsSpawned;
+				if (pawns == null)
+				{
+					continue;
+				}
+
+				for (int j = 0; j < pawns.Count; j++)
+				{
+					NotifyPawnFactionChanged(pawns[j]);
+				}
+			}
+		}
+
 		private static bool ShouldReceiveNewEnvironmentMood(Pawn pawn)
 		{
 			if (!IsVisitorToddler(pawn))

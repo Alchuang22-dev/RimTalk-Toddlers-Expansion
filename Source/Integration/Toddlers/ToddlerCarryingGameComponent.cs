@@ -43,6 +43,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			if (currentTick % CleanupInterval == 0)
 			{
 				ToddlerCarryingTracker.CleanupInvalidEntries();
+				Patch_VisitorToddlerBabyFood.CleanupInvalidNewEnvironmentMoodOnMaps();
 			}
 
 			if (currentTick % CarriedJobInterval == 0)

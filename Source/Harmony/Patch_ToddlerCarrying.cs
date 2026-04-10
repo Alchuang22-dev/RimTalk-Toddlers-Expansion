@@ -310,6 +310,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 			ToddlerCarryDesireUtility.NotifyPawnFactionChanged(__instance);
 			ToddlerSelfBathGameComponent.NotifyPawnFactionChanged(__instance);
+			Patch_VisitorToddlerBabyFood.NotifyPawnFactionChanged(__instance);
 			DropInvalidCarryRelations(__instance);
 		}
 
