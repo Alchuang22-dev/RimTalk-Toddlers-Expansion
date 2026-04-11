@@ -27,9 +27,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private const float MutualPlayWalkingFactor = 1.3f;
 
 		private const int SelfPlayDamageMin = 2;
-		private const int SelfPlayDamageMax = 5;
 		private const int ScuffleFallbackDamageMin = 1;
-		private const int ScuffleFallbackDamageMax = 3;
 
 		private static readonly System.Collections.Generic.Dictionary<int, int> LastEventTickByPawn =
 			new System.Collections.Generic.Dictionary<int, int>(64);
@@ -40,6 +38,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		public static bool TryTriggerSelfPlayMishap(Pawn toddler, int delta)
 		{
+			if (!Core.ToddlersExpansionSettings.enableToddlerTumble)
+			{
+				return false;
+			}
+
 			if (!ShouldCheck(toddler, delta))
 			{
 				return false;
@@ -52,7 +55,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			float stageFactor = GetSelfPlayStageFactor(toddler);
-			float chance = GetEffectiveCheckChance(SelfPlayBaseChancePerTick, stageFactor, neglect, delta);
+			float baseChance = SelfPlayBaseChancePerTick * Core.ToddlersExpansionSettings.toddlerTumbleChanceFactor;
+			float chance = GetEffectiveCheckChance(baseChance, stageFactor, neglect, delta);
 			if (!Rand.Chance(chance))
 			{
 				return false;
@@ -64,6 +68,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		public static bool TryTriggerMutualPlayMishap(Pawn toddler, Pawn partner, int delta)
 		{
+			if (!Core.ToddlersExpansionSettings.enableToddlerScuffle)
+			{
+				return false;
+			}
+
 			if (!ShouldCheck(toddler, delta))
 			{
 				return false;
@@ -81,7 +90,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			float stageFactor = GetMutualPlayStageFactor(toddler);
-			float chance = GetEffectiveCheckChance(MutualPlayBaseChancePerTick, stageFactor, neglect, delta);
+			float baseChance = MutualPlayBaseChancePerTick * Core.ToddlersExpansionSettings.toddlerScuffleChanceFactor;
+			float chance = GetEffectiveCheckChance(baseChance, stageFactor, neglect, delta);
 			if (!Rand.Chance(chance))
 			{
 				return false;
@@ -271,7 +281,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			int now = Find.TickManager.TicksGame;
 			LastEventTickByPawn[toddler.thingIDNumber] = now;
 
-			float amount = Rand.RangeInclusive(SelfPlayDamageMin, SelfPlayDamageMax);
+			float amount = Rand.RangeInclusive(SelfPlayDamageMin, Mathf.Max(SelfPlayDamageMin, Core.ToddlersExpansionSettings.toddlerTumbleDamageMax));
 			DamageInfo damage = new DamageInfo(DamageDefOf.Blunt, amount, instigator: null);
 			toddler.TakeDamage(damage);
 
@@ -320,7 +330,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		private static void ApplyScuffleFallbackInjury(Pawn toddler)
 		{
-			float amount = Rand.RangeInclusive(ScuffleFallbackDamageMin, ScuffleFallbackDamageMax);
+			float amount = Rand.RangeInclusive(ScuffleFallbackDamageMin, Mathf.Max(ScuffleFallbackDamageMin, Core.ToddlersExpansionSettings.toddlerScuffleDamageMax));
 			DamageInfo damage = new DamageInfo(DamageDefOf.Blunt, amount, instigator: null);
 			toddler.TakeDamage(damage);
 		}

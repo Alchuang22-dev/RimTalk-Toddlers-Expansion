@@ -64,6 +64,14 @@ namespace RimTalk_ToddlersExpansion.Core
 		public bool EnableOutingPoolSand = true;
 		public bool EnableOutingPoolAncientRoad = true;
 
+		// Toddler mishap event settings
+		public static bool enableToddlerTumble = true;
+		public static float toddlerTumbleChanceFactor = 1f;
+		public static int toddlerTumbleDamageMax = 5;
+		public static bool enableToddlerScuffle = true;
+		public static float toddlerScuffleChanceFactor = 1f;
+		public static int toddlerScuffleDamageMax = 2;
+
 		// Play animation pool settings
 		public static bool EnableNewbornPlayAnimations = true;
 
@@ -179,6 +187,13 @@ namespace RimTalk_ToddlersExpansion.Core
 			Scribe_Values.Look(ref MutualPlayPartnerCheckIntervalTicks, "MutualPlayPartnerCheckIntervalTicks", 1);
 			Scribe_Values.Look(ref ToddlerMainLoopCheckIntervalTicks, "ToddlerMainLoopCheckIntervalTicks", 1);
 			Scribe_Values.Look(ref BabyCarryCheckIntervalTicks, "BabyCarryCheckIntervalTicks", 120);
+
+			Scribe_Values.Look(ref enableToddlerTumble, "enableToddlerTumble", true);
+			Scribe_Values.Look(ref toddlerTumbleChanceFactor, "toddlerTumbleChanceFactor", 1f);
+			Scribe_Values.Look(ref toddlerTumbleDamageMax, "toddlerTumbleDamageMax", 5);
+			Scribe_Values.Look(ref enableToddlerScuffle, "enableToddlerScuffle", true);
+			Scribe_Values.Look(ref toddlerScuffleChanceFactor, "toddlerScuffleChanceFactor", 1f);
+			Scribe_Values.Look(ref toddlerScuffleDamageMax, "toddlerScuffleDamageMax", 2);
 
 			Scribe_Values.Look(ref EnableOutingPoolVanillaEdgeRandom, "EnableOutingPoolVanillaEdgeRandom", true);
 			Scribe_Values.Look(ref EnableOutingPoolGrowingZone, "EnableOutingPoolGrowingZone", true);

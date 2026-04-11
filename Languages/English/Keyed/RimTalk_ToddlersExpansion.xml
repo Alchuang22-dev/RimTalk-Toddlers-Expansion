@@ -144,6 +144,17 @@
   <RimTalk_ToddlersExpansion_Interaction_EnableChildCarry>Children can trigger baby carry (Experimental)</RimTalk_ToddlersExpansion_Interaction_EnableChildCarry>
   <RimTalk_ToddlersExpansion_Interaction_EnableChildCarry_Tooltip>Allows child-stage pawns to count as valid carriers in baby/toddler carry interactions.</RimTalk_ToddlersExpansion_Interaction_EnableChildCarry_Tooltip>
 
+  <!-- Mishap Event Settings -->
+  <RimTalk_ToddlersExpansion_Mishap_Settings_Header>Toddler Mishap Events</RimTalk_ToddlersExpansion_Mishap_Settings_Header>
+  <RimTalk_ToddlersExpansion_Mishap_EnableTumble>Enable toddler tumble events</RimTalk_ToddlersExpansion_Mishap_EnableTumble>
+  <RimTalk_ToddlersExpansion_Mishap_EnableTumble_Tooltip>When enabled, toddlers may fall and get bruised while playing alone.</RimTalk_ToddlersExpansion_Mishap_EnableTumble_Tooltip>
+  <RimTalk_ToddlersExpansion_Mishap_TumbleChance>Tumble chance factor: {0}</RimTalk_ToddlersExpansion_Mishap_TumbleChance>
+  <RimTalk_ToddlersExpansion_Mishap_TumbleDamageMax>Tumble max damage: {0}</RimTalk_ToddlersExpansion_Mishap_TumbleDamageMax>
+  <RimTalk_ToddlersExpansion_Mishap_EnableScuffle>Enable toddler scuffle events</RimTalk_ToddlersExpansion_Mishap_EnableScuffle>
+  <RimTalk_ToddlersExpansion_Mishap_EnableScuffle_Tooltip>When enabled, toddlers may get into brief scuffles during mutual play.</RimTalk_ToddlersExpansion_Mishap_EnableScuffle_Tooltip>
+  <RimTalk_ToddlersExpansion_Mishap_ScuffleChance>Scuffle chance factor: {0}</RimTalk_ToddlersExpansion_Mishap_ScuffleChance>
+  <RimTalk_ToddlersExpansion_Mishap_ScuffleDamageMax>Scuffle max damage: {0}</RimTalk_ToddlersExpansion_Mishap_ScuffleDamageMax>
+
   <!-- Boredom Tooltip Display -->
   <RimTalk_Boredom_Header>Play boredom:</RimTalk_Boredom_Header>
   <RimTalk_Boredom_Label_Boring>boring</RimTalk_Boredom_Label_Boring>

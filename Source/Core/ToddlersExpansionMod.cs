@@ -78,7 +78,7 @@ namespace RimTalk_ToddlersExpansion.Core
 		private void DrawGeneralSettingsPage(Rect inRect, ToddlersExpansionSettings settings)
 		{
 			const float columnGap = 24f;
-			float contentHeight = 1780f;
+			float contentHeight = 2230f;
 			Rect viewRect = new Rect(0f, 0f, inRect.width - 20f, contentHeight);
 			float columnWidth = (viewRect.width - columnGap) / 2f;
 			Rect leftColumnRect = new Rect(0f, 0f, columnWidth, contentHeight);
@@ -100,6 +100,7 @@ namespace RimTalk_ToddlersExpansion.Core
 			DrawPerformanceSettingsSection(rightColumn);
 			DrawBehaviorSettingsSection(rightColumn);
 			DrawInteractionSettingsSection(rightColumn);
+			DrawMishapEventSettingsSection(rightColumn);
 			rightColumn.End();
 
 			Widgets.EndScrollView();
@@ -439,6 +440,56 @@ namespace RimTalk_ToddlersExpansion.Core
 			listingStandard.Gap();
 		}
 
+
+		private static void DrawMishapEventSettingsSection(Listing_Standard listingStandard)
+		{
+			listingStandard.Label("RimTalk_ToddlersExpansion_Mishap_Settings_Header".Translate());
+			listingStandard.GapLine();
+
+			listingStandard.CheckboxLabeled(
+				"RimTalk_ToddlersExpansion_Mishap_EnableTumble".Translate(),
+				ref ToddlersExpansionSettings.enableToddlerTumble,
+				"RimTalk_ToddlersExpansion_Mishap_EnableTumble_Tooltip".Translate());
+			listingStandard.Gap();
+
+			if (ToddlersExpansionSettings.enableToddlerTumble)
+			{
+				listingStandard.Label("RimTalk_ToddlersExpansion_Mishap_TumbleChance".Translate(
+					ToddlersExpansionSettings.toddlerTumbleChanceFactor.ToString("0.##")));
+				ToddlersExpansionSettings.toddlerTumbleChanceFactor =
+					listingStandard.Slider(ToddlersExpansionSettings.toddlerTumbleChanceFactor, 0f, 3f);
+				listingStandard.Gap();
+
+				listingStandard.Label("RimTalk_ToddlersExpansion_Mishap_TumbleDamageMax".Translate(
+					ToddlersExpansionSettings.toddlerTumbleDamageMax));
+				ToddlersExpansionSettings.toddlerTumbleDamageMax =
+					(int)listingStandard.Slider(ToddlersExpansionSettings.toddlerTumbleDamageMax, 1, 15);
+				listingStandard.Gap();
+			}
+
+			listingStandard.CheckboxLabeled(
+				"RimTalk_ToddlersExpansion_Mishap_EnableScuffle".Translate(),
+				ref ToddlersExpansionSettings.enableToddlerScuffle,
+				"RimTalk_ToddlersExpansion_Mishap_EnableScuffle_Tooltip".Translate());
+			listingStandard.Gap();
+
+			if (ToddlersExpansionSettings.enableToddlerScuffle)
+			{
+				listingStandard.Label("RimTalk_ToddlersExpansion_Mishap_ScuffleChance".Translate(
+					ToddlersExpansionSettings.toddlerScuffleChanceFactor.ToString("0.##")));
+				ToddlersExpansionSettings.toddlerScuffleChanceFactor =
+					listingStandard.Slider(ToddlersExpansionSettings.toddlerScuffleChanceFactor, 0f, 3f);
+				listingStandard.Gap();
+
+				listingStandard.Label("RimTalk_ToddlersExpansion_Mishap_ScuffleDamageMax".Translate(
+					ToddlersExpansionSettings.toddlerScuffleDamageMax));
+				ToddlersExpansionSettings.toddlerScuffleDamageMax =
+					(int)listingStandard.Slider(ToddlersExpansionSettings.toddlerScuffleDamageMax, 1, 15);
+				listingStandard.Gap();
+			}
+
+			listingStandard.GapLine();
+		}
 		private static void DrawTalkRequestSettingsSection(Listing_Standard listingStandard)
 		{
 			listingStandard.Label("RimTalk_ToddlersExpansion_Talk_Settings_Header".Translate());

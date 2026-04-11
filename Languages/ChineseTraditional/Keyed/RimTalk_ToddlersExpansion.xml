@@ -170,4 +170,15 @@
   <RimTalk_ToddlersExpansion_Performance_MutualPlayCheckInterval>mutual play 檢查間隔：{0} tick</RimTalk_ToddlersExpansion_Performance_MutualPlayCheckInterval>
   <RimTalk_ToddlersExpansion_Performance_MainLoopCheckInterval>主循環檢查間隔：{0} tick</RimTalk_ToddlersExpansion_Performance_MainLoopCheckInterval>
   <RimTalk_ToddlersExpansion_Performance_BabyCarryCheckInterval>baby carry 檢查間隔：{0} tick</RimTalk_ToddlersExpansion_Performance_BabyCarryCheckInterval>
+
+  <!-- 幼兒意外事件設置 -->
+  <RimTalk_ToddlersExpansion_Mishap_Settings_Header>幼兒意外事件</RimTalk_ToddlersExpansion_Mishap_Settings_Header>
+  <RimTalk_ToddlersExpansion_Mishap_EnableTumble>啟用幼兒摔跤事件</RimTalk_ToddlersExpansion_Mishap_EnableTumble>
+  <RimTalk_ToddlersExpansion_Mishap_EnableTumble_Tooltip>啟用後，幼兒獨自玩耍時可能會摔倒受傷。</RimTalk_ToddlersExpansion_Mishap_EnableTumble_Tooltip>
+  <RimTalk_ToddlersExpansion_Mishap_TumbleChance>摔跤概率倍率：{0}</RimTalk_ToddlersExpansion_Mishap_TumbleChance>
+  <RimTalk_ToddlersExpansion_Mishap_TumbleDamageMax>摔跤傷害上限：{0}</RimTalk_ToddlersExpansion_Mishap_TumbleDamageMax>
+  <RimTalk_ToddlersExpansion_Mishap_EnableScuffle>啟用幼兒打架事件</RimTalk_ToddlersExpansion_Mishap_EnableScuffle>
+  <RimTalk_ToddlersExpansion_Mishap_EnableScuffle_Tooltip>啟用後，幼兒一起玩耍時可能會打架受傷。</RimTalk_ToddlersExpansion_Mishap_EnableScuffle_Tooltip>
+  <RimTalk_ToddlersExpansion_Mishap_ScuffleChance>打架概率倍率：{0}</RimTalk_ToddlersExpansion_Mishap_ScuffleChance>
+  <RimTalk_ToddlersExpansion_Mishap_ScuffleDamageMax>打架傷害上限：{0}</RimTalk_ToddlersExpansion_Mishap_ScuffleDamageMax>
 </LanguageData>

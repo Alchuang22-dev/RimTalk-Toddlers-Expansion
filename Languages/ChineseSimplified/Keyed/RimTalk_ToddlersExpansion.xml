@@ -185,4 +185,15 @@
   <RimTalk_ToddlersExpansion_Interaction_EnablePrisonerCarry_Tooltip>允许囚犯在抱婴儿/幼儿互动中被视为合法抱持者。</RimTalk_ToddlersExpansion_Interaction_EnablePrisonerCarry_Tooltip>
   <RimTalk_ToddlersExpansion_Interaction_EnableChildCarry>儿童可以触发抱幼儿（实验）</RimTalk_ToddlersExpansion_Interaction_EnableChildCarry>
   <RimTalk_ToddlersExpansion_Interaction_EnableChildCarry_Tooltip>允许儿童阶段 pawn 在抱婴儿/幼儿互动中被视为合法抱持者。</RimTalk_ToddlersExpansion_Interaction_EnableChildCarry_Tooltip>
+
+  <!-- 幼儿意外事件设置 -->
+  <RimTalk_ToddlersExpansion_Mishap_Settings_Header>幼儿意外事件</RimTalk_ToddlersExpansion_Mishap_Settings_Header>
+  <RimTalk_ToddlersExpansion_Mishap_EnableTumble>启用幼儿摔跤事件</RimTalk_ToddlersExpansion_Mishap_EnableTumble>
+  <RimTalk_ToddlersExpansion_Mishap_EnableTumble_Tooltip>启用后，幼儿独自玩耍时可能会摔倒受伤。</RimTalk_ToddlersExpansion_Mishap_EnableTumble_Tooltip>
+  <RimTalk_ToddlersExpansion_Mishap_TumbleChance>摔跤概率倍率：{0}</RimTalk_ToddlersExpansion_Mishap_TumbleChance>
+  <RimTalk_ToddlersExpansion_Mishap_TumbleDamageMax>摔跤伤害上限：{0}</RimTalk_ToddlersExpansion_Mishap_TumbleDamageMax>
+  <RimTalk_ToddlersExpansion_Mishap_EnableScuffle>启用幼儿打架事件</RimTalk_ToddlersExpansion_Mishap_EnableScuffle>
+  <RimTalk_ToddlersExpansion_Mishap_EnableScuffle_Tooltip>启用后，幼儿一起玩耍时可能会打架受伤。</RimTalk_ToddlersExpansion_Mishap_EnableScuffle_Tooltip>
+  <RimTalk_ToddlersExpansion_Mishap_ScuffleChance>打架概率倍率：{0}</RimTalk_ToddlersExpansion_Mishap_ScuffleChance>
+  <RimTalk_ToddlersExpansion_Mishap_ScuffleDamageMax>打架伤害上限：{0}</RimTalk_ToddlersExpansion_Mishap_ScuffleDamageMax>
 </LanguageData>
