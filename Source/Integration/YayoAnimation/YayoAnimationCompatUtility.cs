@@ -75,6 +75,15 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 		private static FieldInfo _posOffsetField;
 		private static HediffDef _learningToWalkDef;
 
+			// Profile cache — rebuilt only when animation settings change
+			private static uint _profileSettingsHash;
+			private static List<SmallPawnPlayProfile> _cachedBabyProfilesNoRoll;
+			private static List<SmallPawnPlayProfile> _cachedBabyProfilesWithRoll;
+			private static List<SmallPawnPlayProfile> _cachedToddlerProfilesNoRoll;
+			private static List<SmallPawnPlayProfile> _cachedToddlerProfilesWithRoll;
+			private static readonly SmallPawnPlayProfile BabyRollProfileEntry =
+				new SmallPawnPlayProfile(SmallPawnPlayProfileKind.CustomBabyRoll, "BabyRoll");
+
 		public static void Initialize()
 		{
 			if (_initialized)
@@ -160,6 +169,9 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 
 		private static bool CheckAni_Prefix(Pawn pawn, Rot4 rot, object pdd)
 		{
+			// Fast exit: non-toddler/baby pawns never need play animation override
+			if (!ToddlersCompatUtility.IsToddlerOrBaby(pawn))
+				return true;
 			bool isSmallPlayJob = IsSmallPawnPlayJob(pawn);
 			bool isEngagedPlay = ToddlersCompatUtility.IsEngagedInToddlerPlay(pawn);
 			Pawn carrier = ToddlerCarryingUtility.GetCarrier(pawn);
@@ -758,30 +770,45 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 		{
 			List<SmallPawnPlayProfile> profiles = BuildEnabledPlayProfiles(pawn);
 			if (profiles.Count == 0)
-			{
 				return default;
-			}
 
 			if (pawn != null && ToddlersCompatUtility.IsToddler(pawn))
 			{
-				bool allowActiveSelfPlay = IsMobileToddlerSelfPlay(pawn);
-				List<SmallPawnPlayProfile> activeProfiles = allowActiveSelfPlay
-					? profiles
-					: FilterOutMobileOnlyProfiles(profiles);
+				bool allowMobile = IsMobileToddlerSelfPlay(pawn);
+				int seed = GetPlayProfileSeed(pawn) & int.MaxValue;
 
-				if (activeProfiles.Count == 0)
+				if (allowMobile)
+					return profiles[seed % profiles.Count];
+
+				// Count non-mobile profiles without allocating a filtered list
+				int eligibleCount = 0;
+				for (int i = 0; i < profiles.Count; i++)
 				{
-					activeProfiles = profiles;
+					if (!IsMobileOnlyProfile(profiles[i].Kind))
+						eligibleCount++;
 				}
 
-				int seed = GetPlayProfileSeed(pawn) & int.MaxValue;
-				return activeProfiles[seed % activeProfiles.Count];
+				if (eligibleCount == 0)
+					return profiles[seed % profiles.Count];
+
+				int targetIndex = seed % eligibleCount;
+				int current = 0;
+				for (int i = 0; i < profiles.Count; i++)
+				{
+					if (!IsMobileOnlyProfile(profiles[i].Kind))
+					{
+						if (current == targetIndex)
+							return profiles[i];
+						current++;
+					}
+				}
+
+				return default;
 			}
 
 			int babySeed = Gen.HashCombineInt(pawn?.thingIDNumber ?? 0, pawn?.CurJob?.loadID ?? 0);
 			return profiles[(babySeed & int.MaxValue) % profiles.Count];
 		}
-
 		private static int GetPlayProfileSeed(Pawn pawn)
 		{
 			if (TryGetMutualPlayPartner(pawn, out Pawn partner))
@@ -818,7 +845,30 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 
 		private static bool HasAnyEnabledPlayProfile(Pawn pawn)
 		{
-			return BuildEnabledPlayProfiles(pawn).Count > 0;
+			if (ToddlersExpansionSettings.EnableYayoPlayToys
+				|| ToddlersExpansionSettings.EnableYayoPlayHoopstone
+				|| ToddlersExpansionSettings.EnableYayoPlayDartsBoard
+				|| ToddlersExpansionSettings.EnableYayoGoldenCube
+				|| ToddlersExpansionSettings.EnableYayoCustomRoll
+				|| ToddlersExpansionSettings.EnableYayoSocialRelax)
+			{
+				return true;
+			}
+
+			bool isToddler = pawn != null && ToddlersCompatUtility.IsToddler(pawn);
+			if (isToddler && (ToddlersExpansionSettings.EnableNativePlayWiggle
+				|| ToddlersExpansionSettings.EnableNativePlayLay
+				|| ToddlersExpansionSettings.EnableNativePlayCrawl
+				|| ToddlersExpansionSettings.EnableNativePlaySway
+				|| ToddlersExpansionSettings.EnableNativePlayToddlerWobble
+				|| ToddlersExpansionSettings.EnableYayoCustomSpin
+				|| ToddlersExpansionSettings.EnableYayoCustomHop
+				|| ToddlersExpansionSettings.EnableYayoCustomRunLoop))
+			{
+				return true;
+			}
+
+			return ToddlersExpansionSettings.EnableYayoBabyRoll && CanUseBabyRollProfile(pawn);
 		}
 
 		private static bool TryApplySelectedPlayProfile(Pawn pawn, Rot4 rot, object pdd, SmallPawnPlayProfile profile)
@@ -863,57 +913,80 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 
 		private static List<SmallPawnPlayProfile> BuildEnabledPlayProfiles(Pawn pawn)
 		{
+			EnsureProfileCache();
 			bool isToddler = pawn != null && ToddlersCompatUtility.IsToddler(pawn);
-			List<SmallPawnPlayProfile> profiles = new List<SmallPawnPlayProfile>(16);
-
+			bool canRoll = ToddlersExpansionSettings.EnableYayoBabyRoll && CanUseBabyRollProfile(pawn);
 			if (isToddler)
-			{
-				AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableNativePlayWiggle, SmallPawnPlayProfileKind.CustomWiggle, "RimTalk_ToddlerPlay_Wiggle");
-				AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableNativePlayLay, SmallPawnPlayProfileKind.CustomLay, "RimTalk_ToddlerPlay_Lay");
-				AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableNativePlayCrawl, SmallPawnPlayProfileKind.CustomProne, "RimTalk_ToddlerPlay_Crawl");
-				AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableNativePlaySway, SmallPawnPlayProfileKind.CustomSway, "RimTalk_ToddlerPlay_Sway");
-				AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableNativePlayToddlerWobble, SmallPawnPlayProfileKind.CustomWobble, "ToddlerWobble");
-			}
+				return canRoll ? _cachedToddlerProfilesWithRoll : _cachedToddlerProfilesNoRoll;
+			return canRoll ? _cachedBabyProfilesWithRoll : _cachedBabyProfilesNoRoll;
+		}
 
-			AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableYayoPlayToys, SmallPawnPlayProfileKind.CustomYayoSocial, "PlayToys");
-			AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableYayoPlayHoopstone, SmallPawnPlayProfileKind.YayoStanding, "Play_Hoopstone");
-			AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableYayoPlayDartsBoard, SmallPawnPlayProfileKind.YayoStanding, "Play_DartsBoard");
-			AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableYayoGoldenCube, SmallPawnPlayProfileKind.CustomYayoSocial, "GoldenCubePlay");
-			AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableYayoBabyRoll && CanUseBabyRollProfile(pawn), SmallPawnPlayProfileKind.CustomBabyRoll, "BabyRoll");
-			AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableYayoCustomRoll, SmallPawnPlayProfileKind.CustomRoll, "BabyWiggle");
-			AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableYayoSocialRelax, SmallPawnPlayProfileKind.CustomYayoSocial, "SocialRelax");
+		private static uint ComputeProfileSettingsHash()
+		{
+			uint hash = 0;
+			if (ToddlersExpansionSettings.EnableNativePlayWiggle) hash |= 1u;
+			if (ToddlersExpansionSettings.EnableNativePlayLay) hash |= 1u << 1;
+			if (ToddlersExpansionSettings.EnableNativePlayCrawl) hash |= 1u << 2;
+			if (ToddlersExpansionSettings.EnableNativePlaySway) hash |= 1u << 3;
+			if (ToddlersExpansionSettings.EnableNativePlayToddlerWobble) hash |= 1u << 4;
+			if (ToddlersExpansionSettings.EnableYayoPlayToys) hash |= 1u << 5;
+			if (ToddlersExpansionSettings.EnableYayoPlayHoopstone) hash |= 1u << 6;
+			if (ToddlersExpansionSettings.EnableYayoPlayDartsBoard) hash |= 1u << 7;
+			if (ToddlersExpansionSettings.EnableYayoGoldenCube) hash |= 1u << 8;
+			if (ToddlersExpansionSettings.EnableYayoBabyRoll) hash |= 1u << 9;
+			if (ToddlersExpansionSettings.EnableYayoCustomRoll) hash |= 1u << 10;
+			if (ToddlersExpansionSettings.EnableYayoSocialRelax) hash |= 1u << 11;
+			if (ToddlersExpansionSettings.EnableYayoCustomSpin) hash |= 1u << 12;
+			if (ToddlersExpansionSettings.EnableYayoCustomHop) hash |= 1u << 13;
+			if (ToddlersExpansionSettings.EnableYayoCustomRunLoop) hash |= 1u << 14;
+			return hash;
+		}
 
-			if (isToddler)
-			{
-				AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableYayoCustomSpin, SmallPawnPlayProfileKind.CustomSpin, ToddlerSpinProfile);
-				AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableYayoCustomHop, SmallPawnPlayProfileKind.CustomHop, ToddlerHopProfile);
-				AddEnabledProfile(profiles, ToddlersExpansionSettings.EnableYayoCustomRunLoop, SmallPawnPlayProfileKind.CustomRunLoop, ToddlerRunLoopProfile);
-			}
+		private static void EnsureProfileCache()
+		{
+			uint currentHash = ComputeProfileSettingsHash();
+			if (_profileSettingsHash == currentHash && _cachedToddlerProfilesNoRoll != null)
+				return;
+			_profileSettingsHash = currentHash;
 
-			return profiles;
+			var shared = new List<SmallPawnPlayProfile>();
+			AddEnabledProfile(shared, ToddlersExpansionSettings.EnableYayoPlayToys, SmallPawnPlayProfileKind.CustomYayoSocial, "PlayToys");
+			AddEnabledProfile(shared, ToddlersExpansionSettings.EnableYayoPlayHoopstone, SmallPawnPlayProfileKind.YayoStanding, "Play_Hoopstone");
+			AddEnabledProfile(shared, ToddlersExpansionSettings.EnableYayoPlayDartsBoard, SmallPawnPlayProfileKind.YayoStanding, "Play_DartsBoard");
+			AddEnabledProfile(shared, ToddlersExpansionSettings.EnableYayoGoldenCube, SmallPawnPlayProfileKind.CustomYayoSocial, "GoldenCubePlay");
+			AddEnabledProfile(shared, ToddlersExpansionSettings.EnableYayoCustomRoll, SmallPawnPlayProfileKind.CustomRoll, "BabyWiggle");
+			AddEnabledProfile(shared, ToddlersExpansionSettings.EnableYayoSocialRelax, SmallPawnPlayProfileKind.CustomYayoSocial, "SocialRelax");
+
+			_cachedBabyProfilesNoRoll = new List<SmallPawnPlayProfile>(shared);
+			_cachedBabyProfilesWithRoll = new List<SmallPawnPlayProfile>(shared);
+			if (ToddlersExpansionSettings.EnableYayoBabyRoll)
+				_cachedBabyProfilesWithRoll.Add(BabyRollProfileEntry);
+
+			_cachedToddlerProfilesNoRoll = new List<SmallPawnPlayProfile>(shared);
+			AddEnabledProfile(_cachedToddlerProfilesNoRoll, ToddlersExpansionSettings.EnableNativePlayWiggle, SmallPawnPlayProfileKind.CustomWiggle, "RimTalk_ToddlerPlay_Wiggle");
+			AddEnabledProfile(_cachedToddlerProfilesNoRoll, ToddlersExpansionSettings.EnableNativePlayLay, SmallPawnPlayProfileKind.CustomLay, "RimTalk_ToddlerPlay_Lay");
+			AddEnabledProfile(_cachedToddlerProfilesNoRoll, ToddlersExpansionSettings.EnableNativePlayCrawl, SmallPawnPlayProfileKind.CustomProne, "RimTalk_ToddlerPlay_Crawl");
+			AddEnabledProfile(_cachedToddlerProfilesNoRoll, ToddlersExpansionSettings.EnableNativePlaySway, SmallPawnPlayProfileKind.CustomSway, "RimTalk_ToddlerPlay_Sway");
+			AddEnabledProfile(_cachedToddlerProfilesNoRoll, ToddlersExpansionSettings.EnableNativePlayToddlerWobble, SmallPawnPlayProfileKind.CustomWobble, "ToddlerWobble");
+			AddEnabledProfile(_cachedToddlerProfilesNoRoll, ToddlersExpansionSettings.EnableYayoCustomSpin, SmallPawnPlayProfileKind.CustomSpin, ToddlerSpinProfile);
+			AddEnabledProfile(_cachedToddlerProfilesNoRoll, ToddlersExpansionSettings.EnableYayoCustomHop, SmallPawnPlayProfileKind.CustomHop, ToddlerHopProfile);
+			AddEnabledProfile(_cachedToddlerProfilesNoRoll, ToddlersExpansionSettings.EnableYayoCustomRunLoop, SmallPawnPlayProfileKind.CustomRunLoop, ToddlerRunLoopProfile);
+
+			_cachedToddlerProfilesWithRoll = new List<SmallPawnPlayProfile>(_cachedToddlerProfilesNoRoll);
+			if (ToddlersExpansionSettings.EnableYayoBabyRoll)
+				_cachedToddlerProfilesWithRoll.Add(BabyRollProfileEntry);
 		}
 
 		private static void AddEnabledProfile(List<SmallPawnPlayProfile> profiles, bool enabled, SmallPawnPlayProfileKind kind, string profileName)
 		{
 			if (enabled)
-			{
 				profiles.Add(new SmallPawnPlayProfile(kind, profileName));
-			}
 		}
 
-		private static List<SmallPawnPlayProfile> FilterOutMobileOnlyProfiles(List<SmallPawnPlayProfile> profiles)
+		private static bool IsMobileOnlyProfile(SmallPawnPlayProfileKind kind)
 		{
-			List<SmallPawnPlayProfile> filtered = new List<SmallPawnPlayProfile>(profiles.Count);
-			for (int i = 0; i < profiles.Count; i++)
-			{
-				if (profiles[i].Kind != SmallPawnPlayProfileKind.CustomHop
-					&& profiles[i].Kind != SmallPawnPlayProfileKind.CustomRunLoop)
-				{
-					filtered.Add(profiles[i]);
-				}
-			}
-
-			return filtered;
+			return kind == SmallPawnPlayProfileKind.CustomHop
+				|| kind == SmallPawnPlayProfileKind.CustomRunLoop;
 		}
 
 		private static bool TryApplyYayoStandingProfile(Pawn pawn, Rot4 rot, object pdd, string yayoProfile)
