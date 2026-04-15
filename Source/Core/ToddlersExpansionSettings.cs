@@ -116,12 +116,12 @@ namespace RimTalk_ToddlersExpansion.Core
 
 		public static int GetMutualPlayPartnerCheckIntervalTicks()
 		{
-			return ClampInterval(MutualPlayPartnerCheckIntervalTicks, 1, 600);
+			return ClampInterval(MutualPlayPartnerCheckIntervalTicks, 1, 2500);
 		}
 
 		public static int GetToddlerMainLoopCheckIntervalTicks()
 		{
-			return ClampInterval(ToddlerMainLoopCheckIntervalTicks, 1, 120);
+			return ClampInterval(ToddlerMainLoopCheckIntervalTicks, 1, 2500);
 		}
 
 		public static int GetBabyCarryPickupCheckIntervalTicks()
