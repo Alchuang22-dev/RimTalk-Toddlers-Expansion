@@ -5,7 +5,6 @@ using RimTalk_ToddlersExpansion.Integration.Toddlers;
 using RimWorld;
 using Verse;
 using Verse.AI;
-using Verse.AI.Group;
 
 namespace RimTalk_ToddlersExpansion.Harmony
 {
@@ -33,7 +32,8 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				return;
 			}
 
-			if (pawn.IsPrisoner && ToddlersCompatUtility.IsToddlerOrBaby(pawn))
+			if (ToddlersExpansionSettings.enablePrisonerToddlerColonistThinkTree
+				&& pawn.IsPrisoner && ToddlersCompatUtility.IsToddlerOrBaby(pawn))
 			{
 				__result = false;
 			}
@@ -46,21 +46,17 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				return;
 			}
 
-			if (pawn.IsPrisoner && ToddlersCompatUtility.IsToddlerOrBaby(pawn))
+			if (ToddlersExpansionSettings.enablePrisonerToddlerColonistThinkTree
+				&& pawn.IsPrisoner && ToddlersCompatUtility.IsToddlerOrBaby(pawn))
 			{
 				__result = true;
 				return;
 			}
 
-			if (ShouldTreatHostileYoungAsColonist(pawn))
+			if (YoungPawnCombatUtility.ShouldApplyHostileToddlerColonistThinkTree(pawn))
 			{
 				__result = true;
 			}
-		}
-
-		private static bool ShouldTreatHostileYoungAsColonist(Pawn pawn)
-		{
-			return YoungPawnCombatUtility.ShouldTreatHostileYoungAsColonist(pawn);
 		}
 	}
 }

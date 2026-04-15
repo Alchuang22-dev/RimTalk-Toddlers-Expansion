@@ -13,7 +13,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
-			return ShouldTreatHostileYoungAsColonist(pawn) || IsViolenceDisabled(pawn);
+			return ShouldPreventColonistAttackingHostileToddler(pawn) || IsViolenceDisabled(pawn);
 		}
 
 		public static bool IsViolenceDisabled(Pawn pawn)
@@ -31,13 +31,29 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			return pawn.WorkTagIsDisabled(WorkTags.Violent);
 		}
 
-		public static bool ShouldTreatHostileYoungAsColonist(Pawn pawn)
+		/// <summary>
+		/// Whether a hostile toddler/baby on a player home map should use the colonist think tree.
+		/// Controlled by enableHostileToddlerColonistThinkTree setting.
+		/// </summary>
+		public static bool ShouldApplyHostileToddlerColonistThinkTree(Pawn pawn)
 		{
-			if (!ToddlersExpansionSettings.enableHostileToddlerColonistBehavior)
-			{
-				return false;
-			}
+			return ToddlersExpansionSettings.enableHostileToddlerColonistThinkTree
+				&& IsHostileYoungPawnOnPlayerMap(pawn);
+		}
 
+		/// <summary>
+		/// Whether colonists should be prevented from attacking a hostile toddler/baby,
+		/// and the toddler should be treated as a non-threat.
+		/// Controlled by preventColonistAttackingHostileToddler setting.
+		/// </summary>
+		public static bool ShouldPreventColonistAttackingHostileToddler(Pawn pawn)
+		{
+			return ToddlersExpansionSettings.preventColonistAttackingHostileToddler
+				&& IsHostileYoungPawnOnPlayerMap(pawn);
+		}
+
+		private static bool IsHostileYoungPawnOnPlayerMap(Pawn pawn)
+		{
 			if (pawn == null || !ToddlersCompatUtility.IsToddlerOrBaby(pawn))
 			{
 				return false;

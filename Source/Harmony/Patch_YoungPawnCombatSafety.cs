@@ -85,7 +85,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 		/// </summary>
 		private static void HostileTo_ThingThing_Postfix(Thing a, Thing b, ref bool __result)
 		{
-			if (!__result || !Core.ToddlersExpansionSettings.enableHostileToddlerColonistBehavior)
+			if (!__result || !Core.ToddlersExpansionSettings.preventColonistAttackingHostileToddler)
 			{
 				return;
 			}
@@ -93,14 +93,14 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			Pawn pawnA = a as Pawn;
 			Pawn pawnB = b as Pawn;
 
-			if (pawnA != null && YoungPawnCombatUtility.ShouldTreatHostileYoungAsColonist(pawnA)
+			if (pawnA != null && YoungPawnCombatUtility.ShouldPreventColonistAttackingHostileToddler(pawnA)
 			    && (pawnB == null || pawnB.Faction == Faction.OfPlayer))
 			{
 				__result = false;
 				return;
 			}
 
-			if (pawnB != null && YoungPawnCombatUtility.ShouldTreatHostileYoungAsColonist(pawnB)
+			if (pawnB != null && YoungPawnCombatUtility.ShouldPreventColonistAttackingHostileToddler(pawnB)
 			    && (pawnA == null || pawnA.Faction == Faction.OfPlayer))
 			{
 				__result = false;
@@ -113,12 +113,12 @@ namespace RimTalk_ToddlersExpansion.Harmony
 		/// </summary>
 		private static void HostileTo_ThingFaction_Postfix(Thing t, Faction fac, ref bool __result)
 		{
-			if (!__result || !Core.ToddlersExpansionSettings.enableHostileToddlerColonistBehavior || fac != Faction.OfPlayer)
+			if (!__result || !Core.ToddlersExpansionSettings.preventColonistAttackingHostileToddler || fac != Faction.OfPlayer)
 			{
 				return;
 			}
 
-			if (t is Pawn pawn && YoungPawnCombatUtility.ShouldTreatHostileYoungAsColonist(pawn))
+			if (t is Pawn pawn && YoungPawnCombatUtility.ShouldPreventColonistAttackingHostileToddler(pawn))
 			{
 				__result = false;
 			}

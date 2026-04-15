@@ -34,7 +34,9 @@ namespace RimTalk_ToddlersExpansion.Core
 		public static float toddlerEatingSpeedFactor = 1f;
 
 		// Behavior settings
-		public static bool enableHostileToddlerColonistBehavior = true;
+		public static bool enablePrisonerToddlerColonistThinkTree = true;
+		public static bool enableHostileToddlerColonistThinkTree = true;
+		public static bool preventColonistAttackingHostileToddler = true;
 		public static bool enableUnder3HairRendering = false;
 		public static bool babyCryAffectsMoodOnly = true;
 		public static bool babyCryAffectsMood = true;
@@ -176,7 +178,9 @@ namespace RimTalk_ToddlersExpansion.Core
 			Scribe_Values.Look(ref newbornToToddlerDays, "newbornToToddlerDays", 60);
 			Scribe_Values.Look(ref toddlerEatingSpeedFactor, "toddlerEatingSpeedFactor", 1f);
 
-			Scribe_Values.Look(ref enableHostileToddlerColonistBehavior, "enableHostileToddlerColonistBehavior", true);
+			Scribe_Values.Look(ref enablePrisonerToddlerColonistThinkTree, "enablePrisonerToddlerColonistThinkTree", true);
+			Scribe_Values.Look(ref enableHostileToddlerColonistThinkTree, "enableHostileToddlerColonistThinkTree", true);
+			Scribe_Values.Look(ref preventColonistAttackingHostileToddler, "preventColonistAttackingHostileToddler", true);
 			Scribe_Values.Look(ref enableUnder3HairRendering, "enableUnder3HairRendering", false);
 			Scribe_Values.Look(ref babyCryAffectsMoodOnly, "babyCryAffectsMoodOnly", true);
 			Scribe_Values.Look(ref babyCryAffectsMood, "babyCryAffectsMood", true);

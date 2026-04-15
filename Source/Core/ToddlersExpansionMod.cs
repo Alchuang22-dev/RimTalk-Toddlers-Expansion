@@ -78,7 +78,7 @@ namespace RimTalk_ToddlersExpansion.Core
 		private void DrawGeneralSettingsPage(Rect inRect, ToddlersExpansionSettings settings)
 		{
 			const float columnGap = 24f;
-			float contentHeight = 2230f;
+			float contentHeight = 2350f;
 			Rect viewRect = new Rect(0f, 0f, inRect.width - 20f, contentHeight);
 			float columnWidth = (viewRect.width - columnGap) / 2f;
 			Rect leftColumnRect = new Rect(0f, 0f, columnWidth, contentHeight);
@@ -417,9 +417,21 @@ namespace RimTalk_ToddlersExpansion.Core
 			listingStandard.Label("RimTalk_ToddlersExpansion_Behavior_Settings_Header".Translate());
 			listingStandard.GapLine();
 			listingStandard.CheckboxLabeled(
-				"RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior".Translate(),
-				ref ToddlersExpansionSettings.enableHostileToddlerColonistBehavior,
-				"RimTalk_ToddlersExpansion_EnableHostileToddlerColonistBehavior_Tooltip".Translate());
+				"RimTalk_ToddlersExpansion_EnablePrisonerToddlerColonistThinkTree".Translate(),
+				ref ToddlersExpansionSettings.enablePrisonerToddlerColonistThinkTree,
+				"RimTalk_ToddlersExpansion_EnablePrisonerToddlerColonistThinkTree_Tooltip".Translate());
+			listingStandard.Gap();
+
+			listingStandard.CheckboxLabeled(
+				"RimTalk_ToddlersExpansion_EnableHostileToddlerColonistThinkTree".Translate(),
+				ref ToddlersExpansionSettings.enableHostileToddlerColonistThinkTree,
+				"RimTalk_ToddlersExpansion_EnableHostileToddlerColonistThinkTree_Tooltip".Translate());
+			listingStandard.Gap();
+
+			listingStandard.CheckboxLabeled(
+				"RimTalk_ToddlersExpansion_PreventColonistAttackingHostileToddler".Translate(),
+				ref ToddlersExpansionSettings.preventColonistAttackingHostileToddler,
+				"RimTalk_ToddlersExpansion_PreventColonistAttackingHostileToddler_Tooltip".Translate());
 			listingStandard.Gap();
 			listingStandard.GapLine();
 		}
