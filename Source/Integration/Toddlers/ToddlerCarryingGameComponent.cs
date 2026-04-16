@@ -4,6 +4,7 @@ using RimTalk_ToddlersExpansion.Harmony;
 using RimWorld;
 using Verse;
 using Verse.AI;
+using Verse.AI.Group;
 
 namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 {
@@ -12,6 +13,10 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private const int CleanupInterval = 600;
 		private const int CarriedJobInterval = 120;
 		private const int OrphanExitInterval = 600;
+
+		// Re-use the BabyCarryCheckIntervalTicks setting for visitor re-pickup scanning cadence.
+		// This keeps visitor and colonist carry-desire scanning at the same frequency.
+		private const int VisitorRepickupMaxPerTick = 3;
 
 		private bool _needsCarryProtectionResync;
 		private readonly List<Pawn> _activeCarriedToddlers = new List<Pawn>(32);
@@ -54,6 +59,12 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			if (currentTick % OrphanExitInterval == 0)
 			{
 				EnsureVisitorToddlersExitIfNoAdults();
+			}
+
+			int visitorPickupInterval = ToddlersExpansionSettings.GetBabyCarryPickupCheckIntervalTicks();
+			if (currentTick % visitorPickupInterval == 0)
+			{
+				ProcessVisitorRepickup();
 			}
 		}
 
@@ -204,6 +215,171 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					ToddlerCarryProtectionUtility.SetCarryProtectionActive(pawn, false);
 				}
 			}
+		}
+
+		/// <summary>
+		/// Scans player-home maps for uncarried visitor toddlers during the stay phase
+		/// and assigns same-Lord adults to pick them back up.
+		/// Uses BabyCarryCheckIntervalTicks for scan frequency, matching colonist carry-desire cadence.
+		/// </summary>
+		private static void ProcessVisitorRepickup()
+		{
+			if (Find.Maps == null || Find.Maps.Count == 0)
+			{
+				return;
+			}
+
+			int processed = 0;
+			for (int i = 0; i < Find.Maps.Count; i++)
+			{
+				Map map = Find.Maps[i];
+				if (map == null || !map.IsPlayerHome)
+				{
+					continue;
+				}
+
+				var pawns = map.mapPawns?.AllPawnsSpawned;
+				if (pawns == null || pawns.Count == 0)
+				{
+					continue;
+				}
+
+				for (int j = 0; j < pawns.Count; j++)
+				{
+					if (processed >= VisitorRepickupMaxPerTick)
+					{
+						return;
+					}
+
+					Pawn toddler = pawns[j];
+					if (!IsUncarriedVisitorToddler(toddler))
+					{
+						continue;
+					}
+
+					if (TryAssignSameLordCarrier(toddler))
+					{
+						processed++;
+					}
+				}
+			}
+		}
+
+		private static bool IsUncarriedVisitorToddler(Pawn pawn)
+		{
+			if (pawn == null || pawn.Dead || pawn.Destroyed || !pawn.Spawned)
+			{
+				return false;
+			}
+
+			if (!ToddlersCompatUtility.IsToddlerOrBaby(pawn))
+			{
+				return false;
+			}
+
+			if (pawn.IsPrisoner || pawn.IsPrisonerOfColony)
+			{
+				return false;
+			}
+
+			Faction faction = pawn.Faction;
+			if (faction == null || faction == Faction.OfPlayer || faction.HostileTo(Faction.OfPlayer))
+			{
+				return false;
+			}
+
+			if (pawn.Map == null || !pawn.Map.IsPlayerHome)
+			{
+				return false;
+			}
+
+			if (ToddlerCarryingUtility.IsBeingCarried(pawn))
+			{
+				return false;
+			}
+
+			// Skip toddlers currently eating or moving to food to avoid interrupt-and-repickup loops:
+			// hungry toddler struggles off -> starts eating -> gets picked up -> can't eat -> struggles -> loop.
+			JobDef curJob = pawn.CurJobDef;
+			if (curJob == JobDefOf.Ingest || curJob == JobDefOf.Goto)
+			{
+				return false;
+			}
+
+			// Must be in a Lord (part of a visiting/trading group)
+			return pawn.GetLord() != null;
+		}
+
+		private static bool TryAssignSameLordCarrier(Pawn toddler)
+		{
+			Lord lord = toddler.GetLord();
+			if (lord == null || lord.ownedPawns.NullOrEmpty())
+			{
+				return false;
+			}
+
+			// Find the closest valid carrier in the same Lord
+			Pawn bestCarrier = null;
+			float bestDist = float.MaxValue;
+
+			List<Pawn> members = lord.ownedPawns;
+			for (int i = 0; i < members.Count; i++)
+			{
+				Pawn candidate = members[i];
+				if (candidate == null || candidate == toddler)
+				{
+					continue;
+				}
+
+				if (!ToddlerCarryingUtility.IsValidCarrier(candidate))
+				{
+					continue;
+				}
+
+				if (!candidate.Spawned || candidate.MapHeld != toddler.MapHeld)
+				{
+					continue;
+				}
+
+				if (ToddlerCarryingUtility.GetCarriedToddlerCount(candidate)
+				    >= ToddlerCarryingUtility.GetMaxCarryCapacity(candidate))
+				{
+					continue;
+				}
+
+				if (!candidate.CanReach(toddler, PathEndMode.Touch, Danger.Some))
+				{
+					continue;
+				}
+
+				if (!candidate.CanReserve(toddler, 1, -1, null, false))
+				{
+					continue;
+				}
+
+				float dist = candidate.Position.DistanceToSquared(toddler.Position);
+				if (dist < bestDist)
+				{
+					bestDist = dist;
+					bestCarrier = candidate;
+				}
+			}
+
+			if (bestCarrier == null)
+			{
+				return false;
+			}
+
+			if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
+			{
+				Log.Message($"[RimTalk_ToddlersExpansion][VisitorRepickup] Assigning {bestCarrier.LabelShort} to pick up visitor toddler {toddler.LabelShort}.");
+			}
+
+			Job job = JobMaker.MakeJob(
+				ToddlersExpansionJobDefOf.RimTalk_PickUpToddler, toddler);
+			job.locomotionUrgency = LocomotionUrgency.Jog;
+			bestCarrier.jobs?.TryTakeOrderedJob(job);
+			return true;
 		}
 
 		private static void EnsureVisitorToddlersExitIfNoAdults()
