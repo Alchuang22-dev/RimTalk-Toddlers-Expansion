@@ -10,7 +10,12 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		public static void SetCarryProtectionActive(Pawn pawn, bool active)
 		{
-			if (!IsValidTargetPawn(pawn))
+			if (active && !IsValidTargetPawn(pawn))
+			{
+				return;
+			}
+
+			if (!active && (pawn == null || pawn.health?.hediffSet == null))
 			{
 				return;
 			}
@@ -40,7 +45,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		public static bool HasCarryProtection(Pawn pawn)
 		{
-			if (!IsValidTargetPawn(pawn))
+			if (pawn == null || pawn.health?.hediffSet == null)
 			{
 				return false;
 			}
