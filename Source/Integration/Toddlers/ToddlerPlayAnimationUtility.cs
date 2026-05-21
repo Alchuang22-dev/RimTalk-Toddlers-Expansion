@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 using RimTalk_ToddlersExpansion.Core;
 using RimTalk_ToddlersExpansion.Integration.BioTech;
 using UnityEngine;
@@ -115,22 +116,35 @@ using Verse;
 
 		public static bool ClearManagedNativePlayAnimation(Pawn pawn)
 		{
-			AnimationDef current = pawn?.Drawer?.renderer?.CurAnimation;
-			if (current == null)
+			try
 			{
-				YayoAnimation.YayoAnimationCompatUtility.UntrackSafeFallbackPawn(pawn);
+				AnimationDef current = pawn?.Drawer?.renderer?.CurAnimation;
+				if (current == null)
+				{
+					TryUntrackSafeFallbackPawn(pawn);
+					return false;
+				}
+
+				if (IsManagedPlayAnimation(current))
+				{
+					pawn.Drawer?.renderer?.SetAnimation(null);
+					TryUntrackSafeFallbackPawn(pawn);
+					return true;
+				}
+
+				TryUntrackSafeFallbackPawn(pawn);
 				return false;
 			}
-
-			if (IsManagedPlayAnimation(current))
+			catch (Exception ex)
 			{
-				pawn.Drawer.renderer.SetAnimation(null);
-				YayoAnimation.YayoAnimationCompatUtility.UntrackSafeFallbackPawn(pawn);
-				return true;
-			}
+				TryUntrackSafeFallbackPawn(pawn);
+				if (Prefs.DevMode)
+				{
+					Log.Warning($"[RimTalk_ToddlersExpansion] ClearManagedNativePlayAnimation failed for {pawn?.LabelShort ?? "null"}: {ex.Message}");
+				}
 
-			YayoAnimation.YayoAnimationCompatUtility.UntrackSafeFallbackPawn(pawn);
-			return false;
+				return false;
+			}
 		}
 
 		public static bool HasManagedPlayAnimation(Pawn pawn)
@@ -232,6 +246,21 @@ using Verse;
 			}
 
 			return defs[Rand.Range(0, defs.Length)];
+		}
+
+		private static void TryUntrackSafeFallbackPawn(Pawn pawn)
+		{
+			try
+			{
+				YayoAnimation.YayoAnimationCompatUtility.UntrackSafeFallbackPawn(pawn);
+			}
+			catch (Exception ex)
+			{
+				if (Prefs.DevMode)
+				{
+					Log.Warning($"[RimTalk_ToddlersExpansion] UntrackSafeFallbackPawn failed for {pawn?.LabelShort ?? "null"}: {ex.Message}");
+				}
+			}
 		}
 	}
 }

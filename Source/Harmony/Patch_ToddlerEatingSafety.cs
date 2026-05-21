@@ -12,7 +12,9 @@ namespace RimTalk_ToddlersExpansion.Harmony
 {
 	public static class Patch_ToddlerEatingSafety
 	{
+		private const string ToddlersHarmonyId = "cyanobot.toddlers";
 		private const float ToddlerSucklePriorityOffset = 0.02f;
+		private static Func<Pawn, bool> _toddlerEatsOnFloor;
 
 		public static void Init(HarmonyLib.Harmony harmony)
 		{
@@ -29,6 +31,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			}
 
 			harmony.Patch(isBabyBusy, postfix: new HarmonyMethod(typeof(Patch_ToddlerEatingSafety), nameof(IsBabyBusy_Postfix)));
+			BindToddlersLearningMethods();
 
 			Type childcareUtilityType = AccessTools.TypeByName("RimWorld.ChildcareUtility");
 			if (childcareUtilityType != null)
@@ -136,6 +139,17 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				}
 			}
 
+			MethodInfo carryIngestibleToChewSpot = AccessTools.Method(typeof(Toils_Ingest), nameof(Toils_Ingest.CarryIngestibleToChewSpot));
+			if (carryIngestibleToChewSpot != null)
+			{
+				HarmonyMethod postfix = new HarmonyMethod(typeof(Patch_ToddlerEatingSafety), nameof(CarryIngestibleToChewSpot_Postfix))
+				{
+					after = new[] { ToddlersHarmonyId },
+					priority = Priority.Last
+				};
+
+				harmony.Patch(carryIngestibleToChewSpot, postfix: postfix);
+			}
 		}
 
 		private static void IsBabyBusy_Postfix(Pawn baby, ref bool __result)
@@ -441,6 +455,139 @@ namespace RimTalk_ToddlersExpansion.Harmony
 		private static Pawn GetPawnFromTarget(LocalTargetInfo target)
 		{
 			return target.IsValid && target.HasThing ? target.Thing as Pawn : null;
+		}
+
+		private static void CarryIngestibleToChewSpot_Postfix(Toil __result, Pawn pawn, TargetIndex ingestibleInd)
+		{
+			if (__result == null || pawn == null || !ShouldUseToddlerFloorChewSpotFallback(pawn))
+			{
+				return;
+			}
+
+			Action originalInitAction = __result.initAction;
+			__result.initAction = delegate
+			{
+				Pawn actor = __result.actor;
+				if (actor == null || !ShouldUseToddlerFloorChewSpotFallback(actor))
+				{
+					originalInitAction?.Invoke();
+					return;
+				}
+
+				Thing food = actor.CurJob?.GetTarget(ingestibleInd).Thing;
+				if (food == null || actor.Map == null)
+				{
+					originalInitAction?.Invoke();
+					return;
+				}
+
+				IntVec3 cell = FindToddlerChewSpot(actor, food);
+				if (!IsValidToddlerChewSpot(actor, cell))
+				{
+					originalInitAction?.Invoke();
+					return;
+				}
+
+				actor.ReserveSittableOrSpot(cell, actor.CurJob, errorOnFailed: false);
+				actor.Map.pawnDestinationReservationManager.Reserve(actor, actor.CurJob, cell);
+				actor.pather.StartPath(cell, PathEndMode.OnCell);
+			};
+		}
+
+		private static void BindToddlersLearningMethods()
+		{
+			if (_toddlerEatsOnFloor != null)
+			{
+				return;
+			}
+
+			try
+			{
+				Type toddlerLearningUtilityType = AccessTools.TypeByName("Toddlers.ToddlerLearningUtility");
+				MethodInfo eatsOnFloorMethod = AccessTools.Method(toddlerLearningUtilityType, "EatsOnFloor", new[] { typeof(Pawn) });
+				if (eatsOnFloorMethod != null)
+				{
+					_toddlerEatsOnFloor = (Func<Pawn, bool>)Delegate.CreateDelegate(typeof(Func<Pawn, bool>), eatsOnFloorMethod);
+				}
+			}
+			catch
+			{
+				_toddlerEatsOnFloor = null;
+			}
+		}
+
+		private static bool ShouldUseToddlerFloorChewSpotFallback(Pawn pawn)
+		{
+			if (pawn == null || !ToddlersCompatUtility.IsToddler(pawn))
+			{
+				return false;
+			}
+
+			if (_toddlerEatsOnFloor == null)
+			{
+				return false;
+			}
+
+			try
+			{
+				return _toddlerEatsOnFloor(pawn);
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
+		private static IntVec3 FindToddlerChewSpot(Pawn pawn, Thing food)
+		{
+			IntVec3 safeCell = RCellFinder.SpotToChewStandingNear(
+				pawn,
+				food,
+				c => IsValidToddlerChewSpot(pawn, c) && c.GetDangerFor(pawn, pawn.Map) == Danger.None);
+
+			if (IsValidToddlerChewSpot(pawn, safeCell))
+			{
+				return safeCell;
+			}
+
+			if (IsValidToddlerChewSpot(pawn, pawn.PositionHeld))
+			{
+				return pawn.PositionHeld;
+			}
+
+			if (CellFinder.TryFindRandomReachableNearbyCell(
+				pawn.PositionHeld,
+				pawn.Map,
+				3f,
+				TraverseParms.For(pawn, Danger.Deadly),
+				c => IsValidToddlerChewSpot(pawn, c),
+				null,
+				out IntVec3 fallbackCell))
+			{
+				return fallbackCell;
+			}
+
+			return IntVec3.Invalid;
+		}
+
+		private static bool IsValidToddlerChewSpot(Pawn pawn, IntVec3 cell)
+		{
+			if (pawn?.Map == null || !cell.IsValid || !cell.InBounds(pawn.Map))
+			{
+				return false;
+			}
+
+			if (!cell.Standable(pawn.Map) || cell.IsForbidden(pawn))
+			{
+				return false;
+			}
+
+			if (!pawn.CanReach(cell, PathEndMode.OnCell, Danger.Deadly))
+			{
+				return false;
+			}
+
+			return pawn.CanReserveSittableOrSpot(cell);
 		}
 	}
 }
