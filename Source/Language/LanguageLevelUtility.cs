@@ -14,10 +14,11 @@ namespace RimTalk_ToddlersExpansion.Language
 		private const float DaysPerYear = 60f;
 		private const float TicksPerDay = 60000f;
 		private const float MinLearningFactor = 0.01f;
+		private const int LearningFactorCacheTicks = 2500;
 		private static bool _toddlersApiResolved;
-		private static MethodInfo _toddlersPercentGrowthMethod;
-		private static MethodInfo _toddlersLearningPerBioTickMethod;
 		private static FieldInfo _toddlersManipulationLearningFactorField;
+		private static int _cachedManipulationLearningFactorUntilTick = -1;
+		private static float _cachedManipulationLearningFactor = 1f;
 		private static readonly string[] TierKeys =
 		{
 			"babble",
@@ -133,27 +134,6 @@ namespace RimTalk_ToddlersExpansion.Language
 
 		public static float GetLearningPerBioTick(Pawn pawn)
 		{
-			if (pawn?.ageTracker == null)
-			{
-				return 1f / (2f * DaysPerYear * TicksPerDay);
-			}
-
-			ResolveToddlersApi();
-			if (_toddlersLearningPerBioTickMethod != null)
-			{
-				try
-				{
-					object value = _toddlersLearningPerBioTickMethod.Invoke(null, new object[] { pawn, null });
-					if (value is float perTick && perTick > 0f)
-					{
-						return perTick;
-					}
-				}
-				catch
-				{
-				}
-			}
-
 			float minAge = ToddlersCompatUtility.GetToddlerMinAgeYears(pawn);
 			float endAge = ToddlersCompatUtility.GetToddlerEndAgeYears(pawn);
 			float stageTicks = Mathf.Max(1f, (endAge - minAge) * DaysPerYear * TicksPerDay);
@@ -162,7 +142,14 @@ namespace RimTalk_ToddlersExpansion.Language
 
 		public static float GetToddlersManipulationLearningFactor()
 		{
+			int ticksGame = Find.TickManager?.TicksGame ?? -1;
+			if (ticksGame >= 0 && ticksGame < _cachedManipulationLearningFactorUntilTick)
+			{
+				return _cachedManipulationLearningFactor;
+			}
+
 			ResolveToddlersApi();
+			float result = 1f;
 			if (_toddlersManipulationLearningFactorField != null)
 			{
 				try
@@ -170,7 +157,7 @@ namespace RimTalk_ToddlersExpansion.Language
 					object value = _toddlersManipulationLearningFactorField.GetValue(null);
 					if (value is float factor && factor > MinLearningFactor)
 					{
-						return factor;
+						result = factor;
 					}
 				}
 				catch
@@ -178,7 +165,13 @@ namespace RimTalk_ToddlersExpansion.Language
 				}
 			}
 
-			return 1f;
+			_cachedManipulationLearningFactor = result;
+			if (ticksGame >= 0)
+			{
+				_cachedManipulationLearningFactorUntilTick = ticksGame + LearningFactorCacheTicks;
+			}
+
+			return result;
 		}
 
 		private static bool TryGetToddlersPercentGrowth(Pawn pawn, out float percentGrowth)
@@ -187,23 +180,6 @@ namespace RimTalk_ToddlersExpansion.Language
 			if (pawn?.ageTracker == null)
 			{
 				return false;
-			}
-
-			ResolveToddlersApi();
-			if (_toddlersPercentGrowthMethod != null)
-			{
-				try
-				{
-					object value = _toddlersPercentGrowthMethod.Invoke(null, new object[] { pawn });
-					if (value is float percent)
-					{
-						percentGrowth = Mathf.Clamp01(percent);
-						return true;
-					}
-				}
-				catch
-				{
-				}
 			}
 
 			float minAge = ToddlersCompatUtility.GetToddlerMinAgeYears(pawn);
@@ -222,18 +198,6 @@ namespace RimTalk_ToddlersExpansion.Language
 			}
 
 			_toddlersApiResolved = true;
-
-			Type toddlerUtilityType = GenTypes.GetTypeInAnyAssembly("Toddlers.ToddlerUtility");
-			if (toddlerUtilityType != null)
-			{
-				_toddlersPercentGrowthMethod = toddlerUtilityType.GetMethod("PercentGrowth", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(Pawn) }, null);
-			}
-
-			Type toddlerLearningUtilityType = GenTypes.GetTypeInAnyAssembly("Toddlers.ToddlerLearningUtility");
-			if (toddlerLearningUtilityType != null)
-			{
-				_toddlersLearningPerBioTickMethod = toddlerLearningUtilityType.GetMethod("GetLearningPerBioTick", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(Pawn), typeof(Storyteller) }, null);
-			}
 
 			Type toddlersSettingsType = GenTypes.GetTypeInAnyAssembly("Toddlers.Toddlers_Settings");
 			if (toddlersSettingsType != null)

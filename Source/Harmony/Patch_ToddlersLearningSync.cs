@@ -55,6 +55,15 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				return;
 			}
 
+			if (ToddlersExpansionHediffDefOf.RimTalk_BabyBabbling != null)
+			{
+				Hediff babbling = p.health.hediffSet.GetFirstHediffOfDef(ToddlersExpansionHediffDefOf.RimTalk_BabyBabbling);
+				if (babbling != null)
+				{
+					p.health.RemoveHediff(babbling);
+				}
+			}
+
 			if (clearExisting)
 			{
 				Hediff existing = p.health.hediffSet.GetFirstHediffOfDef(ToddlersExpansionHediffDefOf.RimTalk_ToddlerLanguageLearning);

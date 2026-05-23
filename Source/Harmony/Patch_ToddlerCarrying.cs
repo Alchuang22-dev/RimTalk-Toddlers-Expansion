@@ -268,6 +268,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 		{
 			ToddlerCarryDesireUtility.NotifyPawnSpawned(__instance);
 			ToddlerSelfBathGameComponent.NotifyPawnSpawned(__instance);
+			LanguageLearningBootstrapComponent.NotifyPawnSpawned(__instance);
 		}
 
 		/// <summary>

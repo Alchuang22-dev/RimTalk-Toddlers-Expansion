@@ -4,13 +4,14 @@ using Verse;
 
 namespace RimTalk_ToddlersExpansion.Language
 {
-	public sealed class Hediff_ToddlerLanguageLearning : HediffWithComps
+	public sealed class Hediff_ToddlerLanguageLearning : Hediff
 	{
 		private const int UpdateIntervalTicks = 2500;
+		private bool _removeBecauseNotToddler;
 
 		public override bool ShouldRemove => pawn == null
 			|| Severity >= 1f
-			|| !ToddlersCompatUtility.IsToddler(pawn);
+			|| _removeBecauseNotToddler;
 
 		public float Progress01 => Mathf.Clamp01(Severity);
 
@@ -19,6 +20,12 @@ namespace RimTalk_ToddlersExpansion.Language
 			base.TickInterval(delta);
 			if (pawn == null || !pawn.IsHashIntervalTick(UpdateIntervalTicks, delta))
 			{
+				return;
+			}
+
+			if (!ToddlersCompatUtility.IsToddler(pawn))
+			{
+				_removeBecauseNotToddler = true;
 				return;
 			}
 
