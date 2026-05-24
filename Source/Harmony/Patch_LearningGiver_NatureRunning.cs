@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using HarmonyLib;
 using RimTalk_ToddlersExpansion.Core;
 using RimTalk_ToddlersExpansion.Integration.Toddlers;
@@ -25,11 +24,6 @@ namespace RimTalk_ToddlersExpansion.Harmony
         /// Cached NatureRunning JobDef (looked up at runtime)
         /// </summary>
         private static JobDef _natureRunningJobDef;
-        
-        /// <summary>
-        /// Field info for accessing Pawn_JobTracker.pawn
-        /// </summary>
-        private static FieldInfo _pawnJobTrackerPawnField;
         
         /// <summary>
         /// Get the NatureRunning JobDef
@@ -114,39 +108,21 @@ namespace RimTalk_ToddlersExpansion.Harmony
         }
         
         /// <summary>
-        /// Get the pawn from a Pawn_JobTracker using reflection
-        /// </summary>
-        private static Pawn GetPawnFromJobTracker(Pawn_JobTracker jobTracker)
-        {
-            if (_pawnJobTrackerPawnField == null)
-            {
-                _pawnJobTrackerPawnField = typeof(Pawn_JobTracker).GetField("pawn", BindingFlags.Instance | BindingFlags.NonPublic);
-            }
-            
-            if (_pawnJobTrackerPawnField != null)
-            {
-                return _pawnJobTrackerPawnField.GetValue(jobTracker) as Pawn;
-            }
-            
-            return null;
-        }
-        
-        /// <summary>
         /// Called after a job is started - recruit nearby children if this is a NatureRunning job
         /// </summary>
-        private static void StartJob_Postfix(Pawn_JobTracker __instance, Job newJob)
+        private static void StartJob_Postfix(Job newJob, Pawn ___pawn)
         {
-            Pawn leader = GetPawnFromJobTracker(__instance);
-            if (leader == null)
+            if (newJob == null || NatureRunningJobDef == null || newJob.def != NatureRunningJobDef)
             {
+                if (___pawn?.Faction == Faction.OfPlayer && ___pawn.DevelopmentalStage.Child())
+                {
+                    NatureRunningDestinationUtility.ClearContext(___pawn);
+                }
+
                 return;
             }
 
-            if (newJob == null || NatureRunningJobDef == null || newJob.def != NatureRunningJobDef)
-            {
-                NatureRunningDestinationUtility.ClearContext(leader);
-                return;
-            }
+            Pawn leader = ___pawn;
 
             if (leader == null || leader.Map == null)
             {

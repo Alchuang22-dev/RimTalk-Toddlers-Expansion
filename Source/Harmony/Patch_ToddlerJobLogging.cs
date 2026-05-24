@@ -9,8 +9,6 @@ namespace RimTalk_ToddlersExpansion.Harmony
 {
 	public static class Patch_ToddlerJobLogging
 	{
-		private static FieldInfo _pawnJobTrackerPawnField;
-
 		public static void Init(HarmonyLib.Harmony harmony)
 		{
 			MethodInfo startJobTarget = AccessTools.Method(typeof(Pawn_JobTracker), nameof(Pawn_JobTracker.StartJob));
@@ -20,39 +18,28 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			}
 		}
 
-		private static Pawn GetPawnFromJobTracker(Pawn_JobTracker jobTracker)
+		private static void StartJob_Postfix(Job newJob, Pawn ___pawn)
 		{
-			if (_pawnJobTrackerPawnField == null)
-			{
-				_pawnJobTrackerPawnField = typeof(Pawn_JobTracker).GetField("pawn", BindingFlags.Instance | BindingFlags.NonPublic);
-			}
-
-			return _pawnJobTrackerPawnField?.GetValue(jobTracker) as Pawn;
-		}
-
-		private static void StartJob_Postfix(Pawn_JobTracker __instance, Job newJob)
-		{
-			if (!Prefs.DevMode || newJob?.def == null)
-			{
-				// Still perform cleanup even when not logging.
-				Pawn nonLoggedPawn = GetPawnFromJobTracker(__instance);
-				TryClearManagedPlayAnimationOnJobStart(nonLoggedPawn, newJob);
-				return;
-			}
-
-			Pawn pawn = GetPawnFromJobTracker(__instance);
-			if (pawn == null || !ToddlersCompatUtility.IsToddlerOrBaby(pawn))
+			if (!IsPotentialSmallPawn(___pawn))
 			{
 				return;
 			}
 
-			bool cleared = TryClearManagedPlayAnimationOnJobStart(pawn, newJob);
-			Log.Message($"[RimTalk_ToddlersExpansion] Toddler job: {pawn.LabelShort} -> {newJob.def.defName}{(cleared ? " (cleared managed play animation)" : string.Empty)}");
+			if (!Prefs.DevMode && !ToddlerPlayAnimationUtility.HasManagedPlayAnimation(___pawn))
+			{
+				return;
+			}
+
+			bool cleared = TryClearManagedPlayAnimationOnJobStart(___pawn, newJob);
+			if (Prefs.DevMode && newJob?.def != null)
+			{
+				Log.Message($"[RimTalk_ToddlersExpansion] Toddler job: {___pawn.LabelShort} -> {newJob.def.defName}{(cleared ? " (cleared managed play animation)" : string.Empty)}");
+			}
 		}
 
 		private static bool TryClearManagedPlayAnimationOnJobStart(Pawn pawn, Job newJob)
 		{
-			if (pawn == null || newJob == null || !ToddlersCompatUtility.IsToddlerOrBaby(pawn))
+			if (pawn == null || newJob == null || !IsPotentialSmallPawn(pawn))
 			{
 				return false;
 			}
@@ -73,6 +60,21 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			}
 
 			return cleared;
+		}
+
+		private static bool IsPotentialSmallPawn(Pawn pawn)
+		{
+			if (pawn == null)
+			{
+				return false;
+			}
+
+			if (pawn.DevelopmentalStage.Baby() || pawn.DevelopmentalStage.Newborn())
+			{
+				return true;
+			}
+
+			return ToddlersCompatUtility.IsToddler(pawn);
 		}
 	}
 }
