@@ -38,6 +38,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			Patch_ToddlerPrisonerThinkTree.Init(harmony);
 			Patch_ToddlerPrisonerApparel.Init(harmony);
 			Patch_YoungPawnCombatSafety.Init(harmony);
+			Patch_ToddlerPlaySafety.Init(harmony);
 			Patch_LearningGiver_NatureRunning.Init(harmony);
 			Patch_ToddlerJobLogging.Init(harmony);
 			// 幼儿洗澡渲染补丁（脱衣服、浴缸中位置调整）

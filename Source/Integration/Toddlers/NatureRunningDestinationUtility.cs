@@ -618,6 +618,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
+			if (!NatureRunningSafetyUtility.IsSafeNatureRunningTarget(leader, cell, map))
+			{
+				return false;
+			}
+
 			return leader.CanReach(cell, PathEndMode.OnCell, Danger.Some);
 		}
 

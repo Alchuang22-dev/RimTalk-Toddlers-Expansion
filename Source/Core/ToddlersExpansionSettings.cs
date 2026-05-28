@@ -37,6 +37,8 @@ namespace RimTalk_ToddlersExpansion.Core
 		public static bool enablePrisonerToddlerColonistThinkTree = true;
 		public static bool enableHostileToddlerColonistThinkTree = true;
 		public static bool preventColonistAttackingHostileToddler = true;
+		public static bool enableToddlerPlaySafetyChecks = true;
+		public static bool enableNatureRunningSafetyChecks = true;
 		public static bool enableUnder3HairRendering = false;
 		public static bool babyCryAffectsMoodOnly = true;
 		public static bool babyCryAffectsMood = true;
@@ -181,6 +183,8 @@ namespace RimTalk_ToddlersExpansion.Core
 			Scribe_Values.Look(ref enablePrisonerToddlerColonistThinkTree, "enablePrisonerToddlerColonistThinkTree", true);
 			Scribe_Values.Look(ref enableHostileToddlerColonistThinkTree, "enableHostileToddlerColonistThinkTree", true);
 			Scribe_Values.Look(ref preventColonistAttackingHostileToddler, "preventColonistAttackingHostileToddler", true);
+			Scribe_Values.Look(ref enableToddlerPlaySafetyChecks, "enableToddlerPlaySafetyChecks", true);
+			Scribe_Values.Look(ref enableNatureRunningSafetyChecks, "enableNatureRunningSafetyChecks", true);
 			Scribe_Values.Look(ref enableUnder3HairRendering, "enableUnder3HairRendering", false);
 			Scribe_Values.Look(ref babyCryAffectsMoodOnly, "babyCryAffectsMoodOnly", true);
 			Scribe_Values.Look(ref babyCryAffectsMood, "babyCryAffectsMood", true);

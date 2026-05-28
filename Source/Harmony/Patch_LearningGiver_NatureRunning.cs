@@ -75,11 +75,19 @@ namespace RimTalk_ToddlersExpansion.Harmony
             if (tryFindTarget != null)
             {
                 harmony.Patch(tryFindTarget,
+                    prefix: new HarmonyMethod(typeof(Patch_LearningGiver_NatureRunning), nameof(TryFindNatureInterestTarget_Prefix)),
                     postfix: new HarmonyMethod(typeof(Patch_LearningGiver_NatureRunning), nameof(TryFindNatureInterestTarget_Postfix)));
             }
             else
             {
                 Log.Warning("[RimTalk_ToddlersExpansion] Could not find NatureRunningUtility.TryFindNatureInterestTarget.");
+            }
+
+            var makeNewToilsTarget = AccessTools.Method(typeof(JobDriver_NatureRunning), "MakeNewToils");
+            if (makeNewToilsTarget != null)
+            {
+                harmony.Patch(makeNewToilsTarget,
+                    postfix: new HarmonyMethod(typeof(Patch_LearningGiver_NatureRunning), nameof(MakeNewToils_Postfix)));
             }
         }
         
@@ -90,6 +98,13 @@ namespace RimTalk_ToddlersExpansion.Harmony
         {
             if (__result == null || NatureRunningJobDef == null || __result.def != NatureRunningJobDef)
             {
+                return;
+            }
+
+            if (!NatureRunningSafetyUtility.IsSafeToStartOrContinue(pawn)
+                || !NatureRunningSafetyUtility.IsSafeNatureRunningTarget(pawn, __result.targetA.Cell))
+            {
+                __result = null;
                 return;
             }
 
@@ -126,6 +141,14 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
             if (leader == null || leader.Map == null)
             {
+                return;
+            }
+
+            if (!NatureRunningSafetyUtility.IsSafeToStartOrContinue(leader)
+                || !NatureRunningSafetyUtility.IsSafeNatureRunningTarget(leader, newJob.targetA.Cell))
+            {
+                NatureRunningDestinationUtility.ClearContext(leader);
+                leader.jobs.EndCurrentJob(JobCondition.Incompletable, startNewJob: true, canReturnToPool: true);
                 return;
             }
             
@@ -322,9 +345,25 @@ namespace RimTalk_ToddlersExpansion.Harmony
             {
                 return;
             }
+
+            if (__result && !NatureRunningSafetyUtility.IsSafeNatureRunningTarget(searcher, interestTarget.Cell))
+            {
+                interestTarget = LocalTargetInfo.Invalid;
+                __result = false;
+                return;
+            }
             
             if (!NatureRunningDestinationUtility.TryGetContext(searcher, out var context))
             {
+                return;
+            }
+
+            if (!NatureRunningSafetyUtility.IsSafeToStartOrContinue(searcher)
+                || !NatureRunningSafetyUtility.IsSafeNatureRunningTarget(searcher, context.TargetCell))
+            {
+                NatureRunningDestinationUtility.ClearContext(searcher);
+                interestTarget = LocalTargetInfo.Invalid;
+                __result = false;
                 return;
             }
             
@@ -336,6 +375,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
                 (int)WanderRadius,
                 c => c.InBounds(searcher.Map)
                      && c.Standable(searcher.Map)
+                     && NatureRunningSafetyUtility.IsSafeNatureRunningTarget(searcher, c)
                      && searcher.CanReach(c, PathEndMode.OnCell, Danger.Some),
                 out IntVec3 wanderCell))
             {
@@ -347,6 +387,28 @@ namespace RimTalk_ToddlersExpansion.Harmony
                 // Fallback: use the exact target cell if no nearby cell found
                 interestTarget = context.TargetCell;
                 __result = true;
+            }
+        }
+
+        private static bool TryFindNatureInterestTarget_Prefix(Pawn searcher, ref LocalTargetInfo interestTarget, ref bool __result)
+        {
+            if (!NatureRunningSafetyUtility.IsSafeToStartOrContinue(searcher))
+            {
+                NatureRunningDestinationUtility.ClearContext(searcher);
+                interestTarget = LocalTargetInfo.Invalid;
+                __result = false;
+                return false;
+            }
+
+            return true;
+        }
+
+        private static IEnumerable<Toil> MakeNewToils_Postfix(IEnumerable<Toil> __result, JobDriver_NatureRunning __instance)
+        {
+            foreach (Toil toil in __result)
+            {
+                toil.AddFailCondition(() => !NatureRunningSafetyUtility.IsSafeToStartOrContinue(__instance.pawn));
+                yield return toil;
             }
         }
     }

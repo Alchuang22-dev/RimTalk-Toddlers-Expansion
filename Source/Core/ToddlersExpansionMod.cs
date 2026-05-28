@@ -120,6 +120,13 @@ namespace RimTalk_ToddlersExpansion.Core
 			listingStandard.Label("RimTalk_ToddlersExpansion_Outing_Settings_Desc".Translate());
 			listingStandard.Gap();
 
+			listingStandard.CheckboxLabeled(
+				"RimTalk_ToddlersExpansion_EnableNatureRunningSafetyChecks".Translate(),
+				ref ToddlersExpansionSettings.enableNatureRunningSafetyChecks,
+				"RimTalk_ToddlersExpansion_EnableNatureRunningSafetyChecks_Tooltip".Translate());
+			listingStandard.Gap();
+			listingStandard.GapLine();
+
 			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_OutingPool_VanillaEdgeRandom".Translate(), ref settings.EnableOutingPoolVanillaEdgeRandom);
 			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_OutingPool_GrowingZone".Translate(), ref settings.EnableOutingPoolGrowingZone);
 			listingStandard.CheckboxLabeled("RimTalk_ToddlersExpansion_OutingPool_StockpileZone".Translate(), ref settings.EnableOutingPoolStockpileZone);
@@ -432,6 +439,12 @@ namespace RimTalk_ToddlersExpansion.Core
 				"RimTalk_ToddlersExpansion_PreventColonistAttackingHostileToddler".Translate(),
 				ref ToddlersExpansionSettings.preventColonistAttackingHostileToddler,
 				"RimTalk_ToddlersExpansion_PreventColonistAttackingHostileToddler_Tooltip".Translate());
+			listingStandard.Gap();
+
+			listingStandard.CheckboxLabeled(
+				"RimTalk_ToddlersExpansion_EnableToddlerPlaySafetyChecks".Translate(),
+				ref ToddlersExpansionSettings.enableToddlerPlaySafetyChecks,
+				"RimTalk_ToddlersExpansion_EnableToddlerPlaySafetyChecks_Tooltip".Translate());
 			listingStandard.Gap();
 			listingStandard.GapLine();
 		}

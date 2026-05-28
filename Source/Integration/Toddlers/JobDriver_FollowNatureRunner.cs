@@ -144,6 +144,13 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
                     return;
                 }
 
+                if (!NatureRunningSafetyUtility.IsSafeToStartOrContinue(pawn)
+                    || !NatureRunningSafetyUtility.IsSafeToStartOrContinue(leader))
+                {
+                    EndJobWith(JobCondition.Incompletable);
+                    return;
+                }
+
                 // Match NatureRunning's positive learning effect while this follow job is active.
                 GainNatureRunningLearning(delta);
                 
