@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using HarmonyLib;
 using RimTalk_ToddlersExpansion.Core;
-using RimTalk_ToddlersExpansion.Language;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -20,7 +21,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private const int HardMaxGeneratedPerGroup = 12;
 		private const int HardMaxExtraRolls = 12;
 		private const int GenerationAttemptsPerRequestedPawn = 4;
-		private const float WalkingToddlerSeverity = 0.6f;
 		private const float MinPositiveAgeYears = 0.01f;
 		private const float FallbackToddlerMaxAgeYears = 3f;
 		private const float MinParentAssignmentScore = 0.1f;
@@ -29,9 +29,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private const float PreferredMaleParentAgeAtBirth = 30f;
 		private const float PreferredFemaleParentAgeAtBirth = 27f;
 
-		private static bool _walkHediffChecked;
-		private static HediffDef _learningToWalkDef;
-		private static HediffDef _learningManipulationDef;
+		private static bool _resetHediffsForAgeResolved;
+		private static MethodInfo _resetHediffsForAge;
 		private static int _childhoodFallbackScopeDepth;
 
 		internal static bool UseInjectedChildhoodFallback => _childhoodFallbackScopeDepth > 0;
@@ -186,8 +185,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			{
 				if (addedToddler)
 				{
-					EnsureWalkDef();
-					EnsureWalkingToddlers(pawnList);
+					EnsureWalkingToddlers(generatedToddlers);
 					AssignTraderToddlerParents(parms, pawnList, generatedToddlers);
 					
 					// 注意：不再在这里分配背负关系
@@ -545,8 +543,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
-			float minToddler = ToddlersCompatUtility.GetToddlerMinAgeYears(samplePawn);
-			float maxToddler = ToddlersCompatUtility.GetToddlerEndAgeYears(samplePawn);
+			if (!TryGetToddlerAgeRange(raceDef, samplePawn, out float minToddler, out float maxToddler))
+			{
+				return false;
+			}
+
 			if (!IsValidAgeRange(minToddler, maxToddler))
 			{
 				if (Prefs.DevMode)
@@ -570,6 +571,54 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				ageYears = MinPositiveAgeYears;
 			}
 			return true;
+		}
+
+		private static bool TryGetToddlerAgeRange(ThingDef raceDef, Pawn samplePawn, out float minAge, out float maxAge)
+		{
+			minAge = 0f;
+			maxAge = 0f;
+
+			List<LifeStageAge> ages = raceDef?.race?.lifeStageAges;
+			if (ages != null)
+			{
+				for (int i = 0; i < ages.Count; i++)
+				{
+					LifeStageAge stageAge = ages[i];
+					if (!IsToddlerLifeStage(stageAge))
+					{
+						continue;
+					}
+
+					minAge = stageAge.minAge;
+					maxAge = i + 1 < ages.Count ? ages[i + 1].minAge - 0.01f : minAge + 1f;
+					if (maxAge <= minAge)
+					{
+						maxAge = minAge + 0.5f;
+					}
+
+					return true;
+				}
+			}
+
+			minAge = ToddlersCompatUtility.GetToddlerMinAgeYears(samplePawn);
+			maxAge = ToddlersCompatUtility.GetToddlerEndAgeYears(samplePawn);
+			return true;
+		}
+
+		private static bool IsToddlerLifeStage(LifeStageAge stageAge)
+		{
+			if (stageAge?.def == null)
+			{
+				return false;
+			}
+
+			if (stageAge.def.defName == "HumanlikeToddler")
+			{
+				return true;
+			}
+
+			string workerName = stageAge.def.workerClass?.Name;
+			return !workerName.NullOrEmpty() && workerName == "LifeStageWorker_HumanlikeToddler";
 		}
 
 		private static bool TryGetChildAgeRange(ThingDef raceDef, out float minAge, out float maxAge)
@@ -696,22 +745,21 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		#region Walking Hediffs
 
-		private static void EnsureWalkDef()
-		{
-			if (_walkHediffChecked)
-			{
-				return;
-			}
-
-			_walkHediffChecked = true;
-			_learningToWalkDef = DefDatabase<HediffDef>.GetNamedSilentFail("LearningToWalk");
-			_learningManipulationDef = DefDatabase<HediffDef>.GetNamedSilentFail("LearningManipulation");
-		}
-
 		private static void EnsureWalkingToddlers(List<Pawn> pawns)
 		{
 			if (pawns == null)
 			{
+				return;
+			}
+
+			EnsureResetHediffsForAgeMethod();
+			if (_resetHediffsForAge == null)
+			{
+				if (Prefs.DevMode)
+				{
+					Log.Warning("[RimTalk_ToddlersExpansion] Toddlers.ToddlerLearningUtility.ResetHediffsForAge not found; generated toddlers will rely on Toddlers life stage initialization.");
+				}
+
 				return;
 			}
 
@@ -723,43 +771,43 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					continue;
 				}
 
-				// 添加蹒跚学步hediff（LearningToWalk）
-				if (_learningToWalkDef != null)
+				try
 				{
-					Hediff walkHediff = pawn.health.hediffSet?.GetFirstHediffOfDef(_learningToWalkDef);
-					if (walkHediff == null)
+					if (_resetHediffsForAge.GetParameters().Length == 2)
 					{
-						walkHediff = pawn.health.AddHediff(_learningToWalkDef);
+						_resetHediffsForAge.Invoke(null, new object[] { pawn, true });
 					}
-
-					if (walkHediff != null && walkHediff.Severity < WalkingToddlerSeverity)
+					else
 					{
-						walkHediff.Severity = WalkingToddlerSeverity;
+						_resetHediffsForAge.Invoke(null, new object[] { pawn });
 					}
 				}
-
-				// 添加学习自理hediff（LearningManipulation）
-				if (_learningManipulationDef != null)
+				catch (Exception ex)
 				{
-					Hediff manipulationHediff = pawn.health.hediffSet?.GetFirstHediffOfDef(_learningManipulationDef);
-					if (manipulationHediff == null)
+					if (Prefs.DevMode)
 					{
-						manipulationHediff = pawn.health.AddHediff(_learningManipulationDef);
+						Log.Warning($"[RimTalk_ToddlersExpansion] Failed to reset Toddlers learning hediffs for generated toddler {pawn.LabelShort}: {ex.Message}");
 					}
-
-					if (manipulationHediff != null && manipulationHediff.Severity < WalkingToddlerSeverity)
-					{
-						manipulationHediff.Severity = WalkingToddlerSeverity;
-					}
-				}
-
-				// 同步抬升语言学习进度，避免与学习自理初始进度不一致。
-				if (LanguageLevelUtility.TryGetOrCreateLanguageHediff(pawn, out Hediff languageHediff)
-					&& languageHediff.Severity < WalkingToddlerSeverity)
-				{
-					languageHediff.Severity = WalkingToddlerSeverity;
 				}
 			}
+		}
+
+		private static void EnsureResetHediffsForAgeMethod()
+		{
+			if (_resetHediffsForAgeResolved)
+			{
+				return;
+			}
+
+			_resetHediffsForAgeResolved = true;
+			Type learningUtilityType = AccessTools.TypeByName("Toddlers.ToddlerLearningUtility");
+			if (learningUtilityType == null)
+			{
+				return;
+			}
+
+			_resetHediffsForAge = AccessTools.Method(learningUtilityType, "ResetHediffsForAge", new[] { typeof(Pawn), typeof(bool) })
+				?? AccessTools.Method(learningUtilityType, "ResetHediffsForAge", new[] { typeof(Pawn) });
 		}
 
 		private static void AssignTraderToddlerParents(PawnGroupMakerParms parms, List<Pawn> allPawns, List<Pawn> generatedToddlers)

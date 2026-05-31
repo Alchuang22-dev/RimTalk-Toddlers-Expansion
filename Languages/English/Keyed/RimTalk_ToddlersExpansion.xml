@@ -44,7 +44,7 @@
   <RimTalk_ToddlersExpansion_Talk_EnableStruggle_Tooltip>Controls Event TalkRequest sending when a carried toddler struggles and is put down.</RimTalk_ToddlersExpansion_Talk_EnableStruggle_Tooltip>
   <RimTalk_ToddlersExpansion_Animation_Settings_Header>Play Animation Pools</RimTalk_ToddlersExpansion_Animation_Settings_Header>
   <RimTalk_ToddlersExpansion_Animation_Settings_Desc>Use this page to gradually narrow the toddler play animation pool while debugging animation issues.</RimTalk_ToddlersExpansion_Animation_Settings_Desc>
-  <RimTalk_ToddlersExpansion_Performance_Settings_Header>Performance & Debug</RimTalk_ToddlersExpansion_Performance_Settings_Header>
+	<RimTalk_ToddlersExpansion_Performance_Settings_Header>Performance &amp; Debug</RimTalk_ToddlersExpansion_Performance_Settings_Header>
   <RimTalk_ToddlersExpansion_Performance_Settings_Desc>Tune high-frequency checks and mute verbose debug logging on hot paths.</RimTalk_ToddlersExpansion_Performance_Settings_Desc>
   <RimTalk_ToddlersExpansion_Performance_MuteSpamLogs>Mute spammy debug logs</RimTalk_ToddlersExpansion_Performance_MuteSpamLogs>
   <RimTalk_ToddlersExpansion_Performance_MuteSpamLogs_Tooltip>Suppresses the mod's high-frequency debug spam on hot paths. Still allows other non-debug logs unless the full mute option is enabled.</RimTalk_ToddlersExpansion_Performance_MuteSpamLogs_Tooltip>
@@ -76,6 +76,8 @@
   <RimTalk_ToddlersExpansion_Animation_RunLoop>Custom run loop</RimTalk_ToddlersExpansion_Animation_RunLoop>
   <RimTalk_ToddlersExpansion_Outing_Settings_Header>Nature Running / Children Outing Destination Pools</RimTalk_ToddlersExpansion_Outing_Settings_Header>
   <RimTalk_ToddlersExpansion_Outing_Settings_Desc>Each outing picks one enabled pool, then selects a destination from that pool.</RimTalk_ToddlersExpansion_Outing_Settings_Desc>
+  <RimTalk_ToddlersExpansion_Outing_ChanceFactor>Children outing occurrence factor: x{0}</RimTalk_ToddlersExpansion_Outing_ChanceFactor>
+  <RimTalk_ToddlersExpansion_Outing_ChanceFactor_Tooltip>Multiplies the random selection weight of children's outings. Set to 0 to prevent random outings.</RimTalk_ToddlersExpansion_Outing_ChanceFactor_Tooltip>
   <RimTalk_ToddlersExpansion_EnableNatureRunningSafetyChecks>Stop nature running in unsafe weather or temperature</RimTalk_ToddlersExpansion_EnableNatureRunningSafetyChecks>
   <RimTalk_ToddlersExpansion_EnableNatureRunningSafetyChecks_Tooltip>When enabled, children will not start or continue nature running if their current cell or target is outside comfortable temperature, or if the current weather includes rain or lightning.</RimTalk_ToddlersExpansion_EnableNatureRunningSafetyChecks_Tooltip>
   <RimTalk_ToddlersExpansion_OutingPool_VanillaEdgeRandom>Vanilla outing (map edge random)</RimTalk_ToddlersExpansion_OutingPool_VanillaEdgeRandom>

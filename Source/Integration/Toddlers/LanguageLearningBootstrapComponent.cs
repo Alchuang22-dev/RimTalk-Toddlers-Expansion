@@ -1,4 +1,7 @@
+using System;
 using System.Collections.Generic;
+using System.Reflection;
+using HarmonyLib;
 using RimTalk_ToddlersExpansion.Core;
 using RimTalk_ToddlersExpansion.Integration.BioTech;
 using RimTalk_ToddlersExpansion.Language;
@@ -13,6 +16,10 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private bool _backfillCompleted;
 		private int _addedLanguage;
 		private int _addedBabbling;
+		private static bool _toddlersLearningResolved;
+		private static MethodInfo _resetHediffsForAge;
+		private static HediffDef _learningManipulationDef;
+		private static HediffDef _learningToWalkDef;
 
 		public LanguageLearningBootstrapComponent(Game game)
 		{
@@ -119,8 +126,13 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return;
 			}
 
+			if (isToddler && !HasToddlersNativeLearningHediff(pawn))
+			{
+				TryResetToddlersNativeLearningHediffs(pawn);
+			}
+
 			RemoveBabblingHediffIfPresent(pawn, canAddBabbling);
-			if (canAddLanguage && isToddler)
+			if (canAddLanguage && isToddler && HasToddlersNativeLearningHediff(pawn))
 			{
 				Hediff existingLanguage = pawn.health.hediffSet.GetFirstHediffOfDef(ToddlersExpansionHediffDefOf.RimTalk_ToddlerLanguageLearning);
 				bool hadLanguage = existingLanguage != null;
@@ -136,6 +148,60 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					}
 				}
 			}
+		}
+
+		private static bool HasToddlersNativeLearningHediff(Pawn pawn)
+		{
+			EnsureToddlersLearningResolved();
+			if (pawn?.health?.hediffSet == null)
+			{
+				return false;
+			}
+
+			return (_learningManipulationDef != null && pawn.health.hediffSet.GetFirstHediffOfDef(_learningManipulationDef) != null)
+				|| (_learningToWalkDef != null && pawn.health.hediffSet.GetFirstHediffOfDef(_learningToWalkDef) != null);
+		}
+
+		private static void TryResetToddlersNativeLearningHediffs(Pawn pawn)
+		{
+			EnsureToddlersLearningResolved();
+			if (_resetHediffsForAge == null || pawn == null)
+			{
+				return;
+			}
+
+			try
+			{
+				ParameterInfo[] parameters = _resetHediffsForAge.GetParameters();
+				object[] args = parameters.Length >= 2 ? new object[] { pawn, true } : new object[] { pawn };
+				_resetHediffsForAge.Invoke(null, args);
+			}
+			catch (Exception ex)
+			{
+				if (Prefs.DevMode)
+				{
+					Log.Warning($"[RimTalk_ToddlersExpansion] Failed to invoke Toddlers.ResetHediffsForAge for {pawn.LabelShort}: {ex.Message}");
+				}
+			}
+		}
+
+		private static void EnsureToddlersLearningResolved()
+		{
+			if (_toddlersLearningResolved)
+			{
+				return;
+			}
+
+			_toddlersLearningResolved = true;
+			Type learningUtilityType = AccessTools.TypeByName("Toddlers.ToddlerLearningUtility");
+			if (learningUtilityType != null)
+			{
+				_resetHediffsForAge = AccessTools.Method(learningUtilityType, "ResetHediffsForAge", new[] { typeof(Pawn), typeof(bool) })
+					?? AccessTools.Method(learningUtilityType, "ResetHediffsForAge", new[] { typeof(Pawn) });
+			}
+
+			_learningManipulationDef = DefDatabase<HediffDef>.GetNamedSilentFail("LearningManipulation");
+			_learningToWalkDef = DefDatabase<HediffDef>.GetNamedSilentFail("LearningToWalk");
 		}
 
 		private static void RemoveLanguageHediffIfPresent(Pawn pawn, bool canAddLanguage)

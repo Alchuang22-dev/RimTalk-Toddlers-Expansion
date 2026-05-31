@@ -23,10 +23,12 @@ namespace RimTalk_ToddlersExpansion.Core
 			LongEventHandler.ExecuteWhenFinished(() =>
 			{
 				Integration.Toddlers.ToddlerAgeSettingsUtility.ApplyConfiguredToddlerAge(refreshExistingPawns: false);
+				Integration.Toddlers.ChildrenOutingSettingsUtility.ApplyConfiguredRandomSelectionWeight();
 				ToddlersExpansionDiagnostics.Run();
 				RimTalkCompatUtility.TryRegisterToddlerVariables();
 				Integration.Toddlers.ToddlerCarryingGameComponent.RegisterGameComponent();
 				Integration.Toddlers.MidnightSnackUtility.RegisterGameComponent();
+				Integration.Toddlers.ToddlerAgeSettingsGameComponent.RegisterGameComponent();
 				Integration.Toddlers.LanguageLearningUtility.RegisterGameComponent();
 				Integration.Toddlers.ToddlerSelfBathUtility.RegisterGameComponent();
 				Integration.Toddlers.HAR.HarNurseryMoodUtility.RegisterGameComponent();
@@ -75,6 +77,13 @@ namespace RimTalk_ToddlersExpansion.Core
 			}
 		}
 
+		public override void WriteSettings()
+		{
+			base.WriteSettings();
+			Integration.Toddlers.ToddlerAgeSettingsUtility.ApplyConfiguredToddlerAge(refreshExistingPawns: true);
+			Integration.Toddlers.ChildrenOutingSettingsUtility.ApplyConfiguredRandomSelectionWeight();
+		}
+
 		private void DrawGeneralSettingsPage(Rect inRect, ToddlersExpansionSettings settings)
 		{
 			const float columnGap = 24f;
@@ -108,7 +117,7 @@ namespace RimTalk_ToddlersExpansion.Core
 
 		private void DrawOutingSettingsPage(Rect inRect, ToddlersExpansionSettings settings)
 		{
-			float contentHeight = 920f;
+			float contentHeight = 980f;
 			Rect viewRect = new Rect(0f, 0f, inRect.width - 20f, contentHeight);
 
 			Widgets.BeginScrollView(inRect, ref outingScrollPosition, viewRect);
@@ -119,6 +128,19 @@ namespace RimTalk_ToddlersExpansion.Core
 			listingStandard.GapLine();
 			listingStandard.Label("RimTalk_ToddlersExpansion_Outing_Settings_Desc".Translate());
 			listingStandard.Gap();
+
+			listingStandard.Label("RimTalk_ToddlersExpansion_Outing_ChanceFactor".Translate(
+				ToddlersExpansionSettings.GetChildrenOutingChanceFactor().ToString("0.##")));
+			float previousOutingChanceFactor = ToddlersExpansionSettings.childrenOutingChanceFactor;
+			ToddlersExpansionSettings.childrenOutingChanceFactor =
+				listingStandard.Slider(ToddlersExpansionSettings.GetChildrenOutingChanceFactor(), 0f, 5f);
+			if (!Mathf.Approximately(previousOutingChanceFactor, ToddlersExpansionSettings.childrenOutingChanceFactor))
+			{
+				Integration.Toddlers.ChildrenOutingSettingsUtility.ApplyConfiguredRandomSelectionWeight();
+			}
+			listingStandard.Label("RimTalk_ToddlersExpansion_Outing_ChanceFactor_Tooltip".Translate());
+			listingStandard.Gap();
+			listingStandard.GapLine();
 
 			listingStandard.CheckboxLabeled(
 				"RimTalk_ToddlersExpansion_EnableNatureRunningSafetyChecks".Translate(),

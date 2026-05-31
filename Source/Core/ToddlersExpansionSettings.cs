@@ -51,6 +51,7 @@ namespace RimTalk_ToddlersExpansion.Core
 		public static int BabyCarryCheckIntervalTicks = 120;
 
 		// Nature running / children outing destination pools
+		public static float childrenOutingChanceFactor = 1f;
 		public bool EnableOutingPoolVanillaEdgeRandom = true;
 		public bool EnableOutingPoolGrowingZone = true;
 		public bool EnableOutingPoolStockpileZone = true;
@@ -148,6 +149,11 @@ namespace RimTalk_ToddlersExpansion.Core
 			return GetNewbornToToddlerDays() / 60f;
 		}
 
+		public static float GetChildrenOutingChanceFactor()
+		{
+			return Math.Max(0f, Math.Min(childrenOutingChanceFactor, 5f));
+		}
+
 		private static int ClampInterval(int value, int min, int max)
 		{
 			return Math.Max(min, Math.Min(max, value));
@@ -196,6 +202,7 @@ namespace RimTalk_ToddlersExpansion.Core
 			Scribe_Values.Look(ref ToddlerMainLoopCheckIntervalTicks, "ToddlerMainLoopCheckIntervalTicks", 1);
 			Scribe_Values.Look(ref BabyCarryCheckIntervalTicks, "BabyCarryCheckIntervalTicks", 120);
 
+			Scribe_Values.Look(ref childrenOutingChanceFactor, "childrenOutingChanceFactor", 1f);
 			Scribe_Values.Look(ref enableToddlerTumble, "enableToddlerTumble", true);
 			Scribe_Values.Look(ref toddlerTumbleChanceFactor, "toddlerTumbleChanceFactor", 1f);
 			Scribe_Values.Look(ref toddlerTumbleDamageMax, "toddlerTumbleDamageMax", 5);
