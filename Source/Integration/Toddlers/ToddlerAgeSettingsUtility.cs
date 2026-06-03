@@ -54,10 +54,13 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			float requestedYears = targetDays / DaysPerYear;
-			int updatedRaceStages = ApplyRaceLifeStageOverrides(requestedYears);
+			int updatedRaceStages = ApplyRaceLifeStageOverrides(requestedYears, out int externallyHandledRaceStages);
 			ApplyHarToddlerInfoOverrides(requestedYears);
 			_lastAppliedDays = targetDays;
-			Log.Message($"[RimTalk_ToddlersExpansion][ToddlerAge] Applied newborn-to-toddler threshold: {targetDays} day(s) ({requestedYears:0.###} years); updated race life stages: {updatedRaceStages}; refreshExistingPawns={refreshExistingPawns}.");
+			string externalNote = externallyHandledRaceStages > 0
+				? $"; RatkinToddlerAgeAdjustment-managed race stages skipped: {externallyHandledRaceStages}"
+				: string.Empty;
+			Log.Message($"[RimTalk_ToddlersExpansion][ToddlerAge] Applied newborn-to-toddler threshold: {targetDays} day(s) ({requestedYears:0.###} years); updated race life stages: {updatedRaceStages}{externalNote}; refreshExistingPawns={refreshExistingPawns}.");
 
 			if (refreshExistingPawns)
 			{
@@ -65,9 +68,10 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 		}
 
-		private static int ApplyRaceLifeStageOverrides(float requestedYears)
+		private static int ApplyRaceLifeStageOverrides(float requestedYears, out int externallyHandledRaceStages)
 		{
 			int updatedCount = 0;
+			externallyHandledRaceStages = 0;
 			List<ThingDef> allDefs = DefDatabase<ThingDef>.AllDefsListForReading;
 			for (int i = 0; i < allDefs.Count; i++)
 			{
@@ -81,6 +85,12 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				int toddlerIndex = FindToddlerStageIndex(stages);
 				if (toddlerIndex < 0)
 				{
+					continue;
+				}
+
+				if (RatkinToddlerAgeAdjustmentCompatUtility.IsRaceHandled(def))
+				{
+					externallyHandledRaceStages++;
 					continue;
 				}
 
@@ -108,6 +118,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
+			if (RatkinToddlerAgeAdjustmentCompatUtility.IsAlienInfoHandled(alienRaceToddlerInfo))
+			{
+				return false;
+			}
+
 			Type type = alienRaceToddlerInfo.GetType();
 			FieldInfo babyField = AccessTools.Field(type, "lsa_Baby");
 			LifeStageAge babyStage = babyField?.GetValue(alienRaceToddlerInfo) as LifeStageAge;
@@ -120,6 +135,16 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			float toddlerEndAge = GetToddlerEndAgeFromAlienInfo(type, alienRaceToddlerInfo);
 			minAge = ClampToddlerMinAge(targetMinAge, babyStage.minAge, toddlerEndAge);
 			return true;
+		}
+
+		public static bool IsExternalDetailedToddlerAgeHandled(Pawn pawn)
+		{
+			return RatkinToddlerAgeAdjustmentCompatUtility.IsRaceHandled(pawn?.def);
+		}
+
+		public static bool IsRatkinToddlerAgeAdjustmentLoaded()
+		{
+			return RatkinToddlerAgeAdjustmentCompatUtility.IsLoaded;
 		}
 
 		private static float GetToddlerEndAgeFromAlienInfo(Type type, object alienRaceToddlerInfo)

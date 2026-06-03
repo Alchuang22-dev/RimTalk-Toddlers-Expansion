@@ -105,7 +105,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 		private static void Job_GetCachedDriver_Prefix(Job __instance, Pawn driverPawn)
 		{
-			if (!IsBePlayedWithJob(__instance) || driverPawn == null || _jobCachedDriverField == null)
+			if (!IsProtectedAgainstDriverReuse(__instance) || driverPawn == null || _jobCachedDriverField == null)
 			{
 				return;
 			}
@@ -115,18 +115,21 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				return;
 			}
 
-			Log.Warning($"[RimTalk_ToddlersExpansion] BePlayedWith cached driver mismatch detected. Resetting cached driver. job={DescribeJob(__instance)} firstPawn={DescribePawn(cachedDriver.pawn)} secondPawn={DescribePawn(driverPawn)}");
+			Log.Warning($"[RimTalk_ToddlersExpansion] Cached driver mismatch detected. Resetting cached driver. job={DescribeJob(__instance)} firstPawn={DescribePawn(cachedDriver.pawn)} secondPawn={DescribePawn(driverPawn)}");
 			_jobCachedDriverField.SetValue(__instance, null);
 		}
 
 		private static void PawnJobTracker_StartJob_Prefix(ref Job newJob, bool fromQueue, Pawn ___pawn)
 		{
-			if (!EnsureUniqueBePlayedWithJob(ref newJob, ___pawn, fromQueue ? "StartJob(fromQueue)" : "StartJob"))
+			string context = fromQueue ? "StartJob(fromQueue)" : "StartJob";
+			bool handledBePlayedWith = EnsureUniqueBePlayedWithJob(ref newJob, ___pawn, context);
+			bool handledMutualPlayPartner = EnsureUniqueMutualPlayPartnerJob(ref newJob, ___pawn, context);
+			if (!handledBePlayedWith && !handledMutualPlayPartner)
 			{
 				return;
 			}
 
-			if (ShouldLogVerbose())
+			if (handledBePlayedWith && ShouldLogVerbose())
 			{
 				Log.Message($"[RimTalk_ToddlersExpansion] BePlayedWith start: toddler={DescribePawn(___pawn)} adult={DescribePawn(GetAdult(newJob))} curJob={___pawn?.CurJobDef?.defName ?? "null"} newJob={DescribeJob(newJob)}");
 			}
@@ -134,12 +137,15 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 		private static void PawnJobTracker_TryTakeOrderedJob_Prefix(ref Job job, bool requestQueueing, Pawn ___pawn)
 		{
-			if (!EnsureUniqueBePlayedWithJob(ref job, ___pawn, requestQueueing ? "TryTakeOrderedJob(queue)" : "TryTakeOrderedJob"))
+			string context = requestQueueing ? "TryTakeOrderedJob(queue)" : "TryTakeOrderedJob";
+			bool handledBePlayedWith = EnsureUniqueBePlayedWithJob(ref job, ___pawn, context);
+			bool handledMutualPlayPartner = EnsureUniqueMutualPlayPartnerJob(ref job, ___pawn, context);
+			if (!handledBePlayedWith && !handledMutualPlayPartner)
 			{
 				return;
 			}
 
-			if (ShouldLogVerbose())
+			if (handledBePlayedWith && ShouldLogVerbose())
 			{
 				Log.Message($"[RimTalk_ToddlersExpansion] BePlayedWith ordered: toddler={DescribePawn(___pawn)} adult={DescribePawn(GetAdult(job))} requestQueueing={requestQueueing} curJob={___pawn?.CurJobDef?.defName ?? "null"} job={DescribeJob(job)}");
 			}
@@ -170,20 +176,62 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 			if (needsClone)
 			{
-				Job replacement = JobMaker.MakeJob(job.def, adult);
-				replacement.count = job.count;
-				replacement.playerForced = job.playerForced;
-				replacement.expiryInterval = job.expiryInterval;
-				replacement.checkOverrideOnExpire = job.checkOverrideOnExpire;
-				replacement.ignoreForbidden = job.ignoreForbidden;
-				replacement.ignoreDesignations = job.ignoreDesignations;
-				replacement.reportStringOverride = job.reportStringOverride;
-				job = replacement;
+				job = CloneJob(job);
 
 				Log.Warning($"[RimTalk_ToddlersExpansion] Replaced reused BePlayedWith job before {context}. toddler={DescribePawn(pawn)} adult={DescribePawn(adult)} reason={reason}");
 			}
 
 			return true;
+		}
+
+		private static bool EnsureUniqueMutualPlayPartnerJob(ref Job job, Pawn pawn, string context)
+		{
+			if (!IsMutualPlayPartnerJob(job) || pawn == null)
+			{
+				return false;
+			}
+
+			Pawn initiator = GetAdult(job);
+			JobDriver cachedDriver = _jobCachedDriverField?.GetValue(job) as JobDriver;
+			bool needsClone = false;
+			string reason = null;
+
+			if (cachedDriver?.pawn != null && cachedDriver.pawn != pawn)
+			{
+				needsClone = true;
+				reason = $"cachedDriver belongs to {DescribePawn(cachedDriver.pawn)}";
+			}
+			else if (job.startTick > 0)
+			{
+				needsClone = true;
+				reason = $"job.startTick={job.startTick}";
+			}
+
+			if (needsClone)
+			{
+				job = CloneJob(job);
+
+				Log.Warning($"[RimTalk_ToddlersExpansion] Replaced reused mutual-play partner job before {context}. partner={DescribePawn(pawn)} initiator={DescribePawn(initiator)} reason={reason}");
+			}
+
+			return true;
+		}
+
+		private static Job CloneJob(Job job)
+		{
+			Job replacement = JobMaker.MakeJob(job.def, job.targetA, job.targetB, job.targetC);
+			replacement.count = job.count;
+			replacement.playerForced = job.playerForced;
+			replacement.playerInterruptedForced = job.playerInterruptedForced;
+			replacement.expiryInterval = job.expiryInterval;
+			replacement.checkOverrideOnExpire = job.checkOverrideOnExpire;
+			replacement.ignoreForbidden = job.ignoreForbidden;
+			replacement.ignoreDesignations = job.ignoreDesignations;
+			replacement.ignoreJoyTimeAssignment = job.ignoreJoyTimeAssignment;
+			replacement.reportStringOverride = job.reportStringOverride;
+			replacement.locomotionUrgency = job.locomotionUrgency;
+			replacement.collideWithPawns = job.collideWithPawns;
+			return replacement;
 		}
 
 		private static bool IsBePlayedWithJob(Job job)
@@ -195,6 +243,16 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 			_bePlayedWithDef ??= DefDatabase<JobDef>.GetNamedSilentFail("BePlayedWith");
 			return job.def == _bePlayedWithDef || string.Equals(job.def.defName, "BePlayedWith", StringComparison.Ordinal);
+		}
+
+		private static bool IsMutualPlayPartnerJob(Job job)
+		{
+			return string.Equals(job?.def?.defName, "RimTalk_ToddlerMutualPlayPartnerJob", StringComparison.Ordinal);
+		}
+
+		private static bool IsProtectedAgainstDriverReuse(Job job)
+		{
+			return IsBePlayedWithJob(job) || IsMutualPlayPartnerJob(job);
 		}
 
 		private static Pawn GetAdult(Job job)

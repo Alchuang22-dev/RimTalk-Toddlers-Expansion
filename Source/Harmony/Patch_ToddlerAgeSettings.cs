@@ -20,7 +20,14 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			MethodInfo recalculateLifeStageIndex = AccessTools.Method(typeof(Pawn_AgeTracker), "RecalculateLifeStageIndex");
 			if (recalculateLifeStageIndex != null)
 			{
-				harmony.Patch(recalculateLifeStageIndex, transpiler: new HarmonyMethod(typeof(Patch_ToddlerAgeSettings), nameof(RecalculateLifeStageIndex_Transpiler)));
+				if (ToddlerAgeSettingsUtility.IsRatkinToddlerAgeAdjustmentLoaded())
+				{
+					Log.Message("[RimTalk_ToddlersExpansion][ToddlerAge] RatkinToddlerAgeAdjustment detected; skipping duplicate RecalculateLifeStageIndex float-age transpiler.");
+				}
+				else
+				{
+					harmony.Patch(recalculateLifeStageIndex, transpiler: new HarmonyMethod(typeof(Patch_ToddlerAgeSettings), nameof(RecalculateLifeStageIndex_Transpiler)));
+				}
 			}
 
 			MethodInfo calculateToddlerMinAge = AccessTools.Method("Toddlers.AlienRaceToddlerInfo:CalculateToddlerMinAge");
@@ -32,6 +39,17 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 		private static bool ToddlerMinAge_Prefix(Pawn p, ref float __result)
 		{
+			if (ToddlerAgeSettingsUtility.IsExternalDetailedToddlerAgeHandled(p))
+			{
+				if (ToddlerAgeSettingsUtility.TryGetConfiguredToddlerMinAge(p, out float externalMinAge))
+				{
+					__result = externalMinAge;
+					return false;
+				}
+
+				return true;
+			}
+
 			if (!ToddlerAgeSettingsUtility.TryGetConfiguredToddlerMinAge(p, out float minAge))
 			{
 				minAge = ToddlerAgeSettingsUtility.GetConfiguredToddlerMinAgeYears();

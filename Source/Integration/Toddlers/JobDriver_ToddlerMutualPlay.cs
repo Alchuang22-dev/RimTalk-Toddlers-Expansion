@@ -141,9 +141,15 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
-			if (Partner.CurJob?.def == partnerJobDef)
+			Job currentPartnerJob = Partner.CurJob;
+			if (currentPartnerJob?.def == partnerJobDef)
 			{
-				return true;
+				return currentPartnerJob.targetA.Thing == pawn;
+			}
+
+			if (ToddlersCompatUtility.IsBusyForMutualPlay(Partner))
+			{
+				return false;
 			}
 
 			Job partnerJob = JobMaker.MakeJob(partnerJobDef, pawn);
