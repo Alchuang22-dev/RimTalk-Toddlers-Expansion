@@ -411,7 +411,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 						continue;
 					}
 
-					if (!ToddlersCompatUtility.IsToddlerOrBaby(toddler))
+					if (!IsVisitorDependentYoungPawn(toddler))
 					{
 						continue;
 					}
@@ -458,13 +458,43 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					continue;
 				}
 
-				if (ToddlerCarryingUtility.IsValidCarrier(pawn))
+				if (IsAdultVisitorSupportPawn(pawn))
 				{
 					return true;
 				}
 			}
 
 			return false;
+		}
+
+		private static bool IsVisitorDependentYoungPawn(Pawn pawn)
+		{
+			return pawn != null
+				&& (ToddlersCompatUtility.IsToddlerOrBaby(pawn)
+					|| pawn.DevelopmentalStage == DevelopmentalStage.Child);
+		}
+
+		private static bool IsAdultVisitorSupportPawn(Pawn pawn)
+		{
+			if (pawn == null || pawn.Dead || pawn.Destroyed || !pawn.Spawned)
+			{
+				return false;
+			}
+
+			if (pawn.Downed || pawn.RaceProps?.Humanlike != true)
+			{
+				return false;
+			}
+
+			if (pawn.DevelopmentalStage.Newborn()
+				|| pawn.DevelopmentalStage.Baby()
+				|| pawn.DevelopmentalStage == DevelopmentalStage.Child
+				|| ToddlersCompatUtility.IsToddler(pawn))
+			{
+				return false;
+			}
+
+			return pawn.ageTracker == null || pawn.ageTracker.AgeBiologicalYearsFloat >= 13f;
 		}
 
 		private static void TryStartExitMap(Pawn pawn)

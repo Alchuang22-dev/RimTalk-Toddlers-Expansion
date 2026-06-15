@@ -1,3 +1,4 @@
+using RimTalk_ToddlersExpansion.Core;
 using RimTalk_ToddlersExpansion.Integration.BioTech;
 using RimTalk_ToddlersExpansion.Integration.Toddlers;
 using Verse;
@@ -10,7 +11,8 @@ namespace RimTalk_ToddlersExpansion.Language
 		private bool _removeBecauseNotBaby;
 
 		public override bool ShouldRemove => pawn == null
-			|| _removeBecauseNotBaby;
+			|| _removeBecauseNotBaby
+			|| HasToddlerLanguageHediff();
 
 		public override string SeverityLabel => null;
 
@@ -22,10 +24,16 @@ namespace RimTalk_ToddlersExpansion.Language
 				return;
 			}
 
-			if (ToddlersCompatUtility.IsToddler(pawn) || !BiotechCompatUtility.IsBaby(pawn))
+			if (HasToddlerLanguageHediff() || ToddlersCompatUtility.IsToddler(pawn) || !BiotechCompatUtility.IsBaby(pawn))
 			{
 				_removeBecauseNotBaby = true;
 			}
+		}
+
+		private bool HasToddlerLanguageHediff()
+		{
+			return ToddlersExpansionHediffDefOf.RimTalk_ToddlerLanguageLearning != null
+				&& pawn?.health?.hediffSet?.GetFirstHediffOfDef(ToddlersExpansionHediffDefOf.RimTalk_ToddlerLanguageLearning) != null;
 		}
 	}
 }

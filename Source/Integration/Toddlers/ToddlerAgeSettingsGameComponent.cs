@@ -8,18 +8,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		{
 		}
 
-		public override void StartedNewGame()
-		{
-			base.StartedNewGame();
-			ToddlerAgeSettingsUtility.RefreshExistingPawnLifeStagesForConfiguredAge();
-		}
-
-		public override void LoadedGame()
-		{
-			base.LoadedGame();
-			ToddlerAgeSettingsUtility.RefreshExistingPawnLifeStagesForConfiguredAge();
-		}
-
 		public static void RegisterGameComponent()
 		{
 			if (Current.Game == null)
@@ -30,11 +18,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			if (Current.Game.GetComponent<ToddlerAgeSettingsGameComponent>() == null)
 			{
 				Current.Game.components.Add(new ToddlerAgeSettingsGameComponent(Current.Game));
-			}
-
-			if (Current.ProgramState == ProgramState.Playing)
-			{
-				ToddlerAgeSettingsUtility.RefreshExistingPawnLifeStagesForConfiguredAge();
 			}
 		}
 	}

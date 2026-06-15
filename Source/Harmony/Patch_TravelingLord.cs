@@ -162,7 +162,15 @@ namespace RimTalk_ToddlersExpansion.Harmony
 					continue;
 				}
 
-				pawn.mindState.duty = new PawnDuty(DutyDefOf.ExitMapBest);
+				Pawn actualLeader = ResolveActualLeader(lord, null);
+				if (actualLeader != null && actualLeader != pawn)
+				{
+					pawn.mindState.duty = new PawnDuty(DutyDefOf.Escort, actualLeader, 14f);
+				}
+				else
+				{
+					ForcePawnLeaveMap(pawn);
+				}
 			}
 		}
 
@@ -257,31 +265,32 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 		private static void ForcePawnLeaveMap(Pawn pawn)
 		{
-			if (pawn == null || pawn.Map == null)
+			if (pawn == null || pawn.Dead || pawn.Destroyed || !pawn.Spawned)
 				return;
 
-			// 创建离开地图的任务
-			var leaveJob = JobMaker.MakeJob(RimWorld.JobDefOf.Goto, FindExitCell(pawn));
+			IntVec3 exitCell = FindExitCell(pawn);
+			if (!exitCell.IsValid)
+			{
+				return;
+			}
+
+			var leaveJob = JobMaker.MakeJob(RimWorld.JobDefOf.Goto, exitCell);
 			leaveJob.exitMapOnArrival = true;
-			pawn.jobs?.TryTakeOrderedJob(leaveJob);
+			leaveJob.locomotionUrgency = LocomotionUrgency.Jog;
+			pawn.jobs?.StartJob(leaveJob, JobCondition.InterruptForced);
 		}
 
 		private static IntVec3 FindExitCell(Pawn pawn)
 		{
-			// 找到最近的地图边缘
 			if (pawn?.Map == null)
 				return IntVec3.Invalid;
 
-			// 简单地返回一个远离中心的边缘位置
-			var map = pawn.Map;
-			IntVec3 pawnPos = pawn.Position;
+			if (RCellFinder.TryFindBestExitSpot(pawn, out IntVec3 spot, TraverseMode.ByPawn, canBash: false))
+			{
+				return spot;
+			}
 
-			// 如果靠近北边，去北边
-			if (pawnPos.z > map.Size.z / 2)
-				return new IntVec3(pawnPos.x, 0, map.Size.z - 1);
-
-			// 否则去南边
-			return new IntVec3(pawnPos.x, 0, 0);
+			return IntVec3.Invalid;
 		}
 
 		/// <summary>
@@ -364,7 +373,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				bool hasLeaderDuty = pawn.mindState?.duty?.def == DutyDefOf.ExitMapBestAndDefendSelf;
 				
 				// 如果被背着的幼儿有领头 duty（说明他是 trader），把 duty 转移给载体
-				if (hasLeaderDuty && ToddlerCarryingUtility.IsValidCarrier(carrier))
+				if (hasLeaderDuty && IsValidExitLeader(carrier))
 				{
 					carriersNeedLeaderDuty.Add(carrier);
 				}
@@ -424,8 +433,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				}
 				else
 				{
-					pawn.mindState.duty = new PawnDuty(DutyDefOf.ExitMapBest);
-					pawn.mindState.duty.locomotion = LocomotionUrgency.Jog;
+					ForcePawnLeaveMap(pawn);
 				}
 			}
 		}
@@ -442,7 +450,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				}
 			}
 
-			if (ToddlerCarryingUtility.IsValidCarrier(leader))
+			if (IsValidExitLeader(leader))
 			{
 				return leader;
 			}
@@ -465,13 +473,42 @@ namespace RimTalk_ToddlersExpansion.Harmony
 					continue;
 				}
 
-				if (ToddlerCarryingUtility.IsValidCarrier(candidate))
+				if (IsValidExitLeader(candidate))
 				{
 					return candidate;
 				}
 			}
 
 			return null;
+		}
+
+		private static bool IsValidExitLeader(Pawn pawn)
+		{
+			if (pawn == null || pawn.Dead || pawn.Destroyed || !pawn.Spawned)
+			{
+				return false;
+			}
+
+			if (pawn.Downed || pawn.RaceProps?.Humanlike != true)
+			{
+				return false;
+			}
+
+			if (ToddlerCarryingUtility.IsBeingCarried(pawn))
+			{
+				return false;
+			}
+
+			if (pawn.DevelopmentalStage.Newborn()
+				|| pawn.DevelopmentalStage.Baby()
+				|| pawn.DevelopmentalStage == DevelopmentalStage.Child
+				|| ToddlersCompatUtility.IsToddler(pawn)
+				|| IsYoungHuman(pawn))
+			{
+				return false;
+			}
+
+			return true;
 		}
 
 		/// <summary>

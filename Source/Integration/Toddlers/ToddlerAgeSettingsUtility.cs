@@ -18,8 +18,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private static int _lastAppliedDays = -1;
 		private static FieldInfo _harAlienRaceInfoField;
 		private static bool _harReflectionResolved;
-		private static FieldInfo _cachedLifeStageIndexField;
-		private static bool _ageTrackerReflectionResolved;
 
 		public static float GetConfiguredToddlerMinAgeYears()
 		{
@@ -62,10 +60,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				: string.Empty;
 			Log.Message($"[RimTalk_ToddlersExpansion][ToddlerAge] Applied newborn-to-toddler threshold: {targetDays} day(s) ({requestedYears:0.###} years); updated race life stages: {updatedRaceStages}{externalNote}; refreshExistingPawns={refreshExistingPawns}.");
 
-			if (refreshExistingPawns)
-			{
-				RefreshExistingPawnLifeStages();
-			}
+			// Do not force existing pawns to recalculate here. RimWorld's normal age tick path will start
+			// the toddler life stage when the pawn naturally crosses the configured threshold.
 		}
 
 		private static int ApplyRaceLifeStageOverrides(float requestedYears, out int externallyHandledRaceStages)
@@ -253,121 +249,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			return _harAlienRaceInfoField?.GetValue(null) as IDictionary;
-		}
-
-		private static void RefreshExistingPawnLifeStages()
-		{
-			if (Current.ProgramState != ProgramState.Playing)
-			{
-				return;
-			}
-
-			List<Pawn> pawns = PawnsFinder.AllMapsWorldAndTemporary_AliveOrDead;
-			int preparedToddlerEvents = 0;
-			for (int i = 0; i < pawns.Count; i++)
-			{
-				Pawn pawn = pawns[i];
-				if (pawn?.ageTracker == null || pawn.RaceProps?.Humanlike != true)
-				{
-					continue;
-				}
-
-				if (PrepareBabyToToddlerTransitionEvent(pawn))
-				{
-					preparedToddlerEvents++;
-				}
-
-				long ageTicks = pawn.ageTracker.AgeBiologicalTicks;
-				pawn.ageTracker.AgeBiologicalTicks = ageTicks;
-			}
-
-			if (preparedToddlerEvents > 0)
-			{
-				Log.Message($"[RimTalk_ToddlersExpansion][ToddlerAge] Prepared Toddlers baby-to-toddler transition event for {preparedToddlerEvents} loaded pawn(s).");
-			}
-		}
-
-		public static void RefreshExistingPawnLifeStagesForConfiguredAge()
-		{
-			ApplyConfiguredToddlerAge(refreshExistingPawns: true);
-		}
-
-		private static bool PrepareBabyToToddlerTransitionEvent(Pawn pawn)
-		{
-			List<LifeStageAge> stages = pawn?.def?.race?.lifeStageAges;
-			if (stages == null || stages.Count == 0 || pawn.ageTracker == null)
-			{
-				return false;
-			}
-
-			int toddlerIndex = FindToddlerStageIndex(stages);
-			if (toddlerIndex <= 0)
-			{
-				return false;
-			}
-
-			int babyIndex = toddlerIndex - 1;
-			LifeStageDef babyStage = stages[babyIndex]?.def;
-			if (babyStage == null || !babyStage.developmentalStage.Baby())
-			{
-				return false;
-			}
-
-			int targetIndex = GetLifeStageIndexForAge(stages, pawn.ageTracker.AgeBiologicalYearsFloat);
-			if (targetIndex != toddlerIndex)
-			{
-				return false;
-			}
-
-			if (HasToddlerBackstory(pawn))
-			{
-				return false;
-			}
-
-			FieldInfo cachedLifeStageIndexField = GetCachedLifeStageIndexField();
-			if (cachedLifeStageIndexField == null)
-			{
-				return false;
-			}
-
-			if (cachedLifeStageIndexField.GetValue(pawn.ageTracker) is int cachedIndex && cachedIndex == babyIndex)
-			{
-				return false;
-			}
-
-			cachedLifeStageIndexField.SetValue(pawn.ageTracker, babyIndex);
-			return true;
-		}
-
-		private static int GetLifeStageIndexForAge(List<LifeStageAge> stages, float ageYears)
-		{
-			for (int i = stages.Count - 1; i >= 0; i--)
-			{
-				LifeStageAge stage = stages[i];
-				if (stage != null && stage.minAge <= ageYears + 1E-06f)
-				{
-					return i;
-				}
-			}
-
-			return 0;
-		}
-
-		private static bool HasToddlerBackstory(Pawn pawn)
-		{
-			List<string> categories = pawn?.story?.Childhood?.spawnCategories;
-			return categories != null && categories.Contains("Toddler");
-		}
-
-		private static FieldInfo GetCachedLifeStageIndexField()
-		{
-			if (!_ageTrackerReflectionResolved)
-			{
-				_ageTrackerReflectionResolved = true;
-				_cachedLifeStageIndexField = AccessTools.Field(typeof(Pawn_AgeTracker), "cachedLifeStageIndex");
-			}
-
-			return _cachedLifeStageIndexField;
 		}
 
 	}

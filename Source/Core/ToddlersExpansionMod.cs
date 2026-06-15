@@ -80,7 +80,7 @@ namespace RimTalk_ToddlersExpansion.Core
 		public override void WriteSettings()
 		{
 			base.WriteSettings();
-			Integration.Toddlers.ToddlerAgeSettingsUtility.ApplyConfiguredToddlerAge(refreshExistingPawns: true);
+			Integration.Toddlers.ToddlerAgeSettingsUtility.ApplyConfiguredToddlerAge(refreshExistingPawns: false);
 			Integration.Toddlers.ChildrenOutingSettingsUtility.ApplyConfiguredRandomSelectionWeight();
 		}
 
@@ -388,7 +388,7 @@ namespace RimTalk_ToddlersExpansion.Core
 				(int)listingStandard.Slider(ToddlersExpansionSettings.GetNewbornToToddlerDays(), 1, 179);
 			if (ToddlersExpansionSettings.GetNewbornToToddlerDays() != oldThresholdDays)
 			{
-				Integration.Toddlers.ToddlerAgeSettingsUtility.ApplyConfiguredToddlerAge(refreshExistingPawns: true);
+				Integration.Toddlers.ToddlerAgeSettingsUtility.ApplyConfiguredToddlerAge(refreshExistingPawns: false);
 			}
 			listingStandard.Gap();
 			listingStandard.Label("RimTalk_Language_LearningFactor".Translate(ToddlersExpansionSettings.learningFactor_Talking.ToString("0.##")));
