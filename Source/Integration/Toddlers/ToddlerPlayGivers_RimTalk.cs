@@ -80,7 +80,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 	public sealed class ToddlerPlayGiver_MutualPlay : ToddlerPlayGiver
 	{
-		private const float PlayNeedThreshold = 0.85f;
+		private const float PlayNeedThreshold = 0.92f;
 		private const int PartnerSearchRadius = 10;
 		private const int SpotSearchRadius = 6;
 		private const int SharedSpotDistance = 3;
@@ -143,6 +143,10 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			job.ignoreJoyTimeAssignment = true;
 			job.expiryInterval = 2000;
 			job.targetB = spot;
+			if (Prefs.DevMode)
+			{
+				Log.Message($"[RimTalk_ToddlersExpansion] Mutual play job issued: pawn={pawn.LabelShort} partner={partner.LabelShort} spot={spot}");
+			}
 
 			return job;
 		}
@@ -257,13 +261,12 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					continue;
 				}
 
-				if (!TryFindPlaySpot(pawn, other, out IntVec3 sharedSpot))
+				partner = other;
+				if (!TryFindPlaySpot(pawn, other, out spot))
 				{
-					continue;
+					spot = IntVec3.Invalid;
 				}
 
-				partner = other;
-				spot = sharedSpot;
 				return true;
 			}
 

@@ -136,11 +136,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
                     continue;
                 }
 
-                if (!TryFindMutualPlaySpot(pawn, otherPawn, out _))
-                {
-                    continue;
-                }
-                
                 candidates.Add(otherPawn);
             }
             
