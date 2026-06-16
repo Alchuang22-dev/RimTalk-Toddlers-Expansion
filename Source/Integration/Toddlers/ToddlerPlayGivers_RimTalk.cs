@@ -84,10 +84,17 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private const int PartnerSearchRadius = 10;
 		private const int SpotSearchRadius = 6;
 		private const int SharedSpotDistance = 3;
+		private const int MutualPlayRetryCooldownTicks = 120;
+		private const int MutualPlayCooldownKey = 1945378123;
 
 		public override bool CanDo(Pawn pawn)
 		{
 			if (!IsEligiblePawn(pawn))
+			{
+				return false;
+			}
+
+			if (IsOnCooldown(pawn))
 			{
 				return false;
 			}
@@ -108,6 +115,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		public override Job TryGiveJob(Pawn pawn)
 		{
 			if (!IsEligiblePawn(pawn))
+			{
+				return null;
+			}
+
+			if (IsOnCooldown(pawn))
 			{
 				return null;
 			}
@@ -135,6 +147,12 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			return job;
 		}
 
+		internal static void StartFailureCooldown(Pawn pawn, Pawn partner)
+		{
+			StartCooldown(pawn);
+			StartCooldown(partner);
+		}
+
 		private static bool IsEligiblePawn(Pawn pawn)
 		{
 			if (pawn?.Map == null || pawn.needs?.play == null || !ToddlersCompatUtility.IsEligibleForSelfPlay(pawn))
@@ -148,6 +166,33 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			return !ToddlersCompatUtility.IsBusyForMutualPlay(pawn);
+		}
+
+		private static bool IsOnCooldown(Pawn pawn)
+		{
+			if (pawn?.mindState?.thinkData == null)
+			{
+				return false;
+			}
+
+			int now = Find.TickManager?.TicksGame ?? 0;
+			if (!pawn.mindState.thinkData.TryGetValue(MutualPlayCooldownKey, out int nextTick))
+			{
+				return false;
+			}
+
+			return now < nextTick;
+		}
+
+		private static void StartCooldown(Pawn pawn)
+		{
+			if (pawn?.mindState?.thinkData == null)
+			{
+				return;
+			}
+
+			int now = Find.TickManager?.TicksGame ?? 0;
+			pawn.mindState.thinkData[MutualPlayCooldownKey] = now + MutualPlayRetryCooldownTicks;
 		}
 
 		private static bool ShouldRunPartnerSearch(Pawn pawn)
@@ -183,6 +228,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				}
 
 				if (ToddlersCompatUtility.IsBusyForMutualPlay(other))
+				{
+					continue;
+				}
+
+				if (IsOnCooldown(other))
 				{
 					continue;
 				}

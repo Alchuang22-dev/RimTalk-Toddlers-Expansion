@@ -52,11 +52,13 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			// unrelated jobs such as Ingest/LeaveCrib/Wait_MaintainPosture.
 			bool cleared = ToddlerPlayAnimationUtility.ClearManagedNativePlayAnimation(pawn);
 
-			if (Prefs.DevMode && (before != null || newJob.def == JobDefOf.Ingest))
+			JobDef newJobDef = newJob.def;
+			if (Prefs.DevMode && (before != null || newJobDef == JobDefOf.Ingest))
 			{
+				string newJobName = newJobDef?.defName ?? "<invalid-job>";
 				Log.Message(
 					$"[RimTalk_ToddlersExpansion] Job-start animation cleanup: pawn={pawn.LabelShort} " +
-					$"newJob={newJob.def.defName} curAnimationBefore={before?.defName ?? "null"} cleared={cleared}");
+					$"newJob={newJobName} curAnimationBefore={before?.defName ?? "null"} cleared={cleared}");
 			}
 
 			return cleared;

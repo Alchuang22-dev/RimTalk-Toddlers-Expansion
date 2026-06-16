@@ -26,9 +26,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		protected override IEnumerable<Toil> MakeNewToils()
 		{
 			this.FailOnDestroyedOrNull(PartnerInd);
-			this.FailOn(() => pawn.Downed || pawn.Drafted || ToddlerMentalStateUtility.HasBlockingMentalState(pawn));
-			this.FailOn(() => Partner == null || Partner.Downed || Partner.Drafted || ToddlerMentalStateUtility.HasBlockingMentalState(Partner));
-			this.FailOn(() => Partner.Map != pawn.Map);
+			this.FailOn(() => !CanContinueMutualPlay());
 			this.FailOn(() => _partnerJobStarted && !IsPartnerStillCommitted());
 
 			// Step 1: Start partner job first (partner will stop moving and wait)
@@ -40,6 +38,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					_partnerJobStarted = true;
 					if (!TryStartPartnerJob())
 					{
+						ToddlerPlayGiver_MutualPlay.StartFailureCooldown(pawn, Partner);
 						EndJobWith(JobCondition.Incompletable);
 					}
 				}
@@ -71,6 +70,13 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			};
 			play.tickAction = () =>
 			{
+				if (!CanContinueMutualPlay() || (_partnerJobStarted && !IsPartnerStillCommitted()))
+				{
+					ToddlerPlayGiver_MutualPlay.StartFailureCooldown(pawn, Partner);
+					EndJobWith(JobCondition.Incompletable);
+					return;
+				}
+
 				if (_playAnimation != null && pawn.Drawer?.renderer?.CurAnimation != _playAnimation)
 				{
 					ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, _playAnimation);
@@ -105,6 +111,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				ToddlerPlayReportUtility.CancelJob(job);
 				if (condition != JobCondition.Succeeded)
 				{
+					ToddlerPlayGiver_MutualPlay.StartFailureCooldown(pawn, Partner);
 					return;
 				}
 
@@ -125,7 +132,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		private bool TryStartPartnerJob()
 		{
-			if (Partner?.jobs == null)
+			if (!CanContinueMutualPlay() || Partner?.jobs == null)
 			{
 				return false;
 			}
@@ -160,6 +167,27 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				partnerJob.targetB = job.targetB;
 			}
 			return Partner.jobs.TryTakeOrderedJob(partnerJob);
+		}
+
+		private bool CanContinueMutualPlay()
+		{
+			Pawn partner = Partner;
+			if (pawn?.Map == null || partner?.Map == null || partner.Map != pawn.Map)
+			{
+				return false;
+			}
+
+			if (pawn.Downed || pawn.Drafted || !pawn.Awake() || ToddlerMentalStateUtility.HasBlockingMentalState(pawn))
+			{
+				return false;
+			}
+
+			if (partner.Downed || partner.Drafted || !partner.Awake() || ToddlerMentalStateUtility.HasBlockingMentalState(partner))
+			{
+				return false;
+			}
+
+			return pawn.CanReach(partner, PathEndMode.Touch, Danger.Some);
 		}
 
 		private static float GetPlayLevel(Pawn pawn)
