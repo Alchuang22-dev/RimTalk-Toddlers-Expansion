@@ -186,16 +186,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return alreadyCommitted;
 			}
 
-			if (ToddlersCompatUtility.IsBusyForMutualPlay(Partner))
-			{
-				MutualPlayDiagnostics.Log(
-					pawn,
-					"PartnerJobRejected",
-					$"partner busy; currentPartnerJob={MutualPlayDiagnostics.DescribeJob(currentPartnerJob)}",
-					Partner);
-				return false;
-			}
-
 			Job partnerJob = JobMaker.MakeJob(partnerJobDef, pawn);
 			partnerJob.ignoreJoyTimeAssignment = true;
 			partnerJob.expiryInterval = job.expiryInterval > 0 ? job.expiryInterval : partnerJob.def.joyDuration;
