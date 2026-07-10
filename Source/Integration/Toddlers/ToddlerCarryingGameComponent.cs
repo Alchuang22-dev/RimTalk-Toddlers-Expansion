@@ -19,6 +19,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private const int VisitorRepickupMaxPerTick = 3;
 
 		private bool _needsCarryProtectionResync;
+		private List<Pawn> _savedCarriedToddlers = new List<Pawn>();
+		private List<Pawn> _savedCarriers = new List<Pawn>();
 		private readonly List<Pawn> _activeCarriedToddlers = new List<Pawn>(32);
 		private readonly List<Pawn> _activeCarriers = new List<Pawn>(32);
 
@@ -72,6 +74,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		{
 			base.StartedNewGame();
 			ToddlerCarryingTracker.ClearAll();
+			_savedCarriedToddlers.Clear();
+			_savedCarriers.Clear();
 			ToddlerCarryDesireUtility.RebuildTrackingFromMaps();
 			Patch_VisitorToddlerBabyFood.ClearCache();
 			_needsCarryProtectionResync = false;
@@ -81,6 +85,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		{
 			base.LoadedGame();
 			ToddlerCarryingTracker.ClearAll();
+			RestoreCarryingRelations();
 			ToddlerCarryDesireUtility.RebuildTrackingFromMaps();
 			Patch_VisitorToddlerBabyFood.ClearCache();
 			_needsCarryProtectionResync = true;
@@ -89,6 +94,89 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		public override void ExposeData()
 		{
 			base.ExposeData();
+
+			if (Scribe.mode == LoadSaveMode.Saving)
+			{
+				CaptureCarryingRelations();
+			}
+
+			Scribe_Collections.Look(ref _savedCarriedToddlers, "rimTalkCarriedToddlers", LookMode.Reference);
+			Scribe_Collections.Look(ref _savedCarriers, "rimTalkToddlerCarriers", LookMode.Reference);
+
+			if (Scribe.mode == LoadSaveMode.PostLoadInit)
+			{
+				_savedCarriedToddlers ??= new List<Pawn>();
+				_savedCarriers ??= new List<Pawn>();
+			}
+		}
+
+		private void CaptureCarryingRelations()
+		{
+			_savedCarriedToddlers.Clear();
+			_savedCarriers.Clear();
+
+			ToddlerCarryingTracker.CopyAllCarriedToddlersTo(_activeCarriedToddlers);
+			for (int i = 0; i < _activeCarriedToddlers.Count; i++)
+			{
+				Pawn toddler = _activeCarriedToddlers[i];
+				Pawn carrier = ToddlerCarryingTracker.GetCarrier(toddler);
+				if (toddler == null || carrier == null)
+				{
+					continue;
+				}
+
+				_savedCarriedToddlers.Add(toddler);
+				_savedCarriers.Add(carrier);
+			}
+		}
+
+		private void RestoreCarryingRelations()
+		{
+			int relationCount = System.Math.Min(_savedCarriedToddlers?.Count ?? 0, _savedCarriers?.Count ?? 0);
+			for (int i = 0; i < relationCount; i++)
+			{
+				Pawn toddler = _savedCarriedToddlers[i];
+				Pawn carrier = _savedCarriers[i];
+				if (!CanRestoreCarryingRelation(carrier, toddler))
+				{
+					continue;
+				}
+
+				ToddlerCarryingTracker.RegisterCarrying(carrier, toddler);
+				if (toddler.Position != carrier.Position)
+				{
+					try
+					{
+						toddler.Position = carrier.Position;
+					}
+					catch
+					{
+					}
+				}
+			}
+
+			_savedCarriedToddlers.Clear();
+			_savedCarriers.Clear();
+		}
+
+		private static bool CanRestoreCarryingRelation(Pawn carrier, Pawn toddler)
+		{
+			if (carrier == null || toddler == null
+				|| carrier.Dead || carrier.Destroyed || !carrier.Spawned
+				|| toddler.Dead || toddler.Destroyed || !toddler.Spawned
+				|| carrier.MapHeld != toddler.MapHeld
+				|| ToddlerCarryingUtility.IsBeingCarried(toddler))
+			{
+				return false;
+			}
+
+			if (!ToddlerCarryingUtility.IsCarryRelationStillValid(carrier, toddler))
+			{
+				return false;
+			}
+
+			return ToddlerCarryingTracker.GetCarriedCount(carrier)
+				< ToddlerCarryingUtility.GetMaxCarryCapacity(carrier);
 		}
 
 		public static void RegisterGameComponent()
