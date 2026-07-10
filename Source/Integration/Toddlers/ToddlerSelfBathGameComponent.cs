@@ -755,7 +755,20 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		public static Need GetHygieneNeed(Pawn pawn)
 		{
-			EnsureInitialized();
+			try
+			{
+				EnsureInitialized();
+			}
+			catch (Exception ex)
+			{
+				if (Prefs.DevMode)
+				{
+					Log.Warning($"[RimTalk_ToddlersExpansion] Hygiene integration unavailable while reading hygiene need: {ex.Message}");
+				}
+
+				return null;
+			}
+
 			return _hygieneNeedDef == null ? null : pawn?.needs?.TryGetNeed(_hygieneNeedDef);
 		}
 
@@ -1051,66 +1064,125 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			_initialized = true;
-			_hygieneNeedDef = DefDatabase<NeedDef>.GetNamedSilentFail("Hygiene");
-
-			Type washUtility = AccessTools.TypeByName("Toddlers.WashBabyUtility");
-			if (washUtility != null)
+			try
 			{
-				_findBathOrTub = AccessTools.Method(washUtility, "FindBathOrTub", new[] { typeof(Pawn), typeof(Pawn), typeof(Thing).MakeByRefType() });
-			}
+				_hygieneNeedDef = DefDatabase<NeedDef>.GetNamedSilentFail("Hygiene");
 
-			Type closestSanitation = AccessTools.TypeByName("DubsBadHygiene.ClosestSanitation");
-			if (closestSanitation != null)
-			{
-				_findBestHygieneSource = AccessTools.Method(closestSanitation, "FindBestHygieneSource", new[] { typeof(Pawn), typeof(bool), typeof(float) });
-				_findBestCleanWaterSource ??= AccessTools.Method(
-					closestSanitation,
-					"FindBestCleanWaterSource",
-					new[] { typeof(Pawn), typeof(Pawn), typeof(bool), typeof(float), typeof(ThingDef), typeof(Pawn) });
-			}
-
-			Type patchDbh = AccessTools.TypeByName("Toddlers.Patch_DBH");
-			if (patchDbh != null)
-			{
-				MethodInfo patchMethod = AccessTools.Field(patchDbh, "m_FindBestCleanWaterSource")?.GetValue(null) as MethodInfo;
-				if (patchMethod != null)
+				Type washUtility = AccessTools.TypeByName("Toddlers.WashBabyUtility");
+				if (washUtility != null)
 				{
-					_findBestCleanWaterSource = patchMethod;
+					_findBathOrTub = AccessTools.Method(washUtility, "FindBathOrTub", new[] { typeof(Pawn), typeof(Pawn), typeof(Thing).MakeByRefType() });
+				}
+
+				Type closestSanitation = AccessTools.TypeByName("DubsBadHygiene.ClosestSanitation");
+				if (closestSanitation != null)
+				{
+					_findBestHygieneSource = AccessTools.Method(closestSanitation, "FindBestHygieneSource", new[] { typeof(Pawn), typeof(bool), typeof(float) });
+					_findBestCleanWaterSource ??= AccessTools.Method(
+						closestSanitation,
+						"FindBestCleanWaterSource",
+						new[] { typeof(Pawn), typeof(Pawn), typeof(bool), typeof(float), typeof(ThingDef), typeof(Pawn) });
+				}
+
+				Type patchDbh = AccessTools.TypeByName("Toddlers.Patch_DBH");
+				if (patchDbh != null)
+				{
+					MethodInfo patchMethod = AccessTools.Field(patchDbh, "m_FindBestCleanWaterSource")?.GetValue(null) as MethodInfo;
+					if (patchMethod != null)
+					{
+						_findBestCleanWaterSource = patchMethod;
+					}
+				}
+
+				_bathType = AccessTools.TypeByName("DubsBadHygiene.Building_bath");
+				_showerType = AccessTools.TypeByName("DubsBadHygiene.Building_shower");
+				_washBucketType = AccessTools.TypeByName("DubsBadHygiene.Building_washbucket");
+				if (_bathType != null)
+				{
+					_bathOccupantField = AccessTools.Field(_bathType, "occupant");
+					_bathOccupantProperty = AccessTools.Property(_bathType, "occupant");
+					_bathTryFillBath = AccessTools.Method(_bathType, "TryFillBath");
+					_bathTryPullPlug = AccessTools.Method(_bathType, "TryPullPlug");
+					_bathIsFull = AccessTools.Property(_bathType, "IsFull");
+					_bathOccupantCachedField = _bathOccupantField;
+					_bathOccupantCachedProperty = _bathOccupantProperty;
+				}
+
+				if (_showerType != null)
+				{
+					_showerTryUseWater = AccessTools.Method(_showerType, "TryUseWater");
+				}
+
+				Type hygieneNeedType = AccessTools.TypeByName("DubsBadHygiene.Need_Hygiene");
+				if (hygieneNeedType != null)
+				{
+					_needHygieneClean = AccessTools.Method(hygieneNeedType, "clean", new[] { typeof(float) });
+					_needHygieneLastGainTick = AccessTools.Field(hygieneNeedType, "lastGainTick");
+				}
+
+				_cleanedPerTickField = GetFirstField(
+					(_bathType, "cleanedPerTick"),
+					(_showerType, "CleanedPerTick"),
+					(_washBucketType, "CleanedPerTick"));
+				_cleanedPerTickProperty = GetFirstProperty(
+					(_bathType, "CleanedPerTick"),
+					(_showerType, "CleanedPerTick"),
+					(_washBucketType, "CleanedPerTick"));
+			}
+			catch (Exception ex)
+			{
+				_hygieneNeedDef = null;
+				_findBestHygieneSource = null;
+				_findBestCleanWaterSource = null;
+				_needHygieneClean = null;
+				_needHygieneLastGainTick = null;
+				_cleanedPerTickField = null;
+				_cleanedPerTickProperty = null;
+				if (Prefs.DevMode)
+				{
+					Log.Warning($"[RimTalk_ToddlersExpansion] Hygiene integration initialization failed; DBH features disabled: {ex.Message}");
+				}
+			}
+		}
+
+		private static FieldInfo GetFirstField(params (Type type, string name)[] candidates)
+		{
+			for (int i = 0; i < candidates.Length; i++)
+			{
+				(Type type, string name) = candidates[i];
+				if (type == null)
+				{
+					continue;
+				}
+
+				FieldInfo field = AccessTools.Field(type, name);
+				if (field != null)
+				{
+					return field;
 				}
 			}
 
-			_bathType = AccessTools.TypeByName("DubsBadHygiene.Building_bath");
-			_showerType = AccessTools.TypeByName("DubsBadHygiene.Building_shower");
-			_washBucketType = AccessTools.TypeByName("DubsBadHygiene.Building_washbucket");
-			if (_bathType != null)
+			return null;
+		}
+
+		private static PropertyInfo GetFirstProperty(params (Type type, string name)[] candidates)
+		{
+			for (int i = 0; i < candidates.Length; i++)
 			{
-				_bathOccupantField = AccessTools.Field(_bathType, "occupant");
-				_bathOccupantProperty = AccessTools.Property(_bathType, "occupant");
-				_bathTryFillBath = AccessTools.Method(_bathType, "TryFillBath");
-				_bathTryPullPlug = AccessTools.Method(_bathType, "TryPullPlug");
-				_bathIsFull = AccessTools.Property(_bathType, "IsFull");
-				_bathOccupantCachedField = _bathOccupantField;
-				_bathOccupantCachedProperty = _bathOccupantProperty;
+				(Type type, string name) = candidates[i];
+				if (type == null)
+				{
+					continue;
+				}
+
+				PropertyInfo property = AccessTools.Property(type, name);
+				if (property != null)
+				{
+					return property;
+				}
 			}
 
-			if (_showerType != null)
-			{
-				_showerTryUseWater = AccessTools.Method(_showerType, "TryUseWater");
-			}
-
-			Type hygieneNeedType = AccessTools.TypeByName("DubsBadHygiene.Need_Hygiene");
-			if (hygieneNeedType != null)
-			{
-				_needHygieneClean = AccessTools.Method(hygieneNeedType, "clean", new[] { typeof(float) });
-				_needHygieneLastGainTick = AccessTools.Field(hygieneNeedType, "lastGainTick");
-			}
-
-			_cleanedPerTickField = AccessTools.Field(_bathType, "cleanedPerTick")
-				?? AccessTools.Field(_showerType, "CleanedPerTick")
-				?? AccessTools.Field(_washBucketType, "CleanedPerTick");
-			_cleanedPerTickProperty = AccessTools.Property(_bathType, "CleanedPerTick")
-				?? AccessTools.Property(_showerType, "CleanedPerTick")
-				?? AccessTools.Property(_washBucketType, "CleanedPerTick");
+			return null;
 		}
 	}
 }
