@@ -23,7 +23,9 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		protected override IEnumerable<Toil> MakeNewToils()
 		{
 			this.FailOnDestroyedOrNull(InitiatorInd);
-			this.FailOn(() => !CanContinuePartnerPlay());
+			this.FailOn(() => pawn.Downed || pawn.Drafted || ToddlerMentalStateUtility.HasBlockingMentalState(pawn));
+			this.FailOn(() => Initiator == null || Initiator.Downed || Initiator.Drafted || ToddlerMentalStateUtility.HasBlockingMentalState(Initiator));
+			this.FailOn(() => Initiator.Map != pawn.Map);
 
 			// Step 1: Wait for initiator to arrive (stop moving and stay in place)
 			Toil waitForInitiator = ToilMaker.MakeToil("WaitForInitiator");
@@ -33,9 +35,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			};
 			waitForInitiator.tickAction = () =>
 			{
-				if (!CanContinuePartnerPlay())
+				if (Initiator == null
+					|| Initiator.CurJob?.def != ToddlersExpansionJobDefOf.RimTalk_ToddlerMutualPlayJob
+					|| Initiator.CurJob.targetA.Thing != pawn
+					|| !Initiator.CanReach(pawn, PathEndMode.Touch, Danger.Some))
 				{
-					ToddlerPlayGiver_MutualPlay.StartFailureCooldown(pawn, Initiator);
 					EndJobWith(JobCondition.Incompletable);
 					return;
 				}
@@ -69,21 +73,21 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			};
 			play.tickAction = () =>
 			{
-				if (!CanContinuePartnerPlay())
-				{
-					ToddlerPlayGiver_MutualPlay.StartFailureCooldown(pawn, Initiator);
-					EndJobWith(JobCondition.Incompletable);
-					return;
-				}
-
 				if (_playAnimation != null && pawn.Drawer?.renderer?.CurAnimation != _playAnimation)
 				{
 					ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, _playAnimation);
 				}
 
+				if (Initiator == null
+					|| Initiator.CurJob?.def != ToddlersExpansionJobDefOf.RimTalk_ToddlerMutualPlayJob
+					|| Initiator.CurJob.targetA.Thing != pawn)
+				{
+					EndJobWith(JobCondition.Incompletable);
+					return;
+				}
+
 				if (!pawn.Position.InHorDistOf(Initiator.Position, MaxPartnerDistance))
 				{
-					ToddlerPlayGiver_MutualPlay.StartFailureCooldown(pawn, Initiator);
 					EndJobWith(JobCondition.Incompletable);
 					return;
 				}
@@ -101,39 +105,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			play.defaultDuration = job.def.joyDuration;
 			play.AddFinishAction(() => ToddlerPlayAnimationUtility.ClearAnimation(pawn, _playAnimation));
 
-			AddFinishAction(condition =>
-			{
-				if (condition != JobCondition.Succeeded)
-				{
-					ToddlerPlayGiver_MutualPlay.StartFailureCooldown(pawn, Initiator);
-				}
-			});
-
 			yield return play;
-		}
-
-		private bool CanContinuePartnerPlay()
-		{
-			Pawn initiator = Initiator;
-			if (pawn?.Map == null || initiator?.Map == null || initiator.Map != pawn.Map)
-			{
-				return false;
-			}
-
-			if (pawn.Downed || pawn.Drafted || !pawn.Awake() || ToddlerMentalStateUtility.HasBlockingMentalState(pawn))
-			{
-				return false;
-			}
-
-			if (initiator.Downed || initiator.Drafted || !initiator.Awake() || ToddlerMentalStateUtility.HasBlockingMentalState(initiator))
-			{
-				return false;
-			}
-
-			Job initiatorJob = initiator.CurJob;
-			return initiatorJob?.def == ToddlersExpansionJobDefOf.RimTalk_ToddlerMutualPlayJob
-				&& initiatorJob.targetA.Thing == pawn
-				&& initiator.CanReach(pawn, PathEndMode.Touch, Danger.Some);
 		}
 	}
 }
