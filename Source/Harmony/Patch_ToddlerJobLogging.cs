@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using HarmonyLib;
+using RimTalk_ToddlersExpansion.Core;
 using RimTalk_ToddlersExpansion.Integration.Toddlers;
 using RimWorld;
 using Verse;
@@ -46,18 +47,8 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			}
 
 			bool cleared = TryClearManagedPlayAnimationOnJobStart(pawn, newJob);
-			if (MutualPlayDiagnostics.IsMutualPlayJob(newJob))
-			{
-				MutualPlayDiagnostics.Log(
-					pawn,
-					"StartJobPostfix",
-					$"requested={MutualPlayDiagnostics.DescribeJob(newJob)} " +
-					$"actualCurrent={MutualPlayDiagnostics.DescribeJob(pawn.jobs?.curJob)} " +
-					$"sameInstance={ReferenceEquals(newJob, pawn.jobs?.curJob)}");
-			}
-
 			JobDef newJobDef = newJob?.def;
-			if (Prefs.DevMode && newJobDef != null)
+			if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs && newJobDef != null)
 			{
 				Log.Message(
 					$"[RimTalk_ToddlersExpansion] Toddler job: {SafePawnLabel(pawn)} -> " +
@@ -83,7 +74,8 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				bool cleared = ToddlerPlayAnimationUtility.ClearManagedNativePlayAnimation(pawn);
 				JobDef newJobDef = newJob.def;
 
-				if (Prefs.DevMode && (before != null || newJobDef == JobDefOf.Ingest))
+				if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs
+					&& (before != null || newJobDef == JobDefOf.Ingest))
 				{
 					Log.Message(
 						$"[RimTalk_ToddlersExpansion] Job-start animation cleanup: pawn={SafePawnLabel(pawn)} " +

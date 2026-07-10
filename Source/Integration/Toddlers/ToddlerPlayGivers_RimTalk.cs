@@ -84,33 +84,21 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private const int PartnerSearchRadius = 10;
 		private const int SpotSearchRadius = 6;
 		private const int SharedSpotDistance = 3;
+		private const int PartnerSearchNextTickKey = 1934182755;
 
 		public override bool CanDo(Pawn pawn)
 		{
-			string eligibilityFailure = GetEligibilityFailure(pawn);
-			if (eligibilityFailure != null)
+			if (!IsEligiblePawn(pawn))
 			{
-				MutualPlayDiagnostics.LogSearchFailure(pawn, $"initiator ineligible: {eligibilityFailure}");
 				return false;
 			}
 
 			if (!SocialNeedTuning_Toddlers.ShouldDoOptionalActivity(pawn, PlayNeedThreshold))
 			{
-				MutualPlayDiagnostics.LogSearchFailure(
-					pawn,
-					$"initiator optional-activity check failed at threshold={PlayNeedThreshold:0.00}");
 				return false;
 			}
 
-			if (!ShouldRunPartnerSearch(pawn))
-			{
-				MutualPlayDiagnostics.LogSearchFailure(
-					pawn,
-					$"partner search deferred by hash interval={ToddlersExpansionSettings.GetMutualPlayPartnerCheckIntervalTicks()}");
-				return false;
-			}
-
-			return TryFindPartnerAndSpot(pawn, out _, out _);
+			return true;
 		}
 
 		public override Job TryGiveJob(Pawn pawn)
@@ -125,7 +113,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return null;
 			}
 
-			if (!ShouldRunPartnerSearch(pawn))
+			if (!TryBeginPartnerSearch(pawn))
 			{
 				return null;
 			}
@@ -139,71 +127,42 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			job.ignoreJoyTimeAssignment = true;
 			job.expiryInterval = 2000;
 			job.targetB = spot;
-			MutualPlayDiagnostics.Log(
-				pawn,
-				"JobCreated",
-				$"selected sharedSpot={spot} job={MutualPlayDiagnostics.DescribeJob(job)}",
-				partner);
 
 			return job;
 		}
 
 		private static bool IsEligiblePawn(Pawn pawn)
 		{
-			return GetEligibilityFailure(pawn) == null;
+			if (pawn?.Map == null || pawn.needs?.play == null || !ToddlersCompatUtility.IsEligibleForSelfPlay(pawn))
+			{
+				return false;
+			}
+
+			if (pawn.Downed || pawn.Drafted || ToddlerMentalStateUtility.HasBlockingMentalState(pawn) || !pawn.Awake())
+			{
+				return false;
+			}
+
+			return !ToddlersCompatUtility.IsBusyForMutualPlay(pawn);
 		}
 
-		private static string GetEligibilityFailure(Pawn pawn)
+		private static bool TryBeginPartnerSearch(Pawn pawn)
 		{
-			if (pawn == null)
+			if (pawn?.mindState?.thinkData == null)
 			{
-				return "pawn is null";
+				return true;
 			}
 
-			if (pawn.Map == null)
-			{
-				return "map is null";
-			}
-
-			if (pawn.needs?.play == null)
-			{
-				return "play need is null";
-			}
-
-			if (!ToddlersCompatUtility.IsEligibleForSelfPlay(pawn))
-			{
-				return "Toddlers compatibility eligibility rejected pawn";
-			}
-
-			if (pawn.Downed)
-			{
-				return "downed";
-			}
-
-			if (pawn.Drafted)
-			{
-				return "drafted";
-			}
-
-			if (ToddlerMentalStateUtility.HasBlockingMentalState(pawn))
-			{
-				return $"blocking mental state {pawn.MentalStateDef?.defName ?? "unknown"}";
-			}
-
-			if (!pawn.Awake())
-			{
-				return "not awake";
-			}
-
-			return ToddlersCompatUtility.IsBusyForMutualPlay(pawn)
-				? "busy for mutual play"
-				: null;
-		}
-
-		private static bool ShouldRunPartnerSearch(Pawn pawn)
-		{
+			int currentTick = Find.TickManager?.TicksGame ?? 0;
 			int interval = ToddlersExpansionSettings.GetMutualPlayPartnerCheckIntervalTicks();
-			return interval <= 1 || pawn.IsHashIntervalTick(interval);
+			if (pawn.mindState.thinkData.TryGetValue(PartnerSearchNextTickKey, out int nextTick)
+				&& currentTick < nextTick)
+			{
+				return false;
+			}
+
+			pawn.mindState.thinkData[PartnerSearchNextTickKey] = currentTick + interval;
+			return true;
 		}
 
 		private static bool TryFindPartnerAndSpot(Pawn pawn, out Pawn partner, out IntVec3 spot)
@@ -214,16 +173,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			var pawns = pawn.Faction != null
 				? map.mapPawns.SpawnedPawnsInFaction(pawn.Faction)
 				: map.mapPawns.AllPawnsSpawned;
-			int candidates = 0;
-			int notToddler = 0;
-			int invalidState = 0;
-			int busy = 0;
-			int tooFar = 0;
-			int optionalActivityRejected = 0;
-			int reservationRejected = 0;
-			int unreachable = 0;
-			int noSharedSpot = 0;
-			string toddlerRejectionSample = null;
 			for (int i = 0; i < pawns.Count; i++)
 			{
 				Pawn other = pawns[i];
@@ -231,81 +180,43 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				{
 					continue;
 				}
-				candidates++;
-
 				if (!ToddlersCompatUtility.IsToddler(other))
 				{
-					notToddler++;
 					continue;
 				}
 
 				if (other.Downed || other.Drafted || ToddlerMentalStateUtility.HasBlockingMentalState(other) || !other.Awake())
 				{
-					invalidState++;
-					if (toddlerRejectionSample == null)
-					{
-						toddlerRejectionSample = $"invalidState: {MutualPlayDiagnostics.DescribePawn(other)}";
-					}
 					continue;
 				}
 
 				if (ToddlersCompatUtility.IsBusyForMutualPlay(other))
 				{
-					busy++;
-					if (toddlerRejectionSample == null)
-					{
-						toddlerRejectionSample = $"busy: {MutualPlayDiagnostics.DescribePawn(other)}";
-					}
 					continue;
 				}
 
 				if (!pawn.Position.InHorDistOf(other.Position, PartnerSearchRadius))
 				{
-					tooFar++;
-					if (toddlerRejectionSample == null)
-					{
-						toddlerRejectionSample = $"tooFar: {MutualPlayDiagnostics.DescribePawn(other)}";
-					}
 					continue;
 				}
 
 				if (!SocialNeedTuning_Toddlers.ShouldDoOptionalActivity(other, PlayNeedThreshold))
 				{
-					optionalActivityRejected++;
-					if (toddlerRejectionSample == null)
-					{
-						toddlerRejectionSample = $"optionalActivity: {MutualPlayDiagnostics.DescribePawn(other)}";
-					}
 					continue;
 				}
 
 				if (!pawn.CanReserve(other))
 				{
-					reservationRejected++;
-					if (toddlerRejectionSample == null)
-					{
-						toddlerRejectionSample = $"cannotReserve: {MutualPlayDiagnostics.DescribePawn(other)}";
-					}
 					continue;
 				}
 
 				if (!pawn.CanReach(other, PathEndMode.Touch, Danger.Some))
 				{
-					unreachable++;
-					if (toddlerRejectionSample == null)
-					{
-						toddlerRejectionSample = $"unreachable: {MutualPlayDiagnostics.DescribePawn(other)}";
-					}
 					continue;
 				}
 
 				if (!TryFindPlaySpot(pawn, other, out IntVec3 sharedSpot))
 				{
-					noSharedSpot++;
-					if (toddlerRejectionSample == null)
-					{
-						toddlerRejectionSample = $"noSharedSpot: {MutualPlayDiagnostics.DescribePawn(other)}";
-					}
 					continue;
 				}
 
@@ -313,14 +224,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				spot = sharedSpot;
 				return true;
 			}
-
-			MutualPlayDiagnostics.LogSearchFailure(
-				pawn,
-				$"no partner/spot; pool={pawns.Count} candidates={candidates} factionPool={pawn.Faction?.def?.defName ?? "all"} " +
-				$"notToddler={notToddler} invalidState={invalidState} busy={busy} tooFar={tooFar} " +
-				$"optionalRejected={optionalActivityRejected} reserveRejected={reservationRejected} " +
-				$"unreachable={unreachable} noSharedSpot={noSharedSpot} " +
-				$"sample=[{toddlerRejectionSample ?? "none"}]");
 
 			return false;
 		}
