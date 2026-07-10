@@ -14,32 +14,51 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		private float _initialPlayLevel = -1f;
 		private bool _partnerJobStarted;
+		private bool _failureLogged;
 		private AnimationDef _playAnimation;
 
 		private Pawn Partner => TargetA.Thing as Pawn;
 
 		public override bool TryMakePreToilReservations(bool errorOnFailed)
 		{
-			return pawn.Reserve(TargetA, job, 1, -1, null, errorOnFailed);
+			bool reserved = pawn.Reserve(TargetA, job, 1, -1, null, errorOnFailed);
+			MutualPlayDiagnostics.Log(
+				pawn,
+				"InitiatorReservation",
+				$"reserved={reserved} errorOnFailed={errorOnFailed} job={MutualPlayDiagnostics.DescribeJob(job)}",
+				Partner);
+			return reserved;
 		}
 
 		protected override IEnumerable<Toil> MakeNewToils()
 		{
 			this.FailOnDestroyedOrNull(PartnerInd);
-			this.FailOn(() => pawn.Downed || pawn.Drafted || ToddlerMentalStateUtility.HasBlockingMentalState(pawn));
-			this.FailOn(() => Partner == null || Partner.Downed || Partner.Drafted || ToddlerMentalStateUtility.HasBlockingMentalState(Partner));
-			this.FailOn(() => Partner.Map != pawn.Map);
-			this.FailOn(() => _partnerJobStarted && !IsPartnerStillCommitted());
+			this.FailOn(() => FailIf(
+				"initiator became invalid",
+				pawn.Downed || pawn.Drafted || ToddlerMentalStateUtility.HasBlockingMentalState(pawn)));
+			this.FailOn(() => FailIf(
+				"partner became null/downed/drafted/mental-state blocked",
+				Partner == null || Partner.Downed || Partner.Drafted || ToddlerMentalStateUtility.HasBlockingMentalState(Partner)));
+			this.FailOn(() => FailIf("initiator and partner are on different maps", Partner?.Map != pawn.Map));
+			this.FailOn(() => FailIf(
+				"partner job is no longer committed to this initiator",
+				_partnerJobStarted && !IsPartnerStillCommitted()));
 
 			// Step 1: Start partner job first (partner will stop moving and wait)
 			Toil startPartnerJob = ToilMaker.MakeToil("StartPartnerJob");
 			startPartnerJob.initAction = () =>
 			{
+				MutualPlayDiagnostics.Log(
+					pawn,
+					"StartPartnerJob",
+					$"entering start toil; partnerJobStarted={_partnerJobStarted}",
+					Partner);
 				if (!_partnerJobStarted)
 				{
 					_partnerJobStarted = true;
 					if (!TryStartPartnerJob())
 					{
+						LogFailure("TryStartPartnerJob returned false");
 						EndJobWith(JobCondition.Incompletable);
 					}
 				}
@@ -54,6 +73,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			Toil play = ToilMaker.MakeToil("ToddlerMutualPlay");
 			play.initAction = () =>
 			{
+				MutualPlayDiagnostics.Log(
+					pawn,
+					"InitiatorPlayStarted",
+					$"arrived at partner; distance={DistanceToPartner():0.00}",
+					Partner);
 				if (YayoAnimationCompatUtility.TryGetNativePlayAnimationOverride(pawn, out AnimationDef nativeAnimation))
 				{
 					_playAnimation = nativeAnimation;
@@ -92,6 +116,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 				if (SocialNeedTuning_Toddlers.IsPlayNeedSatisfied(pawn))
 				{
+					MutualPlayDiagnostics.Log(pawn, "InitiatorSatisfied", "play need satisfied", Partner);
 					EndJobWith(JobCondition.Succeeded);
 				}
 			};
@@ -102,6 +127,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 			AddFinishAction(condition =>
 			{
+				MutualPlayDiagnostics.Log(
+					pawn,
+					"InitiatorFinished",
+					$"condition={condition} partnerJobStarted={_partnerJobStarted} partnerCommitted={IsPartnerStillCommitted()}",
+					Partner);
 				ToddlerPlayReportUtility.CancelJob(job);
 				if (condition != JobCondition.Succeeded)
 				{
@@ -127,28 +157,42 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		{
 			if (Partner?.jobs == null)
 			{
+				MutualPlayDiagnostics.Log(pawn, "PartnerJobRejected", "partner or partner.jobs is null", Partner);
 				return false;
 			}
 
 			if (!pawn.CanReach(Partner, PathEndMode.Touch, Danger.Some))
 			{
+				MutualPlayDiagnostics.Log(pawn, "PartnerJobRejected", "initiator cannot reach partner", Partner);
 				return false;
 			}
 
 			JobDef partnerJobDef = ToddlersExpansionJobDefOf.RimTalk_ToddlerMutualPlayPartnerJob;
 			if (partnerJobDef == null)
 			{
+				MutualPlayDiagnostics.Log(pawn, "PartnerJobRejected", "partner JobDef is null", Partner);
 				return false;
 			}
 
 			Job currentPartnerJob = Partner.CurJob;
 			if (currentPartnerJob?.def == partnerJobDef)
 			{
-				return currentPartnerJob.targetA.Thing == pawn;
+				bool alreadyCommitted = currentPartnerJob.targetA.Thing == pawn;
+				MutualPlayDiagnostics.Log(
+					pawn,
+					"PartnerAlreadyInJob",
+					$"alreadyCommitted={alreadyCommitted} currentPartnerJob={MutualPlayDiagnostics.DescribeJob(currentPartnerJob)}",
+					Partner);
+				return alreadyCommitted;
 			}
 
 			if (ToddlersCompatUtility.IsBusyForMutualPlay(Partner))
 			{
+				MutualPlayDiagnostics.Log(
+					pawn,
+					"PartnerJobRejected",
+					$"partner busy; currentPartnerJob={MutualPlayDiagnostics.DescribeJob(currentPartnerJob)}",
+					Partner);
 				return false;
 			}
 
@@ -159,7 +203,47 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			{
 				partnerJob.targetB = job.targetB;
 			}
-			return Partner.jobs.TryTakeOrderedJob(partnerJob);
+			bool accepted = Partner.jobs.TryTakeOrderedJob(partnerJob);
+			MutualPlayDiagnostics.Log(
+				pawn,
+				"PartnerJobOrdered",
+				$"accepted={accepted} requested={MutualPlayDiagnostics.DescribeJob(partnerJob)} " +
+				$"actualCurrent={MutualPlayDiagnostics.DescribeJob(Partner.CurJob)}",
+				Partner);
+			return accepted;
+		}
+
+		private bool FailIf(string reason, bool failed)
+		{
+			if (failed)
+			{
+				LogFailure(reason);
+			}
+
+			return failed;
+		}
+
+		private void LogFailure(string reason)
+		{
+			if (_failureLogged)
+			{
+				return;
+			}
+
+			_failureLogged = true;
+			MutualPlayDiagnostics.Log(
+				pawn,
+				"InitiatorFailure",
+				$"reason={reason} initiatorJob={MutualPlayDiagnostics.DescribeJob(pawn?.CurJob)} " +
+				$"partnerJob={MutualPlayDiagnostics.DescribeJob(Partner?.CurJob)} distance={DistanceToPartner():0.00}",
+				Partner);
+		}
+
+		private float DistanceToPartner()
+		{
+			return pawn?.Spawned == true && Partner?.Spawned == true && pawn.Map == Partner.Map
+				? pawn.Position.DistanceTo(Partner.Position)
+				: -1f;
 		}
 
 		private static float GetPlayLevel(Pawn pawn)

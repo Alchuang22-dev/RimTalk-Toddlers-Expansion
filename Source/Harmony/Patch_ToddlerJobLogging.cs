@@ -31,6 +31,16 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			}
 
 			bool cleared = TryClearManagedPlayAnimationOnJobStart(___pawn, newJob);
+			if (MutualPlayDiagnostics.IsMutualPlayJob(newJob))
+			{
+				MutualPlayDiagnostics.Log(
+					___pawn,
+					"StartJobPostfix",
+					$"requested={MutualPlayDiagnostics.DescribeJob(newJob)} " +
+					$"actualCurrent={MutualPlayDiagnostics.DescribeJob(___pawn.jobs?.curJob)} " +
+					$"sameInstance={ReferenceEquals(newJob, ___pawn.jobs?.curJob)}");
+			}
+
 			if (Prefs.DevMode && newJob?.def != null)
 			{
 				Log.Message($"[RimTalk_ToddlersExpansion] Toddler job: {___pawn.LabelShort} -> {newJob.def.defName}{(cleared ? " (cleared managed play animation)" : string.Empty)}");
