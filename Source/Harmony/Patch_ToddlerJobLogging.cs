@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 using HarmonyLib;
 using RimTalk_ToddlersExpansion.Integration.Toddlers;
@@ -9,6 +10,8 @@ namespace RimTalk_ToddlersExpansion.Harmony
 {
 	public static class Patch_ToddlerJobLogging
 	{
+		private static bool _postfixFailureWarned;
+
 		public static void Init(HarmonyLib.Harmony harmony)
 		{
 			MethodInfo startJobTarget = AccessTools.Method(typeof(Pawn_JobTracker), nameof(Pawn_JobTracker.StartJob));
@@ -20,30 +23,45 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 		private static void StartJob_Postfix(Job newJob, Pawn ___pawn)
 		{
-			if (!IsPotentialSmallPawn(___pawn))
+			try
+			{
+				StartJobPostfixSafely(newJob, ___pawn);
+			}
+			catch (Exception ex)
+			{
+				WarnPostfixFailureOnce(ex);
+			}
+		}
+
+		private static void StartJobPostfixSafely(Job newJob, Pawn pawn)
+		{
+			if (!IsPotentialSmallPawn(pawn))
 			{
 				return;
 			}
 
-			if (!Prefs.DevMode && !ToddlerPlayAnimationUtility.HasManagedPlayAnimation(___pawn))
+			if (!Prefs.DevMode && !ToddlerPlayAnimationUtility.HasManagedPlayAnimation(pawn))
 			{
 				return;
 			}
 
-			bool cleared = TryClearManagedPlayAnimationOnJobStart(___pawn, newJob);
+			bool cleared = TryClearManagedPlayAnimationOnJobStart(pawn, newJob);
 			if (MutualPlayDiagnostics.IsMutualPlayJob(newJob))
 			{
 				MutualPlayDiagnostics.Log(
-					___pawn,
+					pawn,
 					"StartJobPostfix",
 					$"requested={MutualPlayDiagnostics.DescribeJob(newJob)} " +
-					$"actualCurrent={MutualPlayDiagnostics.DescribeJob(___pawn.jobs?.curJob)} " +
-					$"sameInstance={ReferenceEquals(newJob, ___pawn.jobs?.curJob)}");
+					$"actualCurrent={MutualPlayDiagnostics.DescribeJob(pawn.jobs?.curJob)} " +
+					$"sameInstance={ReferenceEquals(newJob, pawn.jobs?.curJob)}");
 			}
 
-			if (Prefs.DevMode && newJob?.def != null)
+			JobDef newJobDef = newJob?.def;
+			if (Prefs.DevMode && newJobDef != null)
 			{
-				Log.Message($"[RimTalk_ToddlersExpansion] Toddler job: {___pawn.LabelShort} -> {newJob.def.defName}{(cleared ? " (cleared managed play animation)" : string.Empty)}");
+				Log.Message(
+					$"[RimTalk_ToddlersExpansion] Toddler job: {SafePawnLabel(pawn)} -> " +
+					$"{newJobDef.defName ?? "<unnamed-job>"}{(cleared ? " (cleared managed play animation)" : string.Empty)}");
 			}
 		}
 
@@ -54,22 +72,63 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				return false;
 			}
 
-			AnimationDef before = pawn.Drawer?.renderer?.CurAnimation;
-
-			// Clear our native toddler play animations on every job boundary.
-			// Yayo keeps its own render-state in PawnDrawData, while our managed native
-			// animations live on PawnRenderer.CurAnimation and must not leak into
-			// unrelated jobs such as Ingest/LeaveCrib/Wait_MaintainPosture.
-			bool cleared = ToddlerPlayAnimationUtility.ClearManagedNativePlayAnimation(pawn);
-
-			if (Prefs.DevMode && (before != null || newJob.def == JobDefOf.Ingest))
+			try
 			{
-				Log.Message(
-					$"[RimTalk_ToddlersExpansion] Job-start animation cleanup: pawn={pawn.LabelShort} " +
-					$"newJob={newJob.def.defName} curAnimationBefore={before?.defName ?? "null"} cleared={cleared}");
+				AnimationDef before = pawn.Drawer?.renderer?.CurAnimation;
+
+				// Clear our native toddler play animations on every job boundary.
+				// Yayo keeps its own render-state in PawnDrawData, while our managed native
+				// animations live on PawnRenderer.CurAnimation and must not leak into
+				// unrelated jobs such as Ingest/LeaveCrib/Wait_MaintainPosture.
+				bool cleared = ToddlerPlayAnimationUtility.ClearManagedNativePlayAnimation(pawn);
+				JobDef newJobDef = newJob.def;
+
+				if (Prefs.DevMode && (before != null || newJobDef == JobDefOf.Ingest))
+				{
+					Log.Message(
+						$"[RimTalk_ToddlersExpansion] Job-start animation cleanup: pawn={SafePawnLabel(pawn)} " +
+						$"newJob={newJobDef?.defName ?? "<null-def>"} " +
+						$"curAnimationBefore={before?.defName ?? "null"} cleared={cleared}");
+				}
+
+				return cleared;
+			}
+			catch (Exception ex)
+			{
+				WarnPostfixFailureOnce(ex);
+				return false;
+			}
+		}
+
+		private static string SafePawnLabel(Pawn pawn)
+		{
+			try
+			{
+				return pawn?.LabelShort ?? "<null-pawn>";
+			}
+			catch
+			{
+				return pawn == null ? "<null-pawn>" : $"Pawn#{pawn.thingIDNumber}";
+			}
+		}
+
+		private static void WarnPostfixFailureOnce(Exception ex)
+		{
+			if (_postfixFailureWarned)
+			{
+				return;
 			}
 
-			return cleared;
+			_postfixFailureWarned = true;
+			try
+			{
+				Log.Warning(
+					$"[RimTalk_ToddlersExpansion] Toddler job logging failed and was safely ignored: " +
+					$"{ex?.GetType().Name ?? "unknown"}: {ex?.Message ?? "no message"}");
+			}
+			catch
+			{
+			}
 		}
 
 		private static bool IsPotentialSmallPawn(Pawn pawn)

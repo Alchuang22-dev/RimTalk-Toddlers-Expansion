@@ -21,71 +21,97 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		public static void Log(Pawn pawn, string phase, string detail, Pawn other = null)
 		{
-			if (!Enabled)
+			try
 			{
-				return;
-			}
+				if (!Enabled)
+				{
+					return;
+				}
 
-			string otherState = other == null ? string.Empty : $" other=[{DescribePawn(other)}]";
-			Verse.Log.Message(
-				$"[RimTalk_ToddlersExpansion][MutualPlay][{phase}] {detail} " +
-				$"pawn=[{DescribePawn(pawn)}]{otherState}");
+				string otherState = other == null ? string.Empty : $" other=[{DescribePawn(other)}]";
+				Verse.Log.Message(
+					$"[RimTalk_ToddlersExpansion][MutualPlay][{phase}] {detail} " +
+					$"pawn=[{DescribePawn(pawn)}]{otherState}");
+			}
+			catch
+			{
+			}
 		}
 
 		public static void LogSearchFailure(Pawn pawn, string detail)
 		{
-			if (!Enabled || pawn == null)
+			try
 			{
-				return;
-			}
+				if (!Enabled || pawn == null)
+				{
+					return;
+				}
 
-			int now = Find.TickManager?.TicksGame ?? 0;
-			int id = pawn.thingIDNumber;
-			if (NextSearchFailureLogTick.TryGetValue(id, out int nextTick) && now < nextTick)
+				int now = Find.TickManager?.TicksGame ?? 0;
+				int id = pawn.thingIDNumber;
+				if (NextSearchFailureLogTick.TryGetValue(id, out int nextTick) && now < nextTick)
+				{
+					return;
+				}
+
+				NextSearchFailureLogTick[id] = now + SearchFailureLogInterval;
+				if (NextSearchFailureLogTick.Count > 2048)
+				{
+					NextSearchFailureLogTick.Clear();
+				}
+
+				Log(pawn, "SearchRejected", detail);
+			}
+			catch
 			{
-				return;
 			}
-
-			NextSearchFailureLogTick[id] = now + SearchFailureLogInterval;
-			if (NextSearchFailureLogTick.Count > 2048)
-			{
-				NextSearchFailureLogTick.Clear();
-			}
-
-			Log(pawn, "SearchRejected", detail);
 		}
 
 		public static string DescribePawn(Pawn pawn)
 		{
-			if (pawn == null)
+			try
 			{
-				return "null";
+				if (pawn == null)
+				{
+					return "null";
+				}
+
+				string label = pawn.LabelShort ?? "unnamed";
+				string position = pawn.Spawned ? pawn.Position.ToString() : "unspawned";
+				string map = pawn.MapHeld?.uniqueID.ToString() ?? "null";
+				string play = pawn.needs?.play != null
+					? pawn.needs.play.CurLevelPercentage.ToString("0.000")
+					: pawn.needs?.joy?.CurLevelPercentage.ToString("0.000") ?? "null";
+				string mental = pawn.MentalStateDef?.defName ?? "none";
+				string job = DescribeJob(pawn.CurJob);
+				string driver = pawn.jobs?.curDriver?.GetType().Name ?? "null";
+
+				return $"{label}#{pawn.thingIDNumber} faction={pawn.Faction?.def?.defName ?? "null"} " +
+					$"map={map} pos={position} stage={pawn.DevelopmentalStage} play={play} " +
+					$"awake={SafeAwake(pawn)} downed={pawn.Downed} drafted={pawn.Drafted} mental={mental} " +
+					$"job={job} driver={driver}";
 			}
-
-			string label = pawn.LabelShort ?? "unnamed";
-			string position = pawn.Spawned ? pawn.Position.ToString() : "unspawned";
-			string map = pawn.MapHeld?.uniqueID.ToString() ?? "null";
-			string play = pawn.needs?.play != null
-				? pawn.needs.play.CurLevelPercentage.ToString("0.000")
-				: pawn.needs?.joy?.CurLevelPercentage.ToString("0.000") ?? "null";
-			string mental = pawn.MentalStateDef?.defName ?? "none";
-			string job = DescribeJob(pawn.CurJob);
-			string driver = pawn.jobs?.curDriver?.GetType().Name ?? "null";
-
-			return $"{label}#{pawn.thingIDNumber} faction={pawn.Faction?.def?.defName ?? "null"} " +
-				$"map={map} pos={position} stage={pawn.DevelopmentalStage} play={play} " +
-				$"awake={SafeAwake(pawn)} downed={pawn.Downed} drafted={pawn.Drafted} mental={mental} " +
-				$"job={job} driver={driver}";
+			catch
+			{
+				return pawn == null ? "null" : $"Pawn#{pawn.thingIDNumber} state-unavailable";
+			}
 		}
 
 		public static string DescribeJob(Job job)
 		{
-			if (job == null)
+			try
 			{
-				return "null";
-			}
+				if (job == null)
+				{
+					return "null";
+				}
 
-			return $"{job.def?.defName ?? "null"}(id={job.loadID},A={DescribeTarget(job.targetA)},B={DescribeTarget(job.targetB)})";
+				return $"{job.def?.defName ?? "null"}(id={job.loadID},A={DescribeTarget(job.targetA)},B={DescribeTarget(job.targetB)})";
+			}
+			catch
+			{
+				return "job-state-unavailable";
+			}
 		}
 
 		private static string DescribeTarget(LocalTargetInfo target)
