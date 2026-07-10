@@ -80,21 +80,14 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 	public sealed class ToddlerPlayGiver_MutualPlay : ToddlerPlayGiver
 	{
-		private const float PlayNeedThreshold = 0.92f;
+		private const float PlayNeedThreshold = 0.85f;
 		private const int PartnerSearchRadius = 10;
 		private const int SpotSearchRadius = 6;
 		private const int SharedSpotDistance = 3;
-		private const int MutualPlayRetryCooldownTicks = 120;
-		private const int MutualPlayCooldownKey = 1945378123;
 
 		public override bool CanDo(Pawn pawn)
 		{
 			if (!IsEligiblePawn(pawn))
-			{
-				return false;
-			}
-
-			if (IsOnCooldown(pawn))
 			{
 				return false;
 			}
@@ -119,11 +112,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return null;
 			}
 
-			if (IsOnCooldown(pawn))
-			{
-				return null;
-			}
-
 			if (!SocialNeedTuning_Toddlers.ShouldDoOptionalActivity(pawn, PlayNeedThreshold))
 			{
 				return null;
@@ -143,18 +131,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			job.ignoreJoyTimeAssignment = true;
 			job.expiryInterval = 2000;
 			job.targetB = spot;
-			if (Prefs.DevMode)
-			{
-				Log.Message($"[RimTalk_ToddlersExpansion] Mutual play job issued: pawn={pawn.LabelShort} partner={partner.LabelShort} spot={spot}");
-			}
 
 			return job;
-		}
-
-		internal static void StartFailureCooldown(Pawn pawn, Pawn partner)
-		{
-			StartCooldown(pawn);
-			StartCooldown(partner);
 		}
 
 		private static bool IsEligiblePawn(Pawn pawn)
@@ -170,33 +148,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			return !ToddlersCompatUtility.IsBusyForMutualPlay(pawn);
-		}
-
-		private static bool IsOnCooldown(Pawn pawn)
-		{
-			if (pawn?.mindState?.thinkData == null)
-			{
-				return false;
-			}
-
-			int now = Find.TickManager?.TicksGame ?? 0;
-			if (!pawn.mindState.thinkData.TryGetValue(MutualPlayCooldownKey, out int nextTick))
-			{
-				return false;
-			}
-
-			return now < nextTick;
-		}
-
-		private static void StartCooldown(Pawn pawn)
-		{
-			if (pawn?.mindState?.thinkData == null)
-			{
-				return;
-			}
-
-			int now = Find.TickManager?.TicksGame ?? 0;
-			pawn.mindState.thinkData[MutualPlayCooldownKey] = now + MutualPlayRetryCooldownTicks;
 		}
 
 		private static bool ShouldRunPartnerSearch(Pawn pawn)
@@ -236,11 +187,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					continue;
 				}
 
-				if (IsOnCooldown(other))
-				{
-					continue;
-				}
-
 				if (!pawn.Position.InHorDistOf(other.Position, PartnerSearchRadius))
 				{
 					continue;
@@ -261,12 +207,13 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					continue;
 				}
 
-				partner = other;
-				if (!TryFindPlaySpot(pawn, other, out spot))
+				if (!TryFindPlaySpot(pawn, other, out IntVec3 sharedSpot))
 				{
-					spot = IntVec3.Invalid;
+					continue;
 				}
 
+				partner = other;
+				spot = sharedSpot;
 				return true;
 			}
 
