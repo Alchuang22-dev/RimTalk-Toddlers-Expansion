@@ -42,6 +42,10 @@
 		<li>Jaxe.Bubbles</li>
 	</loadAfter>
 
+	<forceLoadAfter>
+		<li>cyanobot.toddlers</li>
+	</forceLoadAfter>
+
 	<incompatibleWith>
 		<!-- No known incompatibilities -->
 	</incompatibleWith>
