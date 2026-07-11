@@ -46,6 +46,7 @@ namespace RimTalk_ToddlersExpansion.Core
 		public static bool MuteAllLogs = false;
 		public static bool EnablePrisonerBabyCarryInteractions = false;
 		public static bool EnableChildBabyCarryInteractions = false;
+		public static bool EnableYoungPawnSoulReplacement = true;
 		public static int MutualPlayPartnerCheckIntervalTicks = 1;
 		public static int ToddlerMainLoopCheckIntervalTicks = 1;
 		public static int BabyCarryCheckIntervalTicks = 120;
@@ -198,6 +199,7 @@ namespace RimTalk_ToddlersExpansion.Core
 			Scribe_Values.Look(ref MuteAllLogs, "MuteAllLogs", false);
 			Scribe_Values.Look(ref EnablePrisonerBabyCarryInteractions, "EnablePrisonerBabyCarryInteractions", false);
 			Scribe_Values.Look(ref EnableChildBabyCarryInteractions, "EnableChildBabyCarryInteractions", false);
+			Scribe_Values.Look(ref EnableYoungPawnSoulReplacement, "EnableYoungPawnSoulReplacement", true);
 			Scribe_Values.Look(ref MutualPlayPartnerCheckIntervalTicks, "MutualPlayPartnerCheckIntervalTicks", 1);
 			Scribe_Values.Look(ref ToddlerMainLoopCheckIntervalTicks, "ToddlerMainLoopCheckIntervalTicks", 1);
 			Scribe_Values.Look(ref BabyCarryCheckIntervalTicks, "BabyCarryCheckIntervalTicks", 120);

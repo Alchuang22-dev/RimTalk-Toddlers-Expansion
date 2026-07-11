@@ -485,6 +485,11 @@ namespace RimTalk_ToddlersExpansion.Core
 				ref ToddlersExpansionSettings.EnableChildBabyCarryInteractions,
 				"RimTalk_ToddlersExpansion_Interaction_EnableChildCarry_Tooltip".Translate());
 			listingStandard.Gap();
+			listingStandard.CheckboxLabeled(
+				"RimTalk_ToddlersExpansion_Interaction_EnableYoungPawnSoulReplacement".Translate(),
+				ref ToddlersExpansionSettings.EnableYoungPawnSoulReplacement,
+				"RimTalk_ToddlersExpansion_Interaction_EnableYoungPawnSoulReplacement_Tooltip".Translate());
+			listingStandard.Gap();
 		}
 
 

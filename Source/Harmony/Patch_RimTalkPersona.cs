@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using HarmonyLib;
+using RimTalk_ToddlersExpansion.Core;
 using RimTalk_ToddlersExpansion.Integration.RimTalk;
 using RimWorld;
 using Verse;
@@ -50,7 +51,10 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 		private static void GetOrAddNew_Postfix(Pawn pawn, object __result, bool __state)
 		{
-			if (__state || pawn == null || __result == null)
+			if (!ToddlersExpansionSettings.EnableYoungPawnSoulReplacement
+				|| __state
+				|| pawn == null
+				|| __result == null)
 			{
 				return;
 			}
