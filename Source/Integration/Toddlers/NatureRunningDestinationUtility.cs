@@ -271,7 +271,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				case NatureRunningDestinationPool.GrowingZone:
 					return CollectZoneCandidates<Zone_Growing>(map, leader, includeCropLabel: true);
 				case NatureRunningDestinationPool.StockpileZone:
-					return CollectZoneCandidates<Zone_Stockpile>(map, leader, includeCropLabel: false);
+					return CollectZoneCandidates<Zone_Stockpile>(
+						map,
+						leader,
+						includeCropLabel: false,
+						zonePredicate: zone => !IsDumpingStockpile(zone));
 				case NatureRunningDestinationPool.ResearchRoom:
 					return CollectRoomCandidates(map, leader, room => RoomRoleMatches(room, ResearchRoomRoleNames), includeRecreationBuilding: false);
 				case NatureRunningDestinationPool.TempleRoom:
@@ -379,7 +383,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 		}
 
-		private static List<DestinationCandidate> CollectZoneCandidates<TZone>(Map map, Pawn leader, bool includeCropLabel) where TZone : Zone
+		private static List<DestinationCandidate> CollectZoneCandidates<TZone>(
+			Map map,
+			Pawn leader,
+			bool includeCropLabel,
+			Func<TZone, bool> zonePredicate = null) where TZone : Zone
 		{
 			List<DestinationCandidate> candidates = new List<DestinationCandidate>();
 			List<Zone> zones = map?.zoneManager?.AllZones;
@@ -390,7 +398,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 			foreach (Zone zone in zones)
 			{
-				if (zone is not TZone typedZone)
+				if (zone is not TZone typedZone || (zonePredicate != null && !zonePredicate(typedZone)))
 				{
 					continue;
 				}
@@ -438,6 +446,12 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			return candidates;
+		}
+
+		private static bool IsDumpingStockpile(Zone_Stockpile zone)
+		{
+			return zone != null
+				&& zone.BaseLabel == StorageSettingsPreset.DumpingStockpile.PresetName();
 		}
 
 		private static List<DestinationCandidate> CollectRoomCandidates(Map map, Pawn leader, Func<Room, bool> roomPredicate, bool includeRecreationBuilding)
