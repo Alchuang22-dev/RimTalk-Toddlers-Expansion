@@ -166,6 +166,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				Pawn pawn = GeneratePawnWithRace(wantChild, sampleRace, parms, ageYears);
 				if (pawn != null)
 				{
+					if (wantChild && pawn.DevelopmentalStage == DevelopmentalStage.Child)
+					{
+						ToddlerPawnGenerationUtility.TryInjectChildTravelFood(pawn, pawnList);
+					}
+
 					pawnList.Add(pawn);
 					added++;
 					if (!wantChild && ToddlersCompatUtility.IsToddler(pawn))

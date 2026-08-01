@@ -111,7 +111,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			CleanupCacheIfNeeded();
 
 			// 检查是否是访客幼儿（包含更多条件检查）
-			if (!IsVisitorToddler(pawn))
+			if (!IsFriendlyYoungVisitor(pawn))
 			{
 				return;
 			}
@@ -121,13 +121,24 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			_processedPawnIds.Add(pawn.thingIDNumber);
 
 			// 检查并补充婴儿食品
-			TryEnsureBabyFood(pawn);
+			if (IsVisitorToddler(pawn))
+			{
+				TryEnsureBabyFood(pawn);
+			}
+			else
+			{
+				TryEnsureChildTravelFood(pawn);
+			}
+
 			ToddlerPawnGenerationUtility.EnsureToddlerFallbackApparel(pawn, pawn.MapHeld?.Tile ?? -1);
 			TryApplyNewEnvironmentMood(pawn);
 
 			// 延后处理背负关系（需要等其他成员也spawn完成）
 			// 使用延迟调用，在下一帧处理背负关系
-			TryScheduleCarryingAssignment(pawn);
+			if (IsVisitorToddler(pawn))
+			{
+				TryScheduleCarryingAssignment(pawn);
+			}
 		}
 
 		/// <summary>
@@ -331,13 +342,19 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 		private static bool IsVisitorToddler(Pawn pawn)
 		{
+			return IsFriendlyYoungVisitor(pawn) && ToddlersCompatUtility.IsToddlerOrBaby(pawn);
+		}
+
+		private static bool IsFriendlyYoungVisitor(Pawn pawn)
+		{
 			if (pawn == null || pawn.Dead || pawn.Destroyed)
 			{
 				return false;
 			}
 
 			// 必须是幼儿或婴儿
-			if (!ToddlersCompatUtility.IsToddlerOrBaby(pawn))
+			if (!ToddlersCompatUtility.IsToddlerOrBaby(pawn)
+				&& pawn.DevelopmentalStage != DevelopmentalStage.Child)
 			{
 				return false;
 			}
@@ -369,6 +386,25 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			}
 
 			return true;
+		}
+
+		private static void TryEnsureChildTravelFood(Pawn child)
+		{
+			if (child == null
+				|| child.DevelopmentalStage != DevelopmentalStage.Child
+				|| ToddlersCompatUtility.IsToddlerOrBaby(child))
+			{
+				return;
+			}
+
+			IEnumerable<Pawn> groupMembers = child.GetLord()?.ownedPawns;
+			if (groupMembers == null)
+			{
+				groupMembers = child.Map?.mapPawns?.AllPawnsSpawned
+					.Where(candidate => candidate?.Faction == child.Faction);
+			}
+
+			ToddlerPawnGenerationUtility.TryInjectChildTravelFood(child, groupMembers);
 		}
 
 		private static void TryEnsureBabyFood(Pawn toddler)

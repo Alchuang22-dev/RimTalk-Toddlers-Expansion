@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using RimTalk_ToddlersExpansion.Core;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -439,6 +440,99 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		#endregion
 
 		#region Baby Food
+
+		/// <summary>
+		/// Give an injected child the same travel-food allowance used by adult members
+		/// of its caravan or visitor group.
+		/// </summary>
+		public static void TryInjectChildTravelFood(Pawn child, IEnumerable<Pawn> groupMembers)
+		{
+			if (child?.inventory?.innerContainer == null || child.DevelopmentalStage != DevelopmentalStage.Child)
+			{
+				return;
+			}
+
+			foreach (Thing thing in child.inventory.innerContainer)
+			{
+				if (thing?.def?.IsNutritionGivingIngestible == true && !thing.def.IsDrug)
+				{
+					return;
+				}
+			}
+
+			PawnKindDef foodTemplate = FindAdultTravelFoodTemplate(child, groupMembers);
+			if (foodTemplate == null)
+			{
+				return;
+			}
+
+			try
+			{
+				ThingDef foodDef = foodTemplate.invFoodDef;
+				if (foodDef == null)
+				{
+					float roll = Rand.Value;
+					foodDef = roll < 0.5f
+						? ThingDefOf.MealSimple
+						: roll < 0.75f ? ThingDefOf.MealFine : ThingDefOf.MealSurvivalPack;
+				}
+
+				Thing food = ThingMaker.MakeThing(foodDef);
+				float nutritionPerItem = food.GetStatValue(StatDefOf.Nutrition);
+				if (nutritionPerItem <= 0.001f)
+				{
+					return;
+				}
+
+				food.stackCount = GenMath.RoundRandom(foodTemplate.invNutrition / nutritionPerItem);
+				if (food.stackCount <= 0)
+				{
+					return;
+				}
+
+				child.inventory.TryAddItemNotForSale(food);
+
+				if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
+				{
+					Log.Message($"[RimTalk_ToddlersExpansion] Gave child {child.LabelShort} {food.stackCount}x {food.def.defName} using adult travel-food template {foodTemplate.defName}.");
+				}
+			}
+			catch (Exception ex)
+			{
+				Log.Warning($"[RimTalk_ToddlersExpansion] Failed to give travel food to child {child.LabelShort}: {ex.Message}");
+			}
+		}
+
+		private static PawnKindDef FindAdultTravelFoodTemplate(Pawn child, IEnumerable<Pawn> groupMembers)
+		{
+			if (groupMembers == null)
+			{
+				return null;
+			}
+
+			PawnKindDef fallback = null;
+			foreach (Pawn member in groupMembers)
+			{
+				if (member == null
+					|| member == child
+					|| member.RaceProps?.Humanlike != true
+					|| !member.DevelopmentalStage.Adult()
+					|| member.kindDef == null
+					|| member.kindDef.invNutrition <= 0.001f)
+				{
+					continue;
+				}
+
+				if (member.def == child.def)
+				{
+					return member.kindDef;
+				}
+
+				fallback ??= member.kindDef;
+			}
+
+			return fallback;
+		}
 
 		/// <summary>
 		/// 为幼儿注入婴儿食品
