@@ -22,6 +22,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private const int HardMaxExtraRolls = 12;
 		private const int GenerationAttemptsPerRequestedPawn = 4;
 		private const float MinPositiveAgeYears = 0.01f;
+		private const float WalkingAgeSafetyMarginYears = 0.001f;
+		private const float ToddlerGenerationEndInsetYears = 0.01f;
 		private const float FallbackToddlerMaxAgeYears = 3f;
 		private const float MinParentAssignmentScore = 0.1f;
 		private const float MinMaleParentAgeAtBirth = 14f;
@@ -31,6 +33,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		private static bool _resetHediffsForAgeResolved;
 		private static MethodInfo _resetHediffsForAge;
+		private static bool _walkingLearningFactorResolved;
+		private static FieldInfo _walkingLearningFactorField;
 		private static int _childhoodFallbackScopeDepth;
 
 		internal static bool UseInjectedChildhoodFallback => _childhoodFallbackScopeDepth > 0;
@@ -570,12 +574,95 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
+			if (TryGetMinimumWalkingToddlerAge(samplePawn, minToddler, maxToddler, out float minimumWalkingAge))
+			{
+				float adjustedMinimum = Mathf.Max(minToddler, minimumWalkingAge + WalkingAgeSafetyMarginYears);
+				if (adjustedMinimum >= maxToddler)
+				{
+					if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
+					{
+						Log.Warning($"[RimTalk_ToddlersExpansion] No door-capable toddler age remains in generation range {minToddler:F3}-{maxToddler:F3}; calculated walking minimum is {minimumWalkingAge:F3}.");
+					}
+
+					return false;
+				}
+
+				minToddler = adjustedMinimum;
+			}
+
 			ageYears = Rand.Range(minToddler, maxToddler);
 			if (ageYears <= MinPositiveAgeYears)
 			{
 				ageYears = MinPositiveAgeYears;
 			}
 			return true;
+		}
+
+		private static bool TryGetMinimumWalkingToddlerAge(
+			Pawn samplePawn,
+			float generatedMinAge,
+			float generatedMaxAge,
+			out float minimumWalkingAge)
+		{
+			minimumWalkingAge = generatedMinAge;
+
+			HediffDef learningToWalk = DefDatabase<HediffDef>.GetNamedSilentFail("LearningToWalk");
+			if (learningToWalk?.stages == null || learningToWalk.stages.Count < 2)
+			{
+				return false;
+			}
+
+			if (!TryGetWalkingLearningFactor(out float learningFactor))
+			{
+				return false;
+			}
+
+			float toddlerStartAge = ToddlersCompatUtility.GetToddlerMinAgeYears(samplePawn);
+			float toddlerEndAge = ToddlersCompatUtility.GetToddlerEndAgeYears(samplePawn);
+			if (!IsValidAgeRange(toddlerStartAge, toddlerEndAge))
+			{
+				toddlerStartAge = generatedMinAge;
+				// The normal generation range stops just before the child-stage boundary.
+				// Adding the inset back is conservative for fallback ranges that do not use it.
+				toddlerEndAge = generatedMaxAge + ToddlerGenerationEndInsetYears;
+			}
+
+			float wobblyMinSeverity = learningToWalk.stages[1].minSeverity;
+			if (learningFactor <= 0f || wobblyMinSeverity < 0f)
+			{
+				return false;
+			}
+
+			// Toddlers initializes walking severity as:
+			// PercentGrowth / learningFactor_Walk. Solve that equation for the
+			// first age whose severity reaches the second (Wobbly) stage.
+			float requiredToddlerProgress = wobblyMinSeverity * learningFactor;
+			minimumWalkingAge = toddlerStartAge
+				+ ((toddlerEndAge - toddlerStartAge) * requiredToddlerProgress);
+
+			return !float.IsNaN(minimumWalkingAge) && !float.IsInfinity(minimumWalkingAge);
+		}
+
+		private static bool TryGetWalkingLearningFactor(out float learningFactor)
+		{
+			learningFactor = 0f;
+			if (!_walkingLearningFactorResolved)
+			{
+				_walkingLearningFactorResolved = true;
+				Type settingsType = AccessTools.TypeByName("Toddlers.Toddlers_Settings");
+				if (settingsType != null)
+				{
+					_walkingLearningFactorField = AccessTools.Field(settingsType, "learningFactor_Walk");
+				}
+			}
+
+			if (_walkingLearningFactorField?.GetValue(null) is float currentFactor)
+			{
+				learningFactor = currentFactor;
+				return true;
+			}
+
+			return false;
 		}
 
 		private static bool TryGetToddlerAgeRange(ThingDef raceDef, Pawn samplePawn, out float minAge, out float maxAge)
@@ -595,7 +682,9 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					}
 
 					minAge = stageAge.minAge;
-					maxAge = i + 1 < ages.Count ? ages[i + 1].minAge - 0.01f : minAge + 1f;
+					maxAge = i + 1 < ages.Count
+						? ages[i + 1].minAge - ToddlerGenerationEndInsetYears
+						: minAge + 1f;
 					if (maxAge <= minAge)
 					{
 						maxAge = minAge + 0.5f;
