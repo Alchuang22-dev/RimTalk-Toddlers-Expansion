@@ -592,6 +592,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return;
 			}
 
+			if (pawn.Downed || HealthAIUtility.ShouldSeekMedicalRest(pawn))
+			{
+				return;
+			}
+
 			if (PawnUtility.IsExitingMap(pawn) || pawn.jobs?.curJob?.exitMapOnArrival == true)
 			{
 				return;
