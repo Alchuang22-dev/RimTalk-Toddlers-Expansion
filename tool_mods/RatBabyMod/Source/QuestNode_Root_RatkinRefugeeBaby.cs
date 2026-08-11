@@ -33,6 +33,16 @@ namespace RatBabyMod
 
 		public override Pawn GeneratePawn()
 		{
+			return GeneratePawnCore();
+		}
+
+		public override Pawn GeneratePawn_NewTemp(Map map)
+		{
+			return GeneratePawnCore();
+		}
+
+		private static Pawn GeneratePawnCore()
+		{
 			if (!RatBabyResolver.TryResolve(out RatBabyResolver.ResolvedDefs resolved))
 			{
 				return null;
