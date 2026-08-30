@@ -61,10 +61,16 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
             bool isChild = pawn.DevelopmentalStage.Child();
             
             // RimTalk play jobs - suitable for both toddlers and children
-            AddJobDefIfExists(availableJobs, "RimTalk_ToddlerSelfPlayJob");
+            if (!ToddlerPlayFailureCooldownUtility.IsSelfPlayOnCooldown(pawn))
+            {
+                AddJobDefIfExists(availableJobs, "RimTalk_ToddlerSelfPlayJob");
+            }
             
             // Mutual play is suitable for both
-            AddJobDefIfExists(availableJobs, "RimTalk_ToddlerMutualPlayJob");
+            if (!ToddlerPlayFailureCooldownUtility.IsMutualPlayOnCooldown(pawn))
+            {
+                AddJobDefIfExists(availableJobs, "RimTalk_ToddlerMutualPlayJob");
+            }
             
             // Toddlers mod play jobs - ONLY for toddlers
             if (isToddler)
@@ -121,6 +127,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
                 }
 
                 if (ToddlersCompatUtility.IsBusyForMutualPlay(otherPawn))
+                {
+                    continue;
+                }
+
+                if (ToddlerPlayFailureCooldownUtility.IsMutualPlayOnCooldown(otherPawn))
                 {
                     continue;
                 }

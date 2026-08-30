@@ -21,6 +21,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
+			if (ToddlerPlayFailureCooldownUtility.IsSelfPlayOnCooldown(pawn))
+			{
+				return false;
+			}
+
 			if (!SocialNeedTuning_Toddlers.ShouldDoOptionalActivity(pawn, PlayNeedThreshold))
 			{
 				return false;
@@ -32,6 +37,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		public override Job TryGiveJob(Pawn pawn)
 		{
 			if (!IsEligiblePawn(pawn))
+			{
+				return null;
+			}
+
+			if (ToddlerPlayFailureCooldownUtility.IsSelfPlayOnCooldown(pawn))
 			{
 				return null;
 			}
@@ -66,15 +76,16 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		{
 			Map map = pawn.Map;
 			IntVec3 root = pawn.Position;
-			return CellFinder.TryFindRandomCellNear(root, map, SearchRadius, cell =>
-			{
-				if (!cell.Standable(map) || cell.IsForbidden(pawn))
-				{
-					return false;
-				}
-
-				return pawn.CanReserveSittableOrSpot(cell);
-			}, out spot);
+			return CellFinder.TryFindRandomReachableNearbyCell(
+				root,
+				map,
+				SearchRadius,
+				TraverseParms.For(pawn, Danger.Some),
+				cell => cell.Standable(map)
+					&& !cell.IsForbidden(pawn)
+					&& pawn.CanReserveSittableOrSpot(cell),
+				null,
+				out spot);
 		}
 	}
 
@@ -143,7 +154,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
-			return !ToddlersCompatUtility.IsBusyForMutualPlay(pawn);
+			return !ToddlersCompatUtility.IsBusyForMutualPlay(pawn)
+				&& !ToddlerPlayFailureCooldownUtility.IsMutualPlayOnCooldown(pawn);
 		}
 
 		private static bool TryBeginPartnerSearch(Pawn pawn)
@@ -191,6 +203,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				}
 
 				if (ToddlersCompatUtility.IsBusyForMutualPlay(other))
+				{
+					continue;
+				}
+
+				if (ToddlerPlayFailureCooldownUtility.IsMutualPlayOnCooldown(other))
 				{
 					continue;
 				}

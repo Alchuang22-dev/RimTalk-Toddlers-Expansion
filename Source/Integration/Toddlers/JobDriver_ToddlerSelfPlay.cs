@@ -12,10 +12,24 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 	{
 		private const TargetIndex PlaySpotInd = TargetIndex.A;
 		private AnimationDef _playAnimation;
+		private bool _playStarted;
 
 		public override bool TryMakePreToilReservations(bool errorOnFailed)
 		{
-			return pawn.Reserve(job.GetTarget(PlaySpotInd), job, 1, -1, null, errorOnFailed);
+			LocalTargetInfo playSpot = job.GetTarget(PlaySpotInd);
+			if (!pawn.CanReach(playSpot, PathEndMode.OnCell, Danger.Some))
+			{
+				ToddlerPlayFailureCooldownUtility.StartSelfPlayCooldown(pawn);
+				return false;
+			}
+
+			bool reserved = pawn.Reserve(playSpot, job, 1, -1, null, errorOnFailed);
+			if (!reserved)
+			{
+				ToddlerPlayFailureCooldownUtility.StartSelfPlayCooldown(pawn);
+			}
+
+			return reserved;
 		}
 
 		protected override IEnumerable<Toil> MakeNewToils()
@@ -28,6 +42,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			Toil play = ToilMaker.MakeToil("ToddlerSelfPlay");
 			play.initAction = () =>
 			{
+				_playStarted = true;
 				if (YayoAnimationCompatUtility.TryGetNativePlayAnimationOverride(pawn, out AnimationDef nativeAnimation))
 				{
 					_playAnimation = nativeAnimation;
@@ -87,10 +102,13 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			AddFinishAction(condition =>
 			{
 				ToddlerPlayReportUtility.CancelJob(job);
-				if (condition == JobCondition.Succeeded)
+				if (condition != JobCondition.Succeeded || !_playStarted)
 				{
-					ToddlerPlayDialogueEvents.OnToddlerSelfPlayCompleted(pawn, job, Map);
+					ToddlerPlayFailureCooldownUtility.StartSelfPlayCooldown(pawn);
+					return;
 				}
+
+				ToddlerPlayDialogueEvents.OnToddlerSelfPlayCompleted(pawn, job, Map);
 			});
 
 			yield return play;

@@ -14,13 +14,27 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		private float _initialPlayLevel = -1f;
 		private bool _partnerJobStarted;
+		private bool _playStarted;
 		private AnimationDef _playAnimation;
 
 		private Pawn Partner => TargetA.Thing as Pawn;
 
 		public override bool TryMakePreToilReservations(bool errorOnFailed)
 		{
-			return pawn.Reserve(TargetA, job, 1, -1, null, errorOnFailed);
+			Pawn partner = Partner;
+			if (partner == null || !pawn.CanReach(partner, PathEndMode.Touch, Danger.Some))
+			{
+				StartFailureCooldown(partner);
+				return false;
+			}
+
+			bool reserved = pawn.Reserve(TargetA, job, 1, -1, null, errorOnFailed);
+			if (!reserved)
+			{
+				StartFailureCooldown(partner);
+			}
+
+			return reserved;
 		}
 
 		protected override IEnumerable<Toil> MakeNewToils()
@@ -54,6 +68,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			Toil play = ToilMaker.MakeToil("ToddlerMutualPlay");
 			play.initAction = () =>
 			{
+				_playStarted = true;
 				if (YayoAnimationCompatUtility.TryGetNativePlayAnimationOverride(pawn, out AnimationDef nativeAnimation))
 				{
 					_playAnimation = nativeAnimation;
@@ -103,8 +118,9 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			AddFinishAction(condition =>
 			{
 				ToddlerPlayReportUtility.CancelJob(job);
-				if (condition != JobCondition.Succeeded)
+				if (condition != JobCondition.Succeeded || !_playStarted)
 				{
+					StartFailureCooldown(Partner);
 					return;
 				}
 
@@ -177,6 +193,12 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			Job curJob = Partner.CurJob;
 			return curJob?.def == ToddlersExpansionJobDefOf.RimTalk_ToddlerMutualPlayPartnerJob
 				&& curJob.targetA.Thing == pawn;
+		}
+
+		private void StartFailureCooldown(Pawn partner)
+		{
+			ToddlerPlayFailureCooldownUtility.StartMutualPlayCooldown(pawn);
+			ToddlerPlayFailureCooldownUtility.StartMutualPlayCooldown(partner);
 		}
 	}
 }
