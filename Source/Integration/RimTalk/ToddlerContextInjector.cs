@@ -26,7 +26,25 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 			}
 
 			context = RewriteBabyMentalStateContext(context, pawn);
+			return AppendToddlerDescriptors(context, pawn);
+		}
 
+		public static string InjectToddlerListenerContext(string context, Pawn pawn)
+		{
+			bool isToddler = pawn != null && ToddlersCompatUtility.IsToddler(pawn);
+			bool isBabyOnly = pawn != null && BiotechCompatUtility.IsBaby(pawn) && !isToddler;
+			if (pawn == null || (!isToddler && !isBabyOnly))
+			{
+				return context;
+			}
+
+			// RimTalk's announcement listener context already renders mood without the
+			// generic "mental break" suffix, so only append the compact toddler data.
+			return AppendToddlerDescriptors(context, pawn, " | ");
+		}
+
+		private static string AppendToddlerDescriptors(string context, Pawn pawn, string separator = "\n")
+		{
 			string language = GetToddlerLanguageDescriptor(pawn);
 			string play = GetToddlerPlayDescriptor(pawn);
 			string babyState = GetBabyStateDescriptor(pawn);
@@ -35,30 +53,30 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 				return context;
 			}
 
-			string appended = "";
+			var descriptors = new List<string>(3);
 			if (!string.IsNullOrEmpty(language))
 			{
-				appended = LanguagePrefix + language;
+				descriptors.Add(LanguagePrefix + language);
 			}
 
 			if (!string.IsNullOrEmpty(play))
 			{
-				string playLine = PlayPrefix + play;
-				appended = string.IsNullOrEmpty(appended) ? playLine : appended + "\n" + playLine;
+				descriptors.Add(PlayPrefix + play);
 			}
 
 			if (!string.IsNullOrEmpty(babyState))
 			{
-				string babyStateLine = BabyStatePrefix + babyState;
-				appended = string.IsNullOrEmpty(appended) ? babyStateLine : appended + "\n" + babyStateLine;
+				descriptors.Add(BabyStatePrefix + babyState);
 			}
+
+			string appended = string.Join(separator, descriptors);
 
 			if (string.IsNullOrEmpty(context))
 			{
 				return appended;
 			}
 
-			return context + "\n" + appended;
+			return context + separator + appended;
 		}
 
 		public static string GetToddlerLanguageDescriptor(Pawn pawn)

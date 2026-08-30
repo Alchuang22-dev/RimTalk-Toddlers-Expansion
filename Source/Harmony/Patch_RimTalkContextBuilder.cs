@@ -22,17 +22,22 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			}
 
 			Type infoLevelType = promptServiceType.GetNestedType("InfoLevel", BindingFlags.Public | BindingFlags.NonPublic);
-			MethodInfo target = infoLevelType != null
+			MethodInfo pawnContextTarget = infoLevelType != null
 				? AccessTools.Method(promptServiceType, "CreatePawnContext", new[] { typeof(Pawn), infoLevelType })
 				: AccessTools.Method(promptServiceType, "CreatePawnContext", new[] { typeof(Pawn) });
 
-			if (target == null)
+			if (pawnContextTarget != null)
 			{
-				return;
+				MethodInfo postfix = AccessTools.Method(typeof(Patch_RimTalkContextBuilder), nameof(CreatePawnContext_Postfix));
+				harmony.Patch(pawnContextTarget, postfix: new HarmonyMethod(postfix));
 			}
 
-			MethodInfo postfix = AccessTools.Method(typeof(Patch_RimTalkContextBuilder), nameof(CreatePawnContext_Postfix));
-			harmony.Patch(target, postfix: new HarmonyMethod(postfix));
+			MethodInfo listenerContextTarget = AccessTools.Method(promptServiceType, "CreateMinimalListenerContext", new[] { typeof(Pawn) });
+			if (listenerContextTarget != null)
+			{
+				MethodInfo listenerPostfix = AccessTools.Method(typeof(Patch_RimTalkContextBuilder), nameof(CreateMinimalListenerContext_Postfix));
+				harmony.Patch(listenerContextTarget, postfix: new HarmonyMethod(listenerPostfix));
+			}
 		}
 
 		private static void CreatePawnContext_Postfix(Pawn pawn, ref string __result)
@@ -43,6 +48,16 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			}
 
 			__result = ToddlerContextInjector.InjectToddlerLanguageContext(__result, pawn);
+		}
+
+		private static void CreateMinimalListenerContext_Postfix(Pawn pawn, ref string __result)
+		{
+			if (pawn == null)
+			{
+				return;
+			}
+
+			__result = ToddlerContextInjector.InjectToddlerListenerContext(__result, pawn);
 		}
 	}
 }

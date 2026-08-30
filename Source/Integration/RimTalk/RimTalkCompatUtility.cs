@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using HarmonyLib;
@@ -16,6 +17,8 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 		private const string TalkRequestTypeName = "RimTalk.Data.TalkRequest";
 		private const string TalkTypeTypeName = "RimTalk.Source.Data.TalkType";
 		private const string TalkServiceTypeName = "RimTalk.Service.TalkService";
+		private const string PawnSelectorTypeName = "RimTalk.Service.PawnSelector";
+		private const string CacheTypeName = "RimTalk.Data.Cache";
 		private const string ContextHelperTypeName = "RimTalk.Util.ContextHelper";
 		private const string AiClientFactoryTypeName = "RimTalk.Client.AIClientFactory";
 		private const string AiClientTypeName = "RimTalk.Client.IAIClient";
@@ -41,7 +44,10 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 		private static PropertyInfo _talkRequestInitiator;
 		private static PropertyInfo _talkRequestRecipient;
 		private static PropertyInfo _talkRequestTalkType;
+		private static PropertyInfo _talkRequestParticipants;
 		private static Type _talkTypeType;
+		private static MethodInfo _getAllNearbyPawns;
+		private static MethodInfo _getPlayerPawn;
 		private static MethodInfo _collectNearbyContextText;
 		private static MethodInfo _getAiClientAsync;
 		private static MethodInfo _getChatCompletionAsync;
@@ -210,6 +216,126 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 			return string.Equals(talkTypeName, "User", StringComparison.OrdinalIgnoreCase);
 		}
 
+		public static bool IsAnnouncementTalkType(string talkTypeName)
+		{
+			return string.Equals(talkTypeName, "Announcement", StringComparison.OrdinalIgnoreCase);
+		}
+
+		public static void TryCaptureTalkRequestParticipants(object talkRequest, object participants)
+		{
+			if (talkRequest == null || participants == null)
+			{
+				return;
+			}
+
+			EnsureInitialized();
+			try
+			{
+				PropertyInfo participantsProperty = ResolveParticipantsProperty(talkRequest.GetType());
+				if (participantsProperty?.CanWrite == true && participantsProperty.PropertyType.IsInstanceOfType(participants))
+				{
+					participantsProperty.SetValue(talkRequest, participants);
+				}
+			}
+			catch (Exception ex)
+			{
+				WarnOnce("CaptureTalkRequestParticipants", ex);
+			}
+		}
+
+		public static bool TryGetAnnouncementListeners(
+			object talkRequest,
+			Pawn initiator,
+			Pawn recipient,
+			out Pawn speaker,
+			out List<Pawn> listeners)
+		{
+			EnsureInitialized();
+			speaker = IsRimTalkPlayer(recipient) ? recipient : initiator;
+			listeners = new List<Pawn>();
+			if (talkRequest == null || initiator == null || speaker == null)
+			{
+				return false;
+			}
+
+			var candidates = new List<Pawn>();
+			try
+			{
+				PropertyInfo participantsProperty = ResolveParticipantsProperty(talkRequest.GetType());
+				if (participantsProperty?.GetValue(talkRequest) is IEnumerable participants)
+				{
+					foreach (object item in participants)
+					{
+						if (item is Pawn pawn)
+						{
+							candidates.Add(pawn);
+						}
+					}
+				}
+
+				if (candidates.Count == 0)
+				{
+					candidates.Add(initiator);
+					if (recipient != null)
+					{
+						candidates.Add(recipient);
+					}
+
+					if (_getAllNearbyPawns?.Invoke(null, new object[] { initiator, null, true }) is IEnumerable nearby)
+					{
+						foreach (object item in nearby)
+						{
+							if (item is Pawn pawn)
+							{
+								candidates.Add(pawn);
+							}
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				WarnOnce("GetAnnouncementListeners", ex);
+			}
+
+			var seen = new HashSet<Pawn>();
+			foreach (Pawn candidate in candidates)
+			{
+				if (candidate == null || candidate == speaker || IsRimTalkPlayer(candidate) || !seen.Add(candidate))
+				{
+					continue;
+				}
+
+				listeners.Add(candidate);
+			}
+
+			return listeners.Count > 0;
+		}
+
+		private static PropertyInfo ResolveParticipantsProperty(Type requestType)
+		{
+			return requestType == _talkRequestType
+				? (_talkRequestParticipants ??= AccessTools.Property(requestType, "Participants"))
+				: AccessTools.Property(requestType, "Participants");
+		}
+
+		private static bool IsRimTalkPlayer(Pawn pawn)
+		{
+			if (pawn == null || _getPlayerPawn == null)
+			{
+				return false;
+			}
+
+			try
+			{
+				return ReferenceEquals(pawn, _getPlayerPawn.Invoke(null, null));
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
 		public static bool TryGetNearbyContextText(Pawn pawn, out string contextText)
 		{
 			contextText = null;
@@ -320,12 +446,26 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 					_talkRequestInitiator = AccessTools.Property(_talkRequestType, "Initiator");
 					_talkRequestRecipient = AccessTools.Property(_talkRequestType, "Recipient");
 					_talkRequestTalkType = AccessTools.Property(_talkRequestType, "TalkType");
+					_talkRequestParticipants = AccessTools.Property(_talkRequestType, "Participants");
 				}
 
 				Type talkServiceType = AccessTools.TypeByName(TalkServiceTypeName);
 				if (talkServiceType != null && _talkRequestType != null)
 				{
 					_generateTalk = AccessTools.Method(talkServiceType, "GenerateTalk", new[] { _talkRequestType });
+				}
+
+				Type pawnSelectorType = AccessTools.TypeByName(PawnSelectorTypeName);
+				if (pawnSelectorType != null)
+				{
+					_getAllNearbyPawns = AccessTools.Method(pawnSelectorType, "GetAllNearByPawns",
+						new[] { typeof(Pawn), typeof(Pawn), typeof(bool) });
+				}
+
+				Type cacheType = AccessTools.TypeByName(CacheTypeName);
+				if (cacheType != null)
+				{
+					_getPlayerPawn = AccessTools.Method(cacheType, "GetPlayer", Type.EmptyTypes);
 				}
 
 				Type contextHelperType = AccessTools.TypeByName(ContextHelperTypeName);
