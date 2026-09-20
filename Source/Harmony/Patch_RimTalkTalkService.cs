@@ -18,12 +18,13 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			}
 
 			Type talkServiceType = AccessTools.TypeByName("RimTalk.Service.TalkService");
-			if (talkServiceType == null)
+			Type talkRequestType = AccessTools.TypeByName("RimTalk.Data.TalkRequest");
+			if (talkServiceType == null || talkRequestType == null)
 			{
 				return;
 			}
 
-			MethodInfo target = AccessTools.Method(talkServiceType, "GenerateTalk");
+			MethodInfo target = AccessTools.Method(talkServiceType, "GenerateTalk", new[] { talkRequestType });
 			if (target == null)
 			{
 				return;
@@ -31,39 +32,6 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 			MethodInfo postfix = AccessTools.Method(typeof(Patch_RimTalkTalkService), nameof(GenerateTalk_Postfix));
 			harmony.Patch(target, postfix: new HarmonyMethod(postfix));
-
-			PatchBuildMessagesParticipantCapture(harmony);
-		}
-
-		private static void PatchBuildMessagesParticipantCapture(HarmonyLib.Harmony harmony)
-		{
-			Type promptManagerType = AccessTools.TypeByName("RimTalk.Prompt.PromptManager");
-			if (promptManagerType == null)
-			{
-				return;
-			}
-
-			MethodInfo buildMessages = AccessTools.Method(promptManagerType, "BuildMessages");
-			if (buildMessages == null)
-			{
-				return;
-			}
-
-			MethodInfo prefix = AccessTools.Method(typeof(Patch_RimTalkTalkService), nameof(BuildMessages_Prefix));
-			harmony.Patch(buildMessages, prefix: new HarmonyMethod(prefix));
-		}
-
-		private static void BuildMessages_Prefix(object __0, object __1)
-		{
-			if (RimTalkCompatUtility.TryGetTalkRequestInfo(
-				__0,
-				out Pawn _,
-				out Pawn _,
-				out string talkTypeName)
-				&& RimTalkCompatUtility.IsAnnouncementTalkType(talkTypeName))
-			{
-				RimTalkCompatUtility.TryCaptureTalkRequestParticipants(__0, __1);
-			}
 		}
 
 		private static void GenerateTalk_Postfix(object __0, bool __result)

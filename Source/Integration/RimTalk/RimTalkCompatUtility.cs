@@ -19,6 +19,7 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 		private const string TalkServiceTypeName = "RimTalk.Service.TalkService";
 		private const string PawnSelectorTypeName = "RimTalk.Service.PawnSelector";
 		private const string CacheTypeName = "RimTalk.Data.Cache";
+		private const string PawnStateTypeName = "RimTalk.Data.PawnState";
 		private const string ContextHelperTypeName = "RimTalk.Util.ContextHelper";
 		private const string AiClientFactoryTypeName = "RimTalk.Client.AIClientFactory";
 		private const string AiClientTypeName = "RimTalk.Client.IAIClient";
@@ -39,6 +40,8 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 
 		private static MethodInfo _registerPawnVariable;
 		private static MethodInfo _generateTalk;
+		private static MethodInfo _getPawnState;
+		private static MethodInfo _addTalkRequest;
 		private static ConstructorInfo _talkRequestCtor;
 		private static Type _talkRequestType;
 		private static PropertyInfo _talkRequestInitiator;
@@ -135,7 +138,7 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 			}
 
 			EnsureInitialized();
-			if (!_isActive || _generateTalk == null || _talkRequestCtor == null || _talkTypeType == null)
+			if (!_isActive || _talkTypeType == null)
 			{
 				return false;
 			}
@@ -143,6 +146,22 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 			try
 			{
 				object talkType = Enum.Parse(_talkTypeType, talkTypeName ?? "Other", true);
+				if (_getPawnState != null && _addTalkRequest != null)
+				{
+					object pawnState = _getPawnState.Invoke(null, new object[] { initiator });
+					if (pawnState != null)
+					{
+						_addTalkRequest.Invoke(pawnState, new[] { prompt, recipient, talkType });
+						return true;
+					}
+				}
+
+				// Compatibility fallback for RimTalk builds that do not expose PawnState.AddTalkRequest.
+				if (_generateTalk == null || _talkRequestCtor == null)
+				{
+					return false;
+				}
+
 				object request = _talkRequestCtor.Invoke(new object[] { prompt, initiator, recipient, talkType });
 				object result = _generateTalk.Invoke(null, new[] { request });
 				return result is bool ok && ok;
@@ -219,28 +238,6 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 		public static bool IsAnnouncementTalkType(string talkTypeName)
 		{
 			return string.Equals(talkTypeName, "Announcement", StringComparison.OrdinalIgnoreCase);
-		}
-
-		public static void TryCaptureTalkRequestParticipants(object talkRequest, object participants)
-		{
-			if (talkRequest == null || participants == null)
-			{
-				return;
-			}
-
-			EnsureInitialized();
-			try
-			{
-				PropertyInfo participantsProperty = ResolveParticipantsProperty(talkRequest.GetType());
-				if (participantsProperty?.CanWrite == true && participantsProperty.PropertyType.IsInstanceOfType(participants))
-				{
-					participantsProperty.SetValue(talkRequest, participants);
-				}
-			}
-			catch (Exception ex)
-			{
-				WarnOnce("CaptureTalkRequestParticipants", ex);
-			}
 		}
 
 		public static bool TryGetAnnouncementListeners(
@@ -466,6 +463,14 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 				if (cacheType != null)
 				{
 					_getPlayerPawn = AccessTools.Method(cacheType, "GetPlayer", Type.EmptyTypes);
+					_getPawnState = AccessTools.Method(cacheType, "Get", new[] { typeof(Pawn) });
+				}
+
+				Type pawnStateType = AccessTools.TypeByName(PawnStateTypeName);
+				if (pawnStateType != null && _talkTypeType != null)
+				{
+					_addTalkRequest = AccessTools.Method(pawnStateType, "AddTalkRequest",
+						new[] { typeof(string), typeof(Pawn), _talkTypeType });
 				}
 
 				Type contextHelperType = AccessTools.TypeByName(ContextHelperTypeName);

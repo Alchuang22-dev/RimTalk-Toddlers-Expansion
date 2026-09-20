@@ -95,7 +95,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			return pawn?.Faction != null
 				&& Faction.OfPlayer != null
 				&& pawn.Faction != Faction.OfPlayer
-				&& !pawn.HostileTo(Faction.OfPlayer)
+				&& !IsHostileToPlayer(pawn)
 				&& !pawn.IsPrisoner;
 		}
 
@@ -103,8 +103,21 @@ namespace RimTalk_ToddlersExpansion.Harmony
 		{
 			return pawn != null
 				&& Faction.OfPlayer != null
-				&& pawn.HostileTo(Faction.OfPlayer)
+				&& IsHostileToPlayer(pawn)
 				&& !pawn.IsPrisoner;
+		}
+
+		private static bool IsHostileToPlayer(Pawn pawn)
+		{
+			if (pawn?.Faction == null || Faction.OfPlayer == null || pawn.Faction == Faction.OfPlayer)
+			{
+				return false;
+			}
+
+			FactionRelation relation = pawn.Faction.RelationWith(Faction.OfPlayer, false);
+			return relation != null
+				? relation.kind == FactionRelationKind.Hostile
+				: pawn.Faction.def.permanentEnemy;
 		}
 	}
 }
