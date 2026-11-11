@@ -175,6 +175,7 @@
   <RimTalk_ToddlersExpansion_Llm_ApiKey>API Key</RimTalk_ToddlersExpansion_Llm_ApiKey>
   <RimTalk_ToddlersExpansion_Llm_Model>模型</RimTalk_ToddlersExpansion_Llm_Model>
   <RimTalk_ToddlersExpansion_Llm_ConfigWarning>独立 API 配置还不完整。请先填写所需的接口地址、模型和 API Key，再切换使用。</RimTalk_ToddlersExpansion_Llm_ConfigWarning>
+  <RimTalk_ToddlersExpansion_Llm_InsecureHttpWarning>远程 HTTP 接口无法保护你的 API Key，因此已阻止请求。请改用 HTTPS 或回环地址。</RimTalk_ToddlersExpansion_Llm_InsecureHttpWarning>
 
   <RimTalk_ToddlersExpansion_Performance_Settings_Header>性能相关设置</RimTalk_ToddlersExpansion_Performance_Settings_Header>
   <RimTalk_ToddlersExpansion_Performance_Settings_Desc>用于调节高频检查间隔，并控制日志静音策略。</RimTalk_ToddlersExpansion_Performance_Settings_Desc>

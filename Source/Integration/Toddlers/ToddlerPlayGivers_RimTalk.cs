@@ -448,6 +448,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
+			if (pawn.Downed || pawn.health?.capacities?.CapableOf(PawnCapacityDefOf.Moving) != true)
+			{
+				return false;
+			}
+
 			if (!SocialNeedTuning_Toddlers.ShouldDoOptionalActivity(pawn, 0.8f))
 			{
 				return false;

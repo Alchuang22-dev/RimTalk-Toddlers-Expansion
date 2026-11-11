@@ -23,7 +23,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
         
         protected override Job TryGiveJob(Pawn pawn)
         {
-            if (pawn == null || !pawn.Spawned)
+            if (pawn == null || !pawn.Spawned || pawn.Downed || pawn.health?.capacities?.CapableOf(PawnCapacityDefOf.Moving) != true)
             {
                 return null;
             }

@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
+using RimWorld;
 using RimTalk_ToddlersExpansion.Core;
 using UnityEngine.Networking;
 using Verse;
@@ -15,6 +16,7 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 	{
 		private static bool _loggedFirstRequest;
 		private static bool _loggedUnavailable;
+		private static bool _loggedInsecureHttpWarning;
 
 		public static bool HasValidConfiguration =>
 			ToddlersExpansionMod.Settings?.StandaloneApi != null &&
@@ -28,7 +30,27 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 			}
 
 			ToddlersExpansionStandaloneApiConfig config = ToddlersExpansionMod.Settings?.StandaloneApi;
-			if (config == null || !config.IsValid())
+			if (config == null)
+			{
+				LogUnavailableOnce();
+				return false;
+			}
+
+			if (IsNonLoopbackHttpEndpoint(config.GetResolvedBaseUrl()))
+			{
+				if (!_loggedInsecureHttpWarning)
+				{
+					_loggedInsecureHttpWarning = true;
+					Messages.Message(
+						"RimTalk_ToddlersExpansion_Llm_InsecureHttpWarning".Translate(),
+						MessageTypeDefOf.RejectInput,
+						false);
+				}
+
+				return false;
+			}
+
+			if (!config.IsValid())
 			{
 				LogUnavailableOnce();
 				return false;
@@ -46,23 +68,29 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 				Log.Message($"[RimTalk_ToddlersExpansion] First standalone short-text request queued (provider={snapshot.Provider}, model={snapshot.Model}).");
 			}
 
-			Task.Run(async delegate
-			{
-				try
-				{
-					string response = await RequestShortTextInternalAsync(snapshot, systemPrompt, userPrompt).ConfigureAwait(false);
-					if (!string.IsNullOrWhiteSpace(response))
-					{
-						onCompleted(response);
-					}
-				}
-				catch (Exception ex)
-				{
-					Log.Warning($"[RimTalk_ToddlersExpansion] Standalone short-text request failed: {ex.Message}");
-				}
-			});
+			_ = RequestAndCompleteAsync(snapshot, systemPrompt, userPrompt, onCompleted);
 
 			return true;
+		}
+
+		private static async Task RequestAndCompleteAsync(
+			StandaloneRequestConfig config,
+			string systemPrompt,
+			string userPrompt,
+			Action<string> onCompleted)
+		{
+			try
+			{
+				string response = await RequestShortTextInternalAsync(config, systemPrompt, userPrompt);
+				if (!string.IsNullOrWhiteSpace(response))
+				{
+					onCompleted(response);
+				}
+			}
+			catch (Exception ex)
+			{
+				Log.Warning($"[RimTalk_ToddlersExpansion] Standalone short-text request failed: {ex.Message}");
+			}
 		}
 
 		private static async Task<string> RequestShortTextInternalAsync(
@@ -103,7 +131,7 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 					return null;
 				}
 
-				await Task.Delay(100).ConfigureAwait(false);
+				await Task.Delay(100);
 				elapsedSeconds += 0.1f;
 				if (elapsedSeconds > timeoutSeconds)
 				{
@@ -115,9 +143,8 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 			if (webRequest.result == UnityWebRequest.Result.ConnectionError ||
 				webRequest.result == UnityWebRequest.Result.ProtocolError)
 			{
-				string responseText = webRequest.downloadHandler?.text ?? string.Empty;
 				throw new InvalidOperationException(
-					$"HTTP {(int)webRequest.responseCode} {webRequest.error}. {responseText}".Trim());
+					$"HTTP {(int)webRequest.responseCode} {webRequest.error}".Trim());
 			}
 
 			StandaloneOpenAiResponse response =
@@ -166,6 +193,13 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 			return uri.AbsolutePath == "/" || string.IsNullOrEmpty(uri.AbsolutePath.Trim('/'))
 				? trimmed + defaultPath
 				: trimmed;
+		}
+
+		private static bool IsNonLoopbackHttpEndpoint(string baseUrl)
+		{
+			return Uri.TryCreate(baseUrl, UriKind.Absolute, out Uri uri)
+				&& string.Equals(uri.Scheme, Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase)
+				&& !uri.IsLoopback;
 		}
 
 		private static void LogUnavailableOnce()

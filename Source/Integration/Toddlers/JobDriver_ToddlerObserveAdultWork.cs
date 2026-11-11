@@ -20,6 +20,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		protected override IEnumerable<Toil> MakeNewToils()
 		{
 			this.FailOnDespawnedOrNull(TargetIndex.A);
+			this.FailOn(() => pawn.Downed || pawn.health?.capacities?.CapableOf(PawnCapacityDefOf.Moving) != true);
 			yield return FollowAndObserve();
 		}
 
@@ -174,6 +175,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		private void MoveToObservationPosition(Pawn adult)
 		{
+			if (pawn.Downed || pawn.health?.capacities?.CapableOf(PawnCapacityDefOf.Moving) != true)
+			{
+				return;
+			}
+
 			if (pawn.pather.Moving)
 			{
 				return;
