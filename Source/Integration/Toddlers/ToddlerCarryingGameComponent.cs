@@ -45,7 +45,10 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				// Process deferred carry assignments outside GenSpawn stack.
 				Patch_VisitorToddlerBabyFood.ProcessPendingCarryingAssignments();
 				MaintainActiveCarryingRelations();
-				ToddlerCarryDesireUtility.Tick();
+				if (ToddlerCarryDesireUtility.HasTrackedPawns)
+				{
+					ToddlerCarryDesireUtility.Tick();
+				}
 			}
 
 			if (currentTick % CleanupInterval == 0)
@@ -195,6 +198,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		private void MaintainActiveCarryingRelations()
 		{
+			if (!ToddlerCarryingTracker.HasActiveRelations && !_needsCarryProtectionResync)
+			{
+				return;
+			}
+
 			ToddlerCarryingTracker.CopyAllCarriedToddlersTo(_activeCarriedToddlers);
 			for (int i = 0; i < _activeCarriedToddlers.Count; i++)
 			{
