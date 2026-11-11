@@ -19,6 +19,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			var harmony = new HarmonyLib.Harmony("cj.rimtalk.toddlers");
 			Patch_ModLogFiltering.Init(harmony);
 			Patch_RimTalkContextBuilder.Init(harmony);
+			Patch_RimTalkDecorateTextCompatibility.Init(harmony);
 			Patch_RimTalkTalkService.Init(harmony);
 			Patch_RimTalkPersona.Init(harmony);
 			Patch_ToddlersWashBaby.Init(harmony);
@@ -32,6 +33,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			Patch_FloatMenu_ToddlerToyPlay.Init(harmony);
 			Patch_DBHFixtureFloatMenu.Init(harmony);
 			Patch_TravelingLord.Init(harmony);
+			Patch_CarriedToddlerMapEdgeReachability.Init(harmony);
 			// Patch 商队离开时的 duty 分配，确保被背着的幼儿不会获得不合适的 duty
 			Patch_ExitMapDuty.Init(harmony);
 			
