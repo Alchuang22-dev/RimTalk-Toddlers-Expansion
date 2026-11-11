@@ -11,16 +11,19 @@
 
 	<supportedVersions>
 		<li>1.6</li>
+		<li>1.7</li>
 	</supportedVersions>
 
 	<modDependencies>
 		<li>
 			<packageId>cj.rimtalk</packageId>
 			<displayName>RimTalk</displayName>
+			<steamWorkshopUrl>steam://url/CommunityFilePage/3551203752</steamWorkshopUrl>
 		</li>
 		<li>
 			<packageId>cyanobot.toddlers</packageId>
 			<displayName>Toddlers</displayName>
+			<steamWorkshopUrl>steam://url/CommunityFilePage/2903359152</steamWorkshopUrl>
 		</li>
 		<li>
 			<packageId>brrainz.harmony</packageId>
@@ -31,7 +34,7 @@
 		<li>
 			<packageId>Jaxe.Bubbles</packageId>
 			<displayName>Interaction Bubbles</displayName>
-			<steamWorkshopUrl>steam://url/CommunityFilePage/***</steamWorkshopUrl>
+			<steamWorkshopUrl>steam://url/CommunityFilePage/1516158345</steamWorkshopUrl>
 		</li>
 	</modDependencies>
 

@@ -3,16 +3,17 @@
   <!--
     RimTalk Toddlers Expansion (Add-on Mod)
     Build:
-      dotnet build -c Release -p:GameVersion=1.6
+      dotnet build -c Release -p:GameVersion=1.7 -p:RimWorldDir="/path/to/RimWorld" -p:HarmonyAssemblyPath="/path/to/Harmony/1.7/Assemblies/0Harmony.dll" -p:ToddlersAssemblyPath="/path/to/Toddlers/1.6/Assemblies/Toddlers.dll"
     Output:
       <ModRoot>\<GameVersion>\Assemblies\RimTalk_ToddlersExpansion.dll
   -->
 
   <PropertyGroup>
     <!-- Defaults -->
-    <GameVersion Condition=" '$(GameVersion)' == '' ">1.6</GameVersion>
+    <GameVersion Condition=" '$(GameVersion)' == '' ">1.7</GameVersion>
 
-    <TargetFramework>net48</TargetFramework>
+    <TargetFramework Condition=" '$(GameVersion)' == '1.7' ">net10.0</TargetFramework>
+    <TargetFramework Condition=" '$(GameVersion)' != '1.7' ">net48</TargetFramework>
 
     <RootNamespace>RimTalk_ToddlersExpansion</RootNamespace>
     <AssemblyName>RimTalk_ToddlersExpansion</AssemblyName>
@@ -20,6 +21,8 @@
     <!-- RimWorld mod layout: put DLL directly under mod root <GameVersion>/Assemblies -->
     <OutputPath>..\$(GameVersion)\Assemblies\</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
 
     <!-- VSCode/OmniSharp: do not fall back to C# 7.3 -->
     <LangVersion>latest</LangVersion>
@@ -43,17 +46,41 @@
     <DefineConstants>$(DefineConstants);V1_6</DefineConstants>
   </PropertyGroup>
 
-  <ItemGroup>
+  <PropertyGroup Condition=" '$(GameVersion)' == '1.7' ">
+    <DefineConstants>$(DefineConstants);V1_7</DefineConstants>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(GameVersion)' != '1.7' ">
     <!-- Reference pack for RimWorld types (Verse/RimWorld/Unity) -->
     <PackageReference Include="Krafs.Rimworld.Ref" Version="$(GameVersion).*-*" PrivateAssets="All" />
     <!-- Harmony reference -->
     <PackageReference Include="Lib.Harmony.Ref" Version="2.*" PrivateAssets="All" />
   </ItemGroup>
 
+  <ItemGroup Condition=" '$(GameVersion)' == '1.7' ">
+    <!-- RimWorld 1.7 targets .NET 10 and is referenced from the installed game. -->
+    <Reference Include="Assembly-CSharp" HintPath="$(RimWorldDir)/Assembly-CSharp.dll" Private="false" />
+    <Reference Include="UnityStubs" HintPath="$(RimWorldDir)/UnityStubs.dll" Private="false" />
+    <Reference Include="0Harmony" HintPath="$(HarmonyAssemblyPath)" Private="false" />
+  </ItemGroup>
+
+  <Target Name="CheckRimWorldReferences" BeforeTargets="ResolveReferences">
+    <Error Condition="'$(GameVersion)' != '1.5' and '$(GameVersion)' != '1.6' and '$(GameVersion)' != '1.7'" Text="GameVersion must be 1.5, 1.6, or 1.7." />
+    <Error Condition="'$(GameVersion)' == '1.7' and (!Exists('$(RimWorldDir)/Assembly-CSharp.dll') or !Exists('$(RimWorldDir)/UnityStubs.dll'))" Text="Set RimWorldDir to the RimWorld 1.7 game root containing Assembly-CSharp.dll and UnityStubs.dll." />
+    <Error Condition="'$(GameVersion)' == '1.7' and !Exists('$(HarmonyAssemblyPath)')" Text="Set HarmonyAssemblyPath to Harmony's 1.7/Assemblies/0Harmony.dll." />
+  </Target>
+
   <!-- RimTalk core reference: configurable location -->
   <PropertyGroup>
     <!-- Override on command line: -p:RimTalkDir=... -->
     <RimTalkDir Condition=" '$(RimTalkDir)' == '' ">..\..\RimTalk</RimTalkDir>
+    <RimWorldDir Condition=" '$(RimWorldDir)' == '' ">$(RIMWORLD_DIR)</RimWorldDir>
+    <HarmonyAssemblyPath Condition=" '$(HarmonyAssemblyPath)' == '' ">$(HarmonyModDir)/1.7/Assemblies/0Harmony.dll</HarmonyAssemblyPath>
+    <ToddlersDir Condition=" '$(ToddlersDir)' == '' ">..\..\Toddlers</ToddlersDir>
+    <ToddlersAssemblyName Condition=" '$(ToddlersAssemblyName)' == '' ">Toddlers</ToddlersAssemblyName>
+    <ToddlersAssemblyPath Condition=" '$(ToddlersAssemblyPath)' == '' and Exists('$(ToddlersDir)/1.7/Assemblies/$(ToddlersAssemblyName).dll') ">$(ToddlersDir)/1.7/Assemblies/$(ToddlersAssemblyName).dll</ToddlersAssemblyPath>
+    <ToddlersAssemblyPath Condition=" '$(ToddlersAssemblyPath)' == '' and Exists('$(ToddlersDir)/1.6/Assemblies/$(ToddlersAssemblyName).dll') ">$(ToddlersDir)/1.6/Assemblies/$(ToddlersAssemblyName).dll</ToddlersAssemblyPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -65,12 +92,13 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup Condition=" '$(GameVersion)' == '1.7' and Exists('$(ToddlersAssemblyPath)') ">
+    <Reference Include="Toddlers" HintPath="$(ToddlersAssemblyPath)" Private="false" />
+  </ItemGroup>
+
   <!-- Toddlers mod reference (optional): prefer reflection at runtime, but allow compile-time ref if available -->
   <PropertyGroup>
-    <!-- Override on command line: -p:ToddlersDir=... -->
-    <ToddlersDir Condition=" '$(ToddlersDir)' == '' ">..\..\Toddlers</ToddlersDir>
-    <!-- If the assembly name differs, override: -p:ToddlersAssemblyName=... -->
-    <ToddlersAssemblyName Condition=" '$(ToddlersAssemblyName)' == '' ">Toddlers</ToddlersAssemblyName>
+    <!-- Override on command line: -p:ToddlersDir=... or -p:ToddlersAssemblyName=... -->
   </PropertyGroup>
 
   <ItemGroup>
