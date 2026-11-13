@@ -23,6 +23,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private List<Pawn> _savedCarriers = new List<Pawn>();
 		private readonly List<Pawn> _activeCarriedToddlers = new List<Pawn>(32);
 		private readonly List<Pawn> _activeCarriers = new List<Pawn>(32);
+		private readonly HashSet<Faction> _visitorFactionsWithAdult = new HashSet<Faction>();
 
 		public ToddlerCarryingGameComponent(Game game)
 		{
@@ -470,7 +471,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			return true;
 		}
 
-		private static void EnsureVisitorToddlersExitIfNoAdults()
+		private void EnsureVisitorToddlersExitIfNoAdults()
 		{
 			if (Find.Maps == null || Find.Maps.Count == 0)
 			{
@@ -489,6 +490,16 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				if (pawns == null || pawns.Count == 0)
 				{
 					continue;
+				}
+
+				_visitorFactionsWithAdult.Clear();
+				for (int j = 0; j < pawns.Count; j++)
+				{
+					Pawn candidate = pawns[j];
+					if (IsAdultVisitorSupportPawn(candidate) && candidate.Faction != null)
+					{
+						_visitorFactionsWithAdult.Add(candidate.Faction);
+					}
 				}
 
 				for (int j = 0; j < pawns.Count; j++)
@@ -520,7 +531,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 						continue;
 					}
 
-					if (HasSameFactionAdultOnMap(map, faction))
+					if (_visitorFactionsWithAdult.Contains(faction))
 					{
 						continue;
 					}
@@ -528,31 +539,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					TryStartExitMap(toddler);
 				}
 			}
-		}
-
-		private static bool HasSameFactionAdultOnMap(Map map, Faction faction)
-		{
-			var pawns = map.mapPawns?.AllPawnsSpawned;
-			if (pawns == null)
-			{
-				return false;
-			}
-
-			for (int i = 0; i < pawns.Count; i++)
-			{
-				Pawn pawn = pawns[i];
-				if (pawn == null || pawn.Faction != faction)
-				{
-					continue;
-				}
-
-				if (IsAdultVisitorSupportPawn(pawn))
-				{
-					return true;
-				}
-			}
-
-			return false;
 		}
 
 		private static bool IsVisitorDependentYoungPawn(Pawn pawn)
@@ -592,7 +578,9 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return;
 			}
 
-			if (pawn.Downed || HealthAIUtility.ShouldSeekMedicalRest(pawn))
+			if (pawn.Downed
+				|| HealthAIUtility.ShouldSeekMedicalRest(pawn)
+				|| pawn.health?.capacities?.CapableOf(PawnCapacityDefOf.Moving) != true)
 			{
 				return;
 			}

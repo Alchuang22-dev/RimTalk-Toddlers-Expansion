@@ -268,7 +268,9 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			if (pawn == null || pawn.Dead || pawn.Destroyed || !pawn.Spawned)
 				return;
 
-			if (pawn.Downed || HealthAIUtility.ShouldSeekMedicalRest(pawn))
+			if (pawn.Downed
+				|| HealthAIUtility.ShouldSeekMedicalRest(pawn)
+				|| pawn.health?.capacities?.CapableOf(PawnCapacityDefOf.Moving) != true)
 				return;
 
 			IntVec3 exitCell = FindExitCell(pawn);

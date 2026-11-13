@@ -477,6 +477,13 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				return;
 			}
 
+			if (pawn.Downed
+				|| HealthAIUtility.ShouldSeekMedicalRest(pawn)
+				|| pawn.health?.capacities?.CapableOf(PawnCapacityDefOf.Moving) != true)
+			{
+				return;
+			}
+
 			if (PawnUtility.IsExitingMap(pawn) || pawn.jobs?.curJob?.exitMapOnArrival == true)
 			{
 				return;

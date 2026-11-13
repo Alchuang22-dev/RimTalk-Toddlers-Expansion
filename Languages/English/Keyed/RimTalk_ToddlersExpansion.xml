@@ -30,6 +30,7 @@
   <RimTalk_ToddlersExpansion_Llm_ApiKey>API key</RimTalk_ToddlersExpansion_Llm_ApiKey>
   <RimTalk_ToddlersExpansion_Llm_Model>Model</RimTalk_ToddlersExpansion_Llm_Model>
   <RimTalk_ToddlersExpansion_Llm_ConfigWarning>Standalone API is incomplete. Fill in the required endpoint, model, and API key fields before it can be used.</RimTalk_ToddlersExpansion_Llm_ConfigWarning>
+  <RimTalk_ToddlersExpansion_Llm_InsecureHttpWarning>Remote HTTP endpoints are blocked because they do not protect your API key. Use HTTPS or a loopback address.</RimTalk_ToddlersExpansion_Llm_InsecureHttpWarning>
   <RimTalk_ToddlersExpansion_Talk_Settings_Header>RimTalk TalkRequest Sending</RimTalk_ToddlersExpansion_Talk_Settings_Header>
   <RimTalk_ToddlersExpansion_Talk_Settings_Desc>Configure Event-type TalkRequest sending sources independently.</RimTalk_ToddlersExpansion_Talk_Settings_Desc>
   <RimTalk_ToddlersExpansion_Talk_EnableSelfPlay>Enable self-play Event talks</RimTalk_ToddlersExpansion_Talk_EnableSelfPlay>

@@ -390,23 +390,28 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 				Log.Message($"[RimTalk_ToddlersExpansion] First short-text request queued (systemPrompt={systemPrompt?.Length ?? 0}, userPrompt={userPrompt.Length}).");
 			}
 
-			Task.Run(async () =>
-			{
-				try
-				{
-					string response = await RequestShortTextInternalAsync(systemPrompt, userPrompt).ConfigureAwait(false);
-					if (!string.IsNullOrWhiteSpace(response))
-					{
-						onCompleted(response);
-					}
-				}
-				catch (Exception ex)
-				{
-					WarnOnce("RequestShortText", ex);
-				}
-			});
+			_ = RequestAndCompleteShortTextAsync(systemPrompt, userPrompt, onCompleted);
 
 			return true;
+		}
+
+		private static async Task RequestAndCompleteShortTextAsync(
+			string systemPrompt,
+			string userPrompt,
+			Action<string> onCompleted)
+		{
+			try
+			{
+				string response = await RequestShortTextInternalAsync(systemPrompt, userPrompt);
+				if (!string.IsNullOrWhiteSpace(response))
+				{
+					onCompleted(response);
+				}
+			}
+			catch (Exception ex)
+			{
+				WarnOnce("RequestShortText", ex);
+			}
 		}
 
 		private static void EnsureInitialized()
@@ -522,7 +527,7 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 
 		private static async Task<string> RequestShortTextInternalAsync(string systemPrompt, string userPrompt)
 		{
-			object client = await GetAiClientAsync().ConfigureAwait(false);
+			object client = await GetAiClientAsync();
 			if (client == null || _messageListType == null || _messageTupleType == null)
 			{
 				return null;
@@ -536,7 +541,7 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 				return null;
 			}
 
-			await task.ConfigureAwait(false);
+			await task;
 			object payload = task.GetType().GetProperty("Result")?.GetValue(task);
 			if (payload == null)
 			{
@@ -554,7 +559,7 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 				return null;
 			}
 
-			await task.ConfigureAwait(false);
+			await task;
 			object result = task.GetType().GetProperty("Result")?.GetValue(task);
 			if (result == null)
 			{
