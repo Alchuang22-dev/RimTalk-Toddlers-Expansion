@@ -20,6 +20,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		/// </summary>
 		private static readonly Dictionary<Pawn, List<Pawn>> CarrierToToddlers = new Dictionary<Pawn, List<Pawn>>();
 
+		public static bool HasActiveRelations => ToddlerToCarrier.Count > 0;
+
 		/// <summary>
 		/// 注册背负关系
 		/// </summary>
