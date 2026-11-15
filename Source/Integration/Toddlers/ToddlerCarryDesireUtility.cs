@@ -17,10 +17,15 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private static readonly HashSet<Pawn> _activeWantToBeHeldPawns = new HashSet<Pawn>();
 		private static readonly List<Pawn> _trackedCandidatesBuffer = new List<Pawn>(32);
 		private static readonly List<Pawn> _activePawnsBuffer = new List<Pawn>(16);
+		private static readonly Dictionary<Type, MentalStateHandlerAccessor> _mentalStateHandlerAccessors = new Dictionary<Type, MentalStateHandlerAccessor>();
+		private static readonly Dictionary<Type, MentalStateDefAccessor> _mentalStateDefAccessors = new Dictionary<Type, MentalStateDefAccessor>();
+
+		public static bool HasTrackedPawns => _trackedDesireCandidates.Count > 0;
 
 		public static void Tick()
 		{
-			if (Find.TickManager == null)
+			if (Find.TickManager == null
+				|| (_trackedDesireCandidates.Count == 0 && _activeWantToBeHeldPawns.Count == 0))
 			{
 				return;
 			}
@@ -136,6 +141,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					continue;
 				}
 
+				_activeWantToBeHeldPawns.Remove(pawn);
+
 				int desireCheckInterval = ToddlersExpansionSettings.GetBabyCarryDesireCheckIntervalTicks();
 				if (!pawn.IsHashIntervalTick(desireCheckInterval))
 				{
@@ -170,16 +177,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			for (int i = 0; i < _activePawnsBuffer.Count; i++)
 			{
 				Pawn pawn = _activePawnsBuffer[i];
-				if (!IsTrackedDesireCandidate(pawn) || !IsWantingToBeHeld(pawn))
-				{
-					_activeWantToBeHeldPawns.Remove(pawn);
-					if (!IsTrackedDesireCandidate(pawn))
-					{
-						UntrackPawn(pawn);
-					}
-					continue;
-				}
-
 				int pickupScanInterval = ToddlersExpansionSettings.GetBabyCarryPickupCheckIntervalTicks();
 				if (pawn.IsHashIntervalTick(pickupScanInterval))
 				{
@@ -230,32 +227,65 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			Type handlerType = handler.GetType();
-			PropertyInfo defProp = handlerType.GetProperty("CurStateDef");
-			if (defProp != null)
+			if (!_mentalStateHandlerAccessors.TryGetValue(handlerType, out MentalStateHandlerAccessor accessor))
 			{
-				return defProp.GetValue(handler) as MentalStateDef;
+				accessor = new MentalStateHandlerAccessor(handlerType);
+				_mentalStateHandlerAccessors.Add(handlerType, accessor);
 			}
 
-			PropertyInfo stateProp = handlerType.GetProperty("CurState");
-			if (stateProp != null)
+			if (accessor.CurrentStateDefProperty != null)
 			{
-				object state = stateProp.GetValue(handler);
+				return accessor.CurrentStateDefProperty.GetValue(handler) as MentalStateDef;
+			}
+
+			if (accessor.CurrentStateProperty != null)
+			{
+				object state = accessor.CurrentStateProperty.GetValue(handler);
 				if (state == null)
 				{
 					return null;
 				}
 
-				PropertyInfo innerDefProp = state.GetType().GetProperty("def");
-				if (innerDefProp != null)
+				Type stateType = state.GetType();
+				if (!_mentalStateDefAccessors.TryGetValue(stateType, out MentalStateDefAccessor stateAccessor))
 				{
-					return innerDefProp.GetValue(state) as MentalStateDef;
+					stateAccessor = new MentalStateDefAccessor(stateType);
+					_mentalStateDefAccessors.Add(stateType, stateAccessor);
 				}
 
-				FieldInfo innerDefField = state.GetType().GetField("def");
-				return innerDefField?.GetValue(state) as MentalStateDef;
+				if (stateAccessor.DefProperty != null)
+				{
+					return stateAccessor.DefProperty.GetValue(state) as MentalStateDef;
+				}
+
+				return stateAccessor.DefField?.GetValue(state) as MentalStateDef;
 			}
 
 			return null;
+		}
+
+		private sealed class MentalStateHandlerAccessor
+		{
+			public readonly PropertyInfo CurrentStateDefProperty;
+			public readonly PropertyInfo CurrentStateProperty;
+
+			public MentalStateHandlerAccessor(Type handlerType)
+			{
+				CurrentStateDefProperty = handlerType.GetProperty("CurStateDef");
+				CurrentStateProperty = handlerType.GetProperty("CurState");
+			}
+		}
+
+		private sealed class MentalStateDefAccessor
+		{
+			public readonly PropertyInfo DefProperty;
+			public readonly FieldInfo DefField;
+
+			public MentalStateDefAccessor(Type stateType)
+			{
+				DefProperty = stateType.GetProperty("def");
+				DefField = DefProperty == null ? stateType.GetField("def") : null;
+			}
 		}
 
 		private static bool TryRecoverMentalState(MentalStateHandler handler)
