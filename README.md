@@ -3,6 +3,11 @@ RimTalk Expand Toddlers
 
 RimTalk鼠蛋拓展（开发测试中）
 
+前置：Harmony、Toddlers；婴幼儿相关功能需要生物科技 DLC。
+RimTalk 与 Interaction Bubbles 均为可选模组，安装时请放在本模组之前。
+未安装 RimTalk 时，自动跳过其对话事件、上下文与人格集成，幼儿玩法保持可用。
+本模组的独立 LLM API 仍可生成玩耍活动短文本；未启用或未配置可用 API 时使用固定任务文本。
+
 1. 更多的家庭互动：（配合toddlers模组）
 - 在婴儿1岁后解锁“自娱自乐”娱乐工作，LLM生成工作文本（如玩积木等）
 - 在婴儿1岁后解锁“互相玩耍”娱乐工作，LLM生成工作文本

@@ -1,4 +1,5 @@
 using HarmonyLib;
+using RimTalk_ToddlersExpansion.Integration.RimTalk;
 using RimTalk_ToddlersExpansion.Integration.YayoAnimation;
 using Verse;
 
@@ -18,10 +19,13 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			_initialized = true;
 			var harmony = new HarmonyLib.Harmony("cj.rimtalk.toddlers");
 			Patch_ModLogFiltering.Init(harmony);
-			Patch_RimTalkContextBuilder.Init(harmony);
-			Patch_RimTalkDecorateTextCompatibility.Init(harmony);
-			Patch_RimTalkTalkService.Init(harmony);
-			Patch_RimTalkPersona.Init(harmony);
+			if (RimTalkCompatUtility.IsRimTalkActive)
+			{
+				Patch_RimTalkContextBuilder.Init(harmony);
+				Patch_RimTalkDecorateTextCompatibility.Init(harmony);
+				Patch_RimTalkTalkService.Init(harmony);
+				Patch_RimTalkPersona.Init(harmony);
+			}
 			Patch_ToddlersWashBaby.Init(harmony);
 			Patch_ToddlersWashBabyBathRules.Init(harmony);
 			Patch_ToddlersLearningSync.Init(harmony);

@@ -10,6 +10,7 @@ namespace RimTalk_ToddlersExpansion.Core
 	{
 		private static void DrawLlmSettingsSection(Listing_Standard listingStandard, ToddlersExpansionSettings settings)
 		{
+			bool rimTalkActive = RimTalkCompatUtility.IsRimTalkActive;
 			listingStandard.Label("RimTalk_ToddlersExpansion_Llm_Settings_Header".Translate());
 			listingStandard.GapLine();
 			listingStandard.Label("RimTalk_ToddlersExpansion_Llm_Settings_Desc".Translate());
@@ -18,7 +19,9 @@ namespace RimTalk_ToddlersExpansion.Core
 			Rect rimTalkRect = listingStandard.GetRect(24f);
 			if (Widgets.RadioButtonLabeled(
 				rimTalkRect,
-				"RimTalk_ToddlersExpansion_Llm_UseRimTalk".Translate(),
+				(rimTalkActive
+					? "RimTalk_ToddlersExpansion_Llm_UseRimTalk"
+					: "RimTalk_ToddlersExpansion_Llm_Disabled").Translate(),
 				!settings.UseStandaloneLlmApi))
 			{
 				settings.UseStandaloneLlmApi = false;
@@ -45,11 +48,10 @@ namespace RimTalk_ToddlersExpansion.Core
 			{
 				DrawStandaloneApiConfig(listingStandard, settings.StandaloneApi);
 			}
-			else if (!RimTalkCompatUtility.IsRimTalkActive)
+
+			if (!rimTalkActive)
 			{
-				GUI.color = Color.yellow;
 				listingStandard.Label("RimTalk_ToddlersExpansion_Llm_RimTalkUnavailable".Translate());
-				GUI.color = Color.white;
 				listingStandard.Gap();
 			}
 		}

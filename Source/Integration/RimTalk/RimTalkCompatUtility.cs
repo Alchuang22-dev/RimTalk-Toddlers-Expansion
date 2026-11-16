@@ -424,7 +424,9 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 			_initialized = true;
 			try
 			{
-				Type promptApiType = AccessTools.TypeByName(PromptApiTypeName);
+				Type promptApiType = ModLister.GetActiveModWithIdentifier("cj.rimtalk", ignorePostfix: true) != null
+					? AccessTools.TypeByName(PromptApiTypeName)
+					: null;
 				if (promptApiType == null)
 				{
 					_isActive = false;

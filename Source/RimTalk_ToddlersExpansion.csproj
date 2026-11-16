@@ -71,10 +71,8 @@
     <Error Condition="'$(GameVersion)' == '1.7' and !Exists('$(HarmonyAssemblyPath)')" Text="Set HarmonyAssemblyPath to Harmony's 1.7/Assemblies/0Harmony.dll." />
   </Target>
 
-  <!-- RimTalk core reference: configurable location -->
+  <!-- Game and Toddlers references. RimTalk integration uses reflection only. -->
   <PropertyGroup>
-    <!-- Override on command line: -p:RimTalkDir=... -->
-    <RimTalkDir Condition=" '$(RimTalkDir)' == '' ">..\..\RimTalk</RimTalkDir>
     <RimWorldDir Condition=" '$(RimWorldDir)' == '' ">$(RIMWORLD_DIR)</RimWorldDir>
     <HarmonyAssemblyPath Condition=" '$(HarmonyAssemblyPath)' == '' ">$(HarmonyModDir)/1.7/Assemblies/0Harmony.dll</HarmonyAssemblyPath>
     <ToddlersDir Condition=" '$(ToddlersDir)' == '' ">..\..\Toddlers</ToddlersDir>
@@ -82,15 +80,6 @@
     <ToddlersAssemblyPath Condition=" '$(ToddlersAssemblyPath)' == '' and Exists('$(ToddlersDir)/1.7/Assemblies/$(ToddlersAssemblyName).dll') ">$(ToddlersDir)/1.7/Assemblies/$(ToddlersAssemblyName).dll</ToddlersAssemblyPath>
     <ToddlersAssemblyPath Condition=" '$(ToddlersAssemblyPath)' == '' and Exists('$(ToddlersDir)/1.6/Assemblies/$(ToddlersAssemblyName).dll') ">$(ToddlersDir)/1.6/Assemblies/$(ToddlersAssemblyName).dll</ToddlersAssemblyPath>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Reference Include="RimTalk" Condition="Exists('$(RimTalkDir)\$(GameVersion)\Assemblies\RimTalk.dll')">
-      <!-- Expected layout: ..\..\RimTalk\<GameVersion>\Assemblies\RimTalk.dll -->
-      <HintPath>$(RimTalkDir)\$(GameVersion)\Assemblies\RimTalk.dll</HintPath>
-      <!-- Do not copy RimTalk.dll into this mod's Assemblies -->
-      <Private>false</Private>
-    </Reference>
-  </ItemGroup>
 
   <ItemGroup Condition=" '$(GameVersion)' == '1.7' and Exists('$(ToddlersAssemblyPath)') ">
     <Reference Include="Toddlers" HintPath="$(ToddlersAssemblyPath)" Private="false" />

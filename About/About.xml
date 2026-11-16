@@ -6,7 +6,7 @@
 	<author>changlusss</author>
 
 	<description>
-	RimTalk for toddlers!
+	Expanded toddler play, care, and family interactions. RimTalk and Interaction Bubbles are optional. Standalone LLM activity text is available without RimTalk.
 	</description>
 
 	<supportedVersions>
@@ -15,11 +15,6 @@
 	</supportedVersions>
 
 	<modDependencies>
-		<li>
-			<packageId>cj.rimtalk</packageId>
-			<displayName>RimTalk</displayName>
-			<steamWorkshopUrl>steam://url/CommunityFilePage/3551203752</steamWorkshopUrl>
-		</li>
 		<li>
 			<packageId>cyanobot.toddlers</packageId>
 			<displayName>Toddlers</displayName>
@@ -30,11 +25,6 @@
 			<displayName>Harmony</displayName>
 			<steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
 			<downloadUrl>https://github.com/pardeike/HarmonyRimWorld/releases/latest</downloadUrl>
-		</li>
-		<li>
-			<packageId>Jaxe.Bubbles</packageId>
-			<displayName>Interaction Bubbles</displayName>
-			<steamWorkshopUrl>steam://url/CommunityFilePage/1516158345</steamWorkshopUrl>
 		</li>
 	</modDependencies>
 

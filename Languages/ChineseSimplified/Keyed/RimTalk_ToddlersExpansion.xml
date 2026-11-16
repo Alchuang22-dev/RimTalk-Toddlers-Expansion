@@ -163,12 +163,13 @@
   <RimTalk_CarriedPlayOnCooldown>小宝宝的脑袋晕晕的，要休息一下。</RimTalk_CarriedPlayOnCooldown>
   <RimTalk_ToddlersExpansion_ToddlerSelfBathTooSmall>太小了，不会自己洗澡。</RimTalk_ToddlersExpansion_ToddlerSelfBathTooSmall>
 
-  <RimTalk_ToddlersExpansion_Llm_Settings_Header>RimTalk API 设置</RimTalk_ToddlersExpansion_Llm_Settings_Header>
-  <RimTalk_ToddlersExpansion_Llm_Settings_Desc>选择本模组自己的短文本请求是使用 RimTalk 当前启用的 API，还是使用这里单独配置的独立 LLM API。</RimTalk_ToddlersExpansion_Llm_Settings_Desc>
+  <RimTalk_ToddlersExpansion_Llm_Settings_Header>LLM 活动短文本设置</RimTalk_ToddlersExpansion_Llm_Settings_Header>
+  <RimTalk_ToddlersExpansion_Llm_Settings_Desc>RimTalk 为可选模组。安装后可使用其 API，也可单独配置独立 API 生成活动短文本。</RimTalk_ToddlersExpansion_Llm_Settings_Desc>
   <RimTalk_ToddlersExpansion_Llm_UseRimTalk>使用 RimTalk API</RimTalk_ToddlersExpansion_Llm_UseRimTalk>
+  <RimTalk_ToddlersExpansion_Llm_Disabled>使用固定活动文本（不调用 LLM）</RimTalk_ToddlersExpansion_Llm_Disabled>
   <RimTalk_ToddlersExpansion_Llm_UseStandalone>使用模组独立 LLM API</RimTalk_ToddlersExpansion_Llm_UseStandalone>
   <RimTalk_ToddlersExpansion_Llm_ScopeNote>当前这一设置影响的是 Toddler Expansion 自己的短活动文本生成；RimTalk 的 Event TalkRequest 主流程仍然依赖 RimTalk 本体。</RimTalk_ToddlersExpansion_Llm_ScopeNote>
-  <RimTalk_ToddlersExpansion_Llm_RimTalkUnavailable>当前未检测到可用的 RimTalk，因此选择 RimTalk API 时无法处理短文本请求。</RimTalk_ToddlersExpansion_Llm_RimTalkUnavailable>
+  <RimTalk_ToddlersExpansion_Llm_RimTalkUnavailable>未启用 RimTalk：已跳过其对话事件和人格集成，独立 API 活动短文本功能仍可使用。</RimTalk_ToddlersExpansion_Llm_RimTalkUnavailable>
   <RimTalk_ToddlersExpansion_Llm_Provider>提供方</RimTalk_ToddlersExpansion_Llm_Provider>
   <RimTalk_ToddlersExpansion_Llm_BaseUrl>Base URL</RimTalk_ToddlersExpansion_Llm_BaseUrl>
   <RimTalk_ToddlersExpansion_Llm_Endpoint>接口地址：{0}</RimTalk_ToddlersExpansion_Llm_Endpoint>

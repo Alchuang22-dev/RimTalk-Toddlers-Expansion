@@ -18,12 +18,13 @@
   <RimTalk_ToddlersExpansion_Settings_Page2>Outing Destinations</RimTalk_ToddlersExpansion_Settings_Page2>
   <RimTalk_ToddlersExpansion_Settings_Page3>Animations</RimTalk_ToddlersExpansion_Settings_Page3>
   <RimTalk_ToddlersExpansion_Settings_Page4>Chat &amp; API</RimTalk_ToddlersExpansion_Settings_Page4>
-  <RimTalk_ToddlersExpansion_Llm_Settings_Header>RimTalk API Settings</RimTalk_ToddlersExpansion_Llm_Settings_Header>
-  <RimTalk_ToddlersExpansion_Llm_Settings_Desc>Choose whether Toddler Expansion's own short-text requests use RimTalk's active API or a standalone API configured here.</RimTalk_ToddlersExpansion_Llm_Settings_Desc>
+  <RimTalk_ToddlersExpansion_Llm_Settings_Header>LLM Activity Text Settings</RimTalk_ToddlersExpansion_Llm_Settings_Header>
+  <RimTalk_ToddlersExpansion_Llm_Settings_Desc>RimTalk is optional. Use its API when installed, or configure a standalone API for short activity text.</RimTalk_ToddlersExpansion_Llm_Settings_Desc>
   <RimTalk_ToddlersExpansion_Llm_UseRimTalk>Use RimTalk API</RimTalk_ToddlersExpansion_Llm_UseRimTalk>
+  <RimTalk_ToddlersExpansion_Llm_Disabled>Use fixed activity text (no LLM)</RimTalk_ToddlersExpansion_Llm_Disabled>
   <RimTalk_ToddlersExpansion_Llm_UseStandalone>Use standalone LLM API</RimTalk_ToddlersExpansion_Llm_UseStandalone>
   <RimTalk_ToddlersExpansion_Llm_ScopeNote>This currently affects Toddler Expansion's own short activity-text generation. RimTalk Event TalkRequests still require RimTalk itself.</RimTalk_ToddlersExpansion_Llm_ScopeNote>
-  <RimTalk_ToddlersExpansion_Llm_RimTalkUnavailable>RimTalk is not currently active, so the RimTalk API option cannot serve short-text requests.</RimTalk_ToddlersExpansion_Llm_RimTalkUnavailable>
+  <RimTalk_ToddlersExpansion_Llm_RimTalkUnavailable>RimTalk is not active. Its dialogue events and personality integration are skipped. Standalone API activity text remains available.</RimTalk_ToddlersExpansion_Llm_RimTalkUnavailable>
   <RimTalk_ToddlersExpansion_Llm_Provider>Provider</RimTalk_ToddlersExpansion_Llm_Provider>
   <RimTalk_ToddlersExpansion_Llm_BaseUrl>Base URL</RimTalk_ToddlersExpansion_Llm_BaseUrl>
   <RimTalk_ToddlersExpansion_Llm_Endpoint>Endpoint: {0}</RimTalk_ToddlersExpansion_Llm_Endpoint>
