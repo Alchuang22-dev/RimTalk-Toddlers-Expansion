@@ -13,6 +13,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
     {
         private const TargetIndex LeaderInd = TargetIndex.A;
         private const float NatureRunningLearningPerTick = 1.2E-05f;
+        private const float LonelinessReliefPerTick = 0.0003f;
         
         /// <summary>
         /// Follow distance in cells - stay within this distance of the leader
@@ -69,7 +70,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
         /// </summary>
         private bool LeaderStillNatureRunning()
         {
-            if (LeaderToFollow == null || LeaderToFollow.Dead || !LeaderToFollow.Spawned)
+            if (LeaderToFollow == null || LeaderToFollow.Dead || !LeaderToFollow.Spawned || LeaderToFollow.Map != pawn.Map)
             {
                 return false;
             }
@@ -166,6 +167,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
                     // Give small joy gain for following (social joy from being with friend)
                     pawn.needs?.joy?.GainJoy(0.00002f * delta, JoyKindDefOf.Social);
+                    ToddlerLonelinessUtility.Reduce(pawn, LonelinessReliefPerTick * delta);
                     
                     // Face the leader occasionally
                     if (Find.TickManager.TicksGame % 60 == 0)

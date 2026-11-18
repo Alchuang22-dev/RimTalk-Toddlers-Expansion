@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+    <Operation Class="PatchOperationInsert">
+        <xpath>/Defs/ThinkTreeDef[defName="HumanlikeToddler"]//li[@Class="ThinkNode_PrioritySorter"]/subNodes/li[@Class="Toddlers.JobGiver_ToddlerPlay"]</xpath>
+        <value>
+            <li Class="RimTalk_ToddlersExpansion.Integration.Toddlers.JobGiver_ToddlerSeekCompany" />
+        </value>
+    </Operation>
+</Patch>

@@ -11,6 +11,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 	{
 		private const float SelfPlayGainPerTick = 0.00014f;
 		private const float MutualPlayGainPerTick = 0.0002f;
+		private const float MutualPlayLonelinessReliefPerTick = 0.00045f;
 		private const float WatchPlayJoyGainPerTick = 0.00012f;
 		private const float PlayNeedFullThreshold = 0.95f;
 		private const float PlayedWithMeThreshold = 0.6f;
@@ -45,12 +46,21 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 			ApplyPlayGain(toddler, MutualPlayGainPerTick * delta, JoyKindDefOf.Social);
 			ApplyLanguageGain(toddler, LanguageGainMutualPerTick * delta);
+			ToddlerLonelinessUtility.Reduce(toddler, MutualPlayLonelinessReliefPerTick * delta);
 
 			if (partner != null && partner.CurJob?.def != ToddlersExpansionJobDefOf.RimTalk_ToddlerMutualPlayJob)
 			{
 				ApplyPlayGain(partner, MutualPlayGainPerTick * delta * 0.5f, JoyKindDefOf.Social);
 				ApplyLanguageGain(partner, LanguageGainMutualPerTick * delta * 0.5f);
+				ToddlerLonelinessUtility.Reduce(partner, MutualPlayLonelinessReliefPerTick * delta);
 			}
+		}
+
+		public static bool IsMutualPlaySatisfied(Pawn pawn, Pawn partner)
+		{
+			return !ToddlerLonelinessUtility.WantsMoreCompany(pawn)
+				&& !ToddlerLonelinessUtility.WantsMoreCompany(partner)
+				&& IsPlayNeedSatisfied(pawn);
 		}
 
 		public static void ApplyWatchPlayTickEffects(Pawn watcher, Pawn toddler, int delta)

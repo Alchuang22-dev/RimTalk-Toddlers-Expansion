@@ -99,27 +99,21 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		public override bool CanDo(Pawn pawn)
 		{
-			if (!IsEligiblePawn(pawn))
-			{
-				return false;
-			}
-
-			if (!SocialNeedTuning_Toddlers.ShouldDoOptionalActivity(pawn, PlayNeedThreshold))
-			{
-				return false;
-			}
-
-			return true;
+			return IsEligiblePawn(pawn) && (ToddlerLonelinessUtility.SeeksCompany(pawn)
+				|| SocialNeedTuning_Toddlers.ShouldDoOptionalActivity(pawn, PlayNeedThreshold));
 		}
 
-		public override Job TryGiveJob(Pawn pawn)
+		public override Job TryGiveJob(Pawn pawn) => TryGiveMutualPlayJob(pawn, def.jobDef);
+
+		internal static Job TryGiveMutualPlayJob(Pawn pawn, JobDef jobDef)
 		{
-			if (!IsEligiblePawn(pawn))
+			if (jobDef == null || !IsEligiblePawn(pawn))
 			{
 				return null;
 			}
 
-			if (!SocialNeedTuning_Toddlers.ShouldDoOptionalActivity(pawn, PlayNeedThreshold))
+			bool seekingCompany = ToddlerLonelinessUtility.SeeksCompany(pawn);
+			if (!seekingCompany && !SocialNeedTuning_Toddlers.ShouldDoOptionalActivity(pawn, PlayNeedThreshold))
 			{
 				return null;
 			}
@@ -129,12 +123,12 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return null;
 			}
 
-			if (!TryFindPartnerAndSpot(pawn, out Pawn partner, out IntVec3 spot))
+			if (!TryFindPartnerAndSpot(pawn, seekingCompany, out Pawn partner, out IntVec3 spot))
 			{
 				return null;
 			}
 
-			Job job = JobMaker.MakeJob(def.jobDef, partner);
+			Job job = JobMaker.MakeJob(jobDef, partner);
 			job.ignoreJoyTimeAssignment = true;
 			job.expiryInterval = 2000;
 			job.targetB = spot;
@@ -149,7 +143,8 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
-			if (pawn.Downed || pawn.Drafted || ToddlerMentalStateUtility.HasBlockingMentalState(pawn) || !pawn.Awake())
+			if (pawn.Downed || pawn.Drafted || ToddlerMentalStateUtility.HasBlockingMentalState(pawn) || !pawn.Awake()
+				|| PawnUtility.WillSoonHaveBasicNeed(pawn, 0f) || HealthAIUtility.ShouldSeekMedicalRest(pawn))
 			{
 				return false;
 			}
@@ -177,7 +172,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			return true;
 		}
 
-		private static bool TryFindPartnerAndSpot(Pawn pawn, out Pawn partner, out IntVec3 spot)
+		private static bool TryFindPartnerAndSpot(Pawn pawn, bool seekingCompany, out Pawn partner, out IntVec3 spot)
 		{
 			partner = null;
 			spot = IntVec3.Invalid;
@@ -192,32 +187,13 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				{
 					continue;
 				}
-				if (!ToddlersCompatUtility.IsToddler(other))
+				if (!other.Position.InHorDistOf(pawn.Position, PartnerSearchRadius) || !IsEligiblePawn(other))
 				{
 					continue;
 				}
 
-				if (other.Downed || other.Drafted || ToddlerMentalStateUtility.HasBlockingMentalState(other) || !other.Awake())
-				{
-					continue;
-				}
-
-				if (ToddlersCompatUtility.IsBusyForMutualPlay(other))
-				{
-					continue;
-				}
-
-				if (ToddlerPlayFailureCooldownUtility.IsMutualPlayOnCooldown(other))
-				{
-					continue;
-				}
-
-				if (!pawn.Position.InHorDistOf(other.Position, PartnerSearchRadius))
-				{
-					continue;
-				}
-
-				if (!SocialNeedTuning_Toddlers.ShouldDoOptionalActivity(other, PlayNeedThreshold))
+				if (!seekingCompany && !ToddlerLonelinessUtility.SeeksCompany(other)
+					&& !SocialNeedTuning_Toddlers.ShouldDoOptionalActivity(other, PlayNeedThreshold))
 				{
 					continue;
 				}
@@ -268,6 +244,19 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 				return pawn.CanReserveSittableOrSpot(cell);
 			}, out spot);
+		}
+	}
+
+	public sealed class JobGiver_ToddlerSeekCompany : ThinkNode_JobGiver
+	{
+		// Match the stock toddler play priority when play is low.
+		public override float GetPriority(Pawn pawn) => ToddlerLonelinessUtility.SeeksCompany(pawn) ? 6f : 0f;
+
+		protected override Job TryGiveJob(Pawn pawn)
+		{
+			return ToddlerLonelinessUtility.SeeksCompany(pawn)
+				? ToddlerPlayGiver_MutualPlay.TryGiveMutualPlayJob(pawn, ToddlersExpansionJobDefOf.RimTalk_ToddlerMutualPlayJob)
+				: null;
 		}
 	}
 

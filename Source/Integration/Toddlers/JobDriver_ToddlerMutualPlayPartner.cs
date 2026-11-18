@@ -90,7 +90,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				pawn.rotationTracker.FaceCell(Initiator.Position);
 				pawn.GainComfortFromCellIfPossible(1);
 
-				if (SocialNeedTuning_Toddlers.IsPlayNeedSatisfied(pawn))
+				if (SocialNeedTuning_Toddlers.IsMutualPlaySatisfied(pawn, Initiator))
 				{
 					EndJobWith(JobCondition.Succeeded);
 				}

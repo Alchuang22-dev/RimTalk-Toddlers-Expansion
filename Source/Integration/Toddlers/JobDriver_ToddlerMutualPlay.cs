@@ -105,7 +105,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				pawn.GainComfortFromCellIfPossible(1);
 				SocialNeedTuning_Toddlers.ApplyMutualPlayTickEffects(pawn, Partner, 1);
 
-				if (SocialNeedTuning_Toddlers.IsPlayNeedSatisfied(pawn))
+				if (SocialNeedTuning_Toddlers.IsMutualPlaySatisfied(pawn, Partner))
 				{
 					EndJobWith(JobCondition.Succeeded);
 				}
