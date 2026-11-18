@@ -1,8 +1,8 @@
-using System;
 using System.Reflection;
 using HarmonyLib;
 using RimTalk_ToddlersExpansion.Core;
 using RimTalk_ToddlersExpansion.Integration.Toddlers;
+using RimWorld;
 using UnityEngine;
 using Verse;
 using Verse.AI;
@@ -18,13 +18,25 @@ namespace RimTalk_ToddlersExpansion.Harmony
 	{
 		private static HediffDef _washingHediff;
 		private static bool _hediffChecked;
-		private static readonly FieldInfo _pawnRendererPawnField = AccessTools.Field(typeof(PawnRenderer), "pawn");
 
 		public static void Init(HarmonyLib.Harmony harmony)
 		{
+			// Mod construction runs before the Hygiene need definition is loaded.
+			LongEventHandler.ExecuteWhenFinished(() =>
+			{
+				if (DefDatabase<NeedDef>.GetNamedSilentFail("Hygiene") != null)
+				{
+					ApplyPatches(harmony);
+				}
+			});
+		}
+
+		private static void ApplyPatches(HarmonyLib.Harmony harmony)
+		{
+			bool canReadRendererPawn = AccessTools.Field(typeof(PawnRenderer), "pawn")?.FieldType == typeof(Pawn);
 			// Patch PawnRenderer.GetDrawParms - 脱衣服效果
 			MethodInfo getDrawParms = AccessTools.Method(typeof(PawnRenderer), "GetDrawParms");
-			if (getDrawParms != null)
+			if (canReadRendererPawn && getDrawParms?.ReturnType == typeof(PawnDrawParms))
 			{
 				harmony.Patch(getDrawParms, postfix: new HarmonyMethod(typeof(Patch_ToddlerBathRendering), nameof(GetDrawParms_Postfix)));
 			}
@@ -42,7 +54,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 			// Patch PawnRenderer.BodyAngle - 调整身体角度
 			MethodInfo bodyAngle = AccessTools.Method(typeof(PawnRenderer), "BodyAngle");
-			if (bodyAngle != null)
+			if (canReadRendererPawn && bodyAngle?.ReturnType == typeof(float))
 			{
 				harmony.Patch(bodyAngle, postfix: new HarmonyMethod(typeof(Patch_ToddlerBathRendering), nameof(BodyAngle_Postfix)));
 			}
@@ -53,16 +65,10 @@ namespace RimTalk_ToddlersExpansion.Harmony
 		/// <summary>
 		/// 使幼儿在洗澡时不渲染衣服和头饰（裸体效果）
 		/// </summary>
-		private static void GetDrawParms_Postfix(PawnRenderer __instance, ref PawnDrawParms __result)
+		private static void GetDrawParms_Postfix(Pawn ___pawn, ref PawnDrawParms __result)
 		{
-			Pawn pawn = GetPawnFromRenderer(__instance);
-			if (pawn == null)
-			{
-				return;
-			}
-
 			// 检查是否是幼儿在执行洗澡任务且有 Washing hediff
-			if (!IsToddlerBathing(pawn))
+			if (!IsToddlerBathing(___pawn))
 			{
 				return;
 			}
@@ -121,20 +127,14 @@ namespace RimTalk_ToddlersExpansion.Harmony
 		/// <summary>
 		/// 调整幼儿在浴缸中的身体角度，使其与浴缸方向匹配
 		/// </summary>
-		private static void BodyAngle_Postfix(PawnRenderer __instance, ref float __result)
+		private static void BodyAngle_Postfix(Pawn ___pawn, ref float __result)
 		{
-			Pawn pawn = GetPawnFromRenderer(__instance);
-			if (pawn == null)
+			if (!IsToddlerBathing(___pawn))
 			{
 				return;
 			}
 
-			if (!IsToddlerBathing(pawn))
-			{
-				return;
-			}
-
-			Thing bath = pawn.jobs?.curJob?.GetTarget(TargetIndex.A).Thing;
+			Thing bath = ___pawn.jobs?.curJob?.GetTarget(TargetIndex.A).Thing;
 			if (bath == null || !ToddlerSelfBathUtility.IsBath(bath))
 			{
 				return;
@@ -202,19 +202,6 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 			_hediffChecked = true;
 			_washingHediff = DefDatabase<HediffDef>.GetNamedSilentFail("Washing");
-		}
-
-		/// <summary>
-		/// 从 PawnRenderer 获取对应的 Pawn
-		/// </summary>
-		private static Pawn GetPawnFromRenderer(PawnRenderer renderer)
-		{
-			if (renderer == null || _pawnRendererPawnField == null)
-			{
-				return null;
-			}
-
-			return _pawnRendererPawnField.GetValue(renderer) as Pawn;
 		}
 	}
 }

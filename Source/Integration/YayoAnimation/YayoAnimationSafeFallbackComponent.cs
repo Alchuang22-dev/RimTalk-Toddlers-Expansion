@@ -51,19 +51,19 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			}
 
 			_nextSyncTick = now + SyncIntervalTicks;
-			SyncTrackedPawnsOnCurrentMap();
-
-			if (now >= _nextCurrentMapScanTick)
-			{
-				_nextCurrentMapScanTick = now + CurrentMapScanIntervalTicks;
-				ScanCurrentMapCandidates();
-			}
-
 			if (now >= _nextFullRescanTick)
 			{
 				_nextFullRescanTick = now + FullRescanIntervalTicks;
+				_nextCurrentMapScanTick = now + CurrentMapScanIntervalTicks;
 				RescanAllMapsForCandidates();
 			}
+			else if (now >= _nextCurrentMapScanTick)
+			{
+				_nextCurrentMapScanTick = now + CurrentMapScanIntervalTicks;
+				ScanMapCandidates(Find.CurrentMap);
+			}
+
+			SyncTrackedPawnsOnCurrentMap();
 		}
 
 		private void SyncTrackedPawnsOnCurrentMap()
@@ -95,17 +95,6 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			_trackedPawnsBuffer.Clear();
 		}
 
-		private static void ScanCurrentMapCandidates()
-		{
-			Map currentMap = Find.CurrentMap;
-			if (currentMap == null)
-			{
-				return;
-			}
-
-			ScanMapCandidates(currentMap, syncImmediately: true);
-		}
-
 		private static void RescanAllMapsForCandidates()
 		{
 			if (Find.Maps == null)
@@ -113,15 +102,13 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 				return;
 			}
 
-			Map currentMap = Find.CurrentMap;
 			for (int i = 0; i < Find.Maps.Count; i++)
 			{
-				Map map = Find.Maps[i];
-				ScanMapCandidates(map, syncImmediately: map == currentMap);
+				ScanMapCandidates(Find.Maps[i]);
 			}
 		}
 
-		private static void ScanMapCandidates(Map map, bool syncImmediately)
+		private static void ScanMapCandidates(Map map)
 		{
 			var pawns = map?.mapPawns?.AllPawnsSpawned;
 			if (pawns == null)
@@ -132,21 +119,12 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			for (int i = 0; i < pawns.Count; i++)
 			{
 				Pawn pawn = pawns[i];
-				if (!YayoAnimationCompatUtility.IsRelevantSmallPawnCandidate(pawn))
-				{
-					continue;
-				}
-
 				if (!YayoAnimationCompatUtility.ShouldKeepSafeFallbackPawnTracked(pawn))
 				{
 					continue;
 				}
 
 				YayoAnimationCompatUtility.TrackSafeFallbackPawn(pawn);
-				if (syncImmediately)
-				{
-					YayoAnimationCompatUtility.SyncSafeNativePlayAnimation(pawn);
-				}
 			}
 		}
 	}

@@ -72,7 +72,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			}
 			catch (Exception fallbackException)
 			{
-				Log.Error($"[RimTalk_ToddlersExpansion] RimTalk text-decoration fallback failed: {fallbackException}");
+				Log.ErrorOnce($"[RimTalk_ToddlersExpansion] RimTalk text-decoration fallback failed: {fallbackException}", "RimTalkToddlers.DecorateTextFallback".GetHashCode());
 				return __exception;
 			}
 		}

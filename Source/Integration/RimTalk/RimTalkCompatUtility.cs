@@ -210,7 +210,7 @@ namespace RimTalk_ToddlersExpansion.Integration.RimTalk
 
 				if (initiatorProp == null || recipientProp == null || talkTypeProp == null)
 				{
-					if (Prefs.DevMode)
+					if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
 					{
 						Log.Message($"[RimTalk_ToddlersExpansion] TalkRequest properties missing on type {requestType.FullName}.");
 					}

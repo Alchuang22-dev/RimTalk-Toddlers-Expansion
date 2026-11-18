@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using HarmonyLib;
+using RimTalk_ToddlersExpansion.Core;
 using RimWorld;
 using Verse;
 using Verse.AI;
@@ -141,7 +142,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 		private static void RejectJob(Pawn pawn, Pawn baby, string reason)
 		{
-			if (Prefs.DevMode)
+			if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
 			{
 				Log.Message($"[RimTalk_ToddlersExpansion] WashBaby job rejected: {reason} carer={pawn?.LabelShort ?? "null"} baby={baby?.LabelShort ?? "null"}.");
 			}

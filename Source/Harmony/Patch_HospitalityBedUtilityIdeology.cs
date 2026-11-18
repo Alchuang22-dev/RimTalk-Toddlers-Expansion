@@ -33,7 +33,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				bedUtilityType,
 				"Ideology_GetFulfillment",
 				new[] { typeof(Building_Bed), typeof(Pawn) });
-			if (ideologyMethod == null)
+			if (ideologyMethod == null || ideologyMethod.ReturnType != typeof(int))
 			{
 				return;
 			}
@@ -41,14 +41,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			MethodInfo prefix = AccessTools.Method(
 				typeof(Patch_HospitalityBedUtilityIdeology),
 				nameof(Ideology_GetFulfillment_Prefix));
-			MethodInfo finalizer = AccessTools.Method(
-				typeof(Patch_HospitalityBedUtilityIdeology),
-				nameof(Ideology_GetFulfillment_Finalizer));
-
-			harmony.Patch(
-				ideologyMethod,
-				prefix: new HarmonyMethod(prefix),
-				finalizer: new HarmonyMethod(finalizer));
+			harmony.Patch(ideologyMethod, prefix: new HarmonyMethod(prefix));
 		}
 
 		private static void PatchClaimBedForYoungGuests(HarmonyLib.Harmony harmony)
@@ -60,7 +53,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			}
 
 			MethodInfo tryGiveJob = AccessTools.Method(claimBedType, "TryGiveJob", new[] { typeof(Pawn) });
-			if (tryGiveJob == null)
+			if (tryGiveJob == null || tryGiveJob.DeclaringType != claimBedType || tryGiveJob.ReturnType != typeof(Job))
 			{
 				return;
 			}
@@ -83,7 +76,8 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				sleepType,
 				"TryIssueJobPackage",
 				new[] { typeof(Pawn), typeof(JobIssueParams) });
-			if (tryIssueJobPackage == null)
+			if (tryIssueJobPackage == null || tryIssueJobPackage.DeclaringType != sleepType
+				|| tryIssueJobPackage.ReturnType != typeof(ThinkResult))
 			{
 				return;
 			}
@@ -94,22 +88,12 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			harmony.Patch(tryIssueJobPackage, prefix: new HarmonyMethod(prefix));
 		}
 
-		private static bool Ideology_GetFulfillment_Prefix(Building_Bed bed, Pawn guest, ref int __result)
+		private static bool Ideology_GetFulfillment_Prefix(Building_Bed __0, Pawn __1, ref int __result)
 		{
-			if (!ModsConfig.IdeologyActive || bed == null || guest == null)
-			{
-				__result = 0;
-				return false;
-			}
-
-			// Visitors below child stage may not have stable ideology data in all mod stacks.
-			if (ToddlersCompatUtility.IsToddlerOrBaby(guest))
-			{
-				__result = 0;
-				return false;
-			}
-
-			if (guest.ideo == null || guest.Ideo == null || guest.Ideo.PreceptsListForReading == null)
+			Pawn guest = __1;
+			if (!ModsConfig.IdeologyActive || __0 == null || guest == null
+				|| ToddlersCompatUtility.IsToddlerOrBaby(guest)
+				|| guest.ideo == null || guest.Ideo?.PreceptsListForReading == null)
 			{
 				__result = 0;
 				return false;
@@ -118,26 +102,9 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			return true;
 		}
 
-		private static Exception Ideology_GetFulfillment_Finalizer(Exception __exception, Pawn guest, ref int __result)
+		private static bool ClaimBed_TryGiveJob_Prefix(Pawn __0, ref Job __result)
 		{
-			if (__exception == null)
-			{
-				return null;
-			}
-
-			__result = 0;
-			if (Prefs.DevMode)
-			{
-				string label = guest?.LabelShort ?? "null";
-				Log.Warning($"[RimTalk_ToddlersExpansion][HospitalityCompat] Suppressed Ideology_GetFulfillment exception for {label}: {__exception.GetType().Name} - {__exception.Message}");
-			}
-
-			return null;
-		}
-
-		private static bool ClaimBed_TryGiveJob_Prefix(Pawn guest, ref Job __result)
-		{
-			if (!ToddlersCompatUtility.IsToddlerOrBaby(guest))
+			if (!ToddlersCompatUtility.IsToddlerOrBaby(__0))
 			{
 				return true;
 			}
@@ -146,8 +113,9 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			return false;
 		}
 
-		private static bool Sleep_TryIssueJobPackage_Prefix(Pawn pawn, ThinkNode __instance, ref ThinkResult __result)
+		private static bool Sleep_TryIssueJobPackage_Prefix(Pawn __0, ThinkNode __instance, ref ThinkResult __result)
 		{
+			Pawn pawn = __0;
 			if (!ToddlersCompatUtility.IsToddlerOrBaby(pawn))
 			{
 				return true;

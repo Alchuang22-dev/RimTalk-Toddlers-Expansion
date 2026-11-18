@@ -35,23 +35,9 @@
 		</value>
 	</Operation>
 
-	<!-- 
-		修改 ExitMapBest duty，在离开地图之前先检查是否有未被背的幼儿需要抱起
-	-->
-	<Operation Class="PatchOperationReplace">
+	<!-- 让接幼儿的任务先执行，并保留原有离图行为和其他模组的改动。 -->
+	<Operation Class="RimTalk_ToddlersExpansion.AI.PatchOperation_PrependToddlerPickup">
 		<xpath>/Defs/DutyDef[defName="ExitMapBest"]/thinkNode</xpath>
-		<value>
-			<thinkNode Class="ThinkNode_Priority">
-				<subNodes>
-					<!-- 在离开地图之前，先检查是否有未被背的幼儿需要抱起 -->
-					<li Class="RimTalk_ToddlersExpansion.AI.JobGiver_PickUpUncarriedToddler" />
-					<li Class="JobGiver_ExitMapBest">
-						<defaultLocomotion>Walk</defaultLocomotion>
-						<canFlyOutOfMap>false</canFlyOutOfMap>
-					</li>
-				</subNodes>
-			</thinkNode>
-		</value>
 	</Operation>
 
 	<!-- 

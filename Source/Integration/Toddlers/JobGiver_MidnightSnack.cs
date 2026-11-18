@@ -30,21 +30,20 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
         private static Job TryCreateMidnightSnackJob(Pawn pawn, bool ignoreRestrictions, out string reason)
         {
             reason = null;
-            JobGiver_MidnightSnack helper = new JobGiver_MidnightSnack();
 
-            if (!helper.IsValidPawn(pawn))
+            if (!IsValidPawn(pawn))
             {
                 reason = "pawn is not a valid toddler/child target";
                 return null;
             }
 
-            if (!ignoreRestrictions && !helper.ShouldAttemptMidnightSnack(pawn))
+            if (!ignoreRestrictions && (HasCooldown(pawn) || IsInBadCondition(pawn)))
             {
                 reason = "normal midnight snack conditions not met";
                 return null;
             }
 
-            var (food, score) = helper.FindBestFoodTarget(pawn);
+            var (food, score) = FindBestFoodTarget(pawn);
             if (food == null || score < 0.1f)
             {
                 reason = "no suitable food found";
@@ -64,26 +63,9 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
             return job;
         }
 
-        private bool ShouldAttemptMidnightSnack(Pawn pawn)
+        private static bool IsValidPawn(Pawn pawn)
         {
-            if (!IsValidPawn(pawn))
-                return false;
-
-            if (HasCooldown(pawn))
-                return false;
-
-            if (IsInBadCondition(pawn))
-                return false;
-
-            if (!HasCookingFoodAvailable(pawn))
-                return false;
-
-            return true;
-        }
-
-        private bool IsValidPawn(Pawn pawn)
-        {
-            if (pawn == null || pawn.Dead || !pawn.Spawned)
+            if (pawn?.needs?.food == null || pawn.Dead || !pawn.Spawned)
                 return false;
 
             if (pawn.Faction != Faction.OfPlayer)
@@ -101,7 +83,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
             return false;
         }
 
-        private bool HasCooldown(Pawn pawn)
+        private static bool HasCooldown(Pawn pawn)
         {
             var hediff = pawn.health.hediffSet.GetFirstHediffOfDef(Core.ToddlersExpansionHediffDefOf.RimTalk_MidnightSnackCooldown);
             return hediff != null;
@@ -114,7 +96,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
             pawn.health.AddHediff(hediff);
         }
 
-        private bool IsInBadCondition(Pawn pawn)
+        private static bool IsInBadCondition(Pawn pawn)
         {
             if (pawn.needs.food.Starving)
                 return true;
@@ -128,12 +110,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
             return false;
         }
 
-        private bool HasCookingFoodAvailable(Pawn pawn)
-        {
-            return FindBestFoodTarget(pawn).food != null;
-        }
-
-        private (Thing food, float score) FindBestFoodTarget(Pawn pawn)
+        private static (Thing food, float score) FindBestFoodTarget(Pawn pawn)
         {
             Thing bestFood = null;
             float bestScore = 0f;
@@ -156,7 +133,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
             return (bestFood, bestScore);
         }
 
-        private bool IsValidFood(Pawn pawn, Thing food)
+        private static bool IsValidFood(Pawn pawn, Thing food)
         {
             if (food == null || food.def == null || food.def.ingestible == null)
                 return false;
@@ -180,7 +157,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
             return true;
         }
 
-        private float CalculateFoodScore(Pawn pawn, Thing food)
+        private static float CalculateFoodScore(Pawn pawn, Thing food)
         {
             float score = FoodUtility.FoodOptimality(pawn, food, food.def, 0f, false);
 

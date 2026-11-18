@@ -31,26 +31,37 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			}
 
 			MethodInfo target = AccessTools.Method(personaType, "GetOrAddNew", new[] { typeof(Pawn) });
-			if (target == null)
+			if (target == null || !personaType.IsAssignableFrom(target.ReturnType) || target.ContainsGenericParameters)
 			{
 				return;
 			}
 
-			_personalityField = AccessTools.Field(personaType, "Personality");
-			_talkInitiationWeightField = AccessTools.Field(personaType, "TalkInitiationWeight");
+			_personalityField = GetWritableInstanceField(personaType, "Personality", typeof(string));
+			_talkInitiationWeightField = GetWritableInstanceField(personaType, "TalkInitiationWeight", typeof(float));
+			if (_personalityField == null && _talkInitiationWeightField == null)
+			{
+				return;
+			}
 
 			MethodInfo prefix = AccessTools.Method(typeof(Patch_RimTalkPersona), nameof(GetOrAddNew_Prefix));
 			MethodInfo postfix = AccessTools.Method(typeof(Patch_RimTalkPersona), nameof(GetOrAddNew_Postfix));
 			harmony.Patch(target, prefix: new HarmonyMethod(prefix), postfix: new HarmonyMethod(postfix));
 		}
 
-		private static void GetOrAddNew_Prefix(Pawn pawn, out bool __state)
+		private static FieldInfo GetWritableInstanceField(Type owner, string name, Type fieldType)
 		{
-			__state = HasExistingPersona(pawn);
+			FieldInfo field = AccessTools.Field(owner, name);
+			return field?.FieldType == fieldType && !field.IsStatic && !field.IsInitOnly ? field : null;
 		}
 
-		private static void GetOrAddNew_Postfix(Pawn pawn, object __result, bool __state)
+		private static void GetOrAddNew_Prefix(Pawn __0, out bool __state)
 		{
+			__state = HasExistingPersona(__0);
+		}
+
+		private static void GetOrAddNew_Postfix(Pawn __0, object __result, bool __state)
+		{
+			Pawn pawn = __0;
 			if (!ToddlersExpansionSettings.EnableYoungPawnSoulReplacement
 				|| __state
 				|| pawn == null

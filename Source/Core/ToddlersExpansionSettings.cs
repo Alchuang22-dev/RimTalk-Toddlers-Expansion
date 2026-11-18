@@ -117,7 +117,8 @@ namespace RimTalk_ToddlersExpansion.Core
 			return text.Contains("[RimTalk_ToddlersExpansion]")
 				|| text.Contains("[RimTalk Toddlers Expansion]")
 				|| text.Contains("[RimTalk Toddlers]")
-				|| text.Contains("[RimTalk Boredom]");
+				|| text.Contains("[RimTalk Boredom]")
+				|| text.Contains("[RimTalk Boredom Debug]");
 		}
 
 		public static int GetMutualPlayPartnerCheckIntervalTicks()
