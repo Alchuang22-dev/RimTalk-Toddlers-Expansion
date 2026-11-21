@@ -115,7 +115,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				return;
 			}
 
-			Log.Warning($"[RimTalk_ToddlersExpansion] Cached driver mismatch detected. Resetting cached driver. job={DescribeJob(__instance)} firstPawn={DescribePawn(cachedDriver.pawn)} secondPawn={DescribePawn(driverPawn)}");
+			Log.WarningOnce($"[RimTalk_ToddlersExpansion] Cached driver mismatch detected. Resetting cached driver. job={DescribeJob(__instance)} firstPawn={DescribePawn(cachedDriver.pawn)} secondPawn={DescribePawn(driverPawn)}", "RimTalkToddlers.CachedPlayDriverMismatch".GetHashCode());
 			_jobCachedDriverField.SetValue(__instance, null);
 		}
 
@@ -178,7 +178,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			{
 				job = CloneJob(job);
 
-				Log.Warning($"[RimTalk_ToddlersExpansion] Replaced reused BePlayedWith job before {context}. toddler={DescribePawn(pawn)} adult={DescribePawn(adult)} reason={reason}");
+				Log.WarningOnce($"[RimTalk_ToddlersExpansion] Replaced reused BePlayedWith job before {context}. toddler={DescribePawn(pawn)} adult={DescribePawn(adult)} reason={reason}", "RimTalkToddlers.ReusedBePlayedWithJob".GetHashCode());
 			}
 
 			return true;
@@ -211,7 +211,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			{
 				job = CloneJob(job);
 
-				Log.Warning($"[RimTalk_ToddlersExpansion] Replaced reused mutual-play partner job before {context}. partner={DescribePawn(pawn)} initiator={DescribePawn(initiator)} reason={reason}");
+				Log.WarningOnce($"[RimTalk_ToddlersExpansion] Replaced reused mutual-play partner job before {context}. partner={DescribePawn(pawn)} initiator={DescribePawn(initiator)} reason={reason}", "RimTalkToddlers.ReusedMutualPlayPartnerJob".GetHashCode());
 			}
 
 			return true;

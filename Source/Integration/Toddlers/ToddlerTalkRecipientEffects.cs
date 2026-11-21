@@ -16,7 +16,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		{
 			if (recipient == null)
 			{
-				if (Prefs.DevMode)
+				if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
 				{
 					Log.Message("[RimTalk_ToddlersExpansion] TalkedToBaby: skip null recipient.");
 				}
@@ -26,7 +26,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			bool isToddlerOrBaby = ToddlersCompatUtility.IsToddlerOrBaby(recipient);
 			if (!isToddlerOrBaby)
 			{
-				if (Prefs.DevMode)
+				if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
 				{
 					Log.Message($"[RimTalk_ToddlersExpansion] TalkedToBaby: skip non-toddler/baby recipient={recipient.LabelShort} stage={recipient.DevelopmentalStage} age={recipient.ageTracker?.AgeBiologicalYearsFloat.ToString("F2") ?? "null"}.");
 				}
@@ -35,7 +35,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 			if (recipient.needs?.mood == null)
 			{
-				if (Prefs.DevMode)
+				if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
 				{
 					Log.Message($"[RimTalk_ToddlersExpansion] TalkedToBaby: skip recipient with null mood={recipient.LabelShort}.");
 				}
@@ -72,7 +72,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			pawn.needs.mood.thoughts.memories.TryGainMemory(thought, speaker);
-			if (Prefs.DevMode)
+			if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
 			{
 				Log.Message($"[RimTalk_ToddlersExpansion] TalkedToBaby: TryGainMemory called for={pawn.LabelShort}, speaker={speaker?.LabelShort ?? "null"}.");
 			}

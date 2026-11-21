@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
@@ -60,6 +61,7 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 		private static bool _walkHediffChecked;
 		private static readonly Dictionary<int, int> _lastLoggedBabyPlayJobByPawn = new Dictionary<int, int>(32);
 		private static readonly Dictionary<int, string> _lastLoggedPlayDecisionByPawn = new Dictionary<int, string>(32);
+		private static readonly ConcurrentDictionary<string, byte> _loggedProfileFailures = new ConcurrentDictionary<string, byte>();
 
 		private static readonly HashSet<Pawn> _suppressedPawns = new HashSet<Pawn>();
 		private static readonly HashSet<Pawn> _safeFallbackTrackedPawns = new HashSet<Pawn>();
@@ -173,17 +175,19 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			if (!ToddlersCompatUtility.IsToddlerOrBaby(pawn))
 				return true;
 			bool isSmallPlayJob = IsSmallPawnPlayJob(pawn);
-			bool isEngagedPlay = ToddlersCompatUtility.IsEngagedInToddlerPlay(pawn);
 			Pawn carrier = ToddlerCarryingUtility.GetCarrier(pawn);
 			if (carrier != null)
 			{
-				LogPlayAnimationDecision(pawn, $"default render allowed: custom-carried by {carrier.LabelShort}");
+				if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
+				{
+					LogPlayAnimationDecision(pawn, $"default render allowed: custom-carried by {carrier.LabelShort}");
+				}
 				return true;
 			}
 
-			if (isEngagedPlay && !isSmallPlayJob)
+			if (!isSmallPlayJob && ToddlersCompatUtility.IsEngagedInToddlerPlay(pawn))
 			{
-				if (ShouldLogMissingPlayClassification(pawn))
+				if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs && ShouldLogMissingPlayClassification(pawn))
 				{
 					LogPlayAnimationDecision(pawn, "default render allowed: engaged play job not classified as small-pawn play");
 				}
@@ -236,7 +240,10 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 				{
 				}
 
-				LogPlayAnimationDecision(pawn, $"native animation selected: {nativeAnimation?.defName ?? "null"}");
+				if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
+				{
+					LogPlayAnimationDecision(pawn, $"native animation selected: {nativeAnimation?.defName ?? "null"}");
+				}
 				return false;
 			}
 
@@ -345,7 +352,10 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			if (pawn.Drawer.renderer.CurAnimation != animation)
 			{
 				ToddlerPlayAnimationUtility.TryApplyAnimation(pawn, animation);
-				LogPlayAnimationDecision(pawn, $"safe native fallback applied: {animation.defName}");
+				if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
+				{
+					LogPlayAnimationDecision(pawn, $"safe native fallback applied: {animation.defName}");
+				}
 			}
 		}
 
@@ -465,6 +475,15 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 
 			_lastLoggedPlayDecisionByPawn[pawnId] = message;
 			Log.Message($"[RimTalk_ToddlersExpansion] Play animation decision: pawn={pawn.LabelShort} job={jobName} toil={toil} {decision}");
+		}
+
+		private static void WarnProfileFailure(string profile, Exception exception)
+		{
+			// Yayo can retry the same profile on every animation update.
+			if (Prefs.DevMode && !ToddlersExpansionSettings.MuteAllLogs && _loggedProfileFailures.TryAdd(profile, 0))
+			{
+				Log.Warning($"[RimTalk_ToddlersExpansion] Failed to apply {profile}: {exception.GetBaseException().Message}");
+			}
 		}
 
 		[Obsolete("Use StartSuppression instead")]
@@ -651,11 +670,7 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			}
 			catch (Exception ex)
 			{
-				if (Prefs.DevMode)
-				{
-					Log.Warning($"[RimTalk_ToddlersExpansion] Failed to apply standing-only play profile: {ex.Message}");
-				}
-
+				WarnProfileFailure("standing-only play profile", ex);
 				return false;
 			}
 		}
@@ -691,7 +706,7 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 					return false;
 				}
 
-				if (Prefs.DevMode)
+				if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
 				{
 					int pawnId = pawn.thingIDNumber;
 					int jobId = pawn.CurJob?.loadID ?? -1;
@@ -712,11 +727,7 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			}
 			catch (Exception ex)
 			{
-				if (Prefs.DevMode)
-				{
-					Log.Warning($"[RimTalk_ToddlersExpansion] Failed to apply Yayo baby play animation bridge: {ex.Message}");
-				}
-
+				WarnProfileFailure("Yayo baby play animation bridge", ex);
 				return false;
 			}
 		}
@@ -757,11 +768,7 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			}
 			catch (Exception ex)
 			{
-				if (Prefs.DevMode)
-				{
-					Log.Warning($"[RimTalk_ToddlersExpansion] Failed to apply custom toddler roll profile: {ex.Message}");
-				}
-
+				WarnProfileFailure("custom toddler roll profile", ex);
 				return false;
 			}
 		}
@@ -1281,11 +1288,7 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			}
 			catch (Exception ex)
 			{
-				if (Prefs.DevMode)
-				{
-					Log.Warning($"[RimTalk_ToddlersExpansion] Failed to apply baby roll profile: {ex.Message}");
-				}
-
+				WarnProfileFailure("baby roll profile", ex);
 				return false;
 			}
 		}
@@ -1352,11 +1355,7 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			}
 			catch (Exception ex)
 			{
-				if (Prefs.DevMode)
-				{
-					Log.Warning($"[RimTalk_ToddlersExpansion] Failed to apply toddler-local Yayo social profile: {ex.Message}");
-				}
-
+				WarnProfileFailure("toddler-local Yayo social profile", ex);
 				return false;
 			}
 		}
@@ -1461,11 +1460,7 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			}
 			catch (Exception ex)
 			{
-				if (Prefs.DevMode)
-				{
-					Log.Warning($"[RimTalk_ToddlersExpansion] Failed to apply toddler spin profile: {ex.Message}");
-				}
-
+				WarnProfileFailure("toddler spin profile", ex);
 				return false;
 			}
 		}
@@ -1527,11 +1522,7 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			}
 			catch (Exception ex)
 			{
-				if (Prefs.DevMode)
-				{
-					Log.Warning($"[RimTalk_ToddlersExpansion] Failed to apply toddler hop profile: {ex.Message}");
-				}
-
+				WarnProfileFailure("toddler hop profile", ex);
 				return false;
 			}
 		}
@@ -1618,11 +1609,7 @@ namespace RimTalk_ToddlersExpansion.Integration.YayoAnimation
 			}
 			catch (Exception ex)
 			{
-				if (Prefs.DevMode)
-				{
-					Log.Warning($"[RimTalk_ToddlersExpansion] Failed to apply toddler run-loop profile: {ex.Message}");
-				}
-
+				WarnProfileFailure("toddler run-loop profile", ex);
 				return false;
 			}
 		}

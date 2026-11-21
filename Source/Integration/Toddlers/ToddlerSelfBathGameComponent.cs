@@ -41,7 +41,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		public override void GameComponentTick()
 		{
 			base.GameComponentTick();
-			if (Find.TickManager == null || _trackedSelfBathCandidates.Count == 0)
+			if (_trackedSelfBathCandidates.Count == 0 || Find.TickManager == null)
 			{
 				return;
 			}
@@ -49,7 +49,10 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			_trackedCandidatesBuffer.Clear();
 			foreach (Pawn pawn in _trackedSelfBathCandidates)
 			{
-				_trackedCandidatesBuffer.Add(pawn);
+				if (pawn.IsHashIntervalTick(CheckIntervalTicks))
+				{
+					_trackedCandidatesBuffer.Add(pawn);
+				}
 			}
 
 			for (int i = 0; i < _trackedCandidatesBuffer.Count; i++)
@@ -58,11 +61,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				if (!ShouldTrackSelfBathPawn(pawn))
 				{
 					_trackedSelfBathCandidates.Remove(pawn);
-					continue;
-				}
-
-				if (!pawn.IsHashIntervalTick(CheckIntervalTicks))
-				{
 					continue;
 				}
 
@@ -137,7 +135,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		private void RebuildTrackingFromMaps()
 		{
-			if (Find.Maps == null)
+			if (!ToddlerSelfBathUtility.IsHygieneAvailable || Find.Maps == null)
 			{
 				return;
 			}
@@ -160,7 +158,7 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		private void TrackPawnIfRelevant(Pawn pawn)
 		{
-			if (!ShouldTrackSelfBathPawn(pawn))
+			if (!ToddlerSelfBathUtility.IsHygieneAvailable || !ShouldTrackSelfBathPawn(pawn))
 			{
 				UntrackPawn(pawn);
 				return;
@@ -284,9 +282,18 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private static NeedDef _hygieneNeedDef;
 		private static bool _initialized;
 
+		internal static bool IsHygieneAvailable
+		{
+			get
+			{
+				EnsureInitialized();
+				return _hygieneNeedDef != null;
+			}
+		}
+
 		public static void RegisterGameComponent()
 		{
-			if (Current.Game == null)
+			if (Current.Game == null || !IsHygieneAvailable)
 			{
 				return;
 			}
@@ -1067,6 +1074,10 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			try
 			{
 				_hygieneNeedDef = DefDatabase<NeedDef>.GetNamedSilentFail("Hygiene");
+				if (_hygieneNeedDef == null)
+				{
+					return;
+				}
 
 				Type washUtility = AccessTools.TypeByName("Toddlers.WashBabyUtility");
 				if (washUtility != null)

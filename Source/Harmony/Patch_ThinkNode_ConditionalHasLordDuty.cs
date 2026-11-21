@@ -1,4 +1,5 @@
 using HarmonyLib;
+using RimTalk_ToddlersExpansion.Core;
 using RimWorld;
 using Verse;
 using Verse.AI.Group;
@@ -30,7 +31,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			LordToil toil = lord.CurLordToil;
 			if (toil == null)
 			{
-				if (Prefs.DevMode)
+				if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
 				{
 					Log.Warning($"[RimTalk_ToddlersExpansion][LordDutyGuard] {pawn.LabelShort} has lord {lord.loadID} but CurLordToil is null.");
 				}

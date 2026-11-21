@@ -1,3 +1,4 @@
+using System;
 using HarmonyLib;
 using RimTalk_ToddlersExpansion.Integration.RimTalk;
 using RimTalk_ToddlersExpansion.Integration.YayoAnimation;
@@ -21,10 +22,10 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			Patch_ModLogFiltering.Init(harmony);
 			if (RimTalkCompatUtility.IsRimTalkActive)
 			{
-				Patch_RimTalkContextBuilder.Init(harmony);
-				Patch_RimTalkDecorateTextCompatibility.Init(harmony);
-				Patch_RimTalkTalkService.Init(harmony);
-				Patch_RimTalkPersona.Init(harmony);
+				ApplyOptionalPatch(harmony, Patch_RimTalkContextBuilder.Init);
+				ApplyOptionalPatch(harmony, Patch_RimTalkDecorateTextCompatibility.Init);
+				ApplyOptionalPatch(harmony, Patch_RimTalkTalkService.Init);
+				ApplyOptionalPatch(harmony, Patch_RimTalkPersona.Init);
 			}
 			Patch_ToddlersWashBaby.Init(harmony);
 			Patch_ToddlersWashBabyBathRules.Init(harmony);
@@ -35,7 +36,6 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			Patch_PawnGroupMakerUtility.Init(harmony);
 			Patch_PawnBioAndNameGenerator_ChildhoodFallback.Init(harmony);
 			Patch_FloatMenu_ToddlerToyPlay.Init(harmony);
-			Patch_DBHFixtureFloatMenu.Init(harmony);
 			Patch_TravelingLord.Init(harmony);
 			Patch_CarriedToddlerMapEdgeReachability.Init(harmony);
 			// Patch 商队离开时的 duty 分配，确保被背着的幼儿不会获得不合适的 duty
@@ -69,7 +69,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			Patch_AdoptableFriendlyBaby.Init(harmony);
 			Patch_ApparelGraphicRecordGetter_BabyFallback.Init(harmony);
 			Patch_ToddlersRemoveClothes.Init(harmony);
-			Patch_HospitalityBedUtilityIdeology.Init(harmony);
+			ApplyOptionalPatch(harmony, Patch_HospitalityBedUtilityIdeology.Init);
 			
 			// 婴儿头发渲染补丁（允许婴儿显示头发）
 			Patch_BabyHairRendering.Init(harmony);
@@ -81,7 +81,19 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			// 访客幼儿婴儿食品补丁（修复Hospitality mod兼容性）
 			Patch_VisitorToddlerBabyFood.Init(harmony);
 			
-			Log.Message("[RimTalk Toddlers Expansion] All patches applied");
+			Log.Message("[RimTalk Toddlers Expansion] Patch initialization finished");
+		}
+
+		private static void ApplyOptionalPatch(HarmonyLib.Harmony harmony, Action<HarmonyLib.Harmony> init)
+		{
+			try
+			{
+				init(harmony);
+			}
+			catch (Exception ex)
+			{
+				Log.Warning($"[RimTalk Toddlers Expansion] Could not initialize {init.Method.DeclaringType?.Name}: {ex}");
+			}
 		}
 	}
 }

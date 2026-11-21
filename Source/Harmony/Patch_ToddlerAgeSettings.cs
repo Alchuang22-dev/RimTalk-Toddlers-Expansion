@@ -12,7 +12,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 		public static void Init(HarmonyLib.Harmony harmony)
 		{
 			MethodInfo toddlerMinAge = AccessTools.Method("Toddlers.ToddlerUtility:ToddlerMinAge", new[] { typeof(Pawn) });
-			if (toddlerMinAge != null)
+			if (toddlerMinAge?.ReturnType == typeof(float))
 			{
 				harmony.Patch(toddlerMinAge, prefix: new HarmonyMethod(typeof(Patch_ToddlerAgeSettings), nameof(ToddlerMinAge_Prefix)));
 			}
@@ -29,30 +29,13 @@ namespace RimTalk_ToddlersExpansion.Harmony
 					harmony.Patch(recalculateLifeStageIndex, transpiler: new HarmonyMethod(typeof(Patch_ToddlerAgeSettings), nameof(RecalculateLifeStageIndex_Transpiler)));
 				}
 			}
-
-			MethodInfo calculateToddlerMinAge = AccessTools.Method("Toddlers.AlienRaceToddlerInfo:CalculateToddlerMinAge");
-			if (calculateToddlerMinAge != null)
-			{
-				harmony.Patch(calculateToddlerMinAge, prefix: new HarmonyMethod(typeof(Patch_ToddlerAgeSettings), nameof(CalculateToddlerMinAge_Prefix)));
-			}
 		}
 
-		private static bool ToddlerMinAge_Prefix(Pawn p, ref float __result)
+		private static bool ToddlerMinAge_Prefix(Pawn __0, ref float __result)
 		{
-			if (ToddlerAgeSettingsUtility.IsExternalDetailedToddlerAgeHandled(p))
+			if (!ToddlerAgeSettingsUtility.TryGetConfiguredToddlerMinAge(__0, out float minAge))
 			{
-				if (ToddlerAgeSettingsUtility.TryGetConfiguredToddlerMinAge(p, out float externalMinAge))
-				{
-					__result = externalMinAge;
-					return false;
-				}
-
 				return true;
-			}
-
-			if (!ToddlerAgeSettingsUtility.TryGetConfiguredToddlerMinAge(p, out float minAge))
-			{
-				minAge = ToddlerAgeSettingsUtility.GetConfiguredToddlerMinAgeYears();
 			}
 
 			__result = minAge;
@@ -68,14 +51,11 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 			for (int i = 0; i < codes.Count; i++)
 			{
-				if (codes[i].Calls(ageYearsGetter))
+				if (codes[i].Calls(ageYearsGetter) && i + 1 < codes.Count && codes[i + 1].opcode == OpCodes.Conv_R4)
 				{
 					codes[i].operand = ageYearsFloatGetter;
+					codes[i + 1].opcode = OpCodes.Nop;
 					replacements++;
-					if (i + 1 < codes.Count && codes[i + 1].opcode == OpCodes.Conv_R4)
-					{
-						codes.RemoveAt(i + 1);
-					}
 				}
 			}
 
@@ -89,17 +69,6 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			}
 
 			return codes;
-		}
-
-		private static bool CalculateToddlerMinAge_Prefix(object __instance, ref float __result)
-		{
-			if (!ToddlerAgeSettingsUtility.TryGetConfiguredToddlerMinAgeForAlienInfo(__instance, out float minAge))
-			{
-				return true;
-			}
-
-			__result = minAge;
-			return false;
 		}
 
 	}

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
+using RimTalk_ToddlersExpansion.Core;
 using RimTalk_ToddlersExpansion.Integration.RimTalk;
 using RimTalk_ToddlersExpansion.Integration.Toddlers;
 using Verse;
@@ -25,7 +26,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 			}
 
 			MethodInfo target = AccessTools.Method(talkServiceType, "GenerateTalk", new[] { talkRequestType });
-			if (target == null)
+			if (target == null || target.ReturnType != typeof(bool) || target.ContainsGenericParameters)
 			{
 				return;
 			}
@@ -43,7 +44,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 			if (!RimTalkCompatUtility.TryGetTalkRequestInfo(__0, out Pawn initiator, out Pawn recipient, out string talkTypeName))
 			{
-				if (Prefs.DevMode)
+				if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
 				{
 					Log.Message("[RimTalk_ToddlersExpansion] TalkService.GenerateTalk: failed to read talk request info.");
 				}
@@ -58,19 +59,19 @@ namespace RimTalk_ToddlersExpansion.Harmony
 
 			if (!RimTalkCompatUtility.IsUserTalkType(talkTypeName))
 			{
-				if (Prefs.DevMode)
+				if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
 				{
 					Log.Message($"[RimTalk_ToddlersExpansion] TalkService.GenerateTalk: skip non-user talk type ({talkTypeName ?? "null"}).");
 				}
 				return;
 			}
 
-			if (Prefs.DevMode)
+			if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
 			{
 				Log.Message($"[RimTalk_ToddlersExpansion] TalkService.GenerateTalk: type={talkTypeName}, initiator={initiator?.LabelShort ?? "null"}, recipient={recipient?.LabelShort ?? "null"}.");
 			}
 
-			if (Prefs.DevMode)
+			if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
 			{
 				Log.Message("[RimTalk_ToddlersExpansion] TalkService.GenerateTalk: applying talked-to effect to talkRequest.Initiator for user talk.");
 			}
@@ -87,7 +88,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				out Pawn speaker,
 				out List<Pawn> listeners))
 			{
-				if (Prefs.DevMode)
+				if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
 				{
 					Log.Message("[RimTalk_ToddlersExpansion] Announcement generated with no eligible listeners for toddler effects.");
 				}
@@ -106,7 +107,7 @@ namespace RimTalk_ToddlersExpansion.Harmony
 				toddlerListenerCount++;
 			}
 
-			if (Prefs.DevMode)
+			if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
 			{
 				Log.Message($"[RimTalk_ToddlersExpansion] Announcement listener effects processed: speaker={speaker.LabelShort}, listeners={listeners.Count}, toddlerListeners={toddlerListenerCount}.");
 			}

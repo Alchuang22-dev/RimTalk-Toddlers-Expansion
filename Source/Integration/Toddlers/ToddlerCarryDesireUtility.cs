@@ -14,32 +14,29 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 		private const float MinFoodPercent = 0.5f;
 		private const float SearchRadius = 2.5f;
 		private static readonly HashSet<Pawn> _trackedDesireCandidates = new HashSet<Pawn>();
-		private static readonly HashSet<Pawn> _activeWantToBeHeldPawns = new HashSet<Pawn>();
 		private static readonly List<Pawn> _trackedCandidatesBuffer = new List<Pawn>(32);
-		private static readonly List<Pawn> _activePawnsBuffer = new List<Pawn>(16);
-		private static readonly Dictionary<Type, MentalStateHandlerAccessor> _mentalStateHandlerAccessors = new Dictionary<Type, MentalStateHandlerAccessor>();
-		private static readonly Dictionary<Type, MentalStateDefAccessor> _mentalStateDefAccessors = new Dictionary<Type, MentalStateDefAccessor>();
 
 		public static bool HasTrackedPawns => _trackedDesireCandidates.Count > 0;
 
 		public static void Tick()
 		{
-			if (Find.TickManager == null
-				|| (_trackedDesireCandidates.Count == 0 && _activeWantToBeHeldPawns.Count == 0))
+			Tick(1);
+		}
+
+		internal static void Tick(int elapsedTicks)
+		{
+			if (Find.TickManager == null || _trackedDesireCandidates.Count == 0)
 			{
 				return;
 			}
 
-			ProcessTrackedCandidates();
-			ProcessActiveWantToBeHeldPawns();
+			ProcessTrackedCandidates(elapsedTicks);
 		}
 
 		public static void ResetTracking()
 		{
 			_trackedDesireCandidates.Clear();
-			_activeWantToBeHeldPawns.Clear();
 			_trackedCandidatesBuffer.Clear();
-			_activePawnsBuffer.Clear();
 		}
 
 		public static void RebuildTrackingFromMaps()
@@ -68,7 +65,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 		public static bool TryEndWantToBeHeld(Pawn toddler, bool logSuccess)
 		{
-			_activeWantToBeHeldPawns.Remove(toddler);
 			if (!IsWantingToBeHeld(toddler))
 			{
 				return false;
@@ -113,17 +109,18 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			UntrackPawn(pawn);
 		}
 
-		private static void ProcessTrackedCandidates()
+		private static void ProcessTrackedCandidates(int elapsedTicks)
 		{
-			if (_trackedDesireCandidates.Count == 0)
-			{
-				return;
-			}
-
+			int pickupInterval = ToddlersExpansionSettings.GetBabyCarryPickupCheckIntervalTicks();
+			int desireInterval = ToddlersExpansionSettings.GetBabyCarryDesireCheckIntervalTicks();
 			_trackedCandidatesBuffer.Clear();
 			foreach (Pawn pawn in _trackedDesireCandidates)
 			{
-				_trackedCandidatesBuffer.Add(pawn);
+				// The desire interval is a multiple of the pickup interval.
+				if (IsDue(pawn.HashOffsetTicks(), pickupInterval, elapsedTicks))
+				{
+					_trackedCandidatesBuffer.Add(pawn);
+				}
 			}
 
 			for (int i = 0; i < _trackedCandidatesBuffer.Count; i++)
@@ -137,14 +134,11 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 
 				if (IsWantingToBeHeld(pawn))
 				{
-					_activeWantToBeHeldPawns.Add(pawn);
+					TryAssignCaregiverForPawn(pawn);
 					continue;
 				}
 
-				_activeWantToBeHeldPawns.Remove(pawn);
-
-				int desireCheckInterval = ToddlersExpansionSettings.GetBabyCarryDesireCheckIntervalTicks();
-				if (!pawn.IsHashIntervalTick(desireCheckInterval))
+				if (!IsDue(pawn.HashOffsetTicks(), desireInterval, elapsedTicks))
 				{
 					continue;
 				}
@@ -159,30 +153,21 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 					TryAssignCaregiverForPawn(pawn);
 				}
 			}
+			_trackedCandidatesBuffer.Clear();
 		}
 
-		private static void ProcessActiveWantToBeHeldPawns()
+		private static bool IsDue(int hashTick, int interval, int elapsedTicks)
 		{
-			if (_activeWantToBeHeldPawns.Count == 0)
+			int phase = hashTick % interval;
+			int ticksSinceDue = phase < 0 ? phase + interval : phase;
+			long ticksSinceWrap = (long)hashTick - int.MinValue;
+			if (ticksSinceWrap < elapsedTicks - 1)
 			{
-				return;
+				// The elapsed window includes ticks before the signed hash value wrapped.
+				return ticksSinceDue <= ticksSinceWrap || ticksSinceWrap + 1 + int.MaxValue % interval < elapsedTicks;
 			}
 
-			_activePawnsBuffer.Clear();
-			foreach (Pawn pawn in _activeWantToBeHeldPawns)
-			{
-				_activePawnsBuffer.Add(pawn);
-			}
-
-			for (int i = 0; i < _activePawnsBuffer.Count; i++)
-			{
-				Pawn pawn = _activePawnsBuffer[i];
-				int pickupScanInterval = ToddlersExpansionSettings.GetBabyCarryPickupCheckIntervalTicks();
-				if (pawn.IsHashIntervalTick(pickupScanInterval))
-				{
-					TryAssignCaregiverForPawn(pawn);
-				}
-			}
+			return ticksSinceDue < elapsedTicks;
 		}
 
 		private static bool TryStartWantToBeHeld(Pawn pawn)
@@ -193,99 +178,13 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 				return false;
 			}
 
-			bool started = pawn.mindState.mentalStateHandler.TryStartMentalState(desireDef, null, false, false, false, null, false, false);
-			if (started)
-			{
-				_activeWantToBeHeldPawns.Add(pawn);
-			}
-
-			return started;
+			return pawn.mindState.mentalStateHandler.TryStartMentalState(desireDef, null, false, false, false, null, false, false);
 		}
 
 		private static bool IsWantingToBeHeld(Pawn pawn)
 		{
-			if (pawn == null || pawn.mindState?.mentalStateHandler == null)
-			{
-				return false;
-			}
-
 			MentalStateDef desireDef = ToddlersExpansionMentalStateDefOf.RimTalk_WantToBeHeld;
-			if (desireDef == null)
-			{
-				return false;
-			}
-
-			MentalStateDef currentDef = GetCurrentMentalStateDef(pawn.mindState.mentalStateHandler);
-			return currentDef == desireDef;
-		}
-
-		private static MentalStateDef GetCurrentMentalStateDef(MentalStateHandler handler)
-		{
-			if (handler == null)
-			{
-				return null;
-			}
-
-			Type handlerType = handler.GetType();
-			if (!_mentalStateHandlerAccessors.TryGetValue(handlerType, out MentalStateHandlerAccessor accessor))
-			{
-				accessor = new MentalStateHandlerAccessor(handlerType);
-				_mentalStateHandlerAccessors.Add(handlerType, accessor);
-			}
-
-			if (accessor.CurrentStateDefProperty != null)
-			{
-				return accessor.CurrentStateDefProperty.GetValue(handler) as MentalStateDef;
-			}
-
-			if (accessor.CurrentStateProperty != null)
-			{
-				object state = accessor.CurrentStateProperty.GetValue(handler);
-				if (state == null)
-				{
-					return null;
-				}
-
-				Type stateType = state.GetType();
-				if (!_mentalStateDefAccessors.TryGetValue(stateType, out MentalStateDefAccessor stateAccessor))
-				{
-					stateAccessor = new MentalStateDefAccessor(stateType);
-					_mentalStateDefAccessors.Add(stateType, stateAccessor);
-				}
-
-				if (stateAccessor.DefProperty != null)
-				{
-					return stateAccessor.DefProperty.GetValue(state) as MentalStateDef;
-				}
-
-				return stateAccessor.DefField?.GetValue(state) as MentalStateDef;
-			}
-
-			return null;
-		}
-
-		private sealed class MentalStateHandlerAccessor
-		{
-			public readonly PropertyInfo CurrentStateDefProperty;
-			public readonly PropertyInfo CurrentStateProperty;
-
-			public MentalStateHandlerAccessor(Type handlerType)
-			{
-				CurrentStateDefProperty = handlerType.GetProperty("CurStateDef");
-				CurrentStateProperty = handlerType.GetProperty("CurState");
-			}
-		}
-
-		private sealed class MentalStateDefAccessor
-		{
-			public readonly PropertyInfo DefProperty;
-			public readonly FieldInfo DefField;
-
-			public MentalStateDefAccessor(Type stateType)
-			{
-				DefProperty = stateType.GetProperty("def");
-				DefField = DefProperty == null ? stateType.GetField("def") : null;
-			}
+			return desireDef != null && pawn?.mindState?.mentalStateHandler != null && pawn.MentalStateDef == desireDef;
 		}
 
 		private static bool TryRecoverMentalState(MentalStateHandler handler)
@@ -386,10 +285,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			_trackedDesireCandidates.Add(pawn);
-			if (IsWantingToBeHeld(pawn))
-			{
-				_activeWantToBeHeldPawns.Add(pawn);
-			}
 		}
 
 		private static void UntrackPawn(Pawn pawn)
@@ -400,7 +295,6 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			}
 
 			_trackedDesireCandidates.Remove(pawn);
-			_activeWantToBeHeldPawns.Remove(pawn);
 		}
 
 		private static bool IsBabyOrToddler(Pawn pawn)
@@ -460,22 +354,19 @@ namespace RimTalk_ToddlersExpansion.Integration.Toddlers
 			for (int i = 0; i < pawns.Count; i++)
 			{
 				Pawn pawn = pawns[i];
-				if (!IsEligibleCaregiver(pawn, toddler))
-				{
-					continue;
-				}
-
-				if (!pawn.Position.InHorDistOf(center, SearchRadius))
+				if (pawn == null || !pawn.Position.InHorDistOf(center, SearchRadius))
 				{
 					continue;
 				}
 
 				float dist = pawn.Position.DistanceToSquared(center);
-				if (dist < bestDist)
+				if (dist >= bestDist || !IsEligibleCaregiver(pawn, toddler))
 				{
-					bestDist = dist;
-					best = pawn;
+					continue;
 				}
+
+				bestDist = dist;
+				best = pawn;
 			}
 
 			return best;

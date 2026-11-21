@@ -134,7 +134,7 @@ namespace RimTalk_ToddlersExpansion
             // 只对 Need_Play 实例生效
             if (!(__instance is Need_Play needPlay))
             {
-                if (Prefs.DevMode && __instance.def.defName == "Play")
+                if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs && __instance?.def?.defName == "Play")
                 {
                     Log.Message($"[RimTalk Boredom Debug] Instance is not Need_Play, type: {__instance.GetType().Name}");
                 }
@@ -144,14 +144,14 @@ namespace RimTalk_ToddlersExpansion
             // 获取 pawn
             if (_pawnField == null)
             {
-                Log.Error("[RimTalk Boredom] _pawnField is null!");
+                Log.ErrorOnce("[RimTalk Boredom] Need.pawn field could not be resolved.", "RimTalkBoredom.NeedPawnField".GetHashCode());
                 return __result;
             }
 
             var pawn = _pawnField.GetValue(__instance) as Pawn;
             if (pawn == null)
             {
-                if (Prefs.DevMode)
+                if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
                     Log.Message("[RimTalk Boredom Debug] Pawn is null");
                 return __result;
             }
@@ -159,7 +159,7 @@ namespace RimTalk_ToddlersExpansion
             // 检查是否是幼儿
             if (!IsToddler(pawn))
             {
-                if (Prefs.DevMode)
+                if (ToddlersExpansionSettings.ShouldEmitVerboseDebugLogs)
                     Log.Message($"[RimTalk Boredom Debug] {pawn.LabelShort} is not a toddler");
                 return __result;
             }
